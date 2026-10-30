@@ -117,11 +117,49 @@ function StopServer {
     Log 'Server stopped.'
 }
 
+function RestoreRealmAddress {
+    # The launcher resets the realm list to 127.0.0.1 at every start; the manager then writes the "Play with
+    # friends" address back (friends.rs, reapply). Do the same, or other computers see the realm but cannot join it.
+    $friendsFile = "$Server.manager\friends.json"
+    if (-not (Test-Path $friendsFile)) { Log 'No Play with friends settings; the realm stays on this computer only.'; return }
+    $friends = Get-Content $friendsFile -Raw | ConvertFrom-Json
+    $address = [string] $friends.host
+    if ($friends.mode -eq 'local' -or -not $address) { Log 'Play with friends is off; the realm stays on this computer only.'; return }
+    if ($address -notmatch '^[A-Za-z0-9.\-]+$') { Log "Unexpected Play with friends address '$address'; not applied." 'WARN'; return }
+    $local = ''
+    if ($friends.mode -eq 'lan') {
+        $ip = Get-NetIPAddress -IPAddress $address -AddressFamily IPv4 -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($ip) {
+            $bits = ('1' * $ip.PrefixLength).PadRight(32, '0')
+            $mask = (0..3 | ForEach-Object { [Convert]::ToInt32($bits.Substring($_ * 8, 8), 2) }) -join '.'
+            $local = ",localAddress='$address',localSubnetMask='$mask'"
+        }
+    }
+    # The realms that run: the active one, plus any started together with it (realm-profile.json).
+    $ids = @(1)
+    $realmFile = Join-Path $Server 'Settings\realm-profile.json'
+    if (Test-Path $realmFile) {
+        $state = Get-Content $realmFile -Raw | ConvertFrom-Json
+        $byMode = @{ coa = 1; wildcard = 2; reborn = 3 }
+        $active = if ($state.active) { $byMode[[string] $state.active] } else { 1 }
+        $ids = @($active)
+        if ($state.simultaneous) { $ids += $(if ($active -eq 1) { 2 } else { 1 }) }
+        if ($state.with_reborn) { $ids += 3 }
+    }
+    $sql = "UPDATE acore_auth.realmlist SET address='$address'$local WHERE id IN ($($ids -join ','));"
+    $mysql = Join-Path $Server 'mysql\bin\mysql.exe'
+    $ini = Join-Path $Server 'mysql\admin-client.ini'
+    $result = Invoke-Quiet $mysql @("--defaults-file=`"$ini`"", '--batch', '--skip-column-names') $sql 2
+    if ($result.Code) { Log "Could not set the realm address: $($result.Text)" 'WARN' }
+    else { Log "Realm list points friends at $address again (realm $($ids -join ', '))." }
+}
+
 function StartAndCheck([string] $expected) {
     $started = Get-Date
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
+    RestoreRealmAddress
     # The world is up when this start's Server.log says so, from the expected build.
     $deadline = (Get-Date).AddMinutes(30)
     while ((Get-Date) -lt $deadline) {

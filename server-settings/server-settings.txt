@@ -39,6 +39,12 @@ modules\mod_ahbot.conf | AuctionHouseBot.Alliance.MaxItems = 2000
 modules\mod_ahbot.conf | AuctionHouseBot.Horde.MaxItems = 2000
 modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MaxItems = 2000
 
+# ---------------------------------------------------------------- Play with friends (home network)
+# The manager writes these when the server is shared; kept here so a start outside the manager keeps them.
+worldserver.conf | BindIP = "0.0.0.0"
+authserver.conf | BindIP = "0.0.0.0"
+modules\coa.conf | CoA.AllowRemoteClients = 1
+
 # ---------------------------------------------------------------- SQUID's bots on Wildcard
 # The manager turns both bot systems off on Wildcard each time ITS Start button is used.
 # Start with patch-night\Start-Server.cmd (or let patch night start it) to keep SQUID's bots on.

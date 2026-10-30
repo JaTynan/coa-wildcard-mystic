@@ -51,10 +51,12 @@ function CurrentValue([string[]] $lines, [string] $key) {
     return $value
 }
 
-# The real files behind one entry of the list: worldserver.conf also has the manager's master copy.
+# The real files behind one entry of the list: worldserver.conf and authserver.conf also have master copies.
 function Targets([string] $file) {
     $paths = @(Join-Path $configs $file)
-    if ($file -ieq 'worldserver.conf' -and (Test-Path $template)) { $paths = @($template) + $paths }
+    # The manager keeps master copies of the two main configs and rebuilds the live files from them.
+    $master = Join-Path $Server "Settings\$file.template"
+    if ($file -in @('worldserver.conf', 'authserver.conf') -and (Test-Path $master)) { $paths = @($master) + $paths }
     return $paths
 }
 
@@ -77,10 +79,11 @@ function ReadPath([string] $path) {
 # One config file out of a realm profile. The manager stores each file as a JSON list of bytes.
 $profileText = $null
 function ReadFromProfile([string] $file) {
-    $rel = if ($file -ieq 'worldserver.conf') { 'Settings/worldserver.conf.template' } else { 'Core/configs/' + ($file -replace '\\', '/') }
+    $isMain = $file -in @('worldserver.conf', 'authserver.conf')
+    $rel = if ($isMain) { "Settings/$file.template" } else { 'Core/configs/' + ($file -replace '\\', '/') }
     $start = $profileText.IndexOf('"' + $rel + '"')
-    if ($start -lt 0 -and $file -ieq 'worldserver.conf') {
-        $rel = 'Core/configs/worldserver.conf'
+    if ($start -lt 0 -and $isMain) {
+        $rel = "Core/configs/$file"
         $start = $profileText.IndexOf('"' + $rel + '"')
     }
     if ($start -lt 0) { return $null }
