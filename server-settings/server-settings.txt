@@ -16,26 +16,28 @@ modules\dynamicxp.conf | Dynamic.XP.Preset = 1
 modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
 
 # ---------------------------------------------------------------- Rested XP (weekend players)
-worldserver.conf | Rate.Rest.InGame = ?
-worldserver.conf | Rate.Rest.Offline.InTavernOrCity = ?
-worldserver.conf | Rate.Rest.Offline.InWilderness = ?
-worldserver.conf | Rate.Rest.MaxBonus = ?
+# In an inn or city: 8 = about 5% of a level per 30 minutes online. Cap: up to 5 levels of rested XP
+worldserver.conf | Rate.Rest.InGame = 8
+worldserver.conf | Rate.Rest.Offline.InTavernOrCity = 1
+worldserver.conf | Rate.Rest.Offline.InWilderness = 1
+worldserver.conf | Rate.Rest.MaxBonus = 5
 
 # ---------------------------------------------------------------- Professions and drops
-worldserver.conf | MaxPrimaryTradeSkill = ?
-worldserver.conf | Rate.Drop.Item.Uncommon = ?
-worldserver.conf | Rate.Drop.Item.Rare = ?
-worldserver.conf | Rate.Drop.Item.Epic = ?
-worldserver.conf | Rate.Drop.Item.Legendary = ?
-worldserver.conf | Rate.Drop.Money = ?
+# 11 professions; more rare/epic/legendary drops and a little more gold
+worldserver.conf | MaxPrimaryTradeSkill = 11
+worldserver.conf | Rate.Drop.Item.Uncommon = 1
+worldserver.conf | Rate.Drop.Item.Rare = 1.5
+worldserver.conf | Rate.Drop.Item.Epic = 3
+worldserver.conf | Rate.Drop.Item.Legendary = 3
+worldserver.conf | Rate.Drop.Money = 1.25
 
 # ---------------------------------------------------------------- Auction House bot
-modules\mod_ahbot.conf | AuctionHouseBot.Enable = ?
-modules\mod_ahbot.conf | AuctionHouseBot.Buyer.Enabled = ?
-modules\mod_ahbot.conf | AuctionHouseBot.ItemsPerCycle = ?
-modules\mod_ahbot.conf | AuctionHouseBot.Alliance.MaxItems = ?
-modules\mod_ahbot.conf | AuctionHouseBot.Horde.MaxItems = ?
-modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MaxItems = ?
+modules\mod_ahbot.conf | AuctionHouseBot.Enable = 1
+modules\mod_ahbot.conf | AuctionHouseBot.Buyer.Enabled = true
+modules\mod_ahbot.conf | AuctionHouseBot.ItemsPerCycle = 150
+modules\mod_ahbot.conf | AuctionHouseBot.Alliance.MaxItems = 2000
+modules\mod_ahbot.conf | AuctionHouseBot.Horde.MaxItems = 2000
+modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MaxItems = 2000
 
 # ---------------------------------------------------------------- SQUID's bots: world PvP
 # 25% High Risk, 55% War Mode, the remaining 20% PvE

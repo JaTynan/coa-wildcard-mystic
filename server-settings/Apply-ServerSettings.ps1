@@ -26,6 +26,9 @@ function Done([string] $message, [int] $code = 0) {
     exit $code
 }
 
+# Any unexpected error: show it and wait, instead of closing the window.
+trap { Done "The script stopped with an error:`n$_`nFiles are only saved at the very end; old copies of anything saved are in Core\configs\settings-backup." 1 }
+
 $configs = Join-Path $Server 'Core\configs'
 $template = Join-Path $Server 'Settings\worldserver.conf.template'
 $listPath = Join-Path $PSScriptRoot 'server-settings.txt'
@@ -56,7 +59,13 @@ function Targets([string] $file) {
 $cache = @{}
 function ReadPath([string] $path) {
     if (-not $cache.ContainsKey($path)) {
-        $cache[$path] = if (Test-Path $path) { [System.Collections.ArrayList]@(Get-Content $path) } else { $null }
+        $cache[$path] = $null
+        if (Test-Path $path) {
+            # Built step by step: an if-expression would unroll the list into a fixed-size array.
+            $lines = New-Object System.Collections.ArrayList
+            foreach ($line in @(Get-Content $path)) { [void] $lines.Add($line) }
+            $cache[$path] = $lines
+        }
     }
     # The comma keeps PowerShell from unrolling the list into a copy, so edits reach the cache.
     if ($null -eq $cache[$path]) { return $null }
