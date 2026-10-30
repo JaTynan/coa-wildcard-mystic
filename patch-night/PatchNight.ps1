@@ -17,6 +17,7 @@ patch night and this picks the new release up. Use at your own risk.
 param(
     [string] $Server = 'C:\Games\CoA Server',
     [string] $Repo = 'JaTynan/coa-wildcard-mystic',
+    [string] $Client = 'F:\CoAClient',
     [int] $WarnMinutes = 10,
     [switch] $Unattended,
     # Start-Server.cmd: only apply the local settings and start the server (keeps SQUID's bots on Wildcard)
@@ -137,6 +138,13 @@ function FetchRepo {
             New-Item -ItemType Directory -Force -Path $settingsDir | Out-Null
             Copy-Item (Join-Path $fresh '*') $settingsDir -Force
             Log 'Downloaded the current server-settings from GitHub.'
+        }
+        # The newest WildcardEnchants addon into the VM's client folder, so coa-sync takes it to every player.
+        $addon = Join-Path $repoRoot 'addon\WildcardEnchants'
+        $addons = Join-Path $Client 'Interface\AddOns'
+        if ((Test-Path $addon) -and (Test-Path $addons)) {
+            Copy-Item $addon $addons -Recurse -Force
+            Log "Updated the WildcardEnchants addon in $addons."
         }
         $scripts = Join-Path $repoRoot 'patch-night'
         if (Test-Path (Join-Path $scripts 'PatchNight.ps1')) {
@@ -280,7 +288,7 @@ if (-not $Updated) {
     if ((Get-FileHash $PSCommandPath).Hash -ne $before) {
         Log 'Running the newer patch-night script just downloaded...'
         $again = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$PSCommandPath`"", '-Updated',
-                   '-Server', "`"$Server`"", '-Repo', $Repo, '-WarnMinutes', $WarnMinutes)
+                   '-Server', "`"$Server`"", '-Repo', $Repo, '-Client', "`"$Client`"", '-WarnMinutes', $WarnMinutes)
         foreach ($name in 'Unattended', 'StartOnly', 'RebuildWildcardBots') { if ((Get-Variable $name -ValueOnly).IsPresent) { $again += "-$name" } }
         & powershell.exe @again
         exit $LASTEXITCODE

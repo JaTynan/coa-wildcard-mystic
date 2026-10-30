@@ -229,7 +229,8 @@ local function PatchApplied()
 	local original = api.GetAppliedEnchant
 	api.GetAppliedEnchant = function(unit, slot, ...)
 		if activeSlots and Applies() and (unit == "player" or UnitIsUnit(unit, "player")) then
-			return activeSlots[tonumber(slot) or -1] or 0
+			-- The client numbers slots 1-17, the server 0-16 (client slot i is server slot i - 1).
+			return activeSlots[(tonumber(slot) or 0) - 1] or 0
 		end
 		return original(unit, slot, ...)
 	end
