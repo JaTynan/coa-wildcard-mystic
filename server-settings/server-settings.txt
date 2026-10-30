@@ -39,6 +39,12 @@ modules\mod_ahbot.conf | AuctionHouseBot.Alliance.MaxItems = 2000
 modules\mod_ahbot.conf | AuctionHouseBot.Horde.MaxItems = 2000
 modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MaxItems = 2000
 
+# ---------------------------------------------------------------- SQUID's bots on Wildcard
+# The manager turns both bot systems off on Wildcard each time ITS Start button is used.
+# Start with patch-night\Start-Server.cmd (or let patch night start it) to keep SQUID's bots on.
+modules\playerbots.conf | AiPlayerbot.Enabled = 1
+modules\mod_coa_playerbots.conf | CoaBots.Enable = 0
+
 # ---------------------------------------------------------------- SQUID's bots: world PvP
 # 25% High Risk, 55% War Mode, the remaining 20% PvE
 modules\playerbots.conf | AiPlayerbot.CoaRulesetForBots = 1
