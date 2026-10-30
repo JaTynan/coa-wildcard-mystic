@@ -41,6 +41,8 @@ modules\coa.conf | CoA.UnlockAllVanity = 0
 modules\coa.conf | CoA.MaxRidingFromStart = 0
 # Transmog appearances are collected as normal (the default 1 unlocks every appearance from the start).
 modules\coa.conf | CoA.UnlockLocalAppearanceCatalog = 0
+# Reputation at double speed for every faction (battleground reputation follows it too).
+worldserver.conf | Rate.Reputation.Gain = 2
 # No intro cinematic for new characters: the client crashes on the first login of a new character.
 worldserver.conf | SkipCinematics = 2
 
