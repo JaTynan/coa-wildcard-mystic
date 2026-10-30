@@ -329,13 +329,18 @@ if ($RebuildWildcardBots) {
         if ($done % 50 -eq 0) { Log "  $done of $($list.Count) removed" }
     }
     $left = Sql ($query -replace 'SELECT c.name', 'SELECT COUNT(*)')
+    $leftCount = if ($left.Text.Trim() -match '^\d+$') { [int] $left.Text.Trim() } else { -1 }
     Log "Removed $done; non-Hero bot characters left: $($left.Text.Trim())."
 
     # Back to normal: the settings switch the bots on again; SQUID creates Heroes on the emptied accounts.
     StopServer
     if (RunScript (Join-Path $settingsDir 'Apply-ServerSettings.ps1') @('-Server', "`"$Server`"", '-Unattended')) { Log 'Applying the settings reported a problem.' 'WARN' }
     $expected = Revision $live
-    if (StartAndCheck $expected) { Finish "Wildcard bots rebuilt; SQUID is creating Hero bots (they log in over the next minutes)." 0 }
+    $up = StartAndCheck $expected
+    if ($leftCount -ne 0) {
+        Finish "Wildcard bots NOT rebuilt: $($left.Text.Trim()) non-Hero bot characters are still there. The server is $(if ($up) { 'up' } else { 'not up' }); see patch-night.log." 1
+    }
+    if ($up) { Finish "Wildcard bots rebuilt: all $done non-Hero bots removed; SQUID is creating Hero bots (they log in over the next minutes)." 0 }
     Finish 'The bots were removed, but the server did not come up. See patch-night.log, or start it with Start-Server.cmd.' 1
 }
 
