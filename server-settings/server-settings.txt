@@ -6,6 +6,25 @@
 # and Apply-Settings.cmd skips it until then.
 # Changes take effect when the server next starts (or .reload config for most of them).
 
+# ---------------------------------------------------------------- Which realm this list is for
+# Nothing is applied while the manager has a different realm active (Settings\realm-profile.json).
+realm | active = wildcard
+
+# ---------------------------------------------------------------- Wildcard realm
+# What makes this realm Wildcard (the values the manager sets when it creates a Wildcard realm).
+# GameModes.Realm went missing once: without it Wildcard is only a per-character challenge, and
+# SQUID's bots are created in CoA classes instead of as Wildcard Heroes.
+modules\mod-coa-challenges.conf | CoAChallenges.GameModes.Realm = WildCard
+modules\mod-coa-challenges.conf | CoAChallenges.GameModes.Enable = 1
+modules\coa.conf | CoA.ClassModel = "hero"
+modules\coa.conf | CoA.GameModeMask = 64
+modules\coa.conf | CoA.MapClass10ToWarrior = 0
+modules\coa.conf | CoA.RealmType = "live seasonal"
+modules\coa.conf | CoA.ClientBooleanConfigs = "CONFIG_LEGACY_CHARACTER_ADVANCEMENT_ENABLED=0"
+worldserver.conf | RealmID = 2
+worldserver.conf | AlwaysMaxSkillForLevel = 1
+worldserver.conf | PlayerStart.CustomSpells = 1
+
 # ---------------------------------------------------------------- Experience
 # Double XP everywhere (CoA's stock master rate is 0.9295; this keeps its per-source balance)
 worldserver.conf | Rate.XP.Global = 1.859
