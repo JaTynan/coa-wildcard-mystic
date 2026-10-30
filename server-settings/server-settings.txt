@@ -34,6 +34,14 @@ modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 150
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
 modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
 
+# ---------------------------------------------------------------- Progression (earned, not handed out)
+# Vanity items are earned or bought, not all owned from the start (the default 1 unlocks the whole catalog).
+modules\coa.conf | CoA.UnlockAllVanity = 0
+# Riding is trained as normal (the default 1 gives every character 300 riding and Cold Weather Flying at level 1).
+modules\coa.conf | CoA.MaxRidingFromStart = 0
+# No intro cinematic for new characters: the client crashes on the first login of a new character.
+worldserver.conf | SkipCinematics = 2
+
 # ---------------------------------------------------------------- Rested XP (weekend players)
 # In an inn or city: 8 = about 5% of a level per 30 minutes online. Cap: up to 5 levels of rested XP
 worldserver.conf | Rate.Rest.InGame = 8
