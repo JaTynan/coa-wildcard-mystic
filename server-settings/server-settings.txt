@@ -30,6 +30,8 @@ worldserver.conf | PlayerStart.CustomSpells = 1
 worldserver.conf | Rate.XP.Global = 1.859
 # Prestige multiplies on top of that: 150% of 2x = 3x while a prestige cycle is active
 modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 150
+# Exploring: 2.7 x the master rate 1.859 = about 5x normal exploration XP.
+worldserver.conf | Rate.XP.Explore = 2.7
 # Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
 modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
@@ -41,6 +43,8 @@ modules\coa.conf | CoA.UnlockAllVanity = 0
 modules\coa.conf | CoA.MaxRidingFromStart = 0
 # Transmog appearances are collected as normal (the default 1 unlocks every appearance from the start).
 modules\coa.conf | CoA.UnlockLocalAppearanceCatalog = 0
+# Reputation at double speed for every faction (battleground reputation follows it too).
+worldserver.conf | Rate.Reputation.Gain = 2
 # No intro cinematic for new characters: the client crashes on the first login of a new character.
 worldserver.conf | SkipCinematics = 2
 
@@ -82,6 +86,13 @@ modules\coa.conf | CoA.AllowRemoteClients = 1
 # Start with patch-night\Start-Server.cmd (or let patch night start it) to keep SQUID's bots on.
 modules\playerbots.conf | AiPlayerbot.Enabled = 1
 modules\mod_coa_playerbots.conf | CoaBots.Enable = 0
+
+# ---------------------------------------------------------------- PvP rewards
+# Double honor: honorable kills (world PvP and battlegrounds) and the battleground win/loss bonuses.
+worldserver.conf | Rate.Honor = 2
+# Honor for the winner of a duel: 10, doubled by Rate.Honor to 20. Kept small: it is paid on every win,
+# so trading duel wins (with a friend or a bot) must not beat playing battlegrounds.
+worldserver.conf | HonorPointsAfterDuel = 10
 
 # ---------------------------------------------------------------- SQUID's bots: world PvP
 # 25% High Risk, 55% War Mode, the remaining 20% PvE
