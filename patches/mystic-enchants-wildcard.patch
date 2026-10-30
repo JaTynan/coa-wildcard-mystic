@@ -1,0 +1,199 @@
+diff --git a/src/server/coa/AscensionFreepick.cpp b/src/server/coa/AscensionFreepick.cpp
+index 3fae79022..85fc78cef 100644
+--- a/src/server/coa/AscensionFreepick.cpp
++++ b/src/server/coa/AscensionFreepick.cpp
+@@ -538,7 +538,8 @@ public:
+         Classless = CurrentRealm.Classless;
+         Reborn = CurrentRealm.WarcraftReborn;
+         MysticAltars = (Classless || Reborn) &&
+-            !AscensionWildcard::PlaysWildcard(sConfigMgr->GetOption<std::string>("CoAChallenges.GameModes.Realm", ""));
++            (!AscensionWildcard::PlaysWildcard(sConfigMgr->GetOption<std::string>("CoAChallenges.GameModes.Realm", "")) ||
++             sConfigMgr->GetOption<bool>("CoA.MysticEnchants.AllowWildcard", false));
+         if (CurrentRealm.ConquestOfAzeroth)
+             sGameEventMgr->StartInternalEvent(COA_CLASS_TRAINERS_EVENT);
+         if ((Classless || Reborn) && !LoadCatalog(Loaded))
+diff --git a/src/server/coa/AscensionMysticEnchant.cpp b/src/server/coa/AscensionMysticEnchant.cpp
+index de3bc5ba9..f0acbd788 100644
+--- a/src/server/coa/AscensionMysticEnchant.cpp
++++ b/src/server/coa/AscensionMysticEnchant.cpp
+@@ -5,6 +5,7 @@
+ #include "AscensionFreepick.h"
+ #include "AscensionMysticEnchant.h"
+ #include "AscensionMysticEnchantRules.h"
++#include "AscensionWildcard.h"
+ #include "Chat.h"
+ #include "Config.h"
+ #include "Creature.h"
+@@ -139,6 +140,7 @@ Character Describe(Player const* player, ClientConfig const& config)
+     character.Runes = player->GetItemCount(RUNE_OF_ASCENSION, false);
+     character.Extracts = player->GetItemCount(MYSTIC_EXTRACT, false);
+     character.AltarNearby = AltarNearby(player);
++    character.WildcardAllowed = sConfigMgr->GetOption<bool>("CoA.MysticEnchants.AllowWildcard", false);
+     character.RealmGates = AscensionFreepick::RealmGates();
+     character.Config = &config;
+     character.Invested = [player](uint32 classType, uint32 tab, bool talent)
+@@ -211,6 +213,26 @@ void SaveSlot(Player const* player, uint32 preset, uint32 slot, uint32 spell)
+             player->GetGUID().GetCounter(), preset, slot);
+ }
+ 
++// CoA.MysticEnchants.AllowWildcard: the client keeps no slot record for Wildcard characters
++// (it answers every slot as empty), so the active slots also go to the WildcardEnchants addon
++// as an addon whisper: "WCME", "S:<slot 0 spell>,<slot 1 spell>,...".
++constexpr char WILDCARD_SLOTS_PREFIX[] = "WCME";
++constexpr char WILDCARD_SLOTS_REQUEST[] = "WCME\tREQ";
++
++void SendWildcardSlots(Player* player, State& state)
++{
++    if (!sConfigMgr->GetOption<bool>("CoA.MysticEnchants.AllowWildcard", false) ||
++        !AscensionWildcard::IsWildcardHero(player))
++        return;
++    std::string message = std::string(WILDCARD_SLOTS_PREFIX) + "\tS";
++    Slots const& active = state.Active();
++    for (uint32 slot = 0; slot < SLOT_COUNT; ++slot)
++        message += (slot ? "," : ":") + std::to_string(active[slot]);
++    WorldPacket data;
++    ChatHandler::BuildChatPacket(data, CHAT_MSG_WHISPER, LANG_ADDON, player, player, message);
++    player->SendDirectMessage(&data);
++}
++
+ void SyncAuras(Player* player, State& state)
+ {
+     std::unordered_map<uint32, uint32> wanted;
+@@ -235,6 +257,7 @@ void SyncAuras(Player* player, State& state)
+             aura->SetStackAmount(uint8(std::min<uint32>(stacks, 255)));
+     }
+     state.Auras = std::move(wanted);
++    SendWildcardSlots(player, state);
+ }
+ 
+ void SendResult(Player* player, uint16 opcode, char const* result)
+@@ -766,7 +789,21 @@ class AscensionMysticEnchantPlayer final : public PlayerScript
+ {
+ public:
+     AscensionMysticEnchantPlayer() : PlayerScript("AscensionMysticEnchantPlayer", { PLAYERHOOK_ON_LOGIN,
+-        PLAYERHOOK_ON_LOGOUT, PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_DELETE_FROM_DB }) { }
++        PLAYERHOOK_ON_LOGOUT, PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_DELETE_FROM_DB,
++        PLAYERHOOK_CAN_PLAYER_USE_PRIVATE_CHAT }) { }
++
++    using PlayerScript::OnPlayerCanUseChat;
++
++    // The WildcardEnchants addon asks for the slots again after it loads (it misses the login send).
++    bool OnPlayerCanUseChat(Player* player, uint32 type, uint32 language, std::string& msg, Player* receiver) override
++    {
++        if (language != LANG_ADDON || type != CHAT_MSG_WHISPER || receiver != player ||
++            msg.rfind(WILDCARD_SLOTS_REQUEST, 0) != 0)
++            return true;
++        if (State* state = Ready ? Find(player) : nullptr)
++            SendWildcardSlots(player, *state);
++        return false;
++    }
+ 
+     void OnPlayerLogin(Player* player) override
+     {
+diff --git a/src/server/coa/AscensionMysticEnchantRules.cpp b/src/server/coa/AscensionMysticEnchantRules.cpp
+index ea1a26378..6574080e1 100644
+--- a/src/server/coa/AscensionMysticEnchantRules.cpp
++++ b/src/server/coa/AscensionMysticEnchantRules.cpp
+@@ -201,7 +201,7 @@ void CheckEnchant(Catalog const& catalog, Character const& character, Slots cons
+         errors.push_back(APPLY_BAD_CLASS);
+     if (!RealmAllows(*enchant, character.RealmGates))
+         errors.push_back(APPLY_BAD_REALM);
+-    else if (character.Wildcard())
++    else if (character.WildcardBlocked())
+         errors.push_back(APPLY_DISABLED_IN_WILDCARD);
+ }
+ 
+@@ -412,6 +412,9 @@ std::uint32_t QualityCap(Character const& character, std::uint32_t quality)
+ 
+ bool InvestmentMet(Character const& character, Enchant const& enchant, bool talent)
+ {
++    // Wildcard builds come from rolls, not tree investment: with the option on, essence requirements do not apply.
++    if (character.Wildcard() && character.WildcardAllowed)
++        return true;
+     std::array<std::uint32_t, REQUIREMENT_COUNT> const& required = talent ? enchant.RequiredTE : enchant.RequiredAE;
+     if (std::all_of(required.begin(), required.end(), [](std::uint32_t need) { return need == 0; }))
+         return true;
+@@ -443,7 +446,7 @@ std::vector<std::uint32_t> CheckApplySlot(Catalog const& catalog, Character cons
+         errors.push_back(APPLY_BUILD_DRAFT);
+     if (character.Casting)
+         errors.push_back(APPLY_NOT_WHILE_CASTING);
+-    if (character.Wildcard())
++    if (character.WildcardBlocked())
+         errors.push_back(APPLY_DISABLED_IN_WILDCARD);
+     for (StagedApply const& other : staged)
+         if (other.ItemKey == entry.ItemKey && other.Slot != entry.Slot)
+@@ -593,7 +596,7 @@ void CheckReforgeTarget(Catalog const& catalog, Character const& character, std:
+             errors.push_back(COLLECTION_REFORGE_NOT_KNOWN_ENCHANTMENT);
+         if (!RealmAllows(*target, character.RealmGates))
+             errors.push_back(COLLECTION_REFORGE_BAD_REALM);
+-        else if (character.Wildcard())
++        else if (character.WildcardBlocked())
+             errors.push_back(COLLECTION_REFORGE_DISABLED_IN_WILDCARD);
+     }
+     else
+@@ -675,7 +678,7 @@ std::string QualityTier(std::uint32_t quality)
+ bool GuideFits(Catalog const& catalog, Character const& character, Slots const& slots, std::uint32_t spell)
+ {
+     Enchant const* enchant = catalog.FindSpell(spell);
+-    if (!enchant || !character.Knows(spell) || !RealmAllows(*enchant, character.RealmGates) || character.Wildcard() ||
++    if (!enchant || !character.Knows(spell) || !RealmAllows(*enchant, character.RealmGates) || character.WildcardBlocked() ||
+         !ClassAllowed(*enchant, character.Class) || character.Level < enchant->RequiredLevel ||
+         !InvestmentMet(character, *enchant, false) || !InvestmentMet(character, *enchant, true))
+         return false;
+@@ -846,7 +849,7 @@ std::uint32_t CheckReforgeItem(Catalog const& catalog, Character const& characte
+         return REFORGE_NOT_WHILE_CASTING;
+     if (IsConquestOfAzerothClass(character.Class))
+         return REFORGE_BAD_CLASS;
+-    if (character.Wildcard())
++    if (character.WildcardBlocked())
+         return REFORGE_DISABLED_IN_WILDCARD;
+     return REFORGE_OK;
+ }
+@@ -899,7 +902,7 @@ std::uint32_t CheckDisenchant(Catalog const& catalog, Character const& character
+         return DISENCHANT_BAD_ENCHANTMENT;
+     if (!RealmAllows(*enchant, character.RealmGates))
+         return DISENCHANT_BAD_REALM;
+-    if (character.Wildcard())
++    if (character.WildcardBlocked())
+         return DISENCHANT_DISABLED_IN_WILDCARD;
+     if (character.Knows(spell))
+         return DISENCHANT_ALREADY_KNOWN_ENCHANTMENT;
+diff --git a/src/server/coa/AscensionMysticEnchantRules.h b/src/server/coa/AscensionMysticEnchantRules.h
+index ca644ba9e..bd7daf1da 100644
+--- a/src/server/coa/AscensionMysticEnchantRules.h
++++ b/src/server/coa/AscensionMysticEnchantRules.h
+@@ -290,6 +290,7 @@ struct Character
+     bool Draft = false;
+     bool Casting = false;
+     bool AltarNearby = false;
++    bool WildcardAllowed = false;
+     bool BagSpace = true;
+     std::uint32_t UnlockTokens = 0;
+     std::uint32_t Runes = 0;
+@@ -303,6 +304,8 @@ struct Character
+     [[nodiscard]] bool Fusion() const;
+     [[nodiscard]] bool Knows(std::uint32_t spell) const;
+     [[nodiscard]] bool Wildcard() const { return (GameModes & WILDCARD_MODE) != 0; }
++    // CoA.MysticEnchants.AllowWildcard: Wildcard characters may use Mystic Enchants, ignoring essence investment.
++    [[nodiscard]] bool WildcardBlocked() const { return Wildcard() && !WildcardAllowed; }
+ };
+ 
+ using Slots = std::array<std::uint32_t, SLOT_COUNT>;
+diff --git a/src/server/coa/conf/coa.conf.dist b/src/server/coa/conf/coa.conf.dist
+index da9b90708..8b30f1e6f 100644
+--- a/src/server/coa/conf/coa.conf.dist
++++ b/src/server/coa/conf/coa.conf.dist
+@@ -28,6 +28,13 @@ CoA.AllowRemoteClients = 0
+ # 0 - Create a Hero. Use this on a realm with CoA.ClassModel = "hero".
+ CoA.MapClass10ToWarrior = 1
+ 
++# Allow Mystic Enchants on a Wildcard realm: altars, scroll drops and identification, and
++# applying or reforging enchants for Wildcard characters. Essence investment requirements are
++# ignored for Wildcard characters (their builds come from rolls); rarity limits still apply.
++# Restart to apply.
++# Default: 0 (Mystic Enchants stay disabled in Wildcard)
++CoA.MysticEnchants.AllowWildcard = 0
++
+ # Client lab probe relay: the admin command .labprobe whispers read-only CoaProbe requests to an
+ # online lab character as addon messages and collects the chunked answers the addon whispers back.
+ # Accepted only for accounts whose name starts with CoA.ProbeRelay.AccountPrefix (case-insensitive).
