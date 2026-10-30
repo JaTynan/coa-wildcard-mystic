@@ -1,0 +1,214 @@
+name: Build patched worldserver
+# Builds the same Windows world server the CF-Server-Manager installs (same core, CoA bots,
+# Content Scaling and SQUID's Playerbots commits, same build settings), with the patches in
+# patches/ applied, and publishes it as a release of this repository ready for the VM.
+# Run it by hand from the Actions tab after the manager updates your server.
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Manager server release to match, for example server-0.261028.83 (or "latest")'
+        default: latest
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-worldserver
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 340
+    env:
+      BOOST_ROOT: C:\local\boost_1_87_0
+    steps:
+      - name: Keep line endings as they are in the repositories
+        shell: pwsh
+        run: git config --global core.autocrlf false
+
+      - name: This repository (patches, addon, install scripts)
+        uses: actions/checkout@v4
+        with:
+          path: _mine
+
+      - name: Look up the release's exact commits
+        id: lock
+        shell: pwsh
+        run: python -I _mine/scripts/resolve_release.py "${{ inputs.release }}"
+
+      - name: Core at the release commit
+        uses: actions/checkout@v4
+        with:
+          repository: Corfirean/azerothcore-wotlk-coa
+          ref: ${{ steps.lock.outputs.core_sha }}
+          path: core
+          fetch-depth: 1
+
+      - name: Apply our patches
+        shell: pwsh
+        working-directory: core
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($patch in Get-ChildItem ../_mine/patches -Filter *.patch | Sort-Object Name) {
+            git apply --check --whitespace=nowarn $patch.FullName
+            if ($LASTEXITCODE) {
+              throw "$($patch.Name) no longer fits release ${{ steps.lock.outputs.tag }}. The patch needs refreshing for this core."
+            }
+            git apply --whitespace=nowarn $patch.FullName
+            if ($LASTEXITCODE) { throw "Applying $($patch.Name) failed." }
+            Write-Host "Applied $($patch.Name)"
+          }
+          git diff --stat
+
+      - name: CoA bots module
+        uses: actions/checkout@v4
+        with:
+          repository: Corfirean/mod-coa-playerbots
+          ref: ${{ steps.lock.outputs.bots_sha }}
+          path: _bots
+
+      - name: Content Scaling module
+        uses: actions/checkout@v4
+        with:
+          repository: Corfirean/mod-coa-content-scaling
+          ref: ${{ steps.lock.outputs.scaling_sha }}
+          path: _scaling
+
+      - name: SQUID's Playerbots, unchanged
+        uses: actions/checkout@v4
+        with:
+          repository: Zyth45/mod-playerbots
+          ref: ${{ steps.lock.outputs.squid_sha }}
+          path: core/modules/mod-playerbots
+
+      - name: Place the modules where the core expects them (as the manager's build does)
+        shell: pwsh
+        run: |
+          $dst = 'core/modules/mod-coa-playerbots'
+          New-Item -ItemType Directory -Force -Path "$dst/conf" | Out-Null
+          Copy-Item -Recurse -Force '_bots/module/src' "$dst/src"
+          Copy-Item -Force '_bots/module/conf/*' "$dst/conf/"
+          robocopy '_scaling' 'core\modules\mod-coa-content-scaling' /E /XD .git artifacts tools /NFL /NDL /NJH /NJS /NP | Out-Null
+          if ($LASTEXITCODE -ge 8) { throw "copying mod-coa-content-scaling failed ($LASTEXITCODE)" }
+          foreach ($pack in 'mod-coa-tbc-content', 'mod-coa-wotlk-content') {
+            robocopy "_scaling\content-packs\$pack" "core\modules\$pack" /E /NFL /NDL /NJH /NJS /NP | Out-Null
+            if ($LASTEXITCODE -ge 8) { throw "copying $pack failed ($LASTEXITCODE)" }
+          }
+          $global:LASTEXITCODE = 0
+
+      - name: Cache Boost and MySQL
+        uses: actions/cache@v4
+        with:
+          path: |
+            C:\local\boost_1_87_0
+            C:\tools\mysql\current
+          key: winbuild-deps:boost-1.87.0:mysql-8.4.9
+
+      - name: Install Boost 1.87 and the MySQL 8.4 client (same versions as the manager's build)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if (-not (Test-Path 'C:\local\boost_1_87_0\boost')) {
+            $boostExe = Join-Path $env:RUNNER_TEMP 'boost.exe'
+            $boostUrl = 'https://downloads.sourceforge.net/project/boost/boost-binaries/1.87.0/boost_1_87_0-msvc-14.3-64.exe'
+            for ($attempt = 1; $attempt -le 3; $attempt++) {
+              try {
+                Invoke-WebRequest -Uri $boostUrl -OutFile $boostExe -UserAgent 'azerothcore-ci' -ConnectionTimeoutSeconds 60 -OperationTimeoutSeconds 60
+                if ((Get-Item $boostExe).Length / 1MB -lt 50) { throw 'got an HTML page instead of the installer' }
+                break
+              } catch {
+                Write-Host "Boost download attempt $attempt failed: $($_.Exception.Message)"
+                if ($attempt -eq 3) { throw }
+                Start-Sleep -Seconds 15
+              }
+            }
+            $proc = Start-Process -FilePath $boostExe -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/DIR=C:\local\boost_1_87_0' -Wait -PassThru
+            if ($proc.ExitCode -ne 0) { throw "Boost installer failed with exit code $($proc.ExitCode)." }
+            if (-not (Test-Path 'C:\local\boost_1_87_0\lib64-msvc-14.3')) { throw 'Boost install is missing its libraries.' }
+          }
+          if (-not (Test-Path 'C:\tools\mysql\current\lib\mysqlclient.lib')) {
+            $zip = Join-Path $env:RUNNER_TEMP 'mysql.zip'
+            Invoke-WebRequest -Uri 'https://cdn.mysql.com/archives/mysql-8.4/mysql-8.4.9-winx64.zip' -OutFile $zip -UserAgent 'Mozilla/5.0'
+            if ((Get-Item $zip).Length / 1MB -lt 50) { throw 'MySQL download looks wrong.' }
+            New-Item -ItemType Directory -Force -Path 'C:\tools\mysql' | Out-Null
+            Expand-Archive -Path $zip -DestinationPath 'C:\tools\mysql' -Force
+            Rename-Item 'C:\tools\mysql\mysql-8.4.9-winx64' 'C:\tools\mysql\current'
+          }
+          $openssl = @($env:OPENSSL_ROOT_DIR, 'C:\Program Files\OpenSSL', 'C:\Program Files\OpenSSL-Win64') |
+            Where-Object { $_ -and (Test-Path (Join-Path $_ 'include\openssl\opensslv.h')) } | Select-Object -First 1
+          if (-not $openssl) { throw 'No OpenSSL development install found on the runner.' }
+          "OPENSSL_ROOT_DIR=$openssl" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure
+        shell: pwsh
+        working-directory: core
+        run: |
+          cmake -S . -B build -G Ninja `
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo `
+            -DAPPS_BUILD=all -DTOOLS_BUILD=none `
+            -DSCRIPTS=static -DMODULES=static `
+            -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 `
+            "-DBOOST_ROOT=$env:BOOST_ROOT" `
+            -DMYSQL_INCLUDE_DIR=C:/tools/mysql/current/include `
+            -DMYSQL_LIBRARY=C:/tools/mysql/current/lib/mysqlclient.lib `
+            -DOPENSSL_ROOT_DIR="$env:OPENSSL_ROOT_DIR"
+          if ($LASTEXITCODE) { throw 'CMake configure failed.' }
+
+      - name: Build worldserver
+        shell: pwsh
+        working-directory: core
+        run: |
+          cmake --build build --target worldserver -j 4
+          if ($LASTEXITCODE) { throw 'Build failed.' }
+
+      - name: Check it starts and reports its revision
+        shell: pwsh
+        working-directory: core
+        run: |
+          $bin = (Get-ChildItem build -Recurse -Filter worldserver.exe | Select-Object -First 1).DirectoryName
+          & "$bin\worldserver.exe" --version
+          if ($LASTEXITCODE) { throw "worldserver --version exited with $LASTEXITCODE" }
+          "BIN_DIR=$bin" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Package for the VM
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tag = '${{ steps.lock.outputs.tag }}'
+          $out = "coa-wildcard-$tag"
+          New-Item -ItemType Directory -Force -Path "$out/server", "$out/addon" | Out-Null
+          Copy-Item "$env:BIN_DIR/worldserver.exe" "$out/server/"
+          Copy-Item "$env:BIN_DIR/*.dll" "$out/server/" -ErrorAction SilentlyContinue
+          Copy-Item -Recurse _mine/addon/WildcardEnchants "$out/addon/"
+          Copy-Item _mine/vm/* "$out/"
+          @(
+            "Manager release: $tag"
+            "Core:            Corfirean/azerothcore-wotlk-coa ${{ steps.lock.outputs.core_sha }}"
+            "CoA bots:        Corfirean/mod-coa-playerbots ${{ steps.lock.outputs.bots_sha }}"
+            "Content Scaling: Corfirean/mod-coa-content-scaling ${{ steps.lock.outputs.scaling_sha }}"
+            "SQUID bots:      Zyth45/mod-playerbots ${{ steps.lock.outputs.squid_tag }} ${{ steps.lock.outputs.squid_sha }}"
+            "Patches:         $((Get-ChildItem _mine/patches -Filter *.patch | ForEach-Object Name) -join ', ')"
+            "This repository: ${{ github.repository }} ${{ github.sha }}"
+            "Built:           $([DateTime]::UtcNow.ToString('u'))"
+          ) | Set-Content "$out/BUILD-INFO.txt" -Encoding utf8
+          '${{ steps.lock.outputs.core_sha }}' | Set-Content "$out/server/core-revision.txt" -Encoding ascii -NoNewline
+          Compress-Archive -Path "$out/*" -DestinationPath "$out.zip"
+          "PACKAGE=$out.zip" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "RELEASE_TAG=wcme-$tag-build${{ github.run_number }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Publish as a release of this repository
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $notes = (Get-Content (Join-Path ($env:PACKAGE -replace '\.zip$','') 'BUILD-INFO.txt')) -join "`n"
+          $notes += "`n`nOn the VM: stop the server in the manager, extract this zip, double-click Install.cmd, start the server."
+          gh release create $env:RELEASE_TAG $env:PACKAGE --repo ${{ github.repository }} --target ${{ github.sha }} --title "Wildcard Mystic Enchants for ${{ steps.lock.outputs.tag }}" --notes $notes
+          if ($LASTEXITCODE) { throw 'Publishing the release failed.' }
