@@ -39,6 +39,8 @@ modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
 modules\coa.conf | CoA.UnlockAllVanity = 0
 # Riding is trained as normal (the default 1 gives every character 300 riding and Cold Weather Flying at level 1).
 modules\coa.conf | CoA.MaxRidingFromStart = 0
+# Transmog appearances are collected as normal (the default 1 unlocks every appearance from the start).
+modules\coa.conf | CoA.UnlockLocalAppearanceCatalog = 0
 # No intro cinematic for new characters: the client crashes on the first login of a new character.
 worldserver.conf | SkipCinematics = 2
 
