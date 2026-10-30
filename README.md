@@ -18,7 +18,7 @@ build settings.
 
 ## Building (GitHub Actions)
 
-1. Actions tab → **Build patched worldserver** → **Run workflow**.
+1. It runs by itself daily. To run it by hand: Actions tab → **Build patched worldserver** → **Run workflow**.
 2. Enter the manager's server release, for example `server-0.261028.83` (or leave `latest`).
    The world server's log shows the core revision in its first line if you're unsure.
 3. About 1.5–3 hours later the build appears under **Releases** as a zip.
@@ -39,6 +39,26 @@ manager's own world server back.
 
 After a manager update the official server comes back on its own. Build again for the new
 release and reinstall.
+
+## Patch night (automatic weekly update)
+
+The build runs by itself every day on GitHub and builds each new manager release once. On the
+server PC, `patch-night\Register-PatchNight.cmd` creates a scheduled task (Tuesday 11 pm by
+default) that:
+
+1. reads which release the manager has installed;
+2. downloads the patched build of that release, if there is one, and the current
+   `server-settings` from this repository (edit them here on GitHub and they apply on the night);
+3. warns players in game 10 minutes ahead, stops the server, installs the build if it is new,
+   applies the settings, starts the server and checks it came up on the right build;
+4. if the patched server does not come up, puts the official one back and starts that.
+
+Results go to `patch-night\patch-night.log` and `patch-night\last-run.txt`. The manager's own
+**Update** button stays manual: click it any time before patch night and the new release is
+picked up. `Run-PatchNight-Now.cmd` runs it straight away, with the window open.
+
+`patch-night\launcher_bridge.py` comes from CF-Server-Manager (AGPL-3.0); patch night starts and
+stops the server through it, the same way the manager does.
 
 ## Credits
 

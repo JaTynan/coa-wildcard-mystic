@@ -14,7 +14,9 @@ Core\configs\settings-backup\<date-time>\.
 param(
     [switch] $Capture,
     [string] $Realm = '',
-    [string] $Server = 'C:\Games\CoA Server'
+    [string] $Server = 'C:\Games\CoA Server',
+    # Patch night: no 'Press Enter' at the end
+    [switch] $Unattended
 )
 $ErrorActionPreference = 'Stop'
 
@@ -22,7 +24,7 @@ function Done([string] $message, [int] $code = 0) {
     Write-Host ''
     if ($code) { Write-Host $message -ForegroundColor Red } else { Write-Host $message -ForegroundColor Green }
     Write-Host ''
-    Read-Host 'Press Enter to close'
+    if (-not $Unattended) { Read-Host 'Press Enter to close' | Out-Null }
     exit $code
 }
 
