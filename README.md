@@ -57,6 +57,11 @@ Results go to `patch-night\patch-night.log` and `patch-night\last-run.txt`. The 
 **Update** button stays manual: click it any time before patch night and the new release is
 picked up. `Run-PatchNight-Now.cmd` runs it straight away, with the window open.
 
+**SQUID's bots on Wildcard:** the manager switches both bot systems off on Wildcard whenever its
+own Start button is used. `server-settings` turns SQUID's bots on, and `patch-night\Start-Server.cmd`
+applies the settings and starts the server without that step (patch night does the same). This is
+not something the manager supports; keep a backup.
+
 `patch-night\launcher_bridge.py` comes from CF-Server-Manager (AGPL-3.0); patch night starts and
 stops the server through it, the same way the manager does.
 

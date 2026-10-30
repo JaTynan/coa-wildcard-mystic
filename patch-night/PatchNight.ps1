@@ -18,7 +18,9 @@ param(
     [string] $Server = 'C:\Games\CoA Server',
     [string] $Repo = 'JaTynan/coa-wildcard-mystic',
     [int] $WarnMinutes = 10,
-    [switch] $Unattended
+    [switch] $Unattended,
+    # Start-Server.cmd: only apply the local settings and start the server (keeps SQUID's bots on Wildcard)
+    [switch] $StartOnly
 )
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -149,6 +151,22 @@ function RunScript([string] $path, [string[]] $arguments) {
     $result = Invoke-Quiet 'powershell.exe' (@('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$path`"") + $arguments) '' 10
     foreach ($line in ($result.Text -split "`r?`n")) { if ($line.Trim()) { Log "  $($line.Trim())" } }
     return $result.Code
+}
+
+if ($StartOnly) {
+    Log '---- start server (Start-Server.cmd) ----'
+    foreach ($needed in $live, $python, $manage, $bridge) {
+        if (-not (Test-Path $needed)) { Finish "Missing $needed; nothing was changed." 1 }
+    }
+    if (WorldRunning) { Finish 'The server is already running. Stop it in the manager first to restart it with bots.' 1 }
+    $applySettings = Join-Path $settingsDir 'Apply-ServerSettings.ps1'
+    if (-not (Test-Path $applySettings)) { Finish "No settings kit at $settingsDir; nothing was changed." 1 }
+    Log 'Applying server-settings...'
+    if (RunScript $applySettings @('-Server', "`"$Server`"", '-Unattended')) { Log 'Applying the settings reported a problem.' 'WARN' }
+    $expected = Revision $live
+    if (-not $expected) { Finish "Cannot read the revision of $live." 1 }
+    if (StartAndCheck $expected) { Finish "Server started on core $expected with your settings." 0 }
+    Finish 'The server did not come up. See patch-night.log, or start it in the manager.' 1
 }
 
 Log '---- patch night started ----'
