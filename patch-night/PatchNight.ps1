@@ -310,25 +310,26 @@ if ($RebuildWildcardBots) {
     while ((Get-Date) -lt $deadline -and -not ((Test-Path $serverLog) -and (Get-Content $serverLog -Raw) -match 'World Initialized In')) { Start-Sleep -Seconds 10 }
 
     # The non-Hero characters of SQUID's bot accounts, in the Wildcard characters database only.
-    $query = "SELECT c.name FROM acore_characters_wildcard.characters c JOIN acore_auth.account a ON a.id = c.account " +
+    # By character number: SQUID's bot names have two words ("Haramilo Bot"), and "character erase" takes a number too.
+    $query = "SELECT c.guid FROM acore_characters_wildcard.characters c JOIN acore_auth.account a ON a.id = c.account " +
              "WHERE a.username LIKE '$($prefix.ToUpper())%' AND c.class <> 10;"
     $names = Sql $query
     if ($names.Code) { Finish "Cannot list the bots: $($names.Text)" 1 }
     # Trim each line: mysql on Windows can end its lines with an extra carriage return.
     $lines = @($names.Text -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
-    $list = @($lines | Where-Object { $_ -match '^[A-Za-z]+$' })
+    $list = @($lines | Where-Object { $_ -match '^\d+$' })
     if ($lines.Count -ne $list.Count) {
-        $odd = @($lines | Where-Object { $_ -notmatch '^[A-Za-z]+$' } | Select-Object -First 3) -join ', '
-        Log "Skipping $($lines.Count - $list.Count) line(s) that are not plain names, for example: $odd" 'WARN'
+        $odd = @($lines | Where-Object { $_ -notmatch '^\d+$' } | Select-Object -First 3) -join ', '
+        Log "Skipping $($lines.Count - $list.Count) line(s) that are not character numbers, for example: $odd" 'WARN'
     }
     Log "Removing $($list.Count) non-Hero bot characters from the Wildcard realm (this takes a while)..."
     $done = 0
-    foreach ($name in $list) {
-        $null = Ra "character erase $name"
+    foreach ($guid in $list) {
+        $null = Ra "character erase $guid"
         $done++
         if ($done % 50 -eq 0) { Log "  $done of $($list.Count) removed" }
     }
-    $left = Sql ($query -replace 'SELECT c.name', 'SELECT COUNT(*)')
+    $left = Sql ($query -replace 'SELECT c.guid', 'SELECT COUNT(*)')
     $leftCount = if ($left.Text.Trim() -match '^\d+$') { [int] $left.Text.Trim() } else { -1 }
     Log "Removed $done; non-Hero bot characters left: $($left.Text.Trim())."
 
