@@ -1,0 +1,59 @@
+# James's server settings, re-applied by Apply-Settings.cmd
+#
+# Each line:  <config file> | <setting> = <value>
+# The file is relative to C:\Games\CoA Server\Core\configs. Lines starting with # are ignored.
+# A value of ? means "not recorded yet": Save-Current.cmd fills it in from what the server has now,
+# and Apply-Settings.cmd skips it until then.
+# Changes take effect when the server next starts (or .reload config for most of them).
+
+# ---------------------------------------------------------------- Experience
+# Double XP everywhere (CoA's stock master rate is 0.9295; this keeps its per-source balance)
+worldserver.conf | Rate.XP.Global = 1.859
+# Prestige multiplies on top of that: 150% of 2x = 3x while a prestige cycle is active
+modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 150
+# Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
+modules\dynamicxp.conf | Dynamic.XP.Preset = 1
+modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
+
+# ---------------------------------------------------------------- Rested XP (weekend players)
+worldserver.conf | Rate.Rest.InGame = ?
+worldserver.conf | Rate.Rest.Offline.InTavernOrCity = ?
+worldserver.conf | Rate.Rest.Offline.InWilderness = ?
+worldserver.conf | Rate.Rest.MaxBonus = ?
+
+# ---------------------------------------------------------------- Professions and drops
+worldserver.conf | MaxPrimaryTradeSkill = ?
+worldserver.conf | Rate.Drop.Item.Uncommon = ?
+worldserver.conf | Rate.Drop.Item.Rare = ?
+worldserver.conf | Rate.Drop.Item.Epic = ?
+worldserver.conf | Rate.Drop.Item.Legendary = ?
+worldserver.conf | Rate.Drop.Money = ?
+
+# ---------------------------------------------------------------- Auction House bot
+modules\mod_ahbot.conf | AuctionHouseBot.Enable = ?
+modules\mod_ahbot.conf | AuctionHouseBot.Buyer.Enabled = ?
+modules\mod_ahbot.conf | AuctionHouseBot.ItemsPerCycle = ?
+modules\mod_ahbot.conf | AuctionHouseBot.Alliance.MaxItems = ?
+modules\mod_ahbot.conf | AuctionHouseBot.Horde.MaxItems = ?
+modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MaxItems = ?
+
+# ---------------------------------------------------------------- SQUID's bots: world PvP
+# 25% High Risk, 55% War Mode, the remaining 20% PvE
+modules\playerbots.conf | AiPlayerbot.CoaRulesetForBots = 1
+modules\playerbots.conf | AiPlayerbot.CoaRulesetHighRiskPct = 25
+modules\playerbots.conf | AiPlayerbot.CoaRulesetWarModePct = 55
+# Optional, not decided yet: more time at capture points, and Alterac Valley games
+# modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.OutdoorPvp = 30
+# modules\playerbots.conf | AiPlayerbot.RandomBotAutoJoinBGAVCount = 1
+
+# ---------------------------------------------------------------- SQUID's bots: lower load
+# Bots far from any player mostly idle (bots in your zone, within 150 yards or in combat stay active)
+modules\playerbots.conf | AiPlayerbot.BotActiveAlone = 15
+# Bots move into the zones players are levelling in
+modules\playerbots.conf | AiPlayerbot.RandomBotConcentrateInPlayerZone = 1
+# Bots log in when the first player does and out 5 minutes after the last one leaves
+modules\playerbots.conf | AiPlayerbot.DisabledWithoutRealPlayer = 1
+
+# ---------------------------------------------------------------- Wildcard Mystic Enchants
+# Needs the patched world server (Install.cmd); the official one ignores it
+modules\coa.conf | CoA.MysticEnchants.AllowWildcard = 1
