@@ -105,7 +105,7 @@ if ($Capture) {
     }
     $filled = 0; $missing = 0; $profileFiles = @{}
     for ($i = 0; $i -lt $list.Count; $i++) {
-        if ($list[$i] -notmatch $pattern -or $Matches[3] -ne '?' -or $Matches[1] -ieq 'realmlist') { continue }
+        if ($list[$i] -notmatch $pattern -or $Matches[3] -ne '?' -or $Matches[1] -ieq 'realmlist' -or $Matches[1] -ieq 'realm') { continue }
         $file = $Matches[1]; $key = $Matches[2]
         if ($Realm) {
             if (-not $profileFiles.ContainsKey($file)) { $profileFiles[$file] = ReadFromProfile $file }
@@ -127,6 +127,17 @@ if ($Capture) {
     Done "Recorded $filled value(s) from $source in server-settings.txt ($missing not found)."
 }
 
+# The list belongs to one realm ("realm | active = wildcard"): never apply it to another.
+$forRealm = ''
+foreach ($entry in $list) { if ($entry -match '^\s*realm\s*\|\s*active\s*=\s*(\S+)\s*$') { $forRealm = $Matches[1].ToLower() } }
+if ($forRealm) {
+    $realmFile = Join-Path $Server 'Settings\realm-profile.json'
+    $activeRealm = if (Test-Path $realmFile) { [string] (Get-Content $realmFile -Raw | ConvertFrom-Json).active } else { 'coa' }
+    if ($activeRealm.ToLower() -ne $forRealm) {
+        Done "These settings are for the $forRealm realm, but the manager has the $activeRealm realm active. Nothing was changed." 1
+    }
+}
+
 $stamp = Get-Date -Format 'yyyy-MM-dd_HHmmss'
 $backup = Join-Path $configs "settings-backup\$stamp"
 $changedPaths = @{}
@@ -136,7 +147,7 @@ foreach ($entry in $list) {
     if ($entry -notmatch $pattern) { continue }
     $file = $Matches[1]; $key = $Matches[2]; $value = $Matches[3]
     # realmlist | address is written to the database by patch night after each start, not to a config file.
-    if ($file -ieq 'realmlist') { continue }
+    if ($file -ieq 'realmlist' -or $file -ieq 'realm') { continue }
     if ($value -eq '?') { $skipped++; continue }
     $wanted = "$key = $value"
     $any = $false; $differs = $false

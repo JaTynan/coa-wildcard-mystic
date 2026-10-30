@@ -20,7 +20,9 @@ param(
     [int] $WarnMinutes = 10,
     [switch] $Unattended,
     # Start-Server.cmd: only apply the local settings and start the server (keeps SQUID's bots on Wildcard)
-    [switch] $StartOnly
+    [switch] $StartOnly,
+    # Rebuild-WildcardBots.cmd: remove the non-Hero bots of the Wildcard realm, then start (SQUID creates Heroes)
+    [switch] $RebuildWildcardBots
 )
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -267,6 +269,52 @@ function RunScript([string] $path, [string[]] $arguments) {
     $result = Invoke-Quiet 'powershell.exe' (@('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$path`"") + $arguments) '' 10
     foreach ($line in ($result.Text -split "`r?`n")) { if ($line.Trim()) { Log "  $($line.Trim())" } }
     return $result.Code
+}
+
+if ($RebuildWildcardBots) {
+    Log '---- rebuild Wildcard bots (Rebuild-WildcardBots.cmd) ----'
+    foreach ($needed in $live, $python, $manage, $bridge) {
+        if (-not (Test-Path $needed)) { Finish "Missing $needed; nothing was changed." 1 }
+    }
+    $realmFile = Join-Path $Server 'Settings\realm-profile.json'
+    $activeRealm = if (Test-Path $realmFile) { [string] (Get-Content $realmFile -Raw | ConvertFrom-Json).active } else { 'coa' }
+    if ($activeRealm -ne 'wildcard') { Finish "The manager has the $activeRealm realm active, not Wildcard; nothing was changed." 1 }
+    $botsConf = Join-Path $configs 'modules\playerbots.conf'
+    $prefix = 'rndbot'
+    foreach ($line in Get-Content $botsConf) { if ($line -match '^\s*AiPlayerbot\.RandomBotAccountPrefix\s*=\s*"?([A-Za-z0-9_]+)"?') { $prefix = $Matches[1] } }
+
+    StopServer
+    # Start with SQUID's bots off, so none of them is online while it is removed.
+    $text = [IO.File]::ReadAllText($botsConf) -replace '(?m)^(\s*AiPlayerbot\.Enabled\s*=\s*)1', '${1}0'
+    [IO.File]::WriteAllText($botsConf, $text)
+    Log 'Starting the server with the bots switched off...'
+    $result = Launcher 'start-all' '' 60
+    if ($result.Code) { Finish "The server did not start: $($result.Text)" 1 }
+    $deadline = (Get-Date).AddMinutes(20)
+    while ((Get-Date) -lt $deadline -and -not ((Test-Path $serverLog) -and (Get-Content $serverLog -Raw) -match 'World Initialized In')) { Start-Sleep -Seconds 10 }
+
+    # The non-Hero characters of SQUID's bot accounts, in the Wildcard characters database only.
+    $query = "SELECT c.name FROM acore_characters_wildcard.characters c JOIN acore_auth.account a ON a.id = c.account " +
+             "WHERE a.username LIKE '$($prefix.ToUpper())%' AND c.class <> 10;"
+    $names = Sql $query
+    if ($names.Code) { Finish "Cannot list the bots: $($names.Text)" 1 }
+    $list = @($names.Text -split "`r?`n" | Where-Object { $_ -match '^[A-Za-z]+$' })
+    Log "Removing $($list.Count) non-Hero bot characters from the Wildcard realm (this takes a while)..."
+    $done = 0
+    foreach ($name in $list) {
+        $null = Ra "character erase $name"
+        $done++
+        if ($done % 50 -eq 0) { Log "  $done of $($list.Count) removed" }
+    }
+    $left = Sql ($query -replace 'SELECT c.name', 'SELECT COUNT(*)')
+    Log "Removed $done; non-Hero bot characters left: $($left.Text.Trim())."
+
+    # Back to normal: the settings switch the bots on again; SQUID creates Heroes on the emptied accounts.
+    StopServer
+    if (RunScript (Join-Path $settingsDir 'Apply-ServerSettings.ps1') @('-Server', "`"$Server`"", '-Unattended')) { Log 'Applying the settings reported a problem.' 'WARN' }
+    $expected = Revision $live
+    if (StartAndCheck $expected) { Finish "Wildcard bots rebuilt; SQUID is creating Hero bots (they log in over the next minutes)." 0 }
+    Finish 'The bots were removed, but the server did not come up. See patch-night.log, or start it with Start-Server.cmd.' 1
 }
 
 if ($StartOnly) {
