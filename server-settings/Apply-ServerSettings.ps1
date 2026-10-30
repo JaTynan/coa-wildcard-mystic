@@ -105,7 +105,7 @@ if ($Capture) {
     }
     $filled = 0; $missing = 0; $profileFiles = @{}
     for ($i = 0; $i -lt $list.Count; $i++) {
-        if ($list[$i] -notmatch $pattern -or $Matches[3] -ne '?') { continue }
+        if ($list[$i] -notmatch $pattern -or $Matches[3] -ne '?' -or $Matches[1] -ieq 'realmlist') { continue }
         $file = $Matches[1]; $key = $Matches[2]
         if ($Realm) {
             if (-not $profileFiles.ContainsKey($file)) { $profileFiles[$file] = ReadFromProfile $file }
@@ -135,6 +135,8 @@ $changed = 0; $same = 0; $skipped = 0
 foreach ($entry in $list) {
     if ($entry -notmatch $pattern) { continue }
     $file = $Matches[1]; $key = $Matches[2]; $value = $Matches[3]
+    # realmlist | address is written to the database by patch night after each start, not to a config file.
+    if ($file -ieq 'realmlist') { continue }
     if ($value -eq '?') { $skipped++; continue }
     $wanted = "$key = $value"
     $any = $false; $differs = $false

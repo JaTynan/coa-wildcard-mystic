@@ -41,6 +41,9 @@ modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MaxItems = 2000
 
 # ---------------------------------------------------------------- Play with friends (home network)
 # The manager writes these when the server is shared; kept here so a start outside the manager keeps them.
+# The address other computers use to reach this server (written to the realm list after every start).
+# Change it to your server's own address, or put # in front to use the manager's Play with friends address.
+realmlist | address = 10.59.20.53
 worldserver.conf | BindIP = "0.0.0.0"
 authserver.conf | BindIP = "0.0.0.0"
 modules\coa.conf | CoA.AllowRemoteClients = 1

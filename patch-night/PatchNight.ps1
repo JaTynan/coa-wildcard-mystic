@@ -120,14 +120,26 @@ function StopServer {
 function RestoreRealmAddress {
     # The launcher resets the realm list to 127.0.0.1 at every start; the manager then writes the "Play with
     # friends" address back (friends.rs, reapply). Do the same, or other computers see the realm but cannot join it.
-    $friendsFile = "$Server.manager\friends.json"
-    if (-not (Test-Path $friendsFile)) { Log 'No Play with friends settings; the realm stays on this computer only.'; return }
-    $friends = Get-Content $friendsFile -Raw | ConvertFrom-Json
-    $address = [string] $friends.host
-    if ($friends.mode -eq 'local' -or -not $address) { Log 'Play with friends is off; the realm stays on this computer only.'; return }
-    if ($address -notmatch '^[A-Za-z0-9.\-]+$') { Log "Unexpected Play with friends address '$address'; not applied." 'WARN'; return }
+    # 1. "realmlist | address = ..." in server-settings.txt, if set; 2. the manager's Play with friends address.
+    $address = ''; $source = ''; $lan = $false
+    $list = Join-Path $settingsDir 'server-settings.txt'
+    if (Test-Path $list) {
+        foreach ($line in Get-Content $list) {
+            if ($line -match '^\s*realmlist\s*\|\s*address\s*=\s*(\S+)\s*$') { $address = $Matches[1]; $source = 'server-settings' }
+        }
+    }
+    if (-not $address) {
+        $friendsFile = "$Server.manager\friends.json"
+        if (-not (Test-Path $friendsFile)) { Log 'No realm address in server-settings or Play with friends; the realm stays on this computer only.'; return }
+        $friends = Get-Content $friendsFile -Raw | ConvertFrom-Json
+        if ($friends.mode -eq 'local' -or -not $friends.host) { Log 'Play with friends is off; the realm stays on this computer only.'; return }
+        $address = [string] $friends.host; $source = 'Play with friends'; $lan = $friends.mode -eq 'lan'
+    }
+    if ($address -notmatch '^[A-Za-z0-9.\-]+$') { Log "Unexpected realm address '$address' ($source); not applied." 'WARN'; return }
+    # An address of this computer is a home-network address: also set it as the realm's local address, with its mask.
+    if ($source -eq 'server-settings') { $lan = [bool] (Get-NetIPAddress -IPAddress $address -AddressFamily IPv4 -ErrorAction SilentlyContinue) }
     $local = ''
-    if ($friends.mode -eq 'lan') {
+    if ($lan) {
         $ip = Get-NetIPAddress -IPAddress $address -AddressFamily IPv4 -ErrorAction SilentlyContinue | Select-Object -First 1
         if ($ip) {
             $bits = ('1' * $ip.PrefixLength).PadRight(32, '0')
@@ -151,7 +163,7 @@ function RestoreRealmAddress {
     $ini = Join-Path $Server 'mysql\admin-client.ini'
     $result = Invoke-Quiet $mysql @("--defaults-file=`"$ini`"", '--batch', '--skip-column-names') $sql 2
     if ($result.Code) { Log "Could not set the realm address: $($result.Text)" 'WARN' }
-    else { Log "Realm list points friends at $address again (realm $($ids -join ', '))." }
+    else { Log "Realm list points friends at $address again, from $source (realm $($ids -join ', '))." }
 }
 
 function StartAndCheck([string] $expected) {
