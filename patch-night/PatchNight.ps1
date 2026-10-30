@@ -22,7 +22,9 @@ param(
     # Start-Server.cmd: only apply the local settings and start the server (keeps SQUID's bots on Wildcard)
     [switch] $StartOnly,
     # Rebuild-WildcardBots.cmd: remove the non-Hero bots of the Wildcard realm, then start (SQUID creates Heroes)
-    [switch] $RebuildWildcardBots
+    [switch] $RebuildWildcardBots,
+    # Set when this script restarted itself after downloading a newer copy of itself
+    [switch] $Updated
 )
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -271,6 +273,20 @@ function RunScript([string] $path, [string[]] $arguments) {
     return $result.Code
 }
 
+# Every run first downloads this repository; when that brings a newer copy of this script, run that one instead.
+if (-not $Updated) {
+    $before = (Get-FileHash $PSCommandPath).Hash
+    $null = FetchRepo
+    if ((Get-FileHash $PSCommandPath).Hash -ne $before) {
+        Log 'Running the newer patch-night script just downloaded...'
+        $again = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$PSCommandPath`"", '-Updated',
+                   '-Server', "`"$Server`"", '-Repo', $Repo, '-WarnMinutes', $WarnMinutes)
+        foreach ($name in 'Unattended', 'StartOnly', 'RebuildWildcardBots') { if ((Get-Variable $name -ValueOnly).IsPresent) { $again += "-$name" } }
+        & powershell.exe @again
+        exit $LASTEXITCODE
+    }
+}
+
 if ($RebuildWildcardBots) {
     Log '---- rebuild Wildcard bots (Rebuild-WildcardBots.cmd) ----'
     foreach ($needed in $live, $python, $manage, $bridge) {
@@ -298,7 +314,13 @@ if ($RebuildWildcardBots) {
              "WHERE a.username LIKE '$($prefix.ToUpper())%' AND c.class <> 10;"
     $names = Sql $query
     if ($names.Code) { Finish "Cannot list the bots: $($names.Text)" 1 }
-    $list = @($names.Text -split "`r?`n" | Where-Object { $_ -match '^[A-Za-z]+$' })
+    # Trim each line: mysql on Windows can end its lines with an extra carriage return.
+    $lines = @($names.Text -split "`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    $list = @($lines | Where-Object { $_ -match '^[A-Za-z]+$' })
+    if ($lines.Count -ne $list.Count) {
+        $odd = @($lines | Where-Object { $_ -notmatch '^[A-Za-z]+$' } | Select-Object -First 3) -join ', '
+        Log "Skipping $($lines.Count - $list.Count) line(s) that are not plain names, for example: $odd" 'WARN'
+    }
     Log "Removing $($list.Count) non-Hero bot characters from the Wildcard realm (this takes a while)..."
     $done = 0
     foreach ($name in $list) {
@@ -323,7 +345,6 @@ if ($StartOnly) {
         if (-not (Test-Path $needed)) { Finish "Missing $needed; nothing was changed." 1 }
     }
     if (WorldRunning) { Finish 'The server is already running. Stop it in the manager first to restart it with bots.' 1 }
-    $null = FetchRepo
     $applySettings = Join-Path $settingsDir 'Apply-ServerSettings.ps1'
     if (-not (Test-Path $applySettings)) { Finish "No settings kit at $settingsDir; nothing was changed." 1 }
     Log 'Applying server-settings...'
@@ -371,7 +392,8 @@ if ($release) {
 }
 
 # 3. This repository's current settings and scripts (falls back to the local copies).
-$repoInstaller = FetchRepo
+$repoRoot = Get-ChildItem (Join-Path $work 'repo') -Directory -ErrorAction SilentlyContinue | Select-Object -First 1
+$repoInstaller = if ($repoRoot) { Join-Path $repoRoot.FullName 'vm\Install-WildcardServer.ps1' } else { $null }
 $applySettings = Join-Path $settingsDir 'Apply-ServerSettings.ps1'
 if (-not (Test-Path $applySettings)) { Finish "No settings kit at $settingsDir; nothing was changed." 1 }
 
