@@ -90,6 +90,9 @@ modules\mod_coa_playerbots.conf | CoaBots.Enable = 0
 # ---------------------------------------------------------------- PvP rewards
 # Double honor: honorable kills (world PvP and battlegrounds) and the battleground win/loss bonuses.
 worldserver.conf | Rate.Honor = 2
+# Honor for the winner of a duel: 10, doubled by Rate.Honor to 20. Kept small: it is paid on every win,
+# so trading duel wins (with a friend or a bot) must not beat playing battlegrounds.
+worldserver.conf | HonorPointsAfterDuel = 10
 
 # ---------------------------------------------------------------- SQUID's bots: world PvP
 # 25% High Risk, 55% War Mode, the remaining 20% PvE
