@@ -32,6 +32,7 @@ $lastRun = Join-Path $here 'last-run.txt'
 New-Item -ItemType Directory -Force -Path $work | Out-Null
 
 $core = Join-Path $Server 'Core'
+$configs = Join-Path $core 'configs'
 $live = Join-Path $core 'worldserver.exe'
 $official = Join-Path $core 'worldserver.official.exe'
 $marker = Join-Path $core 'worldserver.patched.txt'
@@ -117,6 +118,68 @@ function StopServer {
     Log 'Server stopped.'
 }
 
+function FetchRepo {
+    # Downloads this repository's main branch: the current server-settings (edit them on GitHub, they apply here),
+    # the newest installer (returned), and the newest patch-night scripts, used from the next run on.
+    try {
+        $zip = Join-Path $work 'repo.zip'
+        Invoke-WebRequest -Uri "https://github.com/$Repo/archive/refs/heads/main.zip" -OutFile $zip -Headers $headers -UseBasicParsing
+        $repoDir = Join-Path $work 'repo'
+        if (Test-Path $repoDir) { Remove-Item $repoDir -Recurse -Force }
+        Expand-Archive -Path $zip -DestinationPath $repoDir -Force
+        $repoRoot = Get-ChildItem $repoDir -Directory | Select-Object -First 1 | ForEach-Object { $_.FullName }
+        $fresh = Join-Path $repoRoot 'server-settings'
+        if (Test-Path (Join-Path $fresh 'server-settings.txt')) {
+            New-Item -ItemType Directory -Force -Path $settingsDir | Out-Null
+            Copy-Item (Join-Path $fresh '*') $settingsDir -Force
+            Log 'Downloaded the current server-settings from GitHub.'
+        }
+        $scripts = Join-Path $repoRoot 'patch-night'
+        if (Test-Path (Join-Path $scripts 'PatchNight.ps1')) {
+            Get-ChildItem $scripts -File | Copy-Item -Destination $here -Force
+            Log 'Updated the patch-night scripts from GitHub (used from the next run).'
+        }
+        return (Join-Path $repoRoot 'vm\Install-WildcardServer.ps1')
+    } catch {
+        Log "Cannot download from GitHub ($($_.Exception.Message)); using the local copies." 'WARN'
+        return $null
+    }
+}
+
+function Sql([string] $query) {
+    $mysql = Join-Path $Server 'mysql\bin\mysql.exe'
+    $ini = Join-Path $Server 'mysql\admin-client.ini'
+    return Invoke-Quiet $mysql @("--defaults-file=`"$ini`"", '--batch', '--skip-column-names') $query 2
+}
+
+function EnsureWildcardBotNames {
+    # SQUID names new bots from playerbots_names in the realm's own characters database. The Wildcard one is
+    # left empty ("No more unused names left"), so no Hero bots get created. The name lists are fixed data:
+    # copy them from the CoA characters database when the Wildcard ones are missing or empty.
+    $realmFile = Join-Path $Server 'Settings\realm-profile.json'
+    if (-not (Test-Path $realmFile)) { return }
+    $state = Get-Content $realmFile -Raw | ConvertFrom-Json
+    if ([string] $state.active -ne 'wildcard' -and -not $state.simultaneous) { return }
+    $bots = Join-Path $configs 'modules\playerbots.conf'
+    if (-not (Test-Path $bots) -or -not ((Get-Content $bots) -match '^\s*AiPlayerbot\.Enabled\s*=\s*1')) { return }
+    foreach ($table in 'playerbots_names', 'playerbots_guild_names', 'playerbots_arena_team_names') {
+        $check = Sql ("SELECT (SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='acore_characters' AND TABLE_NAME='$table')," +
+                      "(SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='acore_characters_wildcard' AND TABLE_NAME='$table');")
+        if ($check.Code -or $check.Text -notmatch '^(\d+)\s+(\d+)') { Log "Cannot check $table : $($check.Text)" 'WARN'; continue }
+        $sourceThere = $Matches[1] -eq '1'; $targetThere = $Matches[2] -eq '1'
+        if (-not $sourceThere) { Log "No $table in the CoA characters database to copy." 'WARN'; continue }
+        if ($targetThere) {
+            $rows = Sql "SELECT COUNT(*) FROM acore_characters_wildcard.$table;"
+            if (-not $rows.Code -and $rows.Text.Trim() -ne '0') { continue }
+        }
+        $copy = Sql ("CREATE TABLE IF NOT EXISTS acore_characters_wildcard.$table LIKE acore_characters.$table; " +
+                     "INSERT IGNORE INTO acore_characters_wildcard.$table SELECT * FROM acore_characters.$table; " +
+                     "SELECT COUNT(*) FROM acore_characters_wildcard.$table;")
+        if ($copy.Code) { Log "Copying $table to Wildcard failed: $($copy.Text)" 'WARN' }
+        else { Log "Copied $table to the Wildcard characters database ($($copy.Text.Trim()) rows)." }
+    }
+}
+
 function RestoreRealmAddress {
     # The launcher resets the realm list to 127.0.0.1 at every start; the manager then writes the "Play with
     # friends" address back (friends.rs, reapply). Do the same, or other computers see the realm but cannot join it.
@@ -169,6 +232,9 @@ function RestoreRealmAddress {
 function StartAndCheck([string] $expected) {
     $started = Get-Date
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
+    # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
+    $db = Launcher 'start-mysql' '' 10
+    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames }
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
@@ -209,6 +275,7 @@ if ($StartOnly) {
         if (-not (Test-Path $needed)) { Finish "Missing $needed; nothing was changed." 1 }
     }
     if (WorldRunning) { Finish 'The server is already running. Stop it in the manager first to restart it with bots.' 1 }
+    $null = FetchRepo
     $applySettings = Join-Path $settingsDir 'Apply-ServerSettings.ps1'
     if (-not (Test-Path $applySettings)) { Finish "No settings kit at $settingsDir; nothing was changed." 1 }
     Log 'Applying server-settings...'
@@ -255,25 +322,8 @@ if ($release) {
     Log "No patched build for core $installed yet; the official server keeps running (no Mystic Enchants on Wildcard)." 'WARN'
 }
 
-# 3. This repository's current settings (falls back to the local copy).
-$repoInstaller = $null
-try {
-    $zip = Join-Path $work 'repo.zip'
-    Invoke-WebRequest -Uri "https://github.com/$Repo/archive/refs/heads/main.zip" -OutFile $zip -Headers $headers -UseBasicParsing
-    $repoDir = Join-Path $work 'repo'
-    if (Test-Path $repoDir) { Remove-Item $repoDir -Recurse -Force }
-    Expand-Archive -Path $zip -DestinationPath $repoDir -Force
-    $repoRoot = Get-ChildItem $repoDir -Directory | Select-Object -First 1 | ForEach-Object { $_.FullName }
-    $repoInstaller = Join-Path $repoRoot 'vm\Install-WildcardServer.ps1'
-    $fresh = Join-Path $repoRoot 'server-settings'
-    if ($fresh -and (Test-Path (Join-Path $fresh 'server-settings.txt'))) {
-        New-Item -ItemType Directory -Force -Path $settingsDir | Out-Null
-        Copy-Item (Join-Path $fresh '*') $settingsDir -Force
-        Log 'Downloaded the current server-settings from GitHub.'
-    }
-} catch {
-    Log "Cannot download the settings from GitHub ($($_.Exception.Message)); using the local copy." 'WARN'
-}
+# 3. This repository's current settings and scripts (falls back to the local copies).
+$repoInstaller = FetchRepo
 $applySettings = Join-Path $settingsDir 'Apply-ServerSettings.ps1'
 if (-not (Test-Path $applySettings)) { Finish "No settings kit at $settingsDir; nothing was changed." 1 }
 
