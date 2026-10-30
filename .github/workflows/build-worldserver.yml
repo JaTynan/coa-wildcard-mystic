@@ -2,13 +2,20 @@ name: Build patched worldserver
 # Builds the same Windows world server the CF-Server-Manager installs (same core, CoA bots,
 # Content Scaling and SQUID's Playerbots commits, same build settings), with the patches in
 # patches/ applied, and publishes it as a release of this repository ready for the VM.
-# Run it by hand from the Actions tab after the manager updates your server.
+# Runs by itself every day for the manager's newest release, and only builds a release once;
+# patch night on the VM installs it. Run it by hand from the Actions tab for a specific release.
 on:
+  schedule:
+    - cron: '17 3 * * *'   # 03:17 UTC daily, about 2:17 pm in Sydney
   workflow_dispatch:
     inputs:
       release:
         description: 'Manager server release to match, for example server-0.261028.83 (or "latest")'
         default: latest
+      rebuild:
+        description: 'Build even if this release was built before'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -18,7 +25,40 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      build: ${{ steps.decide.outputs.build }}
+      tag: ${{ steps.lock.outputs.tag }}
+      core_sha: ${{ steps.lock.outputs.core_sha }}
+      bots_sha: ${{ steps.lock.outputs.bots_sha }}
+      scaling_sha: ${{ steps.lock.outputs.scaling_sha }}
+      squid_sha: ${{ steps.lock.outputs.squid_sha }}
+      squid_tag: ${{ steps.lock.outputs.squid_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Look up the release's exact commits
+        id: lock
+        run: python3 -I scripts/resolve_release.py "${{ inputs.release || 'latest' }}"
+      - name: Build only releases not built before
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.lock.outputs.tag }}
+          REBUILD: ${{ inputs.rebuild || false }}
+        run: |
+          if [ "$REBUILD" = "true" ]; then echo "build=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if gh release list --repo "${{ github.repository }}" --limit 200 --json tagName --jq '.[].tagName' | grep -q "^wcme-$TAG-"; then
+            echo "$TAG is already built; nothing to do."
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
+    needs: check
+    if: needs.check.outputs.build == 'true'
     runs-on: windows-latest
     timeout-minutes: 340
     env:
@@ -33,16 +73,11 @@ jobs:
         with:
           path: _mine
 
-      - name: Look up the release's exact commits
-        id: lock
-        shell: pwsh
-        run: python -I _mine/scripts/resolve_release.py "${{ inputs.release }}"
-
       - name: Core at the release commit
         uses: actions/checkout@v4
         with:
           repository: Corfirean/azerothcore-wotlk-coa
-          ref: ${{ steps.lock.outputs.core_sha }}
+          ref: ${{ needs.check.outputs.core_sha }}
           path: core
           fetch-depth: 1
 
@@ -54,7 +89,7 @@ jobs:
           foreach ($patch in Get-ChildItem ../_mine/patches -Filter *.patch | Sort-Object Name) {
             git apply --check --whitespace=nowarn $patch.FullName
             if ($LASTEXITCODE) {
-              throw "$($patch.Name) no longer fits release ${{ steps.lock.outputs.tag }}. The patch needs refreshing for this core."
+              throw "$($patch.Name) no longer fits release ${{ needs.check.outputs.tag }}. The patch needs refreshing for this core."
             }
             git apply --whitespace=nowarn $patch.FullName
             if ($LASTEXITCODE) { throw "Applying $($patch.Name) failed." }
@@ -66,21 +101,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: Corfirean/mod-coa-playerbots
-          ref: ${{ steps.lock.outputs.bots_sha }}
+          ref: ${{ needs.check.outputs.bots_sha }}
           path: _bots
 
       - name: Content Scaling module
         uses: actions/checkout@v4
         with:
           repository: Corfirean/mod-coa-content-scaling
-          ref: ${{ steps.lock.outputs.scaling_sha }}
+          ref: ${{ needs.check.outputs.scaling_sha }}
           path: _scaling
 
       - name: SQUID's Playerbots, unchanged
         uses: actions/checkout@v4
         with:
           repository: Zyth45/mod-playerbots
-          ref: ${{ steps.lock.outputs.squid_sha }}
+          ref: ${{ needs.check.outputs.squid_sha }}
           path: core/modules/mod-playerbots
 
       - name: Place the modules where the core expects them (as the manager's build does)
@@ -181,7 +216,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $tag = '${{ steps.lock.outputs.tag }}'
+          $tag = '${{ needs.check.outputs.tag }}'
           $out = "coa-wildcard-$tag"
           New-Item -ItemType Directory -Force -Path "$out/server", "$out/addon" | Out-Null
           Copy-Item "$env:BIN_DIR/worldserver.exe" "$out/server/"
@@ -190,15 +225,15 @@ jobs:
           Copy-Item _mine/vm/* "$out/"
           @(
             "Manager release: $tag"
-            "Core:            Corfirean/azerothcore-wotlk-coa ${{ steps.lock.outputs.core_sha }}"
-            "CoA bots:        Corfirean/mod-coa-playerbots ${{ steps.lock.outputs.bots_sha }}"
-            "Content Scaling: Corfirean/mod-coa-content-scaling ${{ steps.lock.outputs.scaling_sha }}"
-            "SQUID bots:      Zyth45/mod-playerbots ${{ steps.lock.outputs.squid_tag }} ${{ steps.lock.outputs.squid_sha }}"
+            "Core:            Corfirean/azerothcore-wotlk-coa ${{ needs.check.outputs.core_sha }}"
+            "CoA bots:        Corfirean/mod-coa-playerbots ${{ needs.check.outputs.bots_sha }}"
+            "Content Scaling: Corfirean/mod-coa-content-scaling ${{ needs.check.outputs.scaling_sha }}"
+            "SQUID bots:      Zyth45/mod-playerbots ${{ needs.check.outputs.squid_tag }} ${{ needs.check.outputs.squid_sha }}"
             "Patches:         $((Get-ChildItem _mine/patches -Filter *.patch | ForEach-Object Name) -join ', ')"
             "This repository: ${{ github.repository }} ${{ github.sha }}"
             "Built:           $([DateTime]::UtcNow.ToString('u'))"
           ) | Set-Content "$out/BUILD-INFO.txt" -Encoding utf8
-          '${{ steps.lock.outputs.core_sha }}' | Set-Content "$out/server/core-revision.txt" -Encoding ascii -NoNewline
+          '${{ needs.check.outputs.core_sha }}' | Set-Content "$out/server/core-revision.txt" -Encoding ascii -NoNewline
           Compress-Archive -Path "$out/*" -DestinationPath "$out.zip"
           "PACKAGE=$out.zip" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           "RELEASE_TAG=wcme-$tag-build${{ github.run_number }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
@@ -210,5 +245,5 @@ jobs:
         run: |
           $notes = (Get-Content (Join-Path ($env:PACKAGE -replace '\.zip$','') 'BUILD-INFO.txt')) -join "`n"
           $notes += "`n`nOn the VM: stop the server in the manager, extract this zip, double-click Install.cmd, start the server."
-          gh release create $env:RELEASE_TAG $env:PACKAGE --repo ${{ github.repository }} --target ${{ github.sha }} --title "Wildcard Mystic Enchants for ${{ steps.lock.outputs.tag }}" --notes $notes
+          gh release create $env:RELEASE_TAG $env:PACKAGE --repo ${{ github.repository }} --target ${{ github.sha }} --title "Wildcard Mystic Enchants for ${{ needs.check.outputs.tag }}" --notes $notes
           if ($LASTEXITCODE) { throw 'Publishing the release failed.' }

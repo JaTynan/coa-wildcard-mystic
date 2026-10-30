@@ -11,7 +11,10 @@ param(
     [switch] $Restore,
     [switch] $Force,
     [string] $Server = 'C:\Games\CoA Server',
-    [string] $Client = 'F:\CoAClient'
+    [string] $Client = 'F:\CoAClient',
+    # Patch night: no 'Press Enter' at the end, and the build's folder when this script runs from elsewhere
+    [switch] $Unattended,
+    [string] $Package = $PSScriptRoot
 )
 $ErrorActionPreference = 'Stop'
 
@@ -19,7 +22,7 @@ function Done([string] $message, [int] $code = 0) {
     Write-Host ''
     if ($code) { Write-Host $message -ForegroundColor Red } else { Write-Host $message -ForegroundColor Green }
     Write-Host ''
-    Read-Host 'Press Enter to close'
+    if (-not $Unattended) { Read-Host 'Press Enter to close' | Out-Null }
     exit $code
 }
 
@@ -37,7 +40,7 @@ $core = Join-Path $Server 'Core'
 $live = Join-Path $core 'worldserver.exe'
 $official = Join-Path $core 'worldserver.official.exe'
 $marker = Join-Path $core 'worldserver.patched.txt'
-$here = $PSScriptRoot
+$here = $Package
 
 if (-not (Test-Path $live)) { Done "No world server found at $live." 1 }
 if (Get-Process worldserver -ErrorAction SilentlyContinue) {
