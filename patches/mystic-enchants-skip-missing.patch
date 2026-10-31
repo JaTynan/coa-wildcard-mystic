@@ -1,8 +1,16 @@
 diff --git a/src/server/coa/AscensionMysticEnchant.cpp b/src/server/coa/AscensionMysticEnchant.cpp
-index de3bc5ba..350371bd 100644
+index de3bc5ba..af836814 100644
 --- a/src/server/coa/AscensionMysticEnchant.cpp
 +++ b/src/server/coa/AscensionMysticEnchant.cpp
-@@ -1006,6 +1006,156 @@ public:
+@@ -23,6 +23,7 @@
+ #include "SpellInfo.h"
+ #include "SpellMgr.h"
+ #include "SpellScript.h"
++#include "UnitScript.h"
+ #include "WorldPacket.h"
+ #include "WorldSession.h"
+ #include <algorithm>
+@@ -1006,6 +1007,173 @@ public:
      }
  };
  
@@ -156,10 +164,27 @@ index de3bc5ba..350371bd 100644
 +        missing, duds);
 +}
 +
++// An enchant put on with the GM command .aura (testing) also teaches its spell, as it does through the altar.
++class WcmeTaughtOnAura final : public UnitScript
++{
++public:
++    WcmeTaughtOnAura() : UnitScript("WcmeTaughtOnAura", true, { UNITHOOK_ON_AURA_APPLY }) { }
++
++    void OnAuraApply(Unit* unit, Aura* aura) override
++    {
++        if (!Ready || !unit || !aura || !unit->IsPlayer())
++            return;
++        Enchant const* enchant = Loaded.FindSpell(aura->GetId());
++        Player* player = unit->ToPlayer();
++        if (enchant && enchant->Taught && !player->HasSpell(enchant->Taught))
++            player->learnSpell(enchant->Taught, true);
++    }
++};
++
  class AscensionMysticEnchantWorld final : public WorldScript
  {
  public:
-@@ -1015,7 +1165,11 @@ public:
+@@ -1015,7 +1183,11 @@ public:
      {
          Ready = LoadCatalog(Loaded);
          if (Ready)
@@ -171,6 +196,14 @@ index de3bc5ba..350371bd 100644
          if (!Ready)
              LOG_ERROR("coa", "Mystic enchants are unavailable: MysticEnchant.dbc did not load");
      }
+@@ -1115,6 +1287,7 @@ void AddAscensionMysticEnchantScripts()
+     RegisterAscensionClientConfig(&AscensionMysticEnchant::AppendExtractCosts);
+     new AscensionMysticEnchant::AscensionMysticEnchantPlayer();
+     new AscensionMysticEnchant::AscensionMysticEnchantWorld();
++    new AscensionMysticEnchant::WcmeTaughtOnAura();
+     new AscensionMysticEnchant::AscensionMysticEnchantLoot();
+     new AscensionMysticEnchant::AscensionMysticEnchantScrollDrops();
+     RegisterSpellScriptWithArgs(AscensionMysticEnchant::spell_ascension_unidentified_mystic_scroll,
 diff --git a/src/server/coa/conf/coa.conf.dist b/src/server/coa/conf/coa.conf.dist
 index da9b9070..813c3465 100644
 --- a/src/server/coa/conf/coa.conf.dist

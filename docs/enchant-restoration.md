@@ -7,7 +7,7 @@ The per-enchant tracker is [`enchants/tracker.csv`](../enchants/tracker.csv); Gi
 
 | Date | Restored (live) | Tested | Broken left | Missing |
 | --- | --- | --- | --- | --- |
-| 2026-10-31 | 164 (+95 ready for the next build) | 4 (plus the tooltip fix) | 644 | 1,206 |
+| 2026-10-31 | 164, +15 at the next restart, +202 with the next build | 4 (plus the tooltip fix) | 406 (+116 partly working) | 1,206 |
 
 Out of 6,440 enchants offered on the realm, the audit found 4,331 that should work, 903 that need code
 (882 placeholders plus 21 unsupported effects) and 1,206 whose spell is missing from the game data.
@@ -25,15 +25,27 @@ Out of 6,440 enchants offered on the realm, the audit found 4,331 that should wo
 Workflow per batch: pick a batch from the tracker, write the SQL, run it twice on a scratch database, open a
 pull request, merge, stop the server, run `Start-Server.cmd`, test in game, update the tracker.
 
+## Testing a batch
+
+[`enchants/test-checklist.csv`](../enchants/test-checklist.csv) lists every fix not yet tested, with the commands
+and what should happen. Fill in the `result` column (pass, fail and what happened), then copy results to the
+tracker. Quick types first: `twin` and `teach` take seconds each (`.aura`, then `.list auras` or the spellbook).
+
 ## Proven recipes
 
 | Recipe | Used for | How |
 | --- | --- | --- |
-| Twin that teaches | 95 enchants (file 006, needs the build with the teach table) | Our enchant teaches the spell its twin teaches, through `wcme_enchant_teach`. |
+| Twin that teaches | 95 enchants (file 006, needs the build) | Our enchant teaches the spell its twin teaches, through `wcme_enchant_teach`. |
+| Working namesake | 74 enchants (file 008, needs the build) | An enchant that teaches a broken spell, or transforms an ability, teaches a working spell of the same name instead (a transform adds the ability rather than replacing). |
+| Action table | 34 enchants (file 007 part 1, needs the build) | `spell_wcme_enchant_action` (patch `mystic-enchants-actions`): on a proc the enchant casts a helper spell, or cuts or resets a cooldown, with spell, target-aura and player-aura conditions, read from `wcme_enchant_action`. |
+| Aura link | 15 enchants (file 007 part 2, works now) | "While X is on you, you also have Y" through the core's `coa_mystic_enchant_aura_link`. |
 | Working twin | 143 enchants (files 001, 003, 004, 005) | Many broken enchants have a twin: the same enchant made for another realm type, which works. `spell_linked_spell` type 2 puts the twin's aura on while ours is on. Where the twin's text differs, the addon (1.9) shows the twin's tooltip. When both spells carry the same real effect, ours becomes a placeholder in `spell_dbc` first (file 004), so the bonus is not doubled. A twin with a proc aura but no proc settings gets a `spell_proc` row read from its tooltip (file 005). |
 | School pair | 21 enchants (file 002) | "Damaging school A raises school B, and B raises A". The enchant's placeholder becomes a proc aura (`spell_dbc`) for one half; the existing 2861xx proc spell covers the other half (linked); `spell_proc` rows say when each fires. |
 
 ## Lessons
+
+- 116 "broken" enchants also carry a real effect (for example the threat reducers), so they already do part of
+  their job and stay in the rolls. The tracker marks them `partly working`.
 
 - A twin can look working and never fire: a proc aura with no proc flags and no `spell_proc` row does nothing.
   The twin search now skips these.
