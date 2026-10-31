@@ -7,7 +7,7 @@ The per-enchant tracker is [`enchants/tracker.csv`](../enchants/tracker.csv); Gi
 
 | Date | Restored (live) | Tested | Broken left | Missing |
 | --- | --- | --- | --- | --- |
-| 2026-10-31 | 117 | 2 | 786 | 1,206 |
+| 2026-10-31 | 155 | 2 (plus the tooltip fix) | 748 | 1,206 |
 
 Out of 6,440 enchants offered on the realm, the audit found 4,331 that should work, 903 that need code
 (882 placeholders plus 21 unsupported effects) and 1,206 whose spell is missing from the game data.
@@ -29,14 +29,15 @@ pull request, merge, stop the server, run `Start-Server.cmd`, test in game, upda
 
 | Recipe | Used for | How |
 | --- | --- | --- |
-| Working twin | 96 enchants (files 001, 003) | Many broken enchants have a twin: the same enchant made for another realm type, which works. `spell_linked_spell` type 2 puts the twin's aura on while ours is on. Where the twin's text differs, addon 1.8 shows the twin's tooltip. |
+| Working twin | 134 enchants (files 001, 003, 004) | Many broken enchants have a twin: the same enchant made for another realm type, which works. `spell_linked_spell` type 2 puts the twin's aura on while ours is on. Where the twin's text differs, the addon (1.9) shows the twin's tooltip. When both spells carry the same real effect, ours becomes a placeholder in `spell_dbc` first (file 004), so the bonus is not doubled. |
 | School pair | 21 enchants (file 002) | "Damaging school A raises school B, and B raises A". The enchant's placeholder becomes a proc aura (`spell_dbc`) for one half; the existing 2861xx proc spell covers the other half (linked); `spell_proc` rows say when each fires. |
 
 ## Lessons
 
 - A twin can look working and never fire: a proc aura with no proc flags and no `spell_proc` row does nothing.
   The twin search now skips these.
-- Skip a twin when both spells already carry the same real effect, or the player gets the bonus twice.
+- When both spells carry the same real effect, remove ours first, or the player gets the bonus twice.
+- Enchant tooltips show the granted buff below the description: the description is the first line under the name.
 - The "modifier" family (about 300) is mostly event logic ("when X, reduce Y's cooldown"), not simple
   percentage changes. There is no cheap scripted fix for it.
 - Taught spells are read from the client's Spell.dbc, not from `spell_dbc`, so SQL cannot add a "teaches".
@@ -58,7 +59,6 @@ A fix passes when it does what its tooltip says. Write the result and date in th
 
 | Group | Count | What it needs |
 | --- | --- | --- |
-| Twin that would double a bonus | 38 | Override our spell in `spell_dbc` to drop the duplicated effect, then link |
 | Twin that never fires | 16 | `spell_proc` rows for the twin, as in file 002 |
 | Twin that teaches a spell | about 95 | A small server change: a table of extra "teaches" for an enchant (one build) |
 | Placeholder families | about 650 | Per family, read the tooltips and write proc rules or C++ |
