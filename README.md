@@ -94,3 +94,6 @@ the addon and the scripts.
 and runs them, in name order, against the active realm's world database just before the world server starts.
 `000-reset.sql` removes every row this repo added (marked `WCME:`) first, so the database always matches the
 repo: delete a file here and its fix is gone after the next start. Results are in `patch-night.log`.
+
+The WildcardEnchants addon (1.8) shows the twin's tooltip for enchants restored through a twin whose text
+differs (`addon/WildcardEnchants/TooltipData.lua`), so what an enchant says matches what it does.

@@ -1,6 +1,8 @@
 ## Interface: 30300
 ## Title: Wildcard Mystic Enchants
 ## Notes: Mystic Enchants for Wildcard characters. Needs a server with CoA.MysticEnchants.AllowWildcard = 1.
-## Version: 1.7
+## Version: 1.8
 EnchantData.lua
+TooltipData.lua
+TooltipFix.lua
 WildcardEnchants.lua
