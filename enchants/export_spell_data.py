@@ -5,7 +5,7 @@ Usage:  python3 export_spell_data.py <dbc folder> [output file]
         e.g. python3 export_spell_data.py ~/coa-test/env/dist/data/dbc
 
 Reads MysticEnchant.dbc and Spell.dbc and writes enchant-data.json.gz (a few MB) holding:
-  spells  every field of each enchant spell, plus the spells they teach, fire or mention
+  spells  every field of each enchant spell, the spells they teach, fire or mention, and their namesakes
   index   id, name, rank and spell family of every named spell (to match names in tooltips)
 Nothing is changed.
 """
@@ -75,6 +75,17 @@ def main():
             for field in (F_DESC, F_TOOLTIP):
                 more.update(int(m) for m in REFERENCE.findall(string(row[field])))
         wanted |= more
+
+    # Plus every spell sharing a name with one of those: a broken spell often has a working namesake.
+    names = {}
+    for spell_id in wanted:
+        row = spell(spell_id)
+        if row:
+            names.setdefault(string(row[F_NAME]).strip().lower(), None)
+    names.pop("", None)
+    for spell_id, name, *_ in index:
+        if name.strip().lower() in names:
+            wanted.add(spell_id)
 
     export = {}
     for spell_id in sorted(wanted):
