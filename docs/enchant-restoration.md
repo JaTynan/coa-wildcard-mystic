@@ -88,3 +88,26 @@ A fix passes when it does what its tooltip says. Write the result and date in th
   fixes from the client's Spell.dbc into one small file.
 
 Use at your own risk; shared as is, without support.
+
+## To do (in order)
+
+1. **Fast build loop on trundle.** Keep a build of the core on trundle (Ubuntu, native, no VM) and only
+   recompile what changed, so a C++ change to the test server takes minutes instead of a 3-hour GitHub build.
+   GitHub then builds Windows once per batch for the live server. Worth checking at the same time: a compiler
+   cache in the GitHub workflow, to shorten the Windows build too.
+2. **Client patch check** (first step of the [Death Knight proposal](dk-enchant-proposal.md)): does the CoA
+   client load an extra patch file? Another CoA community server ships its own patch files for custom races,
+   so it seems possible; their notes warn that the launcher may skip patch files with names it does not know.
+   Check which patch names the client folder already has, then whether one of ours loads.
+3. **Map the Legendary enchants to Death Knight builds.** On Ascension each build centres on one Legendary.
+   Candidates to check first: White Walker (two-handed Frost and blade), Vampire Lord (Shadow damage over time
+   into healing), Unbounded Deathbringer (not yet checked). White Walker and Vampire Lord are on the broken list.
+4. **A full Death Knight set.** Death Knight has no enchants tagged for it (Warrior has 121 on this realm).
+   Aim for about 120, Warrior's rarity split, half pure Death Knight and half hybrid. Start from the nine pure
+   ones drafted in the proposal, plus two themes:
+    - **Plaguebearer:** Death Knight diseases with Warlock damage over time (Corruption, Curse of Agony) and
+      Shadow damage generally.
+    - **Necromancer:** undead pets (Ghoul, Gargoyle, Army of the Dead) with Warlock demons.
+5. **Damage-type transforms** (for example Frost Strike dealing Shadow damage). These need C++: one general
+   hook ("this ability deals this school while the enchant is active") so each enchant is a table row. The
+   broken pet "Companion" enchants (Fire, Frost, Arcane, Nature, Shadow pet attacks) would use it too.

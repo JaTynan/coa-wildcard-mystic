@@ -50,8 +50,28 @@ Numbers are first guesses for testing, not tuned.
 | Glacial Requiem | Casting Hungering Cold resets the cooldown of Frost Nova, Cone of Cold and Deep Freeze. | Mage | Hungering Cold cast: reset three cooldowns |
 | Plague Doctor's Ritual | Frost Fever and Blood Plague damage has a 3% chance to grant Clearcasting, making your next spell free. | Any caster | Disease tick, 3%: cast Clearcasting (12536) on self |
 
+## Pure Death Knight drafts
+
+The 20 above are mostly hybrids. Every other class's enchants mostly boost that class's own abilities, so a full
+set should be about half pure. A first nine, one per rarity for each specialisation:
+
+| Spec | Rarity | Name | Tooltip |
+| --- | --- | --- | --- |
+| Blood | Uncommon | Sanguine Strikes | Heart Strike has a 20% chance to reduce the cooldown of Rune Tap by 5 sec. |
+| Blood | Rare | Crimson Reprieve | Death Strike critical strikes reset the cooldown of Rune Tap. |
+| Blood | Epic | Vampiric Bulwark | Casting Vampiric Blood also grants Bone Shield. |
+| Frost | Uncommon | Bitter Frost | Icy Touch has a 10% chance to grant Killing Machine. |
+| Frost | Rare | Endless Winter | Obliterate has a 20% chance to grant Freezing Fog, making your next Howling Blast free. |
+| Frost | Epic | Frozen Heart | Frost Strike reduces the cooldown of Unbreakable Armor by 2 sec. |
+| Unholy | Uncommon | Festering Touch | Plague Strike reduces the cooldown of Death and Decay by 2 sec. |
+| Unholy | Rare | Doomcaller | Scourge Strike has a 10% chance to grant Sudden Doom, making your next Death Coil free. |
+| Unholy | Epic | Gravelord's Command | Death Coil hits reduce the cooldown of Summon Gargoyle by 5 sec. |
+
 ## What it takes
 
+0. **First step: check the CoA client loads an extra patch file** (see the to-do list in
+   [enchant-restoration.md](enchant-restoration.md)). A pilot of two Uncommons (Grave Shackles and Blood Price)
+   would then prove the whole path for brand-new enchants.
 1. **Client data for the enchants themselves.** A new enchant needs a row in the client's MysticEnchant.dbc and
    a spell in its Spell.dbc (name, icon, tooltip). Without them the enchant window has nothing to show. That
    means a small client patch file shipped through coa-sync, plus the same rows on the server. To find out
