@@ -87,3 +87,10 @@ stops the server through it, the same way the manager does.
 Conquest of Azeroth (jealous-sound/azerothcore-wotlk-coa), the CF-Server-Manager builds
 (Corfirean), SQUID's Playerbots (Zyth45), AzerothCore. This repository only adds the patch,
 the addon and the scripts.
+
+## Mystic Enchant fixes (SQL)
+
+`sql/enchants/*.sql` holds fixes for broken Mystic Enchants. Patch night (and Start-Server.cmd) downloads them
+and runs them, in name order, against the active realm's world database just before the world server starts.
+`000-reset.sql` removes every row this repo added (marked `WCME:`) first, so the database always matches the
+repo: delete a file here and its fix is gone after the next start. Results are in `patch-night.log`.
