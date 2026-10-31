@@ -111,11 +111,17 @@ Use at your own risk; shared as is, without support.
 5. **Damage-type transforms** (for example Frost Strike dealing Shadow damage). These need C++: one general
    hook ("this ability deals this school while the enchant is active") so each enchant is a table row. The
    broken pet "Companion" enchants (Fire, Frost, Arcane, Nature, Shadow pet attacks) would use it too.
-6. **Race kits (optional, like WoW Forever's racial rework).** Make race choice matter more, behind a config
-   switch so stock racials stay the default. Design first, one kit per playable race, then one build:
-    - Passive bonuses (for example Tauren: health plus hit chance) from a `race -> spell` table applied at login,
-      reusing client-known spells where possible so the spellbook shows a proper tooltip.
-    - Gathering bonuses (for example Tauren herbalism: a chance at a duplicate herb): one C++ hook on gathering
-      loot, driven by a `race, skill, chance` table.
-    - Movement that builds while you keep moving (like Tauren Plainsrunning): one C++ hook adding a stacking
-      speed aura while moving out of combat.
+6. **Race kits: a full racial rework, based on WoW Forever's (optional).** Replace each race's racials with a
+   kit that changes how you play, not stat reskins. Aimed at Wildcard, where a random start leaves little sense
+   of identity: race becomes the fixed part of a character. A config switch, set per realm through the
+   settings kit, so other realms keep the stock racials. Design first, one kit per playable race (WoW Forever's
+   kits as the starting point, including the ones for races it does not have), then one build. Pieces:
+    - Passive bonuses (for example Tauren Endurance: health plus a second stat) from a `race -> spell` table,
+      with the stock racials removed while the switch is on. Reuse client-known spells where possible, so the
+      spellbook shows a proper tooltip.
+    - Gathering bonuses (for example Tauren Cultivation: bonus herbs): one C++ hook on gathering loot, driven by
+      a `race, skill, chance` table.
+    - Movement that builds while you keep moving (Tauren Plainsrunning): one C++ hook adding a stacking speed
+      aura while moving out of combat.
+    - Active abilities that change (WoW Forever reworks some, such as Gnome Eureka!): reuse or adapt
+      client-known spells; brand-new ones need the client patch from item 2.
