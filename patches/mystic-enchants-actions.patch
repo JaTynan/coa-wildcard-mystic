@@ -1,0 +1,284 @@
+diff --git a/src/server/coa/CoAScriptLoader.cpp b/src/server/coa/CoAScriptLoader.cpp
+index ad80ac6d..745135d1 100644
+--- a/src/server/coa/CoAScriptLoader.cpp
++++ b/src/server/coa/CoAScriptLoader.cpp
+@@ -123,6 +123,7 @@ void AddAscensionFreepickScripts();
+ void AddAscensionHeroBloomingShotScripts();
+ void AddAscensionMysticEnchantScripts();
+ void AddSC_AscensionMysticEnchantProcs();
++void AddSC_WcmeEnchantActions();
+ void AddSC_AscensionMysticEnchantScripts();
+ void AddAscensionBuildCreatorScripts();
+ void AddAscensionWarcraftRebornScripts();
+@@ -753,6 +754,7 @@ void AddCoAScripts()
+     AddAscensionHeroBloomingShotScripts();
+     AddAscensionMysticEnchantScripts();
+     AddSC_AscensionMysticEnchantProcs();
++    AddSC_WcmeEnchantActions();
+     AddSC_AscensionMysticEnchantScripts();
+     AddAscensionBuildCreatorScripts();
+     AddAscensionWarcraftRebornScripts();
+diff --git a/src/server/coa/WcmeEnchantActions.cpp b/src/server/coa/WcmeEnchantActions.cpp
+new file mode 100644
+index 00000000..d3e25688
+--- /dev/null
++++ b/src/server/coa/WcmeEnchantActions.cpp
+@@ -0,0 +1,258 @@
++/*
++ * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
++ */
++
++// Data-driven behaviour for Mystic Enchants whose spell is only a placeholder (coa-wildcard-mystic).
++//
++// wcme_enchant_action rows say what an enchant does when its aura procs. The enchant spell is bound to
++// spell_wcme_enchant_action in spell_script_names, and a spell_proc row on it says which events can fire
++// (cast, hit, crit, ...). Each row then narrows the event and names one action:
++//   spells        trigger spell ids (space separated); empty = any spell
++//   school_mask   the trigger spell's school; 0 = any
++//   target_aura   aura ids, at least one of them from the player on the target; empty = no condition
++//   requires_aura aura ids, the player has at least one of them; empty = no condition
++//   chance        percent; cooldown_ms: per enchant and row
++//   action        reduce_cooldown (amount = ms), reduce_cooldown_pct (amount = percent of what is left),
++//                 reset_cooldown, cast_target, cast_self
++//   action_spells the spells whose cooldown changes, or the spell to cast (first id)
++// Rows are read at every startup.
++
++#include "DatabaseEnv.h"
++#include "GameTime.h"
++#include "Log.h"
++#include "Player.h"
++#include "Random.h"
++#include "ScriptMgr.h"
++#include "SpellAuras.h"
++#include "SpellInfo.h"
++#include "SpellMgr.h"
++#include "SpellScript.h"
++#include "StringConvert.h"
++#include "Tokenize.h"
++#include "Unit.h"
++#include <algorithm>
++#include <unordered_map>
++#include <unordered_set>
++#include <vector>
++
++namespace
++{
++enum class WcmeAction : uint8
++{
++    ReduceCooldown,
++    ReduceCooldownPct,
++    ResetCooldown,
++    CastTarget,
++    CastSelf
++};
++
++struct WcmeRule
++{
++    std::unordered_set<uint32> Spells;
++    uint32 SchoolMask = 0;
++    std::vector<uint32> TargetAuras;
++    std::vector<uint32> RequiresAuras;
++    float Chance = 100.0f;
++    Milliseconds Cooldown{0};
++    WcmeAction Action = WcmeAction::CastTarget;
++    std::vector<uint32> ActionSpells;
++    int32 Amount = 0;
++};
++
++std::unordered_map<uint32, std::vector<WcmeRule>> WcmeRules;
++
++std::vector<uint32> WcmeIds(std::string const& text)
++{
++    std::vector<uint32> ids;
++    for (std::string_view token : Acore::Tokenize(text, ' ', false))
++        if (Optional<uint32> id = Acore::StringTo<uint32>(token))
++            ids.push_back(*id);
++    return ids;
++}
++
++bool WcmeTableExists()
++{
++    return bool(WorldDatabase.Query("SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() "
++        "AND TABLE_NAME = 'wcme_enchant_action'"));
++}
++
++void LoadWcmeRules()
++{
++    WcmeRules.clear();
++    if (!WcmeTableExists())
++        return;
++    QueryResult result = WorldDatabase.Query("SELECT enchant_spell, spells, school_mask, target_aura, chance, cooldown_ms, "
++        "action, action_spells, amount, requires_aura FROM wcme_enchant_action ORDER BY enchant_spell, rule");
++    uint32 count = 0;
++    if (result)
++        do
++        {
++            Field* fields = result->Fetch();
++            WcmeRule rule;
++            for (uint32 id : WcmeIds(fields[1].Get<std::string>()))
++                rule.Spells.insert(id);
++            rule.SchoolMask = fields[2].Get<uint32>();
++            rule.TargetAuras = WcmeIds(fields[3].Get<std::string>());
++            rule.Chance = fields[4].Get<float>();
++            rule.Cooldown = Milliseconds(fields[5].Get<uint32>());
++            std::string const action = fields[6].Get<std::string>();
++            if (action == "reduce_cooldown")
++                rule.Action = WcmeAction::ReduceCooldown;
++            else if (action == "reduce_cooldown_pct")
++                rule.Action = WcmeAction::ReduceCooldownPct;
++            else if (action == "reset_cooldown")
++                rule.Action = WcmeAction::ResetCooldown;
++            else if (action == "cast_target")
++                rule.Action = WcmeAction::CastTarget;
++            else if (action == "cast_self")
++                rule.Action = WcmeAction::CastSelf;
++            else
++            {
++                LOG_ERROR("sql.sql", "wcme_enchant_action: enchant {} has an unknown action '{}'", fields[0].Get<uint32>(), action);
++                continue;
++            }
++            rule.ActionSpells = WcmeIds(fields[7].Get<std::string>());
++            rule.Amount = fields[8].Get<int32>();
++            rule.RequiresAuras = WcmeIds(fields[9].Get<std::string>());
++            if (rule.ActionSpells.empty() ||
++                ((rule.Action == WcmeAction::CastTarget || rule.Action == WcmeAction::CastSelf) &&
++                 !sSpellMgr->GetSpellInfo(rule.ActionSpells.front())))
++            {
++                LOG_ERROR("sql.sql", "wcme_enchant_action: enchant {} has no usable action spell", fields[0].Get<uint32>());
++                continue;
++            }
++            WcmeRules[fields[0].Get<uint32>()].push_back(std::move(rule));
++            ++count;
++        } while (result->NextRow());
++    LOG_INFO("coa", "Loaded {} Mystic Enchant action rows for {} enchants (wcme_enchant_action)", count, WcmeRules.size());
++}
++
++bool WcmeTargetHasAura(Unit* target, Unit* owner, std::vector<uint32> const& auras)
++{
++    if (!target)
++        return false;
++    for (uint32 aura : auras)
++        if (target->HasAura(aura, owner->GetGUID()))
++            return true;
++    return false;
++}
++
++bool WcmeSpellMatches(WcmeRule const& rule, SpellInfo const* spell)
++{
++    if (rule.Spells.empty())
++        return true;
++    if (!spell)
++        return false;
++    if (rule.Spells.contains(spell->Id))
++        return true;
++    SpellInfo const* first = spell->GetFirstRankSpell();
++    return first && rule.Spells.contains(first->Id);
++}
++}
++
++class spell_wcme_enchant_action : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_enchant_action);
++
++    std::unordered_map<std::size_t, TimePoint> _ready;
++    WcmeRule const* _matched = nullptr;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        _matched = nullptr;
++        auto const itr = WcmeRules.find(GetId());
++        if (itr == WcmeRules.end())
++            return false;
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        TimePoint const now = GameTime::Now();
++        for (std::size_t index = 0; index < itr->second.size(); ++index)
++        {
++            WcmeRule const& rule = itr->second[index];
++            if (!WcmeSpellMatches(rule, spell))
++                continue;
++            if (rule.SchoolMask && !(eventInfo.GetSchoolMask() & rule.SchoolMask))
++                continue;
++            if (!rule.TargetAuras.empty() && !WcmeTargetHasAura(eventInfo.GetActionTarget(), owner, rule.TargetAuras))
++                continue;
++            if (!rule.RequiresAuras.empty() &&
++                std::none_of(rule.RequiresAuras.begin(), rule.RequiresAuras.end(), [owner](uint32 aura) { return owner->HasAura(aura); }))
++                continue;
++            if (auto const ready = _ready.find(index); ready != _ready.end() && now < ready->second)
++                continue;
++            if (rule.Chance < 100.0f && !roll_chance_f(rule.Chance))
++                continue;
++            if (rule.Cooldown.count())
++                _ready[index] = now + rule.Cooldown;
++            _matched = &rule;
++            return true;
++        }
++        return false;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        WcmeRule const* rule = _matched;
++        _matched = nullptr;
++        if (!rule)
++            return;
++        Unit* owner = GetTarget();
++        Player* player = owner->ToPlayer();
++        switch (rule->Action)
++        {
++            case WcmeAction::ReduceCooldown:
++                if (player)
++                    for (uint32 spell : rule->ActionSpells)
++                        if (player->HasSpellCooldown(spell))
++                            player->ModifySpellCooldown(spell, -rule->Amount);
++                break;
++            case WcmeAction::ReduceCooldownPct:
++                if (player)
++                    for (uint32 spell : rule->ActionSpells)
++                        if (player->HasSpellCooldown(spell))
++                            player->ModifySpellCooldown(spell, -int32(player->GetSpellCooldownDelay(spell) * rule->Amount / 100));
++                break;
++            case WcmeAction::ResetCooldown:
++                if (player)
++                    for (uint32 spell : rule->ActionSpells)
++                        if (player->HasSpellCooldown(spell))
++                            player->RemoveSpellCooldown(spell, true);
++                break;
++            case WcmeAction::CastTarget:
++            {
++                Unit* target = eventInfo.GetActionTarget();
++                if (!target || target == owner)
++                    target = eventInfo.GetProcTarget();
++                owner->CastSpell(target ? target : owner, rule->ActionSpells.front(), true);
++                break;
++            }
++            case WcmeAction::CastSelf:
++                owner->CastSpell(owner, rule->ActionSpells.front(), true);
++                break;
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_enchant_action::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_enchant_action::HandleProc);
++    }
++};
++
++class WcmeEnchantActionsWorld final : public WorldScript
++{
++public:
++    WcmeEnchantActionsWorld() : WorldScript("WcmeEnchantActionsWorld", { WORLDHOOK_ON_STARTUP }) { }
++
++    void OnStartup() override
++    {
++        LoadWcmeRules();
++    }
++};
++
++void AddSC_WcmeEnchantActions()
++{
++    RegisterSpellScript(spell_wcme_enchant_action);
++    new WcmeEnchantActionsWorld();
++}
