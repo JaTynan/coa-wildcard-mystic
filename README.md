@@ -13,6 +13,10 @@ realms**. Shared as-is. **Not supported, use at your own risk**, and keep backup
 - The **WildcardEnchants** client addon (`addon/`), needed because the game client hides the
   Mystic Enchant tab and blocks its own checks for Wildcard characters. Every player needs it.
 
+A second patch adds `Wildcard.AbilityPool` (in `wildcard.conf`): `all` (default, as the client data
+defines Wildcard), `classic` (the original classes' abilities) or `coa` (the Conquest of Azeroth classes'),
+for starting abilities, level rolls and rerolls alike, bots included.
+
 Nothing else changes: the build uses the exact commits of the manager's release and the same
 build settings.
 
