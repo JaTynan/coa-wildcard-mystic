@@ -37,7 +37,7 @@ jobs:
       squid_sha: ${{ steps.lock.outputs.squid_sha }}
       squid_tag: ${{ steps.lock.outputs.squid_tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Look up the release's exact commits
         id: lock
         run: python3 -I scripts/resolve_release.py "${{ inputs.release || 'latest' }}"
@@ -69,12 +69,12 @@ jobs:
         run: git config --global core.autocrlf false
 
       - name: This repository (patches, addon, install scripts)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: _mine
 
       - name: Core at the release commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Corfirean/azerothcore-wotlk-coa
           ref: ${{ needs.check.outputs.core_sha }}
@@ -98,21 +98,21 @@ jobs:
           git diff --stat
 
       - name: CoA bots module
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Corfirean/mod-coa-playerbots
           ref: ${{ needs.check.outputs.bots_sha }}
           path: _bots
 
       - name: Content Scaling module
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Corfirean/mod-coa-content-scaling
           ref: ${{ needs.check.outputs.scaling_sha }}
           path: _scaling
 
       - name: SQUID's Playerbots, unchanged
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Zyth45/mod-playerbots
           ref: ${{ needs.check.outputs.squid_sha }}
@@ -134,7 +134,7 @@ jobs:
           $global:LASTEXITCODE = 0
 
       - name: Cache Boost and MySQL
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             C:\local\boost_1_87_0
