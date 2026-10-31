@@ -124,3 +124,7 @@ modules\coa.conf | CoA.MysticEnchants.AllowWildcard = 1
 # Checked at every startup, not a list: an enchant rolls again once its spell is added (Spell.dbc or
 # spell_dbc), so rebuilding enchants needs no change here. Needs patches/mystic-enchants-skip-missing.patch.
 modules\coa.conf | CoA.MysticEnchants.SkipMissingSpells = 1
+# Also leave out enchants whose spell exists but does nothing here (placeholder effects, no script/proc row).
+# Same idea: checked at every startup, an enchant rolls again once given behaviour. Known limit: about 70
+# enchants that work through hard-coded C++ checks look the same and are left out too.
+modules\coa.conf | CoA.MysticEnchants.SkipDudSpells = 1
