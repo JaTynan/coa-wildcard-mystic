@@ -88,3 +88,7 @@ A fix passes when it does what its tooltip says. Write the result and date in th
   fixes from the client's Spell.dbc into one small file.
 
 Use at your own risk; shared as is, without support.
+
+## To do
+
+The server-wide plan and to-do list moved to [roadmap.md](roadmap.md).
