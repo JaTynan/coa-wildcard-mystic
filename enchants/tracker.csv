@@ -164,6 +164,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 954424,Templar of Flame,Legendary,1178454,needs-code,transform,live,linked to working twin,272101,003-twin-links-close.sql,,
 978727,Unchained,Legendary,1178711,needs-code,transform,live,"linked to working twin, own duplicate effect removed (spell_dbc)",275203,004-twin-links-dedup.sql,,
 271547,Decimation by Pyro,Epic,200742,needs-code,modifier on a placeholder,live (after restart),aura link: Decimation also boosts Pyroblast and Meteor,,007-enchant-actions.sql (part 2),,
+271679,Druidic Storm,Epic,200756,needs-code,modifier on a placeholder,live (after restart),aura link: Lightning damage boost while Nature's Grace is active (the longer Nature's Grace is not done),,007-enchant-actions.sql,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 275463,Fury of the Light,Epic,201198,needs-code,modifier on a placeholder,live (after restart),aura link: Holy crit bonus while Divine Illumination is active,,007-enchant-actions.sql (part 2),,
 1988300,Omen of Doom,Epic,200816,needs-code,modifier on a placeholder,live (after restart),aura link: Clearcasting raises Arcane and Nature damage (lasts while Clearcasting does),,007-enchant-actions.sql (part 2),,
 276551,Pyroclasmic Shadows,Epic,201337,needs-code,modifier on a placeholder,live (after restart),aura link: Shadow Bolt and Chaos Bolt boost while Pyroclasm is active,,007-enchant-actions.sql (part 2),,
@@ -172,12 +173,13 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 271680,Wrath of the Sun,Epic,200755,needs-code,modifier on a placeholder,live (after restart),aura link: Wrath boost during Solar Eclipse,,007-enchant-actions.sql (part 2),,
 272247,Lunar Frenzy,Epic,200823,needs-code,other placeholder,live (after restart),aura link: entering an Eclipse grants Owlkin Frenzy,,007-enchant-actions.sql (part 2),,
 283031,Natural Destruction,Epic,202054,needs-code,other placeholder,live (after restart),aura link: Nature's Grace also grants Natural Destruction,,007-enchant-actions.sql (part 2),,
-274179,Fingers of Death,Epic,201039,needs-code,proc on a placeholder,ready (needs build),aura link: gaining Fingers of Frost grants Fingers of Death; action: Ice Lance while Fingers of Death is up grants Touch of Death,,007-enchant-actions.sql (parts 1 and 2),,
+410400,Natural Destruction,Epic,132077,needs-code,other placeholder,live (after restart),aura link: Nature's Grace also grants Natural Destruction,,007-enchant-actions.sql,,
 299944,Lunar Marksmanship,Epic,404158,needs-code,proc on a placeholder,live (after restart),aura link: Arcane Shot boost during Lunar Eclipse,,007-enchant-actions.sql (part 2),,
 283042,Mind Core,Uncommon,201694,needs-code,proc on a placeholder,live (after restart),aura link: gaining Molten Core grants Mind Core,,007-enchant-actions.sql (part 2),,
 281602,Swashbuckler: Flurry of Blows,Epic,201943,needs-code,proc on a placeholder,live (after restart),aura link: melee haste while Swashbuckling,,007-enchant-actions.sql (part 2),,
 281597,Swashbuckler: Matched Blows,Epic,201942,needs-code,proc on a placeholder,live (after restart),aura link: parry while Swashbuckling,,007-enchant-actions.sql (part 2),,
 272256,Total Solar Eclipse,Epic,200819,needs-code,proc on a placeholder,live (after restart),aura link: Solar Eclipse raises Nature crit,,007-enchant-actions.sql (part 2),,
+980623,Dragon's Rage,Rare,1178769,needs-code,leftover,ready (needs build),action: Dragon's Breath applies Dragon's Rage,,007-enchant-actions.sql,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 982567,Abjurer's Ward: Arcane,Epic,132581,needs-code,modifier on a placeholder,ready (needs build),action: absorbing damage with a Ward takes 10 sec off Presence of Mind,,007-enchant-actions.sql (part 1),,
 1587962,Abjurer's Ward: Arcane,Rare,201296,needs-code,modifier on a placeholder,ready (needs build),action: absorbing damage with a Ward takes 10 sec off Presence of Mind,,007-enchant-actions.sql (part 1),,
 284711,Abjurer's Ward: Arcane,Uncommon,202182,needs-code,modifier on a placeholder,ready (needs build),action: absorbing damage with a Ward takes 10 sec off Presence of Mind,,007-enchant-actions.sql (part 1),,
@@ -187,12 +189,15 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 982605,Abjurer's Ward: Frost,Epic,132586,needs-code,modifier on a placeholder,ready (needs build),action: absorbing damage with a Ward takes 10 sec off Cold Snap,,007-enchant-actions.sql (part 1),,
 1588050,Abjurer's Ward: Frost,Rare,201298,needs-code,modifier on a placeholder,ready (needs build),action: absorbing damage with a Ward takes 10 sec off Cold Snap,,007-enchant-actions.sql (part 1),,
 284752,Abjurer's Ward: Frost,Uncommon,202184,needs-code,modifier on a placeholder,ready (needs build),action: absorbing damage with a Ward takes 10 sec off Cold Snap,,007-enchant-actions.sql (part 1),,
+991030,Adorned by Light,Legendary,200024,needs-code,modifier on a placeholder,ready (needs build),action: direct heals grant Hand of the Adorned (the Adorned and Holy Shock parts are not done),,007-enchant-actions.sql,,
 277746,All that is Right,Epic,202386,needs-code,modifier on a placeholder,ready (needs build),action: Seal of Righteousness damage grants All that is Right,,007-enchant-actions.sql (part 1),,
+282881,Arcane Charge,Epic,202052,needs-code,modifier on a placeholder,ready (needs build),action: Charge deals Arcane Charge damage (the mana part is not done),,007-enchant-actions.sql,,
 986084,Beacon of Divinity,Epic,132662,needs-code,modifier on a placeholder,ready (needs build),action: Holy Light heals take 3 sec off Divine Favor (the Beacon part is not done),,007-enchant-actions.sql (part 1),,
 81526,Biting Cold,Epic,1176071,needs-code,modifier on a placeholder,ready (needs build),action: Deep Freeze damage cuts its remaining cooldown by 33% (first half of the tooltip only),,007-enchant-actions.sql (part 1),,
 282134,Biting Cold,Epic,202023,needs-code,modifier on a placeholder,ready (needs build),action: Deep Freeze damage cuts its remaining cooldown by 33%,,007-enchant-actions.sql (part 1),,
 978724,Bulwark,Legendary,1178710,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1574754, as its twin does (wcme_enchant_teach)",1590962,006-teach-twins.sql,,
 997020,Chaos Burn,Epic,132673,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1590292, as its twin does (wcme_enchant_teach)",1591152,006-teach-twins.sql,,
+281535,Chilling Blows,Epic,201939,needs-code,modifier on a placeholder,ready (needs build),action: Deep Freeze damage grants Chilling Blows attack speed (the Frostbrand part is not done),,007-enchant-actions.sql,,
 982675,Earthborer Acid,Epic,132599,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 284803, as its twin does (wcme_enchant_teach)",852388,006-teach-twins.sql,,
 276397,Edge of Fury,Rare,201310,needs-code,modifier on a placeholder,ready (needs build),action: Blind Revenge damage grants Edge of Fury (the Killing Spree part is not done),,007-enchant-actions.sql (part 1),,
 299938,Elemental Reload,Epic,404157,needs-code,modifier on a placeholder,ready (needs build),action: Elemental Blast damage resets Chimera Shot,,007-enchant-actions.sql (part 1),,
@@ -208,12 +213,15 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 982650,Herod's Legacy,Epic,132595,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1588110, as its twin does (wcme_enchant_teach)",1591099,006-teach-twins.sql,,
 92568,Hour of Judgement,Epic,132714,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1583252, as its twin does (wcme_enchant_teach)",1591046,006-teach-twins.sql,,
 997242,Hydra's Venom,Epic,132701,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1590575, as its twin does (wcme_enchant_teach)",1591162,006-teach-twins.sql,,
+417700,Lava Sweep,Legendary,1178406,needs-code,modifier on a placeholder,ready (needs build),action: Flame Shock grants Doomhammer's Fury (Lava Sweep and Eruption are not done),,007-enchant-actions.sql,,
 956445,Paratrooper,Legendary,1178457,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1569955, as its twin does (wcme_enchant_teach)",1590917,006-teach-twins.sql,,
 273458,Shadow Crash,Epic,200963,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1572039, as its twin does (wcme_enchant_teach)",1572059,006-teach-twins.sql,,
 982330,Shadow Waste Bolt,Epic,132417,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1587489, as its twin does (wcme_enchant_teach)",1591072,006-teach-twins.sql,,
 977928,Stormhammer,Legendary,1178656,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 273955, as its twin does (wcme_enchant_teach)",852224,006-teach-twins.sql,,
 277790,Talonshrike,Epic,202435,needs-code,modifier on a placeholder,ready (needs build),action: Raptor Strike takes 4 sec off Fury of the Eagle,,007-enchant-actions.sql (part 1),,
+983739,Thermal Void,Legendary,1234941,needs-code,modifier on a placeholder,ready (needs build),action: Ice Barrier grants Clad in Frost (the Snowstorm is not done),,007-enchant-actions.sql,,
 965245,Time Warp,Legendary,1178468,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1570042, as its twin does (wcme_enchant_teach)",1590918,006-teach-twins.sql,,
+273713,Traumatic Wounds,Uncommon,200988,needs-code,modifier on a placeholder,ready (needs build),action: Rake ticks restore energy (the Rip and Rake extension is not done),,007-enchant-actions.sql,,
 81408,War Mage,Epic,1176028,needs-code,modifier on a placeholder,ready (needs build),action: each Arcane Explosion hit takes 5 sec off Blink (the 15 sec cap is not enforced),,007-enchant-actions.sql (part 1),,
 965337,Warcry,Legendary,1178501,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1571219, as its twin does (wcme_enchant_teach)",1590923,006-teach-twins.sql,,
 901048,Wave of Despair,Epic,1234984,needs-code,modifier on a placeholder,ready (needs build),"action: crits with Unstable Affliction, Mind Flay or Drain Soul grant Dreading Despair",,007-enchant-actions.sql (part 1),,
@@ -224,6 +232,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 271778,Built up Thirst,Epic,200765,needs-code,other placeholder,ready (needs build),action: finishing moves grant Built up Thirst,,007-enchant-actions.sql (part 1),,
 84377,Burst of Thorns,Epic,1176089,needs-code,other placeholder,ready (needs build),"teaches spell 1582316, as its twin does (wcme_enchant_teach)",1591036,006-teach-twins.sql,,
 977940,Demonic Mind,Epic,1178659,needs-code,other placeholder,ready (needs build),"teaches spell 1586069, as its twin does (wcme_enchant_teach)",1591064,006-teach-twins.sql,,
+1181190,Electric Surge,Epic,201604,needs-code,other placeholder,ready (needs build),action: Lightning Bolt or Chain Lightning triggers Flurry (the extra charges are not done),,007-enchant-actions.sql,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 271997,Forbidden Dance,Epic,200780,needs-code,other placeholder,ready (needs build),action: Forbidden Technique grants Forbidden Dance,,007-enchant-actions.sql (part 1),,
 977939,Frozen Mind,Epic,1178658,needs-code,other placeholder,ready (needs build),"teaches spell 1586047, as its twin does (wcme_enchant_teach)",1591063,006-teach-twins.sql,,
 982725,Hydricles,Epic,132607,needs-code,other placeholder,ready (needs build),"teaches spell 1588304, as its twin does (wcme_enchant_teach)",1591117,006-teach-twins.sql,,
@@ -249,6 +258,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 977727,Crimson Champion,Legendary,1178617,needs-code,proc on a placeholder,ready (needs build),"teaches spell 1572102, as its twin does (wcme_enchant_teach)",1590926,006-teach-twins.sql,,
 276669,Defias Gunslinger,Epic,201643,needs-code,proc on a placeholder,ready (needs build),action: Sinister Strike grants Gunslinger's Strike,,007-enchant-actions.sql (part 1),,
 92438,Fel Charge,Legendary,2178951,needs-code,proc on a placeholder,ready (needs build),action: Charge leaves a Fiery Trail,,007-enchant-actions.sql (part 1),,
+274179,Fingers of Death,Epic,201039,needs-code,proc on a placeholder,ready (needs build),aura link: gaining Fingers of Frost grants Fingers of Death; action: Ice Lance while Fingers of Death is up grants Touch of Death,,007-enchant-actions.sql (parts 1 and 2),,
 982940,Mayhem,Epic,132633,needs-code,proc on a placeholder,ready (needs build),"teaches spell 1588745, as its twin does (wcme_enchant_teach)",1591101,006-teach-twins.sql,,
 982448,Razorlash,Epic,132431,needs-code,proc on a placeholder,ready (needs build),"teaches spell 1587587, as its twin does (wcme_enchant_teach)",1591024,006-teach-twins.sql,,
 276302,Relentless Reflexes,Uncommon,201295,needs-code,proc on a placeholder,ready (needs build),action: finishing moves grant Relentless Reflexes,,007-enchant-actions.sql (part 1),,
@@ -382,7 +392,6 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 1590905,Lava Sweep,Legendary,200174,unsupported,unsupported effect,ready (needs build),teaches working Lava Sweep (1568910) instead (transform),,008-teach-namesakes.sql,,
 1361222,Armored to the Teeth,Rare,1013976,needs-code,leftover,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 81439,Double Agent,Epic,1176037,needs-code,leftover,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
-980623,Dragon's Rage,Rare,1178769,needs-code,leftover,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 1320215,Illumination,Rare,1013828,needs-code,leftover,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 1581027,Purity of Light,Epic,200911,needs-code,leftover,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 1180900,Shadow Funnel,Epic,201570,needs-code,leftover,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
@@ -394,7 +403,6 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 966092,Dark Embrace,Rare,1178544,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 983180,Darkmaster,Legendary,132652,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 1134969,Discipline Mastery,Legendary,1013879,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
-271679,Druidic Storm,Epic,200756,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 81116,Eldritch Knight,Legendary,1175936,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 990200,Elemental Lord,Legendary,100191,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 1180750,Energy Surge,Epic,201542,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
@@ -438,7 +446,6 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 901323,Unthreatening Presence,Rare,1275815,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 81421,Voltaic Companion,Epic,1176034,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 982980,Disciple of Arugal,Legendary,132637,needs-code,other placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
-1181190,Electric Surge,Epic,201604,needs-code,other placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 81402,Faerie Swarm,Epic,1176022,needs-code,other placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 281916,Faerie Swarm,Epic,201983,needs-code,other placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 54811,Glyph of Maul,Rare,554007,needs-code,other placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
@@ -505,16 +512,13 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 100076,Poison Potion,Uncommon,1178252,needs-code,leftover,broken,,,,,
 984696,Saber Fangs,Epic,200643,needs-code,leftover,broken,,,,,
 81102,Social Distancing,Legendary,1175930,needs-code,leftover,broken,,,,,
-991030,Adorned by Light,Legendary,200024,needs-code,modifier on a placeholder,broken,,,,,
 81301,Aggravated Burns,Rare,1176001,needs-code,modifier on a placeholder,broken,,,,,
 902185,Apostle of Eredath,Legendary,200638,needs-code,modifier on a placeholder,broken,,,,,
-282881,Arcane Charge,Epic,202052,needs-code,modifier on a placeholder,broken,,,,,
 272317,Bestial Assault,Epic,200831,needs-code,modifier on a placeholder,broken,,,,,
 965389,Blood Drinker,Epic,1178512,needs-code,modifier on a placeholder,broken,,,,,
 288804,Blood Shield,Epic,404421,needs-code,modifier on a placeholder,broken,,,,,
 289461,Cataclysmic Power,Rare,405213,needs-code,modifier on a placeholder,broken,,,,,
 81213,Chilling Blows,Epic,1175966,needs-code,modifier on a placeholder,broken,,,,,
-281535,Chilling Blows,Epic,201939,needs-code,modifier on a placeholder,broken,,,,,
 997217,Consumed By Shadows,Epic,134409,needs-code,modifier on a placeholder,broken,,,,,
 983300,Creeping Frost,Epic,132660,needs-code,modifier on a placeholder,broken,,,,,
 1590493,Curseweaver,Epic,201453,needs-code,modifier on a placeholder,broken,,,,,
@@ -595,7 +599,6 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 1318183,Improved Life Tap,Rare,1013781,needs-code,modifier on a placeholder,broken,,,,,
 977915,Instigator,Uncommon,1178651,needs-code,modifier on a placeholder,broken,,,,,
 1181340,Iron Guard,Epic,202565,needs-code,modifier on a placeholder,broken,,,,,
-417700,Lava Sweep,Legendary,1178406,needs-code,modifier on a placeholder,broken,,,,,
 985078,Lightforged Weapon,Rare,1178918,needs-code,modifier on a placeholder,broken,,,,,
 81506,Lingering Death,Epic,1176059,needs-code,modifier on a placeholder,broken,,,,,
 985084,Manaforged Weapon,Rare,1178920,needs-code,modifier on a placeholder,broken,,,,,
@@ -619,9 +622,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 985092,Stormforged Weapon,Rare,1178921,needs-code,modifier on a placeholder,broken,,,,,
 299180,Tempered by Chaos,Epic,404186,needs-code,modifier on a placeholder,broken,,,,,
 977972,Temporal Shift,Legendary,1178666,needs-code,modifier on a placeholder,broken,,,,,
-983739,Thermal Void,Legendary,1234941,needs-code,modifier on a placeholder,broken,,,,,
 271813,Tidecaller's Boon,Epic,200767,needs-code,modifier on a placeholder,broken,,,,,
-273713,Traumatic Wounds,Uncommon,200988,needs-code,modifier on a placeholder,broken,,,,,
 299000,Umbral Wounds,Epic,404176,needs-code,modifier on a placeholder,broken,,,,,
 81370,Unbounded Mind Flay,Epic,1176015,needs-code,modifier on a placeholder,broken,,,,,
 911167,Unstoppable Force,Epic,1178415,needs-code,modifier on a placeholder,broken,,,,,
@@ -670,7 +671,6 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 271548,Immolating Backdraft,Uncommon,200743,needs-code,other placeholder,broken,,,,,
 997129,Lei Shen's Legacy,Legendary,134882,needs-code,other placeholder,broken,,,,,
 274948,Mastery of the Tide,Epic,201120,needs-code,other placeholder,broken,,,,,
-410400,Natural Destruction,Epic,132077,needs-code,other placeholder,broken,,,,,
 275963,Necromancer's Touch,Epic,201244,needs-code,other placeholder,broken,,,,,
 273422,Overflowing Cultivation,Epic,200960,needs-code,other placeholder,broken,,,,,
 1412323,Piercing Howl,Rare,1013986,needs-code,other placeholder,broken,,,,,
