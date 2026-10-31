@@ -27,7 +27,7 @@ worldserver.conf | PlayerStart.CustomSpells = 1
 
 # Which classes' abilities Wildcard rolls draw from: all, classic (original classes) or coa (CoA classes).
 # Needs the patched world server (patches/wildcard-ability-pool.patch); builds already rolled are kept.
-modules\wildcard.conf | Wildcard.AbilityPool = "all"
+modules\wildcard.conf | Wildcard.AbilityPool = "classic"
 # Pete Arr beside Silas Darkmoon (Stormwind, Orgrimmar): free, unlimited Scrolls of Fortune for rerolls.
 modules\wildcard.conf | Wildcard.FreeScrolls = 1
 
