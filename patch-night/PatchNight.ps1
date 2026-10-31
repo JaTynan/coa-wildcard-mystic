@@ -146,6 +146,15 @@ function FetchRepo {
             Copy-Item $addon $addons -Recurse -Force
             Log "Updated the WildcardEnchants addon in $addons."
         }
+        # Mystic Enchant fixes (SQL), applied to the world database before every start.
+        $fixes = Join-Path $repoRoot 'sql\enchants'
+        $local = Join-Path $here 'enchants'
+        if (Test-Path $fixes) {
+            if (Test-Path $local) { Remove-Item $local -Recurse -Force }
+            New-Item -ItemType Directory -Force -Path $local | Out-Null
+            Copy-Item (Join-Path $fixes '*.sql') $local -Force
+            Log "Downloaded $(@(Get-ChildItem $local -Filter *.sql).Count) Mystic Enchant fix file(s)."
+        }
         $scripts = Join-Path $repoRoot 'patch-night'
         if (Test-Path (Join-Path $scripts 'PatchNight.ps1')) {
             Get-ChildItem $scripts -File | Copy-Item -Destination $here -Force
@@ -162,6 +171,24 @@ function Sql([string] $query) {
     $mysql = Join-Path $Server 'mysql\bin\mysql.exe'
     $ini = Join-Path $Server 'mysql\admin-client.ini'
     return Invoke-Quiet $mysql @("--defaults-file=`"$ini`"", '--batch', '--skip-column-names') $query 2
+}
+
+function ApplyEnchantFixes {
+    # Runs each file in patch-night\enchants, in name order, against the active realm's world database.
+    $files = @(Get-ChildItem (Join-Path $here 'enchants') -Filter *.sql -ErrorAction SilentlyContinue | Sort-Object Name)
+    if (-not $files.Count) { return }
+    $db = 'acore_world'
+    $conf = Join-Path $configs 'worldserver.conf'
+    if (Test-Path $conf) {
+        $line = Select-String -Path $conf -Pattern '^\s*WorldDatabaseInfo\s*=' | Select-Object -Last 1
+        if ($line -and $line.Line -match '"([^"]*)"') { $parts = $Matches[1] -split ';'; if ($parts.Count -ge 5) { $db = $parts[4] } }
+    }
+    $mysql = Join-Path $Server 'mysql\bin\mysql.exe'
+    $ini = Join-Path $Server 'mysql\admin-client.ini'
+    foreach ($file in $files) {
+        $result = Invoke-Quiet $mysql @("--defaults-file=`"$ini`"", "--database=$db", '--batch') (Get-Content $file.FullName -Raw) 5
+        if ($result.Code) { Log "Enchant fix $($file.Name) failed: $($result.Text)" 'WARN' } else { Log "Applied enchant fix $($file.Name) to $db." }
+    }
 }
 
 function EnsureWildcardBotNames {
@@ -246,7 +273,7 @@ function StartAndCheck([string] $expected) {
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
     # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
     $db = Launcher 'start-mysql' '' 10
-    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames }
+    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes }
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
