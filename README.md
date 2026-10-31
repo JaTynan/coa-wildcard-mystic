@@ -13,6 +13,14 @@ realms**. Shared as-is. **Not supported, use at your own risk**, and keep backup
 - The **WildcardEnchants** client addon (`addon/`), needed because the game client hides the
   Mystic Enchant tab and blocks its own checks for Wildcard characters. Every player needs it.
 
+`patches/mystic-enchants-skip-missing.patch` adds `CoA.MysticEnchants.SkipMissingSpells` (default on):
+enchants whose spell the server does not have are left out of scroll rolls, so every roll gives an enchant
+that exists. It is **checked against the server's spells at every startup, not kept as a list**: when a
+missing enchant's spell is added (Spell.dbc or the `spell_dbc` table), that enchant rolls again after the
+next restart, with nothing else to update. Owned and collected enchants are not touched. (The
+WildcardEnchants addon's EnchantData.lua lists every enchant for browsing and does not need updating
+either.)
+
 A second patch adds `Wildcard.AbilityPool` (in `wildcard.conf`): `all` (default, as the client data
 defines Wildcard), `classic` (the original classes' abilities) or `coa` (the Conquest of Azeroth classes'),
 for starting abilities, level rolls and rerolls alike, bots included.

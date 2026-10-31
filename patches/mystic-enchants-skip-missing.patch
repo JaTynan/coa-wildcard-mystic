@@ -1,0 +1,58 @@
+diff --git a/src/server/coa/AscensionMysticEnchant.cpp b/src/server/coa/AscensionMysticEnchant.cpp
+index de3bc5b..ad87f0f 100644
+--- a/src/server/coa/AscensionMysticEnchant.cpp
++++ b/src/server/coa/AscensionMysticEnchant.cpp
+@@ -1006,6 +1006,25 @@ public:
+     }
+ };
+ 
++// CoA.MysticEnchants.SkipMissingSpells: an enchant whose spell the server does not have would be
++// applied and do nothing. Checked against the loaded spells at every startup (Spell.dbc and
++// spell_dbc), never a fixed list: an enchant whose spell is added later rolls again after the
++// next restart. Only rolls are affected; enchants already owned or collected stay as they are.
++void SkipMissingSpells()
++{
++    if (!sConfigMgr->GetOption<bool>("CoA.MysticEnchants.SkipMissingSpells", true))
++        return;
++    uint32 skipped = 0;
++    for (Enchant& enchant : Loaded.Rows)
++        if (enchant.Spell && enchant.Weight > 0.0f && !sSpellMgr->GetSpellInfo(enchant.Spell))
++        {
++            enchant.Weight = 0.0f;
++            ++skipped;
++        }
++    LOG_INFO("coa", "Mystic enchants: {} left out of rolls because their spell does not exist "
++        "(they roll again once the spell is added)", skipped);
++}
++
+ class AscensionMysticEnchantWorld final : public WorldScript
+ {
+ public:
+@@ -1015,7 +1034,10 @@ public:
+     {
+         Ready = LoadCatalog(Loaded);
+         if (Ready)
++        {
+             LoadLinks();
++            SkipMissingSpells();
++        }
+         if (!Ready)
+             LOG_ERROR("coa", "Mystic enchants are unavailable: MysticEnchant.dbc did not load");
+     }
+diff --git a/src/server/coa/conf/coa.conf.dist b/src/server/coa/conf/coa.conf.dist
+index da9b907..9cf6552 100644
+--- a/src/server/coa/conf/coa.conf.dist
++++ b/src/server/coa/conf/coa.conf.dist
+@@ -132,6 +132,12 @@ CoA.AppearanceCatalogPerCategory = 500
+ # Custom Ascension-only entries still require matching server item/spell templates to deliver.
+ CoA.UnlockAllVanity = 1
+ 
++# Leave Mystic Enchants out of scroll rolls when the server does not have their spell (they would
++# apply and do nothing). Checked at every startup, not a fixed list: an enchant whose spell is added
++# later (Spell.dbc or spell_dbc) rolls again after the next restart. Owned and collected enchants are
++# not touched. 0 = roll every enchant, as before.
++CoA.MysticEnchants.SkipMissingSpells = 1
++
+ # Vanity items every account owns from its first login, as space-separated item ids. They are
+ # recorded in the account's collection, so they stay owned with CoA.UnlockAllVanity = 0, and
+ # CoA.LearnOwnedCompanions teaches their mount/companion spells. Ids missing from the client's

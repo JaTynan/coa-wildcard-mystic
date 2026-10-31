@@ -120,3 +120,7 @@ modules\playerbots.conf | AiPlayerbot.DisabledWithoutRealPlayer = 1
 # ---------------------------------------------------------------- Wildcard Mystic Enchants
 # Needs the patched world server (Install.cmd); the official one ignores it
 modules\coa.conf | CoA.MysticEnchants.AllowWildcard = 1
+# Enchants whose spell the server lacks (about 1,200, mostly Uncommon) are left out of scroll rolls.
+# Checked at every startup, not a list: an enchant rolls again once its spell is added (Spell.dbc or
+# spell_dbc), so rebuilding enchants needs no change here. Needs patches/mystic-enchants-skip-missing.patch.
+modules\coa.conf | CoA.MysticEnchants.SkipMissingSpells = 1
