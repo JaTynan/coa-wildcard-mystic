@@ -14,10 +14,13 @@ One character you stick with and keep investing in. The end state:
 
 ## To do (in order)
 
-1. **Fast build loop on trundle.** Keep a build of the core on trundle (Ubuntu, native, no VM) and only
-   recompile what changed, so a C++ change to the test server takes minutes instead of a 3-hour GitHub build.
-   GitHub then builds Windows once per batch for the live server. Worth checking at the same time: a compiler
-   cache in the GitHub workflow, to shorten the Windows build too.
+1. **Fast build loop: build on the Windows game VM** (after the i9 upgrade, due within two weeks: more cores and
+   about 10 GB more memory for the VM). Keep a Windows build tree on the VM and only recompile what changed:
+   a one-file change rebuilds in minutes and the result is the live server's own format, so there is no
+   GitHub wait and no separate test build. Patch night builds locally instead of downloading; GitHub stays
+   as the backup builder. Needs Visual Studio Build Tools, CMake, Boost and the MySQL client (what the GitHub
+   workflow installs), about 20 to 30 GB of disk, and builds limited to a few cores or run at quiet times so
+   players do not feel them. Fallback if that does not suit: a native build on trundle for the test server.
 2. **Client patch check** (first step of the [Death Knight proposal](dk-enchant-proposal.md)): does the CoA
    client load an extra patch file? Another CoA community server ships its own patch files for custom races,
    so it seems possible; their notes warn that the launcher may skip patch files with names it does not know.
