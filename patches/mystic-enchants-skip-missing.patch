@@ -1,8 +1,8 @@
 diff --git a/src/server/coa/AscensionMysticEnchant.cpp b/src/server/coa/AscensionMysticEnchant.cpp
-index de3bc5ba..53c30d38 100644
+index de3bc5ba..350371bd 100644
 --- a/src/server/coa/AscensionMysticEnchant.cpp
 +++ b/src/server/coa/AscensionMysticEnchant.cpp
-@@ -1006,6 +1006,98 @@ public:
+@@ -1006,6 +1006,156 @@ public:
      }
  };
  
@@ -15,7 +15,8 @@ index de3bc5ba..53c30d38 100644
 +// SkipMissingSpells: the enchant's spell (or the spell it teaches) does not exist.
 +// SkipDudSpells: the spell exists but is only a placeholder (dummy/script effects, or a trigger aura with
 +// nothing to trigger) and nothing on the server gives it behaviour. Known limit: enchants that work only
-+// through hard-coded checks in C++ look the same and are left out too (about 70 when this was written).
++// through hard-coded checks in C++ look the same and are left out too (36 on a Wildcard realm when this was written); list them in
++// wcme_enchant_override to keep them in.
 +bool SpellMissing(uint32 spellId)
 +{
 +    return !sSpellMgr->GetSpellInfo(spellId);
@@ -54,10 +55,67 @@ index de3bc5ba..53c30d38 100644
 +    return sSpellMgr->GetSpellLinked(id) || sSpellMgr->GetSpellLinked(-id) || sSpellMgr->GetSpellLinked(id + SPELL_LINK_AURA);
 +}
 +
++bool WorldTableExists(char const* table)
++{
++    QueryResult result = WorldDatabase.Query("SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() "
++        "AND TABLE_NAME = '{}'", table);
++    return bool(result);
++}
++
++// wcme_enchant_teach (enchant_spell, taught_spell): extra spells an enchant teaches while it is active, on top
++// of the "Teaches you ... @s:NNN" read from the client's Spell.dbc, which SQL cannot change. Used to restore
++// broken enchants whose working twin teaches a spell. Read at every startup.
++void LoadExtraTeaches()
++{
++    if (!WorldTableExists("wcme_enchant_teach"))
++        return;
++    uint32 count = 0;
++    if (QueryResult result = WorldDatabase.Query("SELECT enchant_spell, taught_spell FROM wcme_enchant_teach"))
++        do
++        {
++            Field* fields = result->Fetch();
++            uint32 const spell = fields[0].Get<uint32>();
++            uint32 const taught = fields[1].Get<uint32>();
++            auto const itr = Loaded.BySpell.find(spell);
++            if (itr == Loaded.BySpell.end() || !sSpellMgr->GetSpellInfo(taught))
++            {
++                LOG_ERROR("sql.sql", "wcme_enchant_teach: enchant spell {} or taught spell {} does not exist", spell, taught);
++                continue;
++            }
++            Loaded.Rows[itr->second].Taught = taught;
++            ++count;
++        } while (result->NextRow());
++    LOG_INFO("coa", "Mystic enchants given an extra taught spell: {}", count);
++}
++
++// wcme_enchant_override (enchant_spell, roll): 1 = always in the scroll rolls (skips the checks below, for
++// enchants that work through C++ the checks cannot see), 0 = never (for enchants found broken in testing).
++std::unordered_map<uint32, bool> LoadRollOverrides()
++{
++    std::unordered_map<uint32, bool> overrides;
++    if (!WorldTableExists("wcme_enchant_override"))
++        return overrides;
++    if (QueryResult result = WorldDatabase.Query("SELECT enchant_spell, roll FROM wcme_enchant_override"))
++        do
++            overrides[result->Fetch()[0].Get<uint32>()] = result->Fetch()[1].Get<uint8>() != 0;
++        while (result->NextRow());
++    return overrides;
++}
++
 +void SkipMissingSpells()
 +{
 +    bool const skipMissing = sConfigMgr->GetOption<bool>("CoA.MysticEnchants.SkipMissingSpells", true);
 +    bool const skipDuds = sConfigMgr->GetOption<bool>("CoA.MysticEnchants.SkipDudSpells", true);
++    std::unordered_map<uint32, bool> const overrides = LoadRollOverrides();
++    uint32 forcedOut = 0;
++    for (Enchant& enchant : Loaded.Rows)
++        if (auto const itr = overrides.find(enchant.Spell); itr != overrides.end() && !itr->second && enchant.Weight > 0.0f)
++        {
++            enchant.Weight = 0.0f;
++            ++forcedOut;
++        }
++    if (forcedOut)
++        LOG_INFO("coa", "Mystic enchants kept out of rolls by wcme_enchant_override: {}", forcedOut);
 +    if (!skipMissing && !skipDuds)
 +        return;
 +
@@ -73,7 +131,7 @@ index de3bc5ba..53c30d38 100644
 +    uint32 missing = 0, duds = 0;
 +    for (Enchant& enchant : Loaded.Rows)
 +    {
-+        if (!enchant.Spell || enchant.Weight <= 0.0f)
++        if (!enchant.Spell || enchant.Weight <= 0.0f || overrides.contains(enchant.Spell))
 +            continue;
 +        // What the enchant does: the spell it teaches when it teaches one, else its own spell.
 +        uint32 const effective = enchant.Taught ? enchant.Taught : enchant.Spell;
@@ -101,22 +159,23 @@ index de3bc5ba..53c30d38 100644
  class AscensionMysticEnchantWorld final : public WorldScript
  {
  public:
-@@ -1015,7 +1107,10 @@ public:
+@@ -1015,7 +1165,11 @@ public:
      {
          Ready = LoadCatalog(Loaded);
          if (Ready)
 +        {
              LoadLinks();
++            LoadExtraTeaches();
 +            SkipMissingSpells();
 +        }
          if (!Ready)
              LOG_ERROR("coa", "Mystic enchants are unavailable: MysticEnchant.dbc did not load");
      }
 diff --git a/src/server/coa/conf/coa.conf.dist b/src/server/coa/conf/coa.conf.dist
-index da9b9070..0d0104b7 100644
+index da9b9070..813c3465 100644
 --- a/src/server/coa/conf/coa.conf.dist
 +++ b/src/server/coa/conf/coa.conf.dist
-@@ -132,6 +132,20 @@ CoA.AppearanceCatalogPerCategory = 500
+@@ -132,6 +132,26 @@ CoA.AppearanceCatalogPerCategory = 500
  # Custom Ascension-only entries still require matching server item/spell templates to deliver.
  CoA.UnlockAllVanity = 1
  
@@ -133,6 +192,12 @@ index da9b9070..0d0104b7 100644
 +# limit: enchants that work only through hard-coded checks in C++ look the same and are left out too.
 +# 0 = roll them anyway.
 +CoA.MysticEnchants.SkipDudSpells = 1
++
++# Two optional world database tables adjust Mystic Enchants without a rebuild (read at every startup):
++#   wcme_enchant_teach (enchant_spell, taught_spell): a spell the enchant teaches while active, on top of
++#     the client's "Teaches you" text (which SQL cannot change).
++#   wcme_enchant_override (enchant_spell, roll): 1 = always in the scroll rolls, skipping the two checks
++#     above; 0 = never in the rolls.
 +
  # Vanity items every account owns from its first login, as space-separated item ids. They are
  # recorded in the account's collection, so they stay owned with CoA.UnlockAllVanity = 0, and
