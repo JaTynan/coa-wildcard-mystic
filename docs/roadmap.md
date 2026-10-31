@@ -37,7 +37,7 @@ One character you stick with and keep investing in. The end state:
 5. **Damage-type transforms** (for example Frost Strike dealing Shadow damage). These need C++: one general
    hook ("this ability deals this school while the enchant is active") so each enchant is a table row. The
    broken pet "Companion" enchants (Fire, Frost, Arcane, Nature, Shadow pet attacks) would use it too.
-6. **Race kits: a full racial rework, based on WoW Forever's (optional).** Replace each race's racials with a
+6. **Race kits: a full racial rework, based on WoW Forever's (optional).** Baseline: [race-kits.md](race-kits.md). Replace each race's racials with a
    kit that changes how you play, not stat reskins. Aimed at Wildcard, where a random start leaves little sense
    of identity: race becomes the fixed part of a character. A config switch, set per realm through the
    settings kit, so other realms keep the stock racials. Design first, one kit per playable race (WoW Forever's
