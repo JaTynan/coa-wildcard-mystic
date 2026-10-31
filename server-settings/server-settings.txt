@@ -25,6 +25,12 @@ worldserver.conf | RealmID = 2
 worldserver.conf | AlwaysMaxSkillForLevel = 1
 worldserver.conf | PlayerStart.CustomSpells = 1
 
+# Which classes' abilities Wildcard rolls draw from: all, classic (original classes) or coa (CoA classes).
+# Needs the patched world server (patches/wildcard-ability-pool.patch); builds already rolled are kept.
+modules\wildcard.conf | Wildcard.AbilityPool = "all"
+# Pete Arr beside Silas Darkmoon (Stormwind, Orgrimmar): free, unlimited Scrolls of Fortune for rerolls.
+modules\wildcard.conf | Wildcard.FreeScrolls = 1
+
 # ---------------------------------------------------------------- Experience
 # Double XP everywhere (CoA's stock master rate is 0.9295; this keeps its per-source balance)
 worldserver.conf | Rate.XP.Global = 1.859
@@ -114,3 +120,7 @@ modules\playerbots.conf | AiPlayerbot.DisabledWithoutRealPlayer = 1
 # ---------------------------------------------------------------- Wildcard Mystic Enchants
 # Needs the patched world server (Install.cmd); the official one ignores it
 modules\coa.conf | CoA.MysticEnchants.AllowWildcard = 1
+# Enchants whose spell the server lacks (about 1,200, mostly Uncommon) are left out of scroll rolls.
+# Checked at every startup, not a list: an enchant rolls again once its spell is added (Spell.dbc or
+# spell_dbc), so rebuilding enchants needs no change here. Needs patches/mystic-enchants-skip-missing.patch.
+modules\coa.conf | CoA.MysticEnchants.SkipMissingSpells = 1

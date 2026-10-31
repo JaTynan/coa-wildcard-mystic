@@ -1,0 +1,135 @@
+diff --git a/src/server/coa/AscensionWildcard.cpp b/src/server/coa/AscensionWildcard.cpp
+index 4c44667..ea0a81a 100644
+--- a/src/server/coa/AscensionWildcard.cpp
++++ b/src/server/coa/AscensionWildcard.cpp
+@@ -56,6 +56,37 @@ namespace
+ {
+ using StarterEntry = AscensionWildcardStarterData::Entry;
+ 
++// Wildcard.AbilityPool: which classes' abilities and talents Wildcard rolls draw from.
++// all = every entry the client data marks for Wildcard; classic = the original classes (and the Hero);
++// coa = the Conquest of Azeroth classes (and the Hero).
++enum class AbilityPool { All, Classic, CoA };
++AbilityPool Pool = AbilityPool::All;
++// Every rank spell of a Character Advancement entry -> the class its class type belongs to.
++constexpr uint32 CLASS_TYPES_CLASS = 2;  // CharacterAdvancementClassTypes.dbc: the class of a class type
++std::unordered_map<uint32, uint32> SpellClasses;
++
++AbilityPool ParseAbilityPool(std::string const& value)
++{
++    if (value == "classic")
++        return AbilityPool::Classic;
++    if (value == "coa")
++        return AbilityPool::CoA;
++    if (value != "all" && !value.empty())
++        LOG_ERROR("coa", "Wildcard.AbilityPool \"{}\" is not all, classic or coa; using all", value);
++    return AbilityPool::All;
++}
++
++bool InAbilityPool(uint32 spellId)
++{
++    if (Pool == AbilityPool::All)
++        return true;
++    auto const found = SpellClasses.find(spellId);
++    if (found == SpellClasses.end() || found->second == CLASS_HERO || !found->second)
++        return true;
++    bool const custom = IsAscensionCustomClassId(uint8(found->second));
++    return Pool == AbilityPool::CoA ? custom : !custom;
++}
++
+ constexpr uint16 CMSG_WILDCARD_UNLEARN_ABILITY = 0x061D;
+ constexpr uint16 SMSG_WILDCARD_UNLEARN_ABILITY_RESULT = 0x061E;
+ constexpr uint16 SMSG_WILDCARD_ENTRY_LEARNED = 0x0621;
+@@ -219,6 +250,7 @@ enum AdvancementDwordField : uint32
+     ADVANCEMENT_WILDCARD_LEVEL    = 28,
+     ADVANCEMENT_WILDCARD_AE       = 22,
+     ADVANCEMENT_GROUP             = 29,
++    ADVANCEMENT_CLASS_TYPE        = 32,
+     ADVANCEMENT_FLAGS             = 120,
+     ADVANCEMENT_MODES             = 121,
+ };
+@@ -522,13 +554,30 @@ bool IsGlyph(uint32 spellId)
+ 
+ void LoadTables()
+ {
+-    ClientDBC advancement, essence, cards, costs, spellTags;
++    ClientDBC advancement, essence, cards, costs, spellTags, classTypes;
+     if (!advancement.Load(GetClientDBCPath("CharacterAdvancement.dbc"), ADVANCEMENT_MODES + 1) ||
+         !essence.Load(GetClientDBCPath("CharacterAdvancementEssence.dbc"), ESSENCE_TE + 1) ||
+         !cards.Load(GetClientDBCPath("SkillCard.dbc"), SKILL_CARD_STARTER + 1) ||
+         !costs.Load(GetClientDBCPath("SealedCardCosts.dbc"), SEALED_CARD_TYPE_COUNT + 1))
+         return;
+ 
++    // Wildcard.AbilityPool: class type -> class (CharacterAdvancementClassTypes.dbc), then every rank spell -> class.
++    std::unordered_map<uint32, uint32> classOfType;
++    if (classTypes.Load(GetClientDBCPath("CharacterAdvancementClassTypes.dbc"), CLASS_TYPES_CLASS + 1))
++        for (uint32 row = 0; row < classTypes.GetRecordCount(); ++row)
++            classOfType[classTypes.GetRecord(row).GetUInt32(0)] = classTypes.GetRecord(row).GetUInt32(CLASS_TYPES_CLASS);
++    SpellClasses.clear();
++    for (uint32 row = 0; row < advancement.GetRecordCount(); ++row)
++    {
++        ClientDBC::Record record = advancement.GetRecord(row);
++        auto const owner = classOfType.find(record.GetUInt32(ADVANCEMENT_CLASS_TYPE));
++        if (owner == classOfType.end())
++            continue;
++        for (uint32 field = ADVANCEMENT_SPELLS; field < ADVANCEMENT_SPELLS + ADVANCEMENT_RANK_COUNT; ++field)
++            if (uint32 const spellId = record.GetUInt32(field))
++                SpellClasses[spellId] = owner->second;
++    }
++
+     Tables tables;
+     for (uint32 row = 0; row < advancement.GetRecordCount(); ++row)
+     {
+@@ -1498,7 +1547,7 @@ char const* RerollStartingAbilities(Player* player, StarterPick const& pick = {}
+             [](uint32 bound) { return urand(0, bound - 1); },
+             [player, &releasedSpells](uint32 spellId)
+             {
+-                return releasedSpells.count(spellId) || !player->HasSpell(spellId);
++                return InAbilityPool(spellId) && (releasedSpells.count(spellId) || !player->HasSpell(spellId));
+             }, chosen));
+     std::vector<Slot> const& rolled = candidates[pick ? std::min(pick(candidates), candidates.size() - 1) : 0];
+ 
+@@ -1606,7 +1655,7 @@ char const* RapidRollAbilities(Player* player, Request const& request)
+     RollTrace trace;
+     RapidRoll const rapid = AscensionWildcard::RollRapidly(Loaded, slots, level,
+         FirstSetting(player, SpecSource(player, UNLEARNED_SETTING)), request.Rapid, scrolls, RandomBelowBound,
+-        [player](uint32 spellId) { return CanTake(player, spellId); }, synergy, &trace);
++        [player](uint32 spellId) { return InAbilityPool(spellId) && CanTake(player, spellId); }, synergy, &trace);
+     if (!rapid.Rolled)
+         return "ROLL_ABILITIES_NO_ROLL";
+     std::string const reason =
+@@ -1649,7 +1698,7 @@ char const* RollAbilities(Player* player, Request const& request)
+     std::optional<Slot> const rolled = RollLevelEntry(Loaded, slots, player->GetLevel(),
+         FirstSetting(player, SpecSource(player, UNLEARNED_SETTING)),
+         [](uint32 bound) { return urand(0, bound - 1); },
+-        [player](uint32 spellId) { return CanTake(player, spellId); },
++        [player](uint32 spellId) { return InAbilityPool(spellId) && CanTake(player, spellId); },
+         CardedEntries(Loaded, cards, player->GetLevel()), synergy, &trace);
+     if (!rolled)
+     {
+@@ -2525,6 +2574,7 @@ public:
+     {
+         LoadSynergySettings();
+         FreeScrolls = sConfigMgr->GetOption<bool>("Wildcard.FreeScrolls", false);
++        Pool = ParseAbilityPool(sConfigMgr->GetOption<std::string>("Wildcard.AbilityPool", "all"));
+     }
+ 
+     void OnStartup() override
+diff --git a/src/server/coa/conf/wildcard.conf.dist b/src/server/coa/conf/wildcard.conf.dist
+index 63e8807..4982066 100644
+--- a/src/server/coa/conf/wildcard.conf.dist
++++ b/src/server/coa/conf/wildcard.conf.dist
+@@ -110,3 +110,13 @@ Wildcard.Synergy.LogRolls = 1
+ #                     1 - (Enabled)
+ 
+ Wildcard.FreeScrolls = 0
++
++#    Wildcard.AbilityPool
++#        Description: Which classes' abilities and talents Wildcard rolls (starting abilities, level
++#                     rolls and rerolls) draw from. Builds already rolled are kept. Read at startup
++#                     and on .reload config.
++#        Default:     all     - every entry the client data marks for Wildcard
++#                     classic - the original classes (and the Hero)
++#                     coa     - the Conquest of Azeroth classes (and the Hero)
++
++Wildcard.AbilityPool = "all"
