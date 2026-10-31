@@ -17,12 +17,12 @@ INSERT INTO `spell_dbc` VALUES
 DELETE FROM `spell_proc` WHERE `SpellId` IN (1584647, 1579665, 55441, 282040, 1576793, 911162, 285100);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
 (1584647, 0, 9, 262144, 0, 0, 4352, 0, 2, 0, 0, 0, 0, 0, 0, 0),
-(1579665, 0, 11, 0, 2147745792, 0, 65536, 1, 2, 0, 0, 0, 0, 0, 20000, 0),
+(1579665, 0, 11, 0, 2147745792, 0, 65536, 1, 2, 0, 2, 0, 0, 0, 20000, 0),
 (55441, 0, 11, 536870912, 0, 0, 21504, 0, 7, 0, 0, 0, 0, 0, 0, 0),
 (282040, 0, 0, 0, 0, 0, 340, 0, 2, 52, 0, 0, 0, 0, 0, 0),
 (1576793, 0, 4, 0, 512, 0, 16, 1, 2, 0, 0, 0, 0, 0, 0, 0),
-(911162, 0, 3, 0, 65536, 0, 65536, 1, 2, 0, 0, 0, 0, 0, 8000, 0),
-(285100, 0, 5, 64, 0, 0, 65536, 1, 2, 0, 0, 0, 0, 0, 0, 0);
+(911162, 0, 3, 0, 65536, 0, 65536, 1, 2, 0, 2, 0, 0, 0, 8000, 0),
+(285100, 0, 5, 64, 0, 0, 262144, 1, 2, 0, 2, 0, 0, 0, 0, 0);
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (283449, 1584647, 2, 'WCME: Scattered Burst uses twin 1584647, made to fire when Scatter Shot hits'),
 (81100, 1579665, 2, 'WCME: By Fire Be Purged uses twin 1579665, made to fire when Fire Nova deals damage, once every 20 sec'),
