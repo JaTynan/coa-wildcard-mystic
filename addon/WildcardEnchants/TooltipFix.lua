@@ -5,19 +5,18 @@
 local scan = CreateFrame("GameTooltip", "WildcardEnchantsScanTooltip", nil, "GameTooltipTemplate")
 scan:SetOwner(UIParent, "ANCHOR_NONE")
 
--- The description is the last line of a spell's tooltip; the client fills in its numbers for us.
+-- The description is the first line under the name. Enchant tooltips can add more below it (a separator and
+-- the buff they grant, with its own text), so the last line is not always the description.
 local function Description(spellID)
 	scan:SetOwner(UIParent, "ANCHOR_NONE")
 	scan:ClearLines()
 	scan:SetHyperlink("spell:" .. spellID)
-	local count = scan:NumLines()
-	if count < 2 then
-		return nil
-	end
-	local line = _G["WildcardEnchantsScanTooltipTextLeft" .. count]
-	local text = line and line:GetText()
-	if text and text ~= "" then
-		return text
+	for i = 2, scan:NumLines() do
+		local line = _G["WildcardEnchantsScanTooltipTextLeft" .. i]
+		local text = line and line:GetText()
+		if text and text ~= "" then
+			return text
+		end
 	end
 end
 
