@@ -17,7 +17,12 @@ realms**. Shared as-is. **Not supported, use at your own risk**, and keep backup
 enchants whose spell the server does not have are left out of scroll rolls, so every roll gives an enchant
 that exists. It is **checked against the server's spells at every startup, not kept as a list**: when a
 missing enchant's spell is added (Spell.dbc or the `spell_dbc` table), that enchant rolls again after the
-next restart, with nothing else to update. Owned and collected enchants are not touched. (The
+next restart, with nothing else to update. The same patch adds `CoA.MysticEnchants.SkipDudSpells` (default on): enchants whose spell exists but
+does nothing on this server (only placeholder effects, and no spell script, `spell_linked_spell`,
+`coa_mystic_enchant_proc` or `coa_mystic_enchant_aura_link` row giving it behaviour) are left out too, and
+come back the same way once given behaviour. Known limit: about 70 enchants that work only through
+hard-coded checks in the C++ look identical and are left out as well.
+Owned and collected enchants are not touched. (The
 WildcardEnchants addon's EnchantData.lua lists every enchant for browsing and does not need updating
 either.)
 

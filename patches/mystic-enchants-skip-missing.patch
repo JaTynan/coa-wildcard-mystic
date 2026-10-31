@@ -1,34 +1,107 @@
 diff --git a/src/server/coa/AscensionMysticEnchant.cpp b/src/server/coa/AscensionMysticEnchant.cpp
-index de3bc5b..ad87f0f 100644
+index de3bc5ba..53c30d38 100644
 --- a/src/server/coa/AscensionMysticEnchant.cpp
 +++ b/src/server/coa/AscensionMysticEnchant.cpp
-@@ -1006,6 +1006,25 @@ public:
+@@ -1006,6 +1006,98 @@ public:
      }
  };
  
-+// CoA.MysticEnchants.SkipMissingSpells: an enchant whose spell the server does not have would be
-+// applied and do nothing. Checked against the loaded spells at every startup (Spell.dbc and
-+// spell_dbc), never a fixed list: an enchant whose spell is added later rolls again after the
-+// next restart. Only rolls are affected; enchants already owned or collected stay as they are.
++// CoA.MysticEnchants.SkipMissingSpells and SkipDudSpells: keep enchants that cannot do anything out of
++// scroll rolls. Both are checked against what the server has at every startup, never a fixed list: an
++// enchant comes back into the rolls after the next restart once its spell is added (Spell.dbc or
++// spell_dbc) or given behaviour (a spell script, spell_linked_spell, coa_mystic_enchant_proc or
++// coa_mystic_enchant_aura_link). Only rolls are affected; owned and collected enchants stay as they are.
++//
++// SkipMissingSpells: the enchant's spell (or the spell it teaches) does not exist.
++// SkipDudSpells: the spell exists but is only a placeholder (dummy/script effects, or a trigger aura with
++// nothing to trigger) and nothing on the server gives it behaviour. Known limit: enchants that work only
++// through hard-coded checks in C++ look the same and are left out too (about 70 when this was written).
++bool SpellMissing(uint32 spellId)
++{
++    return !sSpellMgr->GetSpellInfo(spellId);
++}
++
++bool SpellIsPlaceholder(SpellInfo const* info)
++{
++    for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
++    {
++        SpellEffectInfo const& effect = info->Effects[i];
++        if (!effect.Effect)
++            continue;
++        if (effect.Effect == SPELL_EFFECT_DUMMY || effect.Effect == SPELL_EFFECT_SCRIPT_EFFECT)
++            continue;
++        if (effect.IsAura())
++        {
++            AuraType const aura = effect.ApplyAuraName;
++            if (aura == SPELL_AURA_DUMMY || aura == SPELL_AURA_PERIODIC_DUMMY)
++                continue;
++            if ((aura == SPELL_AURA_PROC_TRIGGER_SPELL || aura == SPELL_AURA_PERIODIC_TRIGGER_SPELL ||
++                    aura == SPELL_AURA_ADD_TARGET_TRIGGER || aura == SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE) &&
++                (!effect.TriggerSpell || SpellMissing(effect.TriggerSpell)))
++                continue;
++        }
++        return false;  // a real effect
++    }
++    return true;
++}
++
++bool SpellHasBehaviour(uint32 spellId, std::unordered_set<uint32> const& tableSpells)
++{
++    SpellScriptsBounds const scripts = sObjectMgr->GetSpellScriptsBounds(spellId);
++    if (scripts.first != scripts.second || tableSpells.count(spellId))
++        return true;
++    int32 const id = int32(spellId);
++    return sSpellMgr->GetSpellLinked(id) || sSpellMgr->GetSpellLinked(-id) || sSpellMgr->GetSpellLinked(id + SPELL_LINK_AURA);
++}
++
 +void SkipMissingSpells()
 +{
-+    if (!sConfigMgr->GetOption<bool>("CoA.MysticEnchants.SkipMissingSpells", true))
++    bool const skipMissing = sConfigMgr->GetOption<bool>("CoA.MysticEnchants.SkipMissingSpells", true);
++    bool const skipDuds = sConfigMgr->GetOption<bool>("CoA.MysticEnchants.SkipDudSpells", true);
++    if (!skipMissing && !skipDuds)
 +        return;
-+    uint32 skipped = 0;
++
++    // Enchant spells given behaviour by the CoA enchant tables.
++    std::unordered_set<uint32> tableSpells;
++    for (char const* query : { "SELECT DISTINCT enchant_spell FROM coa_mystic_enchant_proc",
++                               "SELECT DISTINCT enchant_spell FROM coa_mystic_enchant_aura_link" })
++        if (QueryResult result = WorldDatabase.Query(query))
++            do
++                tableSpells.insert(result->Fetch()[0].Get<uint32>());
++            while (result->NextRow());
++
++    uint32 missing = 0, duds = 0;
 +    for (Enchant& enchant : Loaded.Rows)
-+        if (enchant.Spell && enchant.Weight > 0.0f && !sSpellMgr->GetSpellInfo(enchant.Spell))
++    {
++        if (!enchant.Spell || enchant.Weight <= 0.0f)
++            continue;
++        // What the enchant does: the spell it teaches when it teaches one, else its own spell.
++        uint32 const effective = enchant.Taught ? enchant.Taught : enchant.Spell;
++        if (SpellMissing(enchant.Spell) || SpellMissing(effective))
++        {
++            if (skipMissing)
++            {
++                enchant.Weight = 0.0f;
++                ++missing;
++            }
++            continue;
++        }
++        if (skipDuds && SpellIsPlaceholder(sSpellMgr->GetSpellInfo(effective)) &&
++            !SpellHasBehaviour(effective, tableSpells) && !SpellHasBehaviour(enchant.Spell, tableSpells))
 +        {
 +            enchant.Weight = 0.0f;
-+            ++skipped;
++            ++duds;
 +        }
-+    LOG_INFO("coa", "Mystic enchants: {} left out of rolls because their spell does not exist "
-+        "(they roll again once the spell is added)", skipped);
++    }
++    LOG_INFO("coa", "Mystic enchants left out of rolls: {} whose spell does not exist, {} whose spell does nothing "
++        "on this server (both come back once fixed; see CoA.MysticEnchants.SkipMissingSpells/SkipDudSpells)",
++        missing, duds);
 +}
 +
  class AscensionMysticEnchantWorld final : public WorldScript
  {
  public:
-@@ -1015,7 +1034,10 @@ public:
+@@ -1015,7 +1107,10 @@ public:
      {
          Ready = LoadCatalog(Loaded);
          if (Ready)
@@ -40,10 +113,10 @@ index de3bc5b..ad87f0f 100644
              LOG_ERROR("coa", "Mystic enchants are unavailable: MysticEnchant.dbc did not load");
      }
 diff --git a/src/server/coa/conf/coa.conf.dist b/src/server/coa/conf/coa.conf.dist
-index da9b907..9cf6552 100644
+index da9b9070..0d0104b7 100644
 --- a/src/server/coa/conf/coa.conf.dist
 +++ b/src/server/coa/conf/coa.conf.dist
-@@ -132,6 +132,12 @@ CoA.AppearanceCatalogPerCategory = 500
+@@ -132,6 +132,20 @@ CoA.AppearanceCatalogPerCategory = 500
  # Custom Ascension-only entries still require matching server item/spell templates to deliver.
  CoA.UnlockAllVanity = 1
  
@@ -52,6 +125,14 @@ index da9b907..9cf6552 100644
 +# later (Spell.dbc or spell_dbc) rolls again after the next restart. Owned and collected enchants are
 +# not touched. 0 = roll every enchant, as before.
 +CoA.MysticEnchants.SkipMissingSpells = 1
++
++# Also leave out enchants whose spell exists but does nothing on this server: only placeholder effects
++# (dummy or script effects, or a trigger aura with nothing to trigger) and no spell script,
++# spell_linked_spell, coa_mystic_enchant_proc or coa_mystic_enchant_aura_link row giving it behaviour.
++# Checked at every startup, not a fixed list: an enchant rolls again once it is given behaviour. Known
++# limit: enchants that work only through hard-coded checks in C++ look the same and are left out too.
++# 0 = roll them anyway.
++CoA.MysticEnchants.SkipDudSpells = 1
 +
  # Vanity items every account owns from its first login, as space-separated item ids. They are
  # recorded in the account's collection, so they stay owned with CoA.UnlockAllVanity = 0, and
