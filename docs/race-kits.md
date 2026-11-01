@@ -14,9 +14,9 @@ of C++; *new* = a new active (reused spell for now, or the client patch from roa
 
 | | Racial | What it does | Notes |
 | --- | --- | --- | --- |
-| Active | Will to Survive | Become immune to stuns and incapacitates and take 15% less damage for 3 sec. Used while stunned or incapacitated, it breaks them and lasts 5 sec. | existing (Every Man for Himself), reworked. A high-reward skill: best saved for the moment you are locked down. Each race owns its own kind of crowd control: Humans stuns and incapacitates, Undead charm, fear and sleep, Gnomes roots and snares |
-| Active | Regroup | Above 50% health: gain Battle Ready. At or below 50%: reduce the remaining cooldown of Will to Survive (first guess: 30 sec). 1.5 min cooldown. | new. Press on the attack while healthy, or buy back your escape when you are not |
-| Passive | Battle Ready | After 5 sec out of combat, entering a fight gives 15% haste for 5 sec. | hook; the same size for every class, never tied to one ability's cost |
+| Active | Will to Survive | Break free and become immune to stuns and incapacitates for 2 sec, taking 10% less damage. Used while stunned or incapacitated, it lasts 4 sec. | existing (Every Man for Himself), reworked. Timing matters in PvP and PvE. Each race owns its own kind of crowd control: Humans stuns and incapacitates, Undead charm, fear and sleep, Gnomes roots and snares |
+| Active | Regroup | Gain Battle Ready. At or below 50% health, it also reduces Will to Survive's remaining cooldown by 30 sec. 1.5 min cooldown. | new. Gives Battle Ready mid-fight every time; at low health it also buys back your escape |
+| Passive | Battle Ready | After 5 sec out of combat, your next ability costs 10% less and has +10% crit chance. | hook. Kept at 10% so it never becomes best in slot (a Subtlety rogue opener at a deeper cut would be). Room for clever macros and rotations, especially with Regroup |
 | Passive | Jack of All Trades | +5 to all trade skills; 20% discount on learning recipes. | skill bonus existing aura type; discount needs a hook |
 
 **Dwarf**
