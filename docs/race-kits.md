@@ -1,6 +1,6 @@
 # Race kits: the new baseline
 
-James's design (1 November 2026). Each race has two actives and two passives, and its own feel: how you play
+James's design (1 November 2026), locked in as the starting point. Each race has two actives and two passives, and its own feel: how you play
 changes a little based on your racial, and it will not be the best for every class. Balance comes later; the
 first goal is that every race feels different. Optional and per realm ([roadmap.md](roadmap.md), item 6).
 
@@ -61,8 +61,8 @@ of C++; *new* = a new active (reused spell for now, or the client patch from roa
 
 | | Racial | What it does | Notes |
 | --- | --- | --- | --- |
-| Active | Blood Fury | +15% attack power and spell power for 15 sec; healing taken reduced (amount to confirm). 2 min cooldown. | existing, reworked |
-| Active | Command | Nearby allies (very short range; players, NPCs and pets) gain 5% attack power, spell power and movement speed for 8 sec. | new; could make orcs group up to keep it running |
+| Active | Blood Fury | +5% attack power and spell power per nearby ally (players, NPCs, pets; up to 4) for 15 sec; 10% less healing taken. 2 min cooldown. | existing, reworked + hook to count allies; leans into groups and pets |
+| Active | Command | Nearby allies (very short range; players, NPCs and pets) gain 5% attack power, spell power and movement speed for 8 sec. | new; could make orcs group up to keep it running. Pairs with Blood Fury: stand together |
 | Passive | Hardiness | 5% chance to avoid a killing blow in combat. | hook; can make memorable moments, watch it in PvP |
 | Passive | Spell Scarred | 5% less damage taken from curses and banes. | hook or reworked; deliberately small next to Hardiness |
 
@@ -81,7 +81,7 @@ of C++; *new* = a new active (reused spell for now, or the client patch from roa
 | --- | --- | --- | --- |
 | Active | War Stomp | Stuns up to 5 nearby enemies for 2 sec. 1.5 min cooldown. | existing |
 | Active | Bull Rush | Gain 10% health as temporary health for 5 sec, and 10 extra stacks of Plainsrunning. | new; starts or keeps the momentum |
-| Passive | Plainsrunning | +2% movement speed per second while you keep moving, up to 60%. | hook; reaches 60% in 30 sec, much faster than WoW Forever's 2.5 min. Watch it in PvP and battlegrounds, and decide what makes it drop |
+| Passive | Plainsrunning | +1% movement speed per second while you keep moving, up to 60%. | hook; 60 sec to cap. Decide what makes it drop (stopping, damage, mounting) |
 | Passive | Herbalist | +10 Herbalism; chance for additional herbs. | skill existing; extra herbs need a hook |
 
 **Troll**
@@ -91,7 +91,7 @@ of C++; *new* = a new active (reused spell for now, or the client patch from roa
 | Active | Berserking | 10% haste, plus up to 10% more based on missing health, for 15 sec. 2 min cooldown. | existing, reworked |
 | Active | Rapid Regeneration | Regenerate 50% of maximum health over 6 sec, but 50% slower movement and haste, and you cannot dodge, parry or block meanwhile. | new |
 | Passive | Regeneration | +20% health regeneration, and 20% of it continues in combat. | existing, reworked |
-| Passive | Headhunter | Killing a beast gives +1% damage to beasts for 1 min, stacking up to 10. | hook (or the enchant action handler with a kill event) |
+| Passive | Headhunter | 5% more damage to enemies below 20% health, plus 1% per enemy you recently landed the killing blow on, stacking up to 10. | hook (or the enchant action handler with a kill event); an execute theme for trolls |
 
 **Blood Elf**
 
