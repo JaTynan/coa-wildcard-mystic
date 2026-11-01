@@ -98,5 +98,5 @@ repo: delete a file here and its fix is gone after the next start. Results are i
 The WildcardEnchants addon (1.8) shows the twin's tooltip for enchants restored through a twin whose text
 differs (`addon/WildcardEnchants/TooltipData.lua`), so what an enchant says matches what it does.
 
-Plan, method and progress: [docs/enchant-restoration.md](docs/enchant-restoration.md); per-enchant status:
+Server plan: [docs/roadmap.md](docs/roadmap.md). Enchant plan, method and progress: [docs/enchant-restoration.md](docs/enchant-restoration.md); per-enchant status:
 [enchants/tracker.csv](enchants/tracker.csv).
