@@ -61,7 +61,7 @@ of C++; *new* = a new active (reused spell for now, or the client patch from roa
 
 | | Racial | What it does | Notes |
 | --- | --- | --- | --- |
-| Active | Blood Fury | +5% attack power and spell power per nearby ally (players, NPCs, pets; up to 4) for 15 sec; 10% less healing taken. 2 min cooldown. | existing, reworked + hook to count allies; leans into groups and pets |
+| Active | Blood Fury | +5% attack power and spell power per nearby ally (players, NPCs, pets; up to 4), counted once when cast, for 15 sec; 10% less healing taken. 2 min cooldown. | existing, reworked + hook to count allies; leans into groups and pets |
 | Active | Command | Nearby allies (very short range; players, NPCs and pets) gain 5% attack power, spell power and movement speed for 8 sec. | new; could make orcs group up to keep it running. Pairs with Blood Fury: stand together |
 | Passive | Hardiness | 5% chance to avoid a killing blow in combat. | hook; can make memorable moments, watch it in PvP |
 | Passive | Spell Scarred | 5% less damage taken from curses and banes. | hook or reworked; deliberately small next to Hardiness |
@@ -91,7 +91,7 @@ of C++; *new* = a new active (reused spell for now, or the client patch from roa
 | Active | Berserking | 10% haste, plus up to 10% more based on missing health, for 15 sec. 2 min cooldown. | existing, reworked |
 | Active | Rapid Regeneration | Regenerate 50% of maximum health over 6 sec, but 50% slower movement and haste, and you cannot dodge, parry or block meanwhile. | new |
 | Passive | Regeneration | +20% health regeneration, and 20% of it continues in combat. | existing, reworked |
-| Passive | Headhunter | 5% more damage to enemies below 20% health, plus 1% per enemy you recently landed the killing blow on, stacking up to 10. | hook (or the enchant action handler with a kill event); an execute theme for trolls |
+| Passive | Headhunter | 5% more damage to enemies below 20% health, plus 1% per enemy you landed the killing blow on, stacking up to 10; each stack lasts 1 min. | hook (or the enchant action handler with a kill event); an execute theme for trolls; stacks can drop between dungeon pulls, which rewards aggressive play |
 
 **Blood Elf**
 
