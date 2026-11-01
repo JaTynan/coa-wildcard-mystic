@@ -1,8 +1,7 @@
 -- Batch 9: enchants whose spell is missing from the game data, rebuilt.
 -- Each of these has a scroll and an entry in MysticEnchant.dbc, but no spell, so it did nothing. Each now gets
--- a passive spell with one aura that changes the named spell (or school) by the amount its description gave.
--- Only enchants whose target can be picked out alone are here: where the target shares its spell flag with
--- more than three other spells, the bonus would spread to those too, so it is left out.
+-- a passive spell with one aura that changes the named spell (or school) by the amount its description gave,
+-- picked out by a spell flag that at most three other spells share. The rest are in 011.
 -- A row is only added (and owned) where no spell with that ID exists already. The game client does not have
 -- these spells either, so 010-missing-hold.sql keeps them out of scroll rolls until the client patch adds them.
 CREATE TEMPORARY TABLE `wcme_new_spell` (`id` INT NOT NULL PRIMARY KEY);
