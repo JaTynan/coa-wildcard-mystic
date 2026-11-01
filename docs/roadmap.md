@@ -24,6 +24,8 @@ One character you stick with and keep investing in. The end state:
 2. **Client patch check** (first step of the [Death Knight proposal](dk-enchant-proposal.md)): does the CoA
    client load an extra patch file? Another CoA community server ships its own patch files for custom races,
    so it seems possible; their notes warn that the launcher may skip patch files with names it does not know.
+   Confirmed in the core: the CoA Custom Races module ships `patch-T.MPQ` and `patch-Z*.MPQ` for the client, so
+   extra patch files do load. Pick a name that follows that pattern.
    Check which patch names the client folder already has, then whether one of ours loads.
 3. **Map the Legendary enchants to Death Knight builds.** On Ascension each build centres on one Legendary.
    Candidates to check first: White Walker (two-handed Frost and blade), Vampire Lord (Shadow damage over time
@@ -59,3 +61,9 @@ One character you stick with and keep investing in. The end state:
    Lifeblood, crafting perks such as Jewelcrafting gems). Design a bonus for every profession that matters for a
    long-kept character, scaling with skill, and that sits well with the race kits. Same building blocks as the
    race kits: a `profession, skill level -> spell` table applied at login, plus gathering and crafting hooks.
+9. **New races (later, planning only).** The core already has the CoA Custom Races module (beta, off by default):
+   Goblin, Worgen, High Elf, Void Elf, Dark Iron Dwarf and many more, with its own client files. Its
+   `CoACustomRaces.DisabledRaceIds` setting can allow only chosen races. Plan: Goblin plus one Alliance race,
+   each with a race kit in place of the package's racials. Trade skills: Goblin takes Goblin Engineering (Gnomes
+   Gnomish Engineering); Worgen would take Leatherworking, or a Void or High Elf Inscription. First test the
+   client files and character creation on one client.
