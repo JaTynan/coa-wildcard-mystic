@@ -406,6 +406,14 @@ $officialExe = OfficialExe
 $installed = Revision $officialExe
 if (-not $installed) { Finish "Cannot read the revision of $officialExe; nothing was changed." 1 }
 Log "The manager's installed core is $installed (from $(Split-Path $officialExe -Leaf))."
+# A manager update keeps a world server it sees was changed (ours), so the saved official copy goes stale.
+# The auth server is always the manager's own, so its revision shows which release is really installed.
+$authRev = Revision (Join-Path $core 'authserver.exe')
+if ($authRev -and -not ($authRev.StartsWith($installed) -or $installed.StartsWith($authRev))) {
+    Finish ("The manager updated the server to core $authRev but kept the patched world server (core $installed). " +
+        "In the manager, Settings > Updates, choose to restore Core/worldserver.exe to the manager's version, " +
+        "then run patch night again. Nothing was changed.") 1
+}
 
 # 2. Our patched build of that release, if GitHub has one.
 $release = $null; $releaseCore = $null
