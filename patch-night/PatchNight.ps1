@@ -409,10 +409,15 @@ Log "The manager's installed core is $installed (from $(Split-Path $officialExe 
 # A manager update keeps a world server it sees was changed (ours), so the saved official copy goes stale.
 # The auth server is always the manager's own, so its revision shows which release is really installed.
 $authRev = Revision (Join-Path $core 'authserver.exe')
-if ($authRev -and -not ($authRev.StartsWith($installed) -or $installed.StartsWith($authRev))) {
-    Finish ("The manager updated the server to core $authRev but kept the patched world server (core $installed). " +
-        "In the manager, Settings > Updates, choose to restore Core/worldserver.exe to the manager's version, " +
-        "then run patch night again. Nothing was changed.") 1
+$staleOfficial = $false
+Log "The auth server reports core $authRev."
+if (-not $authRev) {
+    Log 'The auth server did not report its core; trusting the world server.' 'WARN'
+} elseif (-not ($authRev.StartsWith($installed) -or $installed.StartsWith($authRev))) {
+    Log ("The manager installed core $authRev (auth server), but kept our patched world server from core $installed, " +
+        'so the saved official copy is out of date. Going by the auth server.') 'WARN'
+    $installed = $authRev
+    $staleOfficial = $true
 }
 
 # 2. Our patched build of that release, if GitHub has one.
@@ -481,7 +486,10 @@ if ($installNeeded) {
     Log "Installing $($release.tag_name)..."
     # The newest installer from this repository (it knows -Unattended), pointed at the downloaded build.
     $installer = if ($repoInstaller -and (Test-Path $repoInstaller)) { $repoInstaller } else { Join-Path $package 'Install-WildcardServer.ps1' }
-    $code = RunScript $installer @('-Server', "`"$Server`"", '-Package', "`"$package`"", '-Unattended')
+    $installArgs = @('-Server', "`"$Server`"", '-Package', "`"$package`"", '-Unattended')
+    # The saved official copy is from an older core, so its revision check would refuse a build that does match.
+    if ($staleOfficial) { $installArgs += '-Force' }
+    $code = RunScript $installer $installArgs
     if ($code) {
         Log 'The installer refused or failed; continuing with the server as it was.' 'WARN'
         $installNeeded = $false
