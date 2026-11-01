@@ -1,122 +1,103 @@
 # Race kits: the new baseline
 
-Every race gets **two active abilities and two passives**, each tied to the race's identity.
+James's design (1 November 2026). Each race has two actives and two passives, and its own feel: how you play
+changes a little based on your racial, and it will not be the best for every class. Balance comes later; the
+first goal is that every race feels different. Optional and per realm ([roadmap.md](roadmap.md), item 6).
 
-**The rules:**
-- An **active** must ask for a decision: when to use it, what to spend, what you give up. No "press for more
-  damage on cooldown". It answers a situation (a stun, a fear, a pull, low health) or trades one thing for another.
-- A **passive** must change how you play: your rotation, your route, how you gear, how you use a profession, or a
-  strategy no other race has. No flat stat bonus you never notice.
-- The models are Gnome **Expansive Mind** (a little more energy really changes a rogue's rotation) and Night Elf
-  **Shadowmeld** (opens strategies nobody else can do alone).
-- Several passives lean on professions and long-term play, to fit a server where you keep one character.
-
-WoW Forever's rework was the starting point; most of it was rejected under these rules. Optional and per realm
-(see [roadmap.md](roadmap.md), item 6). Numbers are first guesses for testing.
-
-Build notes: *existing* = a spell the client already has; *reworked* = an existing spell with new server
-numbers, tooltip text from the addon; *hook* = a small piece of C++; *new* = a new active (reused spell, or the
-client patch from roadmap item 2).
+Notes flag what to watch in testing and how each would be built: *existing* = a spell the client already has;
+*reworked* = an existing spell with new server numbers, tooltip text from the addon; *hook* = a small piece
+of C++; *new* = a new active (reused spell for now, or the client patch from roadmap item 2).
 
 ## Alliance
 
-**Human**: adaptable, connected
+**Human**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | Will to Survive | Breaks a stun. The next stun on you within 30 sec lasts 50% longer. | Break this stun, or save it for a worse one? | existing, reworked |
-| Active | Adaptive Focus | Choose Offence (+5% damage), Defence (+5% armor and healing taken) or Utility (+10% speed, faster out-of-combat regen). Switching has a 30 sec cooldown. | Read the fight and commit. | new |
-| Passive | Jack of All Trades | Humans can learn a third primary profession. | A different crafting and gathering plan. | hook |
-| Passive | Diplomacy | Reputation gains +10%, vendor prices -5%. | Faction grinds and gold plans shift. | existing (classic Diplomacy), reworked |
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | Will to Survive | Break stuns. | existing |
+| Active | Alert | +5% stealth detection and hit chance for 8 sec. | new; an anti-stealth and opener tool |
+| Passive | Spirited | +10% Spirit. | reworked (The Human Spirit) |
+| Passive | Jack of All Trades | +5 to all trade skills; 20% discount on learning recipes. | skill bonus existing aura type; discount needs a hook |
 
-**Dwarf**: stubborn, miners, brewers
+**Dwarf**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | Stoneform | For up to 8 sec: immune to bleeds, poisons and diseases, 30% less physical damage taken, but 50% slower. Can be cancelled. | Survive in place, or keep moving? | existing, reworked |
-| Active | Dig In | For 10 sec you cannot be knocked back, pulled or displaced, and generate 20% more threat, but you cannot move. | Hold a ledge or a doorway at the cost of mobility. | new |
-| Passive | Miner's Instinct | Mining nodes always show (alongside any other tracking) and have a chance to yield an extra gem. | Route through ore while doing anything else. | hook |
-| Passive | Stout | Being drunk grants +2/4/6% Stamina and fear resistance instead of only penalties. | Drink before a fight, on purpose. | hook |
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | Stoneform | +10% armor; removes and grants immunity to bleed, poison and disease for 8 sec. | existing, reworked |
+| Active | Grudge | Mark an enemy for 15 sec: they deal 10% more damage to you, and you deal 10% more damage to them. | new; a debuff with "damage from caster" exists, the other half may need a hook. A duel-style choice: who is worth the grudge |
+| Passive | Treasure Hunter | Find treasure on the minimap. | existing (Find Treasure) |
+| Passive | Dungeon Crawler | +10% movement speed and +2% hit chance while indoors. | hook (indoors check); strong in dungeons, watch it |
 
-**Night Elf**: the shadows of the forest
+**Night Elf**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | Shadowmeld | Stealth while standing still. | Unchanged: strategies nobody else has. | existing |
-| Active | Wisp Form | For 6 sec: 50% faster, immune to damage, but cannot attack or cast. | An escape or a reposition, at the cost of 6 sec of output. | new |
-| Passive | Silent Step | Out of combat, you can walk at half speed without breaking Shadowmeld. | Shadowmeld becomes a way to move, not only to hide. | hook |
-| Passive | Wisp Spirit | +75% speed while dead. | Corpse runs barely matter; take riskier pulls. | existing |
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | Shadowmeld | As is. | existing |
+| Active | Meditate | Put an out-of-combat ally into a trance (sleep) that restores 30% health and mana over 3 sec. | new; open question: with Shadowmeld dropping combat, self-use mid-dungeon could become a loop. Options: a long cooldown, allies only, or a shared cooldown with Shadowmeld |
+| Passive | Wisp Spirit | +75% speed while dead; revive with more health. | existing + hook for the revive health |
+| Passive | Quickness | As is (Wrath: +2% dodge). | existing |
 
-**Gnome**: resourceful tinkerers
+**Gnome**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | Escape Artist | Escape roots and snares. | Unchanged: answer a root. | existing |
-| Active | Overclock | Your next 3 abilities cost 30% less, then your resource regenerates 50% slower for 10 sec. | Burst now, pay later. | new |
-| Passive | Expansive Mind | +5% maximum Mana, Rage or Energy. | Unchanged: rotations bend around it. | existing |
-| Passive | Gadgeteer | Engineering devices never misfire, and engineering item cooldowns are 25% shorter. | Engineering becomes a real combat kit. | hook |
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | Escape Artist | Remove and become immune to snares, roots and slows; +30% movement speed for 3 sec. | existing, reworked |
+| Active | Eureka | +10% haste and abilities cost 10% less for 5 sec. | new |
+| Passive | Expansive Mind | +5% maximum Mana, Rage or Energy. | existing |
+| Passive | Tinker | +10 Engineering, and either more reliable engineering items or shorter engineering cooldowns (undecided). | skill existing; shorter cooldowns is the simpler hook, reliability touches many items |
 
-**Draenei**: exiles who crossed the stars
+**Draenei**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | Gift of the Naaru | Heals the target over 15 sec. | Self or an ally? | existing |
-| Active | Shifting Crystal | Place a crystal for 15 sec; allies next to it take 10% less damage. | Where to stand, and who gets to stand there. | new |
-| Passive | Crystalline Affinity | Socketed gems give 10% more stats. | Sockets and socket bonuses become a real gearing choice. | hook |
-| Passive | Astral Anchor | Bind your Hearthstone to two inns; it asks which one. | Plan travel around two homes. | hook |
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | Gift of the Naaru | As is, but cannot be interrupted. | existing, reworked |
+| Active | Naaru's Ward | Target takes 10% less magic damage and receives 10% more healing for 8 sec. | new |
+| Passive | Gemcutter's Eye | +10 Jewelcrafting; chance of an extra gem from Jewelcrafting. | skill existing; extra gem needs a hook |
+| Passive | Heroic Presence | +1% hit for your party. | existing |
 
 ## Horde
 
-**Orc**: fury and endurance
+**Orc**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | Blood Fury | +15% attack and spell power for 15 sec, but healing received is halved. | Pick a moment when you will not need heals. | existing, reworked |
-| Active | Shatter Curse | Removes curses, then 5% less magic damage taken for 8 sec. | Answer a curse at the right time. | new |
-| Passive | Command | Pets deal 5% more damage and move 10% faster. | Pet builds get an edge. | existing, reworked |
-| Passive | Unbroken | When a stun ends, your next ability within 4 sec costs nothing. | Plan a punish after every stun. | hook |
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | Blood Fury | +15% attack power and spell power for 15 sec; healing taken reduced (amount to confirm). 2 min cooldown. | existing, reworked |
+| Active | Command | Nearby allies (very short range; players, NPCs and pets) gain 5% attack power, spell power and movement speed for 8 sec. | new; could make orcs group up to keep it running |
+| Passive | Hardiness | 5% chance to avoid a killing blow in combat. | hook; can make memorable moments, watch it in PvP |
+| Passive | Spell Scarred | 5% less damage taken from curses and banes. | hook or reworked; deliberately small next to Hardiness |
 
-**Undead**: they do not breathe, they do not tire
+**Undead**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | Will of the Forsaken | Breaks charm, fear and sleep. | Unchanged: answer a fear. | existing |
-| Active | Cannibalize | Eat a humanoid or undead corpse: restore health and mana over 10 sec; interrupted by damage. | Rest on a corpse, or keep moving? | existing |
-| Passive | Unbreathing | No breath limit underwater. | Underwater routes, fishing and escapes others cannot use. | existing (Underwater Breathing), reworked |
-| Passive | Dead Man's Hunger | Finishing a Cannibalize grants Fed: 5% of damage dealt heals you for 60 sec. | Ties the active to fights: eat, then pull. | hook |
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | Will of the Forsaken | Removes all charm, fear and sleep effects. | existing |
+| Active | Cannibalize | 7% health and mana every 2 sec for 10 sec, from a humanoid or undead corpse within 5 yards; movement, actions or damage cancel it. | existing |
+| Passive | Unbreathing | Unlimited breath underwater. | reworked (Underwater Breathing) |
+| Passive | Dead Man's Hunger | Eating a corpse grants 2% leech for 5 min. | hook (or the enchant action handler) |
 
-**Tauren**: plains runners and herbalists
+**Tauren**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | War Stomp | Stuns nearby enemies for 2 sec. | When to stop a pack. | existing |
-| Active | Stampede | Charge 15 yards, knocking enemies aside. Spends your Plainsrunning stacks: more stacks, a longer stun and more damage. | Keep the speed, or cash it in? | new |
-| Passive | Plainsrunning | Every 5 sec of running adds 2% speed, up to 60%; stopping or taking damage loses it. | Route and pace around keeping speed up. | hook |
-| Passive | Cultivation | A chance at a duplicate herb when gathering, and some herbs can be gathered without Herbalism. | Herbs as a side income for any Tauren. | hook |
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | War Stomp | Stuns up to 5 nearby enemies for 2 sec. 1.5 min cooldown. | existing |
+| Active | Bull Rush | Gain 10% health as temporary health for 5 sec, and 10 extra stacks of Plainsrunning. | new; starts or keeps the momentum |
+| Passive | Plainsrunning | +2% movement speed per second while you keep moving, up to 60%. | hook; reaches 60% in 30 sec, much faster than WoW Forever's 2.5 min. Watch it in PvP and battlegrounds, and decide what makes it drop |
+| Passive | Herbalist | +10 Herbalism; chance for additional herbs. | skill existing; extra herbs need a hook |
 
-**Troll**: regeneration and voodoo
+**Troll**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | Berserking | 10% to 30% faster attacks and casts for 10 sec; the lower your health, the bigger it is. | Risk going low for a bigger burst. | existing, reworked |
-| Active | Regenerative Trance | Channel for up to 10 sec to regenerate 50% of your health; damage breaks it. | Find a safe moment, or lose it. | new |
-| Passive | Regeneration | 10% of your health regeneration continues in combat. | Long fights favour you. | existing, reworked |
-| Passive | Headhunter | Each beast you kill gives +5% damage to beasts for 5 min, up to 25%. | Chain beast pulls on purpose. | hook |
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | Berserking | 10% haste, plus up to 10% more based on missing health, for 15 sec. 2 min cooldown. | existing, reworked |
+| Active | Rapid Regeneration | Regenerate 50% of maximum health over 6 sec, but 50% slower movement and haste, and you cannot dodge, parry or block meanwhile. | new |
+| Passive | Regeneration | +20% health regeneration, and 20% of it continues in combat. | existing, reworked |
+| Passive | Headhunter | Killing a beast gives +1% damage to beasts for 1 min, stacking up to 10. | hook (or the enchant action handler with a kill event) |
 
-**Blood Elf**: magic addicts
+**Blood Elf**
 
-| | Racial | What it does | The decision or change | Built as |
-| --- | --- | --- | --- | --- |
-| Active | Mana Tap | Drain an enemy's mana into a charge, up to 3. | Build charges before a fight. | existing |
-| Active | Arcane Torrent | Silence nearby enemies and restore resource; each Mana Tap charge spent makes it stronger. | Spend charges now, or hold them? | existing, reworked |
-| Passive | Magic Hunger | Each Mana Tap charge gives +2% resource regeneration; charges fade over time. | Keep charges up as part of your rotation. | hook |
-| Passive | Sunwell Attunement | Enchantments you apply to your own gear are 10% stronger. | Enchanting pays off for yourself. | hook |
-
-## What it needs
-
-- A `race -> spell` table applied at login, and removal of the stock racials while the switch is on.
-- Hooks: about 15 of the passives (most are small), sharing a few building blocks: gathering bonuses, buffs on
-  an event (the enchant action handler can do several), profession rules and the Hearthstone.
-- New actives: Adaptive Focus, Dig In, Wisp Form, Overclock, Shifting Crystal, Shatter Curse, Stampede and
-  Regenerative Trance. A reused spell for each for now, a proper one once the client patch works.
-- Tooltip text for reworked spells through the WildcardEnchants addon.
+| | Racial | What it does | Notes |
+| --- | --- | --- | --- |
+| Active | Mana Tap | Gain a Mana Tap charge, up to 3. | existing; needs a limit on how charges are gained (a cooldown, or a target with mana as originally), or it is three presses |
+| Active | Arcane Torrent | Spends all Mana Tap charges: a 1 sec area silence, and 5% mana, rage or energy per charge. 2 min cooldown. | existing, reworked (the Burning Crusade Torrent already spent Mana Tap charges) |
+| Passive | Arcane Affinity | +10 Enchanting; chance of extra materials when disenchanting. | skill existing; extra materials need a hook |
+| Passive | Arcane Hunger | Abilities cost 3% more per Mana Tap charge; damage and healing dealt +2% per charge. | hook; a nice loop with the two actives: hold charges for power, or spend them on Torrent |
