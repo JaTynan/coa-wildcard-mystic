@@ -413,7 +413,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 81420,Glacial Companion,Epic,1176033,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 55684,Glyph of Fade,Rare,554070,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 118203,Glyph of Fade,Uncommon,202666,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
-118607,Glyph of Obliterate,Uncommon,202845,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
+118607,Glyph of Obliterate,Uncommon,202845,needs-code,modifier on a placeholder,ready (needs build),"placeholder replaced by the modifier: damage of Obliterate, 25%",,012-placeholder-modifiers.sql,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 55682,Glyph of Shadow Word: Death,Rare,554068,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 118197,Glyph of Shadow Word: Death,Uncommon,202664,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 63298,Glyph of Stoneclaw Totem,Rare,554252,needs-code,modifier on a placeholder,partly working,,,,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
@@ -1626,7 +1626,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 93767,Hasty Immolation Trap,Uncommon,1177726,missing,,"rebuilt (needs build, held from rolls)","new spell, named targets: cooldown of Immolation Trap, 1.5 sec",,011-missing-named-targets.sql,,spell rebuilt from the archived description; targets named in wcme_spellaffect_dbc (needs the build); kept out of rolls (010) until the client has the spell
 93769,Concentrated Immolation Trap,Uncommon,1177727,missing,,"rebuilt (needs build, held from rolls)","new spell, named targets: mana cost of Immolation Trap, 5%",,011-missing-named-targets.sql,,spell rebuilt from the archived description; targets named in wcme_spellaffect_dbc (needs the build); kept out of rolls (010) until the client has the spell
 93795,Concentrated Frost Trap,Uncommon,1177729,missing,,"rebuilt (needs build, held from rolls)","new spell, named targets: mana cost of Frost Trap, 5%",,011-missing-named-targets.sql,,spell rebuilt from the archived description; targets named in wcme_spellaffect_dbc (needs the build); kept out of rolls (010) until the client has the spell
-93819,Hasty Explosive Trap,Uncommon,1177730,missing,,missing,,,,,
+93819,Hasty Explosive Trap,Uncommon,1177730,missing,,"rebuilt (needs build, held from rolls)","new spell, named targets: cooldown of Explosive Trap, 5%",,011-missing-named-targets.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
 93821,Concentrated Explosive Trap,Uncommon,1177731,missing,,"rebuilt (needs build, held from rolls)","new spell, named targets: mana cost of Explosive Trap, 5%",,011-missing-named-targets.sql,,spell rebuilt from the archived description; targets named in wcme_spellaffect_dbc (needs the build); kept out of rolls (010) until the client has the spell
 93888,Powerful Ghostly Strike,Uncommon,1177732,missing,,rebuilt (held from rolls),"new spell: damage of Ghostly Strike, 3%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
 93893,Critical Ghostly Strike,Uncommon,1177734,missing,,rebuilt (held from rolls),"new spell: critical strike chance of Ghostly Strike, 2%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
@@ -2083,19 +2083,19 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 100265,Brutal Shattering Throw,Uncommon,1178261,missing,,rebuilt (held from rolls),"new spell: critical strike damage of Shattering Throw, 2%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
 100266,Accurate Shattering Throw,Uncommon,1178262,missing,,rebuilt (held from rolls),"new spell: hit chance of Shattering Throw, 4%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
 100273,Focused Shattering Throw,Uncommon,1178263,missing,,rebuilt (held from rolls),"new spell: bonus scaling of Shattering Throw, 3%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
-975601,Hasty Natural Alacrity,Uncommon,1178560,missing,,missing,,,,,
-975602,Hasty Starfall,Uncommon,1178561,missing,,missing,,,,,
-975605,Hasty Black Arrow,Uncommon,1178562,missing,,missing,,,,,
-975608,Hasty Evocation,Uncommon,1178563,missing,,missing,,,,,
-975612,Hasty Adrenaline Rush,Uncommon,1178564,missing,,missing,,,,,
-975613,Hasty Blade Flurry,Uncommon,1178565,missing,,missing,,,,,
-975614,Hasty Cold Blood,Uncommon,1178566,missing,,missing,,,,,
-975616,Hasty Nature's Swiftness,Uncommon,1178567,missing,,missing,,,,,
-975618,Hasty Tidal Force,Uncommon,1178568,missing,,missing,,,,,
-975700,Powerful Starfall,Uncommon,1178570,missing,,missing,,,,,
-975711,Powerful Wyvern Sting,Uncommon,1178571,missing,,missing,,,,,
+975601,Hasty Natural Alacrity,Uncommon,1178560,missing,,rebuilt (held from rolls),"new spell: cooldown of Natural Alacrity, 10 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975602,Hasty Starfall,Uncommon,1178561,missing,,rebuilt (held from rolls),"new spell: cooldown of Starfall, 5 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975605,Hasty Black Arrow,Uncommon,1178562,missing,,rebuilt (held from rolls),"new spell: cooldown of Black Arrow, 2 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975608,Hasty Evocation,Uncommon,1178563,missing,,rebuilt (held from rolls),"new spell: cooldown of Evocation, 10 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975612,Hasty Adrenaline Rush,Uncommon,1178564,missing,,rebuilt (held from rolls),"new spell: cooldown of Adrenaline Rush, 15 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975613,Hasty Blade Flurry,Uncommon,1178565,missing,,rebuilt (held from rolls),"new spell: cooldown of Blade Flurry, 10 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975614,Hasty Cold Blood,Uncommon,1178566,missing,,rebuilt (held from rolls),"new spell: cooldown of Cold Blood, 10 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975616,Hasty Nature's Swiftness,Uncommon,1178567,missing,,rebuilt (held from rolls),"new spell: cooldown of Nature's Swiftness, 15 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975618,Hasty Tidal Force,Uncommon,1178568,missing,,rebuilt (held from rolls),"new spell: cooldown of Tidal Force, 5 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975700,Powerful Starfall,Uncommon,1178570,missing,,rebuilt (held from rolls),"new spell: damage of Starfall, 4%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+975711,Powerful Wyvern Sting,Uncommon,1178571,missing,,rebuilt (held from rolls),"new spell: damage of Wyvern Sting, 25%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
 975909,Quick Entangling Roots,Uncommon,1178603,missing,,rebuilt (held from rolls),"new spell: casting time of Entangling Roots, 10%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
-987025,Hasty Shield of Righteousness,Uncommon,1178934,missing,,missing,,,,,
+987025,Hasty Shield of Righteousness,Uncommon,1178934,missing,,rebuilt (held from rolls),"new spell: cooldown of Shield of Righteousness, 5%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
 987026,Concentrated Shield of Righteousness,Uncommon,1178935,missing,,rebuilt (held from rolls),"new spell: mana cost of Shield of Righteousness, 5%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
 987027,Accurate Shield of Righteousness,Uncommon,1178936,missing,,rebuilt (held from rolls),"new spell: hit chance of Shield of Righteousness, 4%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
 987029,Focused Shield of Righteousness,Uncommon,1178938,missing,,rebuilt (held from rolls),"new spell: bonus scaling of Shield of Righteousness, 3%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
