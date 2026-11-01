@@ -10,13 +10,13 @@ of C++; *new* = a new active (reused spell for now, or the client patch from roa
 
 ## Alliance
 
-**Human**
+**Human**: good at everything, the safe pick, never the obvious one
 
 | | Racial | What it does | Notes |
 | --- | --- | --- | --- |
-| Active | Will to Survive | Break stuns. | existing |
-| Active | Alert | +5% stealth detection and hit chance for 8 sec. | new; an anti-stealth and opener tool |
-| Passive | Spirited | +10% Spirit. | reworked (The Human Spirit) |
+| Active | Will to Survive | Break free of stuns and incapacitates and become immune to them for 3 sec. Used while stunned or incapacitated, you also take 20% less critical damage for 10 sec. | existing (Every Man for Himself), reworked. Covers stuns and incapacitates; Undead cover charm, fear and sleep, Gnomes roots and snares, so each race owns its own kind of crowd control. Can be used ahead of a stun (proactive) or to break one (reactive, with the crit reduction) |
+| Active | Alert | +5% stealth detection and +5% critical strike chance with spells, melee and ranged attacks for 8 sec. | new; watch it doesn't become a damage button pressed on cooldown |
+| Passive | Versatile | Crowd control on you has 10% less effect, and +1% to all stats. | reworked; a small, always-useful passive that suits the safe pick |
 | Passive | Jack of All Trades | +5 to all trade skills; 20% discount on learning recipes. | skill bonus existing aura type; discount needs a hook |
 
 **Dwarf**
