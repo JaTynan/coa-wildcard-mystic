@@ -26,7 +26,7 @@ of C++; *new* = a new active (reused spell for now, or the client patch from roa
 | Active | Stoneform | +10% armor; removes and grants immunity to bleed, poison and disease for 8 sec. | existing, reworked |
 | Active | Grudge | Mark an enemy for 15 sec: they deal 10% more damage to you, and you deal 10% more damage to them. | new; a debuff with "damage from caster" exists, the other half may need a hook. A duel-style choice: who is worth the grudge |
 | Passive | Treasure Hunter | Find treasure on the minimap. | existing (Find Treasure) |
-| Passive | Dungeon Crawler | +10% movement speed and +2% hit chance while indoors. | hook (indoors check); strong in dungeons, watch it |
+| Passive | Underdeep Miner | +10 Mining. While indoors or underground, Treasure Hunter also shows ore veins, and veins mined there yield an extra ore or gem. | skill existing; hooks for the tracking and the extra yield. Strengthens Treasure Hunter and gives dwarves a reason to mine caves; no overlap with the Draenei's Jewelcrafting |
 
 **Night Elf**
 
