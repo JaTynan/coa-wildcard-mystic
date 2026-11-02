@@ -1,0 +1,7 @@
+-- Fixes found while testing the action enchants (2 Nov).
+-- Arcane Charge (282881): the damage part of its helper spell 282883 hit enemies around the caster, but it is
+-- cast as Charge starts, while the caster is still far away, so it hit nothing. It now hits enemies around the
+-- Charge target instead. Owned only if spell_dbc has no row for it already.
+INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) SELECT 'spell_dbc', 282883 FROM DUAL WHERE NOT EXISTS (SELECT 1 FROM `spell_dbc` WHERE `ID` = 282883);
+INSERT IGNORE INTO `spell_dbc` VALUES
+(282883, 0, 0, 0, 65536, 136, 0, 65536, 0, 0, 33554432, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 8, 0, 0, 0, 101, 0, 80, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 2, 64, 0, 1, 0, 0, 2.0, 0.0, 0.0, 4, 0, 0, 0, 0, 0, 53, 22, 0, 16, 30, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 282884, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5964, 0, 63728, 0, 0, 'Arcane Charge', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 'Arcane Charge impact deals $s1 damage.', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 1.0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 0, 0.166, 0.0, 0.0, 0, 0);
