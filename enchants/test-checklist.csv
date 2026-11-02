@@ -159,7 +159,7 @@ file,spell,name,scroll item,test type,commands,expected,result
 005,954641,Scattered Burst,132131,twin,.aura 954641; .list auras shows 1584647; .lookup spell id 954641 for the tooltip,Scatter Shot hits sets it off,
 005,283449,Scattered Burst,202085,twin,.aura 283449; .list auras shows 1584647; .lookup spell id 283449 for the tooltip,Scatter Shot hits sets it off,
 005,276308,Violent Combo,201292,twin,.aura 276308; .list auras shows 1576793; .lookup spell id 276308 for the tooltip,Shield Slam hits sets it off,
-006,983165,Absolute Zero,132651,teach,".aura 983165, open your spellbook (once per family: .additem 132651 and use the altar instead)",the taught spell is in your spellbook and works,
+006,983165,Absolute Zero,132651,teach,".aura 983165, open your spellbook (once per family: .additem 132651 and use the altar instead)",the taught spell is in your spellbook and works,pass: spell taught and works (2 Nov)
 006,982545,Arcanist's Explosion,132580,teach,".aura 982545, open your spellbook (once per family: .additem 132580 and use the altar instead)",the taught spell is in your spellbook and works,
 006,832617,Astral Storm,1178410,teach,".aura 832617, open your spellbook (once per family: .additem 1178410 and use the altar instead)",the taught spell is in your spellbook and works,
 006,92384,Atal'ai Totem,131055,teach,".aura 92384, open your spellbook (once per family: .additem 131055 and use the altar instead)",the taught spell is in your spellbook and works,
@@ -264,8 +264,8 @@ file,spell,name,scroll item,test type,commands,expected,result
 007,1588050,Abjurer's Ward: Frost,201298,action,".aura 1588050, then do what the tooltip says",absorbing damage with a Ward takes 10 sec off Cold Snap,
 007,284752,Abjurer's Ward: Frost,202184,action,".aura 284752, then do what the tooltip says",absorbing damage with a Ward takes 10 sec off Cold Snap,
 007,991030,Adorned by Light,200024,action,".aura 991030, then do what the tooltip says",direct heals grant Hand of the Adorned (the Adorned and Holy Shock parts are not done),
-007,277746,All that is Right,202386,action,".aura 277746, .learn 20154 (Seal of Righteousness), then do what the tooltip says",Seal of Righteousness damage grants All that is Right,
-007,282881,Arcane Charge,202052,action,".aura 282881, .learn 100 (Charge), then do what the tooltip says",Charge deals Arcane Charge damage (the mana part is not done),
+007,277746,All that is Right,202386,action,".aura 277746, .learn 20154 (Seal of Righteousness), then do what the tooltip says",Seal of Righteousness damage grants All that is Right,"fail: no All that is Right buff from Seal of Righteousness damage; likely a different seal damage spell ID on this server (2 Nov). One client crash during the test, cause unknown"
+007,282881,Arcane Charge,202052,action,".aura 282881, .learn 100 (Charge), then do what the tooltip says",Charge deals Arcane Charge damage (the mana part is not done),"partly: mana parts work; damage only hits enemies near you as Charge starts. Retargeting it at the Charge target broke the whole helper, reverted (2 Nov)"
 007,92252,Arcane Charge,131043,action,".aura 92252, .learn 100 (Charge), then do what the tooltip says",Charge also deals Arcane Charge damage,
 007,283584,Bane of the Wicked,404420,action,".aura 283584, .learn 53595 (Hammer of the Righteous), then do what the tooltip says",Hammer of the Righteous applies Bane of the Wicked,
 007,986084,Beacon of Divinity,132662,action,".aura 986084, .learn 635 (Holy Light), then do what the tooltip says",Holy Light heals take 3 sec off Divine Favor (the Beacon part is not done),
@@ -281,7 +281,7 @@ file,spell,name,scroll item,test type,commands,expected,result
 007,1181190,Electric Surge,201604,action,".aura 1181190, .learn 403 (Lightning Bolt), then do what the tooltip says",Lightning Bolt or Chain Lightning triggers Flurry (the extra charges are not done),
 007,299938,Elemental Reload,404157,action,".aura 299938, .learn 954807 (Elemental Blast), then do what the tooltip says",Elemental Blast damage resets Chimera Shot,
 007,92438,Fel Charge,2178951,action,".aura 92438, .learn 100 (Charge), then do what the tooltip says",Charge leaves a Fiery Trail,
-007,92247,Fiery Charge,131040,action,".aura 92247, .learn 100 (Charge), then do what the tooltip says",Charge also deals Fiery Charge damage,
+007,92247,Fiery Charge,131040,action,".aura 92247, .learn 100 (Charge), then do what the tooltip says",Charge also deals Fiery Charge damage,"fail: aura stays on but Charge never triggers it, although the rule loads; sister enchants 92249/92250/92252/92438 suspect (2 Nov)"
 007,274179,Fingers of Death,201039,action,".aura 274179, .learn 30455 (Ice Lance), then do what the tooltip says",gaining Fingers of Frost grants Fingers of Death,
 007,271997,Forbidden Dance,200780,action,".aura 271997, .learn 271980 (Forbidden Technique), then do what the tooltip says",Forbidden Technique grants Forbidden Dance,
 007,92249,Frosty Charge,131041,action,".aura 92249, .learn 100 (Charge), then do what the tooltip says",Charge also deals Frosty Charge damage,
@@ -299,7 +299,7 @@ file,spell,name,scroll item,test type,commands,expected,result
 007,284475,Quick on Your Feet,201749,action,".aura 284475, .learn 53625 (Heroic Leap), then do what the tooltip says","Heroic Leap, Colossus Smash or Warbreaker grants Quick on Your Feet",
 007,276302,Relentless Reflexes,201295,action,".aura 276302, .learn 2098 (Eviscerate), then do what the tooltip says",finishing moves grant Relentless Reflexes,
 007,92250,Shadow Charge,131042,action,".aura 92250, .learn 100 (Charge), then do what the tooltip says",Charge also deals Shadow Charge damage,
-007,979137,Starburst Barrage,132329,action,".aura 979137, .learn 2912 (Starfire), then do what the tooltip says","Starfire, Starsurge or Arcane Barrage grants Starburst Barrage",
+007,979137,Starburst Barrage,132329,action,".aura 979137, .learn 2912 (Starfire), then do what the tooltip says","Starfire, Starsurge or Arcane Barrage grants Starburst Barrage","pass: Starfire grants Starburst Barrage, stacks to 4 (2 Nov)"
 007,281602,Swashbuckler: Flurry of Blows,201943,aura link,".aura 281602, then get Swashbuckling","while Swashbuckling is on you, the granted buff is too (melee haste while Swashbuckling)",
 007,281597,Swashbuckler: Matched Blows,201942,aura link,".aura 281597, then get Swashbuckling","while Swashbuckling is on you, the granted buff is too (parry while Swashbuckling)",
 007,277790,Talonshrike,202435,action,".aura 277790, .learn 2973 (Raptor Strike), then do what the tooltip says",Raptor Strike takes 4 sec off Fury of the Eagle,
@@ -309,10 +309,10 @@ file,spell,name,scroll item,test type,commands,expected,result
 007,272256,Total Solar Eclipse,200819,aura link,".aura 272256, then get ","while  is on you, the granted buff is too (Solar Eclipse raises Nature crit)",
 007,273713,Traumatic Wounds,200988,action,".aura 273713, .learn 1822 (Rake), then do what the tooltip says",Rake ticks restore energy (the Rip and Rake extension is not done),
 007,299988,Vengeful Plague,404169,aura link,".aura 299988, then get Seal of Vengeance","while Seal of Vengeance is on you, the granted buff is too (Blood Plague damage while Seal of Vengeance is active)",
-007,81408,War Mage,1176028,action,".aura 81408, .learn 1449 (Arcane Explosion), then do what the tooltip says",each Arcane Explosion hit takes 5 sec off Blink (the 15 sec cap is not enforced),
+007,81408,War Mage,1176028,action,".aura 81408, .learn 1449 (Arcane Explosion), then do what the tooltip says",each Arcane Explosion hit takes 5 sec off Blink (the 15 sec cap is not enforced),pass: each Arcane Explosion hit takes 5 sec off Blink (2 Nov)
 007,901048,Wave of Despair,1234984,action,".aura 901048, .learn 30108 (Unstable Affliction), then do what the tooltip says","crits with Unstable Affliction, Mind Flay or Drain Soul grant Dreading Despair",
 007,271680,Wrath of the Sun,200755,aura link,".aura 271680, then get ","while  is on you, the granted buff is too (Wrath boost during Solar Eclipse)",
-008,983635,Aftershock,100090,teach,".aura 983635, open your spellbook (once per family: .additem 100090 and use the altar instead)",the taught spell is in your spellbook and works,
+008,983635,Aftershock,100090,teach,".aura 983635, open your spellbook (once per family: .additem 100090 and use the altar instead)",the taught spell is in your spellbook and works,pass: Tectonic Shockwave taught and works (2 Nov)
 008,851993,Arcane Slam,404453,teach,".aura 851993, open your spellbook (once per family: .additem 404453 and use the altar instead)",the taught spell is in your spellbook and works,
 008,979237,Beacon of Virtue,200731,teach,".aura 979237, open your spellbook (once per family: .additem 200731 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852290,Beacon of Virtue,404750,teach,".aura 852290, open your spellbook (once per family: .additem 404750 and use the altar instead)",the taught spell is in your spellbook and works,
