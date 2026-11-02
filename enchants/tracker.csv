@@ -191,7 +191,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 284752,Abjurer's Ward: Frost,Uncommon,202184,needs-code,modifier on a placeholder,ready (needs build),action: absorbing damage with a Ward takes 10 sec off Cold Snap,,007-enchant-actions.sql (part 1),,
 991030,Adorned by Light,Legendary,200024,needs-code,modifier on a placeholder,ready (needs build),action: direct heals grant Hand of the Adorned (the Adorned and Holy Shock parts are not done),,007-enchant-actions.sql,,
 277746,All that is Right,Epic,202386,needs-code,modifier on a placeholder,broken,action: Seal of Righteousness damage grants All that is Right,,007-enchant-actions.sql (part 1),2026-11-02,"fail: no All that is Right buff from Seal of Righteousness damage; likely a different seal damage spell ID on this server (2 Nov). One client crash during the test, cause unknown"
-282881,Arcane Charge,Epic,202052,needs-code,modifier on a placeholder,partly working,action: Charge deals Arcane Charge damage (the mana part is not done),,007-enchant-actions.sql,2026-11-02,"partly: mana parts work; damage only hits enemies near you as Charge starts. Retargeting it at the Charge target broke the whole helper, reverted (2 Nov)"
+282881,Arcane Charge,Epic,202052,needs-code,modifier on a placeholder,live (after restart),action: Charge deals Arcane Charge damage (the mana part is not done),,013-action-fixes.sql,2026-11-02,"partly: mana parts work; damage only hits enemies near you as Charge starts. Retargeting it at the Charge target broke the whole helper, reverted (2 Nov); now fires when Charge Root lands (013)"
 986084,Beacon of Divinity,Epic,132662,needs-code,modifier on a placeholder,ready (needs build),action: Holy Light heals take 3 sec off Divine Favor (the Beacon part is not done),,007-enchant-actions.sql (part 1),,
 81526,Biting Cold,Epic,1176071,needs-code,modifier on a placeholder,ready (needs build),action: Deep Freeze damage cuts its remaining cooldown by 33% (first half of the tooltip only),,007-enchant-actions.sql (part 1),,
 282134,Biting Cold,Epic,202023,needs-code,modifier on a placeholder,ready (needs build),action: Deep Freeze damage cuts its remaining cooldown by 33%,,007-enchant-actions.sql (part 1),,
@@ -902,7 +902,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 977777,Sunder Soul,Epic,1178626,needs-code,transform,broken,,,,,
 954267,Temporal Shield,Epic,1178449,needs-code,transform,broken,,,,,
 281973,Voltaic Companion,Epic,201997,needs-code,transform,broken,,,,,
-911367,Critical Mass,Rare,1175671,missing,,rebuilt (held from rolls),"new spell: critical strike chance of Fire spells and abilities, 2%",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
+911367,Critical Mass,Rare,1175671,missing,,rebuilt (held from rolls),"new spell: critical strike chance of Fire spells and abilities, 2%",,009-missing-modifiers.sql,2026-11-02,pass: Fire spell crit 3.03% to 5.03% (2 Nov); still held from rolls (client lacks the spell)
 916940,Brutal Impact,Rare,1175746,missing,,rebuilt (held from rolls),"new spell: cooldown of Bash, 2 sec",,009-missing-modifiers.sql,,spell rebuilt from the archived description; kept out of rolls (010) until the client has the spell
 933186,Focused Power,Rare,1175845,missing,,missing,,,,,
 947294,Critical Block,Rare,1175874,missing,,missing,,,,,

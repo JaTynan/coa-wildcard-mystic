@@ -12,3 +12,8 @@ INSERT IGNORE INTO `spell_dbc` VALUES
 (291021, 0, 0, 0, 1376256, 0, 0, 0, 0, 0, 131072, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 45000, 0, 0, 12288, 0, 0, 101, 0, 0, 20, 20, 27, 0, 0, 0, 0, 0, 1, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 6, 6, 0, 0, 1, 1, 0.0, 0.0, 0.0, 0, 69, -1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 78, 32, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 16510, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3339, 0, 5623, 0, 0, 'Divine Steed', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 'Leap atop your Charger for $d, increasing movement speed by $291020s2%. Usable while indoors and in combat.
 
 @ext:Divine Steed is removed upon shapeshifting.:ext@', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 0, 0, 0, 0, 10, 0, 268435456, 0, 0, 0, 1, 0, 1.0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0);
+-- Arcane Charge (282881): fired as Charge starts, so its damage (around you) missed the target. It now fires when
+-- Charge Root lands on the target, which is when you arrive, so the damage hits enemies around you there.
+UPDATE `wcme_enchant_action` SET `spells` = '7922 1107922 1357922',
+    `comment` = 'Arcane Charge: Charge Root landing casts Arcane Charge (damage and mana around you)' WHERE `enchant_spell` = 282881;
+UPDATE `spell_proc` SET `SpellTypeMask` = 7, `SpellPhaseMask` = 2, `AttributesMask` = 2 WHERE `SpellId` = 282881;
