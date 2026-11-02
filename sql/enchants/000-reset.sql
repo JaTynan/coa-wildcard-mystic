@@ -24,4 +24,9 @@ CREATE TABLE IF NOT EXISTS `wcme_enchant_action` (`enchant_spell` INT UNSIGNED N
 DELETE FROM `wcme_enchant_action`;
 DELETE FROM `spell_script_names` WHERE `ScriptName` = 'spell_wcme_enchant_action';
 DELETE `l` FROM `coa_mystic_enchant_aura_link` `l` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'aura_link' AND `o`.`id` = `l`.`enchant_spell`;
+-- Extra SpellAffect rows (modifier -> named target spell), loaded into the server's SpellAffect data by the build
+-- with patch mystic-enchants-spellaffect-sql. IDs start at 900000 so they never replace a SpellAffect.dbc row.
+CREATE TABLE IF NOT EXISTS `wcme_spellaffect_dbc` (`ID` INT UNSIGNED NOT NULL, `ModifierSpellID` INT UNSIGNED NOT NULL,
+    `AffectedSpellID` INT UNSIGNED NOT NULL, PRIMARY KEY (`ID`));
+DELETE FROM `wcme_spellaffect_dbc`;
 DELETE FROM `wcme_owned`;
