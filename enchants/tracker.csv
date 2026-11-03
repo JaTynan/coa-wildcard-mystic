@@ -256,7 +256,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 982748,Bone Spear,Epic,132609,needs-code,proc on a placeholder,partly working,"teaches spell 1588371, as its twin does (wcme_enchant_teach)",1591119,006-teach-twins.sql,2026-11-03,"damage, rage cost and debuff work; no charges"
 986008,Carnage Incarnate,Legendary,1178924,needs-code,proc on a placeholder,live,"teaches spell 1576573, as its twin does (wcme_enchant_teach)",1590982,006-teach-twins.sql,,
 977727,Crimson Champion,Legendary,1178617,needs-code,proc on a placeholder,verified,"teaches spell 1572102, as its twin does (wcme_enchant_teach)",1590926,006-teach-twins.sql,2026-11-03,pass (duel)
-276669,Defias Gunslinger,Epic,201643,needs-code,proc on a placeholder,live,action: Sinister Strike grants Gunslinger's Strike,,007-enchant-actions.sql (part 1),,
+276669,Defias Gunslinger,Epic,201643,needs-code,proc on a placeholder,verified,action: Sinister Strike grants Gunslinger's Strike,,007-enchant-actions.sql (part 1),2026-11-03,pass (3 Nov)
 92438,Fel Charge,Legendary,2178951,needs-code,proc on a placeholder,live,action: Charge leaves a Fiery Trail,,007-enchant-actions.sql (part 1),,
 274179,Fingers of Death,Epic,201039,needs-code,proc on a placeholder,live,aura link: gaining Fingers of Frost grants Fingers of Death; action: Ice Lance while Fingers of Death is up grants Touch of Death,,007-enchant-actions.sql (parts 1 and 2),,
 982940,Mayhem,Epic,132633,needs-code,proc on a placeholder,live,"teaches spell 1588745, as its twin does (wcme_enchant_teach)",1591101,006-teach-twins.sql,,
