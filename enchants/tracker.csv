@@ -120,8 +120,8 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 282035,Chaos Manifesting,Epic,202010,needs-code,proc on a placeholder,live,linked to working twin,1581729,001-twin-links.sql,,
 301000,Circle of Life,Legendary,100185,needs-code,proc on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",1568799,004-twin-links-dedup.sql,,
 979740,Compound Power,Legendary,1178742,needs-code,proc on a placeholder,live,linked to working twin,275317,003-twin-links-close.sql,,
-84524,Counterpoise,Epic,1176114,needs-code,proc on a placeholder,live,linked to working twin,1582736,001-twin-links.sql,,
-282348,Counterpoise,Epic,202284,needs-code,proc on a placeholder,live,linked to working twin,1582736,001-twin-links.sql,,
+84524,Counterpoise,Epic,1176114,needs-code,proc on a placeholder,live,linked to working twin,1582736,001-twin-links.sql,2026-11-03,3 Nov: no crit or haste seen with the aura; needs a closer look
+282348,Counterpoise,Epic,202284,needs-code,proc on a placeholder,live,linked to working twin,1582736,001-twin-links.sql,2026-11-03,3 Nov: no crit or haste seen with the aura; needs a closer look
 1570995,Demonic Reoccurence,Legendary,200571,needs-code,proc on a placeholder,live,linked to working twin,272730,001-twin-links.sql,,
 954347,Demonic Synergy,Epic,1175905,needs-code,proc on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",283397,004-twin-links-dedup.sql,,
 913715,Dual Wield Specialization,Rare,1175688,needs-code,proc on a placeholder,live,linked to working twin,1313852,003-twin-links-close.sql,,
@@ -196,7 +196,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 81526,Biting Cold,Epic,1176071,needs-code,modifier on a placeholder,ready (needs build),action: Deep Freeze damage cuts its remaining cooldown by 33% (first half of the tooltip only),,007-enchant-actions.sql (part 1),,
 282134,Biting Cold,Epic,202023,needs-code,modifier on a placeholder,ready (needs build),action: Deep Freeze damage cuts its remaining cooldown by 33%,,007-enchant-actions.sql (part 1),,
 978724,Bulwark,Legendary,1178710,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1574754, as its twin does (wcme_enchant_teach)",1590962,006-teach-twins.sql,,
-997020,Chaos Burn,Epic,132673,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 1590292, as its twin does (wcme_enchant_teach)",1591152,006-teach-twins.sql,,
+997020,Chaos Burn,Epic,132673,needs-code,modifier on a placeholder,verified,"teaches spell 1590292, as its twin does (wcme_enchant_teach)",1591152,006-teach-twins.sql,2026-11-03,pass
 281535,Chilling Blows,Epic,201939,needs-code,modifier on a placeholder,ready (needs build),action: Deep Freeze damage grants Chilling Blows attack speed (the Frostbrand part is not done),,007-enchant-actions.sql,,
 982675,Earthborer Acid,Epic,132599,needs-code,modifier on a placeholder,ready (needs build),"teaches spell 284803, as its twin does (wcme_enchant_teach)",852388,006-teach-twins.sql,,
 276397,Edge of Fury,Rare,201310,needs-code,modifier on a placeholder,ready (needs build),action: Blind Revenge damage grants Edge of Fury (the Killing Spree part is not done),,007-enchant-actions.sql (part 1),,
@@ -228,10 +228,10 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 92252,Arcane Charge,Epic,131043,needs-code,other placeholder,ready (needs build),action: Charge also deals Arcane Charge damage,,007-enchant-actions.sql (part 1),,
 283584,Bane of the Wicked,Uncommon,404420,needs-code,other placeholder,ready (needs build),action: Hammer of the Righteous applies Bane of the Wicked,,007-enchant-actions.sql (part 1),,
 954322,Blazing Barrier,Epic,1178450,needs-code,other placeholder,ready (needs build),"teaches spell 1584463, as its twin does (wcme_enchant_teach)",1591055,006-teach-twins.sql,,
-982743,Bone Arrow,Epic,132608,needs-code,other placeholder,ready (needs build),"teaches spell 284879, as its twin does (wcme_enchant_teach)",852392,006-teach-twins.sql,,
+982743,Bone Arrow,Epic,132608,needs-code,other placeholder,verified,"teaches spell 284879, as its twin does (wcme_enchant_teach)",852392,006-teach-twins.sql,2026-11-03,pass: damage and debuff
 271778,Built up Thirst,Epic,200765,needs-code,other placeholder,ready (needs build),action: finishing moves grant Built up Thirst,,007-enchant-actions.sql (part 1),,
-84377,Burst of Thorns,Epic,1176089,needs-code,other placeholder,ready (needs build),"teaches spell 1582316, as its twin does (wcme_enchant_teach)",1591036,006-teach-twins.sql,,
-977940,Demonic Mind,Epic,1178659,needs-code,other placeholder,ready (needs build),"teaches spell 1586069, as its twin does (wcme_enchant_teach)",1591064,006-teach-twins.sql,,
+84377,Burst of Thorns,Epic,1176089,needs-code,other placeholder,broken,"teaches spell 1582316, as its twin does (wcme_enchant_teach)",1591036,006-teach-twins.sql,2026-11-03,"buff icon and tooltip only: no armour, mana regen or procs when hit (3 Nov)"
+977940,Demonic Mind,Epic,1178659,needs-code,other placeholder,partly working,"teaches spell 1586069, as its twin does (wcme_enchant_teach)",1591064,006-teach-twins.sql,2026-11-03,crit buff works; the proc on enemies did not fire
 1181190,Electric Surge,Epic,201604,needs-code,other placeholder,ready (needs build),action: Lightning Bolt or Chain Lightning triggers Flurry (the extra charges are not done),,007-enchant-actions.sql,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 271997,Forbidden Dance,Epic,200780,needs-code,other placeholder,ready (needs build),action: Forbidden Technique grants Forbidden Dance,,007-enchant-actions.sql (part 1),,
 977939,Frozen Mind,Epic,1178658,needs-code,other placeholder,ready (needs build),"teaches spell 1586047, as its twin does (wcme_enchant_teach)",1591063,006-teach-twins.sql,,
@@ -253,9 +253,9 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 86438,Tree of Wrath,Legendary,1176316,needs-code,other placeholder,ready (needs build),"teaches spell 1568396, as its twin does (wcme_enchant_teach)",1590901,006-teach-twins.sql,,
 81352,Unbounded Drain Life,Epic,1176012,needs-code,other placeholder,ready (needs build),"teaches spell 1581110, as its twin does (wcme_enchant_teach)",1591032,006-teach-twins.sql,,
 81363,Unbounded Drain Soul,Epic,1176014,needs-code,other placeholder,ready (needs build),"teaches spell 1581160, as its twin does (wcme_enchant_teach)",1591034,006-teach-twins.sql,,
-982748,Bone Spear,Epic,132609,needs-code,proc on a placeholder,ready (needs build),"teaches spell 1588371, as its twin does (wcme_enchant_teach)",1591119,006-teach-twins.sql,,
+982748,Bone Spear,Epic,132609,needs-code,proc on a placeholder,partly working,"teaches spell 1588371, as its twin does (wcme_enchant_teach)",1591119,006-teach-twins.sql,2026-11-03,"damage, rage cost and debuff work; no charges"
 986008,Carnage Incarnate,Legendary,1178924,needs-code,proc on a placeholder,ready (needs build),"teaches spell 1576573, as its twin does (wcme_enchant_teach)",1590982,006-teach-twins.sql,,
-977727,Crimson Champion,Legendary,1178617,needs-code,proc on a placeholder,ready (needs build),"teaches spell 1572102, as its twin does (wcme_enchant_teach)",1590926,006-teach-twins.sql,,
+977727,Crimson Champion,Legendary,1178617,needs-code,proc on a placeholder,verified,"teaches spell 1572102, as its twin does (wcme_enchant_teach)",1590926,006-teach-twins.sql,2026-11-03,pass (duel)
 276669,Defias Gunslinger,Epic,201643,needs-code,proc on a placeholder,ready (needs build),action: Sinister Strike grants Gunslinger's Strike,,007-enchant-actions.sql (part 1),,
 92438,Fel Charge,Legendary,2178951,needs-code,proc on a placeholder,ready (needs build),action: Charge leaves a Fiery Trail,,007-enchant-actions.sql (part 1),,
 274179,Fingers of Death,Epic,201039,needs-code,proc on a placeholder,ready (needs build),aura link: gaining Fingers of Frost grants Fingers of Death; action: Ice Lance while Fingers of Death is up grants Touch of Death,,007-enchant-actions.sql (parts 1 and 2),,
@@ -278,7 +278,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 850098,Champion of the Sun,Epic,405087,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
 1398174,Chosen of Elune,Legendary,200066,teaches-needs-code,teaches a broken spell,ready (needs build),"teaches spell 278075, as its twin does (wcme_enchant_teach)",852305,006-teach-twins.sql,,
 852310,Conduit,Rare,404770,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Conduit (278407) instead (teaches),,008-teach-namesakes.sql,,
-1573649,Cremation,Legendary,1013982,teaches-needs-code,teaches a broken spell,ready (needs build),"teaches spell 278067, as its twin does (wcme_enchant_teach)",852304,006-teach-twins.sql,,
+1573649,Cremation,Legendary,1013982,teaches-needs-code,teaches a broken spell,verified,"teaches spell 278067, as its twin does (wcme_enchant_teach)",852304,006-teach-twins.sql,2026-11-03,pass (with Living Bomb)
 852455,Death Tap,Rare,404915,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
 850090,Divine Charge,Epic,405110,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Divine Charge (280262) instead (teaches),,008-teach-namesakes.sql,,
 852452,Divine Missiles,Rare,404912,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Divine Missiles (275448) instead (teaches),,008-teach-namesakes.sql,,
@@ -308,54 +308,54 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 850136,Incarnation of Chaos,Epic,405066,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Incarnation of Chaos (280736) instead (teaches),,008-teach-namesakes.sql,,
 850166,Infused Aegis,Epic,405078,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
 852201,Lava Sweep,Rare,404661,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Lava Sweep (1568910) instead (teaches),,008-teach-namesakes.sql,,
-852243,Lightning Blade,Rare,404703,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Lightning Blade (275051) instead (teaches),,008-teach-namesakes.sql,,
+852243,Lightning Blade,Rare,404703,teaches-needs-code,teaches a broken spell,partly working,teaches working Lightning Blade (275051) instead (teaches),,008-teach-namesakes.sql,2026-11-03,works; does not have or use charges
 851992,Locust Shot,Rare,404452,teaches-needs-code,teaches a broken spell,ready (needs build),"teaches spell 1569208, as its twin does (wcme_enchant_teach)",1590908,006-teach-twins.sql,,
-1180520,Power Word: Barrier,Artifact,201517,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Power Word: Barrier (1180522) instead (teaches),,008-teach-namesakes.sql,,
+1180520,Power Word: Barrier,Artifact,201517,teaches-needs-code,teaches a broken spell,verified,teaches working Power Word: Barrier (1180522) instead (teaches),,008-teach-namesakes.sql,2026-11-03,pass; tooltip does not give the duration
 852414,Quick Draw,Rare,404874,teaches-needs-code,teaches a broken spell,ready (needs build),"teaches spell 997010, as its twin does (wcme_enchant_teach)",997009,006-teach-twins.sql,,
-1398220,Raging Blow,Legendary,200122,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Raging Blow (2304837) instead (teaches),,008-teach-namesakes.sql,,
-1591030,Rain of Arrows,Epic,200318,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Rain of Arrows (1581052) instead (teaches),,008-teach-namesakes.sql,,
-852321,Rain of Arrows,Rare,404781,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Rain of Arrows (281829) instead (teaches),,008-teach-namesakes.sql,,
-1398221,Ring of Frost,Artifact,200123,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Ring of Frost (2304855) instead (teaches),,008-teach-namesakes.sql,,
+1398220,Raging Blow,Legendary,200122,teaches-needs-code,teaches a broken spell,partly working,teaches working Raging Blow (2304837) instead (teaches),,008-teach-namesakes.sql,2026-11-03,instant damage works; no attack animation
+1591030,Rain of Arrows,Epic,200318,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Rain of Arrows (1581052) instead (teaches),,008-teach-namesakes.sql,2026-11-03,"would not cast, tooltip numbers broken; retest with a ranged weapon equipped (tooltip requires one)"
+852321,Rain of Arrows,Rare,404781,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Rain of Arrows (281829) instead (teaches),,008-teach-namesakes.sql,2026-11-03,"would not cast, tooltip numbers broken; retest with a ranged weapon equipped (tooltip requires one)"
+1398221,Ring of Frost,Artifact,200123,teaches-needs-code,teaches a broken spell,broken,,,,2026-11-03,"taught spell does nothing (an effect piece, not the ability); taken out of 008 (3 Nov)"
 852370,Saber Slash,Rare,404830,teaches-needs-code,teaches a broken spell,ready (needs build),"teaches spell 1587522, as its twin does (wcme_enchant_teach)",1591073,006-teach-twins.sql,,
 850130,Sacred Grove,Epic,405062,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
-1398250,Seal of Command,Rare,200156,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Seal of Command (1120424) instead (teaches),,008-teach-namesakes.sql,,
+1398250,Seal of Command,Rare,200156,teaches-needs-code,teaches a broken spell,broken,,,,2026-11-03,"taught spell only deals 1 Holy damage, no seal buff (an effect piece); taken out of 008 (3 Nov)"
 1180002,Shadow Blades,Legendary,201118,teaches-needs-code,teaches a broken spell,ready (needs build),"teaches spell 277847, as its twin does (wcme_enchant_teach)",852294,006-teach-twins.sql,,
 977967,Shadow Counter,Legendary,1178665,teaches-needs-code,teaches a broken spell,ready (needs build),"teaches spell 911800, as its twin does (wcme_enchant_teach)",852138,006-teach-twins.sql,,
 852225,Shadow Counter,Rare,404685,teaches-needs-code,teaches a broken spell,ready (needs build),"teaches spell 911800, as its twin does (wcme_enchant_teach)",852138,006-teach-twins.sql,,
-852256,Shadow Missiles,Rare,404716,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Shadow Missiles (275817) instead (teaches),,008-teach-namesakes.sql,,
-851994,Shadow Slam,Rare,404454,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Shadow Slam (903243) instead (teaches),,008-teach-namesakes.sql,,
+852256,Shadow Missiles,Rare,404716,teaches-needs-code,teaches a broken spell,broken,,,,2026-11-03,taught spell only plays the cast animation (an effect piece); taken out of 008 (3 Nov)
+851994,Shadow Slam,Rare,404454,teaches-needs-code,teaches a broken spell,verified,teaches working Shadow Slam (903243) instead (teaches),,008-teach-namesakes.sql,2026-11-03,pass
 850087,Shadowcrawl,Epic,405031,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
 850207,Snatch,Epic,405203,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
-852457,Soul Reaper,Rare,404917,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Soul Reaper (288815) instead (teaches),,008-teach-namesakes.sql,,
+852457,Soul Reaper,Rare,404917,teaches-needs-code,teaches a broken spell,broken,,,,2026-11-03,"taught spell is only the buff piece (15% melee range and cast speed, no tooltip); taken out of 008 (3 Nov)"
 852402,Stone Shard,Rare,404862,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Stone Shard (983049) instead (teaches),,008-teach-namesakes.sql,,
 1590422,Stoneclaw,Epic,1013988,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
 850127,Sunwell,Epic,405083,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
-1398163,Tame Dragonkin,Legendary,200053,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Tame Dragonkin (91634) instead (teaches),,008-teach-namesakes.sql,,
-1398162,Tether Elemental,Legendary,200052,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Tether Elemental (91606) instead (teaches),,008-teach-namesakes.sql,,
-1398256,Tidal Force,Rare,200164,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Tidal Force (1155166) instead (teaches),,008-teach-namesakes.sql,,
+1398163,Tame Dragonkin,Legendary,200053,teaches-needs-code,teaches a broken spell,verified,teaches working Tame Dragonkin (91634) instead (teaches),,008-teach-namesakes.sql,2026-11-03,"pass: call, dismiss, revive"
+1398162,Tether Elemental,Legendary,200052,teaches-needs-code,teaches a broken spell,verified,teaches working Tether Elemental (91606) instead (teaches),,008-teach-namesakes.sql,2026-11-03,"pass: raise, revive, dismiss"
+1398256,Tidal Force,Rare,200164,teaches-needs-code,teaches a broken spell,verified,teaches working Tidal Force (1155166) instead (teaches),,008-teach-namesakes.sql,2026-11-03,pass
 1591076,Touch of the Magi,Legendary,200372,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
 850190,Twilight Shieldtoss,Epic,405007,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
 850128,Valkyr's Calling,Epic,405089,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
 850199,Vampiric Tonic,Epic,405103,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
-852368,Warbreaker,Rare,404828,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Warbreaker (982208) instead (teaches),,008-teach-namesakes.sql,,
+852368,Warbreaker,Rare,404828,teaches-needs-code,teaches a broken spell,verified,teaches working Warbreaker (982208) instead (teaches),,008-teach-namesakes.sql,2026-11-03,pass
 852210,Water Nova,Rare,404670,teaches-needs-code,teaches a broken spell,ready (needs build),"teaches spell 1569734, as its twin does (wcme_enchant_teach)",1590915,006-teach-twins.sql,,
 852345,Wave of Despair,Rare,404805,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Wave of Despair (901047) instead (teaches),,008-teach-namesakes.sql,,
-850145,Waves of Time,Epic,405122,teaches-needs-code,teaches a broken spell,ready (needs build),teaches working Waves of Time (280822) instead (teaches),,008-teach-namesakes.sql,,
+850145,Waves of Time,Epic,405122,teaches-needs-code,teaches a broken spell,partly working,teaches working Waves of Time (280822) instead (teaches),,008-teach-namesakes.sql,2026-11-03,works; no tooltip text
 850099,Xorothian Sigil,Epic,405045,teaches-needs-code,teaches a broken spell,broken,,,,,"the same-name spell picked in 008 was only a hidden effect or a free uncosted piece of the ability (Divine Steed test, 2 Nov), so it was taken out; needs the broken taught spell itself fixing"
 983165,Absolute Zero,Epic,132651,needs-code,transform,verified,"teaches spell 1589093, as its twin does (wcme_enchant_teach)",1591127,006-teach-twins.sql,2026-11-02,pass: spell taught and works (2 Nov)
 983635,Aftershock,Epic,100090,needs-code,transform,verified,teaches working Tectonic Shockwave (983636) instead (transform),,008-teach-namesakes.sql,2026-11-02,pass: Tectonic Shockwave taught and works (2 Nov)
-982545,Arcanist's Explosion,Epic,132580,needs-code,transform,ready (needs build),"teaches spell 1587933, as its twin does (wcme_enchant_teach)",1591112,006-teach-twins.sql,,
-832617,Astral Storm,Legendary,1178410,needs-code,transform,ready (needs build),"teaches spell 1569011, as its twin does (wcme_enchant_teach)",1590906,006-teach-twins.sql,,
-92384,Atal'ai Totem,Epic,131055,needs-code,transform,ready (needs build),"teaches spell 1583072, as its twin does (wcme_enchant_teach)",1591040,006-teach-twins.sql,,
-979088,Black Widow Strike,Epic,132263,needs-code,transform,ready (needs build),"teaches spell 286387, as its twin does (wcme_enchant_teach)",852436,006-teach-twins.sql,,
-954235,Chaos Meteor,Epic,1178446,needs-code,transform,ready (needs build),"teaches spell 1584421, as its twin does (wcme_enchant_teach)",1591081,006-teach-twins.sql,,
+982545,Arcanist's Explosion,Epic,132580,needs-code,transform,verified,"teaches spell 1587933, as its twin does (wcme_enchant_teach)",1591112,006-teach-twins.sql,2026-11-03,pass
+832617,Astral Storm,Legendary,1178410,needs-code,transform,verified,"teaches spell 1569011, as its twin does (wcme_enchant_teach)",1590906,006-teach-twins.sql,2026-11-03,works; tooltip numbers broken. Enemies hit out of combat vanish briefly and return with Astral Realm (likely its design)
+92384,Atal'ai Totem,Epic,131055,needs-code,transform,verified,"teaches spell 1583072, as its twin does (wcme_enchant_teach)",1591040,006-teach-twins.sql,2026-11-03,pass
+979088,Black Widow Strike,Epic,132263,needs-code,transform,verified,"teaches spell 286387, as its twin does (wcme_enchant_teach)",852436,006-teach-twins.sql,2026-11-03,pass
+954235,Chaos Meteor,Epic,1178446,needs-code,transform,partly working,"teaches spell 1584421, as its twin does (wcme_enchant_teach)",1591081,006-teach-twins.sql,2026-11-03,"damage and cast work; no meteor visual, only the ground marker"
 983590,Cleric's Light,Epic,100147,needs-code,transform,ready (needs build),"teaches spell 285309, as its twin does (wcme_enchant_teach)",852409,006-teach-twins.sql,,
-997076,Curse of the Swamp Witch,Epic,132720,needs-code,transform,ready (needs build),"teaches spell 1590319, as its twin does (wcme_enchant_teach)",1591135,006-teach-twins.sql,,
-814183,Death Mark,Epic,1178408,needs-code,transform,ready (needs build),"teaches spell 283169, as its twin does (wcme_enchant_teach)",852344,006-teach-twins.sql,,
+997076,Curse of the Swamp Witch,Epic,132720,needs-code,transform,verified,"teaches spell 1590319, as its twin does (wcme_enchant_teach)",1591135,006-teach-twins.sql,2026-11-03,pass
+814183,Death Mark,Epic,1178408,needs-code,transform,verified,"teaches spell 283169, as its twin does (wcme_enchant_teach)",852344,006-teach-twins.sql,2026-11-03,pass
 954081,Deconstruction,Epic,1178439,needs-code,transform,ready (needs build),teaches working Deconstruct (954082) instead (transform),,008-teach-namesakes.sql,,
 997082,Desolate Wind Bolt,Epic,132680,needs-code,transform,ready (needs build),teaches working Desolate Wind Bolt (997083) instead (transform),,008-teach-namesakes.sql,,
 997121,Devastating Pound,Epic,134871,needs-code,transform,ready (needs build),teaches working Devastating Pound (997476) instead (transform),,008-teach-namesakes.sql,,
-983120,Devour Mind,Epic,132649,needs-code,transform,ready (needs build),"teaches spell 1589063, as its twin does (wcme_enchant_teach)",1591126,006-teach-twins.sql,,
+983120,Devour Mind,Epic,132649,needs-code,transform,partly working,"teaches spell 1589063, as its twin does (wcme_enchant_teach)",1591126,006-teach-twins.sql,2026-11-03,channel damage and healing work; The Devourer buff does not; tooltip numbers broken
 986280,Exorcist's Slash,Epic,100082,needs-code,transform,ready (needs build),"teaches spell 1590228, as its twin does (wcme_enchant_teach)",1591134,006-teach-twins.sql,,
 92425,Faerie Blink,Epic,131059,needs-code,transform,ready (needs build),"teaches spell 1583151, as its twin does (wcme_enchant_teach)",1591043,006-teach-twins.sql,,
 982536,Firefall,Epic,132693,needs-code,transform,ready (needs build),"teaches spell 1587884, as its twin does (wcme_enchant_teach)",1591111,006-teach-twins.sql,,
