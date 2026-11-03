@@ -67,3 +67,8 @@ One character you stick with and keep investing in. The end state:
    each with a race kit in place of the package's racials. Trade skills: Goblin takes Goblin Engineering (Gnomes
    Gnomish Engineering); Worgen would take Leatherworking, or a Void or High Elf Inscription. First test the
    client files and character creation on one client.
+10. **Pick one of three (optional, nice to have).** A Wildcard mode where each level or scroll offers three
+   abilities to choose from instead of one random roll. Not in the CoA core (it only has the Season 10 rolls with
+   synergy weighting). Rerolls already cover the need, so this is for fun: roll three candidates with the existing
+   synergy weighting, show them in a small WildcardEnchants window (the addon already talks to the server), and
+   learn the pick. First check whether the Ascension client still has the window from the season that ran this.
