@@ -1,26 +1,26 @@
 diff --git a/src/server/coa/CoAScriptLoader.cpp b/src/server/coa/CoAScriptLoader.cpp
-index ad80ac6d..745135d1 100644
+index 71b91e006..416fa9b8d 100644
 --- a/src/server/coa/CoAScriptLoader.cpp
 +++ b/src/server/coa/CoAScriptLoader.cpp
-@@ -123,6 +123,7 @@ void AddAscensionFreepickScripts();
- void AddAscensionHeroBloomingShotScripts();
- void AddAscensionMysticEnchantScripts();
+@@ -131,6 +131,7 @@ void AddAscensionMysticEnchantScripts();
  void AddSC_AscensionMysticEnchantProcs();
+ void AddSC_AscensionMysticEnchantBonus();
+ void AddSC_AscensionMysticEnchantMechanics();
 +void AddSC_WcmeEnchantActions();
  void AddSC_AscensionMysticEnchantScripts();
  void AddAscensionBuildCreatorScripts();
  void AddAscensionWarcraftRebornScripts();
-@@ -753,6 +754,7 @@ void AddCoAScripts()
-     AddAscensionHeroBloomingShotScripts();
-     AddAscensionMysticEnchantScripts();
+@@ -766,6 +767,7 @@ void AddCoAScripts()
      AddSC_AscensionMysticEnchantProcs();
+     AddSC_AscensionMysticEnchantBonus();
+     AddSC_AscensionMysticEnchantMechanics();
 +    AddSC_WcmeEnchantActions();
      AddSC_AscensionMysticEnchantScripts();
      AddAscensionBuildCreatorScripts();
      AddAscensionWarcraftRebornScripts();
 diff --git a/src/server/coa/WcmeEnchantActions.cpp b/src/server/coa/WcmeEnchantActions.cpp
 new file mode 100644
-index 00000000..d3e25688
+index 000000000..d3e25688c
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantActions.cpp
 @@ -0,0 +1,258 @@

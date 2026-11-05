@@ -8,6 +8,7 @@ The per-enchant tracker is [`enchants/tracker.csv`](../enchants/tracker.csv); Gi
 | Date | Restored (live) | Tested | Broken left | Missing |
 | --- | --- | --- | --- | --- |
 | 2026-10-31 | 164, +16 at the next restart, +211 with the next build | 4 (plus the tooltip fix) | 399 (+113 partly working) | 1,206 |
+| 2026-11-01 | same +1 with the next build, plus 1,195 rebuilt missing enchants (337 of them need the next build), held out of rolls until the client has their spells | 4 (plus the tooltip fix) | 398 (+112 partly working) | 11 |
 
 Out of 6,440 enchants offered on the realm, the audit found 4,331 that should work, 903 that need code
 (882 placeholders plus 21 unsupported effects) and 1,206 whose spell is missing from the game data.
@@ -38,6 +39,8 @@ tracker. Quick types first: `twin` and `teach` take seconds each (`.aura`, then 
 | Twin that teaches | 95 enchants (file 006, needs the build) | Our enchant teaches the spell its twin teaches, through `wcme_enchant_teach`. |
 | Working namesake | 74 enchants (file 008, needs the build) | An enchant that teaches a broken spell, or transforms an ability, teaches a working spell of the same name instead (a transform adds the ability rather than replacing). |
 | Action table | 42 enchants (file 007 part 1, needs the build) | `spell_wcme_enchant_action` (patch `mystic-enchants-actions`): on a proc the enchant casts a helper spell, or cuts or resets a cooldown, with spell, target-aura and player-aura conditions, read from `wcme_enchant_action`. |
+| Rebuilt missing spell | 1,195 enchants (files 009 and 011, held out of rolls by 010) | The enchant's spell was missing, so a new passive spell is built in `spell_dbc` from the archived Ascension description (Area-52 builder page): one aura that changes the named spell or school by the stated amount (cost, cooldown, cast time, damage, crit, hit, dispel resistance, scaling). 858 pick out their target by a spell flag that at most three other spells share (009, works now). 337 targets share their flag widely, so those spells carry no flag and name their targets in `wcme_spellaffect_dbc` (011), which patch `mystic-enchants-spellaffect-sql` loads into the server's SpellAffect data (needs the build). The client gets these spells from `patch-ZZW.MPQ` (below), so they are in the rolls. |
+| Placeholder to modifier | 1 enchant (file 012, needs the build) | A broken enchant whose tooltip is a plain modifier gets its spell copied into `spell_dbc` with the modifier where the placeholder was; name and tooltip stay, so the client shows the right text. Few fit: most such tooltips are already working, and 2 enchant IDs turned out to be reused by unrelated spells in our data (skipped). |
 | Aura link | 17 enchants (file 007 part 2, works now) | "While X is on you, you also have Y" through the core's `coa_mystic_enchant_aura_link`. |
 | Working twin | 143 enchants (files 001, 003, 004, 005) | Many broken enchants have a twin: the same enchant made for another realm type, which works. `spell_linked_spell` type 2 puts the twin's aura on while ours is on. Where the twin's text differs, the addon (1.9) shows the twin's tooltip. When both spells carry the same real effect, ours becomes a placeholder in `spell_dbc` first (file 004), so the bonus is not doubled. A twin with a proc aura but no proc settings gets a `spell_proc` row read from its tooltip (file 005). |
 | School pair | 21 enchants (file 002) | "Damaging school A raises school B, and B raises A". The enchant's placeholder becomes a proc aura (`spell_dbc`) for one half; the existing 2861xx proc spell covers the other half (linked); `spell_proc` rows say when each fires. |
@@ -75,11 +78,35 @@ A fix passes when it does what its tooltip says. Write the result and date in th
 
 ## Next candidates
 
+What is left on the Area-52 list (3,822 enchants) after the files above, and the one piece of code that would unlock each group.
+Counts are for the whole realm list, with the Area-52 part in brackets.
+
 | Group | Count | What it needs |
 | --- | --- | --- |
-| Twin that never fires | 7 left | Need a condition on the target (proc table `target_aura`), a stance change (C++), or the twin does something else entirely |
-| Placeholder families | about 650 | Per family, read the tooltips and write proc rules or C++ |
-| Missing spells | 1,206 | Research first: no spell and no scroll item in our data |
+| Extra damage under a condition: against targets with one of your auras, above or below a health mark, while stealthed or in a form | 32 (18) | One generic C++ handler: a table of (enchant, spells or school, condition, percent) applied in the damage hooks (`ModifySpellDamageTaken`, `ModifyPeriodicDamageAurasTick`, `ModifyMeleeDamage`) |
+| Melee auto attacks deal extra damage as a school (the forged weapons) | 6 (6) | The same handler, with an "auto attack, add N% as school X" rule |
+| Cooldown cut or reset on an event the action table cannot see (an aura ending, a stance change) | about 20 (12) | New triggers for `spell_wcme_enchant_action` (aura removed, stance changed) |
+| Teaches or transforms into an ability we do not have | 43 (32) | Client patch (new spells) or a namesake, case by case |
+| Procs with a chance | 62 (24) | Action table rows, read by hand from each tooltip |
+| Everything else | about 360 (94) | One-off C++, enchant by enchant; many of the non-Area-52 ones have tooltips made only of variables, so they need research first |
+| Missing, not simple | 11 (11) | Read by hand |
+
+Ten enchants marked partly working already carry the effect their tooltip names (the threat ones and Improved Mend Pet); they are on the checklist to confirm.
+
+## Client patch
+
+The game client reads two spell lists: `Data/area-52/patch-D.MPQ` only on Ascension's Area 52 realm, and
+`Data/patch-T.MPQ` everywhere else, including this server. The 1,206 enchants whose spell was missing are only in
+the Area 52 list. [`client-patch/build_client_patch.py`](../client-patch/build_client_patch.py) copies them into the
+Wildcard list and packs it as `patch-ZZW.MPQ`, which sorts after `patch-T` and wins. Tested 2 Nov on trundle:
+`GetSpellInfo(911367)` returns Critical Mass with its icon.
+
+The archive is the client's own data, so it is never published here: build it from your own client files and copy
+it into the client's `Data` folder (`F:\CoAClient\Data` on the VM, which friends sync from). The server side of the
+same spells is files 009 and 011.
+
+The Area 52 versions of most broken enchants are the same placeholders as ours (the behaviour lived in Ascension's
+server code), so this does not restore the complex ones; about 15 do have a real effect there and are next.
 
 ## Tools
 
@@ -88,3 +115,7 @@ A fix passes when it does what its tooltip says. Write the result and date in th
   fixes from the client's Spell.dbc into one small file.
 
 Use at your own risk; shared as is, without support.
+
+## To do
+
+The server-wide plan and to-do list moved to [roadmap.md](roadmap.md).

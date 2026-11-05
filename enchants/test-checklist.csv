@@ -1,8 +1,8 @@
 file,spell,name,scroll item,test type,commands,expected,result
 001,81473,Chaos Manifesting,1176050,twin,.aura 81473; .list auras shows 1581729; .lookup spell id 81473 for the tooltip,does what the (twin) tooltip says,
 001,282035,Chaos Manifesting,202010,twin,.aura 282035; .list auras shows 1581729; .lookup spell id 282035 for the tooltip,does what the (twin) tooltip says,
-001,84524,Counterpoise,1176114,twin,.aura 84524; .list auras shows 1582736; .lookup spell id 84524 for the tooltip,does what the (twin) tooltip says,
-001,282348,Counterpoise,202284,twin,.aura 282348; .list auras shows 1582736; .lookup spell id 282348 for the tooltip,does what the (twin) tooltip says,
+001,84524,Counterpoise,1176114,twin,.aura 84524; .list auras shows 1582736; .lookup spell id 84524 for the tooltip,does what the (twin) tooltip says,3 Nov: no crit or haste seen with the aura; needs a closer look
+001,282348,Counterpoise,202284,twin,.aura 282348; .list auras shows 1582736; .lookup spell id 282348 for the tooltip,does what the (twin) tooltip says,3 Nov: no crit or haste seen with the aura; needs a closer look
 001,1570995,Demonic Reoccurence,200571,twin,.aura 1570995; .list auras shows 272730; .lookup spell id 1570995 for the tooltip,does what the (twin) tooltip says,
 001,285174,Elemental Equilibrium,202198,twin,.aura 285174; .list auras shows 1589159; .lookup spell id 285174 for the tooltip,does what the (twin) tooltip says,
 001,979202,Glimmer of Light,200736,twin,.aura 979202; .list auras shows 1180300; .lookup spell id 979202 for the tooltip,does what the (twin) tooltip says,
@@ -159,28 +159,28 @@ file,spell,name,scroll item,test type,commands,expected,result
 005,954641,Scattered Burst,132131,twin,.aura 954641; .list auras shows 1584647; .lookup spell id 954641 for the tooltip,Scatter Shot hits sets it off,
 005,283449,Scattered Burst,202085,twin,.aura 283449; .list auras shows 1584647; .lookup spell id 283449 for the tooltip,Scatter Shot hits sets it off,
 005,276308,Violent Combo,201292,twin,.aura 276308; .list auras shows 1576793; .lookup spell id 276308 for the tooltip,Shield Slam hits sets it off,
-006,983165,Absolute Zero,132651,teach,".aura 983165, open your spellbook (once per family: .additem 132651 and use the altar instead)",the taught spell is in your spellbook and works,
-006,982545,Arcanist's Explosion,132580,teach,".aura 982545, open your spellbook (once per family: .additem 132580 and use the altar instead)",the taught spell is in your spellbook and works,
-006,832617,Astral Storm,1178410,teach,".aura 832617, open your spellbook (once per family: .additem 1178410 and use the altar instead)",the taught spell is in your spellbook and works,
-006,92384,Atal'ai Totem,131055,teach,".aura 92384, open your spellbook (once per family: .additem 131055 and use the altar instead)",the taught spell is in your spellbook and works,
-006,979088,Black Widow Strike,132263,teach,".aura 979088, open your spellbook (once per family: .additem 132263 and use the altar instead)",the taught spell is in your spellbook and works,
+006,983165,Absolute Zero,132651,teach,".aura 983165, open your spellbook (once per family: .additem 132651 and use the altar instead)",the taught spell is in your spellbook and works,pass: spell taught and works (2 Nov)
+006,982545,Arcanist's Explosion,132580,teach,".aura 982545, open your spellbook (once per family: .additem 132580 and use the altar instead)",the taught spell is in your spellbook and works,pass
+006,832617,Astral Storm,1178410,teach,".aura 832617, open your spellbook (once per family: .additem 1178410 and use the altar instead)",the taught spell is in your spellbook and works,works; tooltip numbers broken. Enemies hit out of combat vanish briefly and return with Astral Realm (likely its design)
+006,92384,Atal'ai Totem,131055,teach,".aura 92384, open your spellbook (once per family: .additem 131055 and use the altar instead)",the taught spell is in your spellbook and works,pass
+006,979088,Black Widow Strike,132263,teach,".aura 979088, open your spellbook (once per family: .additem 132263 and use the altar instead)",the taught spell is in your spellbook and works,pass
 006,954322,Blazing Barrier,1178450,teach,".aura 954322, open your spellbook (once per family: .additem 1178450 and use the altar instead)",the taught spell is in your spellbook and works,
-006,982743,Bone Arrow,132608,teach,".aura 982743, open your spellbook (once per family: .additem 132608 and use the altar instead)",the taught spell is in your spellbook and works,
-006,982748,Bone Spear,132609,teach,".aura 982748, open your spellbook (once per family: .additem 132609 and use the altar instead)",the taught spell is in your spellbook and works,
+006,982743,Bone Arrow,132608,teach,".aura 982743, open your spellbook (once per family: .additem 132608 and use the altar instead)",the taught spell is in your spellbook and works,pass: damage and debuff
+006,982748,Bone Spear,132609,teach,".aura 982748, open your spellbook (once per family: .additem 132609 and use the altar instead)",the taught spell is in your spellbook and works,"damage, rage cost and debuff work; no charges"
 006,978724,Bulwark,1178710,teach,".aura 978724, open your spellbook (once per family: .additem 1178710 and use the altar instead)",the taught spell is in your spellbook and works,
-006,84377,Burst of Thorns,1176089,teach,".aura 84377, open your spellbook (once per family: .additem 1176089 and use the altar instead)",the taught spell is in your spellbook and works,
+006,84377,Burst of Thorns,1176089,teach,".aura 84377, open your spellbook (once per family: .additem 1176089 and use the altar instead)",the taught spell is in your spellbook and works,"buff icon and tooltip only: no armour, mana regen or procs when hit (3 Nov)"
 006,986008,Carnage Incarnate,1178924,teach,".aura 986008, open your spellbook (once per family: .additem 1178924 and use the altar instead)",the taught spell is in your spellbook and works,
 006,852264,Carnage Incarnate,404724,teach,".aura 852264, open your spellbook (once per family: .additem 404724 and use the altar instead)",the taught spell is in your spellbook and works,
-006,997020,Chaos Burn,132673,teach,".aura 997020, open your spellbook (once per family: .additem 132673 and use the altar instead)",the taught spell is in your spellbook and works,
-006,954235,Chaos Meteor,1178446,teach,".aura 954235, open your spellbook (once per family: .additem 1178446 and use the altar instead)",the taught spell is in your spellbook and works,
+006,997020,Chaos Burn,132673,teach,".aura 997020, open your spellbook (once per family: .additem 132673 and use the altar instead)",the taught spell is in your spellbook and works,pass
+006,954235,Chaos Meteor,1178446,teach,".aura 954235, open your spellbook (once per family: .additem 1178446 and use the altar instead)",the taught spell is in your spellbook and works,"damage and cast work; no meteor visual, only the ground marker"
 006,1398174,Chosen of Elune,200066,teach,".aura 1398174, open your spellbook (once per family: .additem 200066 and use the altar instead)",the taught spell is in your spellbook and works,
 006,983590,Cleric's Light,100147,teach,".aura 983590, open your spellbook (once per family: .additem 100147 and use the altar instead)",the taught spell is in your spellbook and works,
-006,1573649,Cremation,1013982,teach,".aura 1573649, open your spellbook (once per family: .additem 1013982 and use the altar instead)",the taught spell is in your spellbook and works,
-006,977727,Crimson Champion,1178617,teach,".aura 977727, open your spellbook (once per family: .additem 1178617 and use the altar instead)",the taught spell is in your spellbook and works,
-006,997076,Curse of the Swamp Witch,132720,teach,".aura 997076, open your spellbook (once per family: .additem 132720 and use the altar instead)",the taught spell is in your spellbook and works,
-006,814183,Death Mark,1178408,teach,".aura 814183, open your spellbook (once per family: .additem 1178408 and use the altar instead)",the taught spell is in your spellbook and works,
-006,977940,Demonic Mind,1178659,teach,".aura 977940, open your spellbook (once per family: .additem 1178659 and use the altar instead)",the taught spell is in your spellbook and works,
-006,983120,Devour Mind,132649,teach,".aura 983120, open your spellbook (once per family: .additem 132649 and use the altar instead)",the taught spell is in your spellbook and works,
+006,1573649,Cremation,1013982,teach,".aura 1573649, open your spellbook (once per family: .additem 1013982 and use the altar instead)",the taught spell is in your spellbook and works,pass (with Living Bomb)
+006,977727,Crimson Champion,1178617,teach,".aura 977727, open your spellbook (once per family: .additem 1178617 and use the altar instead)",the taught spell is in your spellbook and works,pass (duel)
+006,997076,Curse of the Swamp Witch,132720,teach,".aura 997076, open your spellbook (once per family: .additem 132720 and use the altar instead)",the taught spell is in your spellbook and works,pass
+006,814183,Death Mark,1178408,teach,".aura 814183, open your spellbook (once per family: .additem 1178408 and use the altar instead)",the taught spell is in your spellbook and works,pass
+006,977940,Demonic Mind,1178659,teach,".aura 977940, open your spellbook (once per family: .additem 1178659 and use the altar instead)",the taught spell is in your spellbook and works,crit buff works; the proc on enemies did not fire
+006,983120,Devour Mind,132649,teach,".aura 983120, open your spellbook (once per family: .additem 132649 and use the altar instead)",the taught spell is in your spellbook and works,channel damage and healing work; The Devourer buff does not; tooltip numbers broken
 006,1590910,Dragon Roar,200179,teach,".aura 1590910, open your spellbook (once per family: .additem 200179 and use the altar instead)",the taught spell is in your spellbook and works,
 006,982675,Earthborer Acid,132599,teach,".aura 982675, open your spellbook (once per family: .additem 132599 and use the altar instead)",the taught spell is in your spellbook and works,
 006,986280,Exorcist's Slash,100082,teach,".aura 986280, open your spellbook (once per family: .additem 100082 and use the altar instead)",the taught spell is in your spellbook and works,
@@ -264,8 +264,8 @@ file,spell,name,scroll item,test type,commands,expected,result
 007,1588050,Abjurer's Ward: Frost,201298,action,".aura 1588050, then do what the tooltip says",absorbing damage with a Ward takes 10 sec off Cold Snap,
 007,284752,Abjurer's Ward: Frost,202184,action,".aura 284752, then do what the tooltip says",absorbing damage with a Ward takes 10 sec off Cold Snap,
 007,991030,Adorned by Light,200024,action,".aura 991030, then do what the tooltip says",direct heals grant Hand of the Adorned (the Adorned and Holy Shock parts are not done),
-007,277746,All that is Right,202386,action,".aura 277746, .learn 20154 (Seal of Righteousness), then do what the tooltip says",Seal of Righteousness damage grants All that is Right,
-007,282881,Arcane Charge,202052,action,".aura 282881, .learn 100 (Charge), then do what the tooltip says",Charge deals Arcane Charge damage (the mana part is not done),
+007,277746,All that is Right,202386,action,".aura 277746, .learn 20154 (Seal of Righteousness), then do what the tooltip says",Seal of Righteousness damage grants All that is Right,"fail: no All that is Right buff from Seal of Righteousness damage; likely a different seal damage spell ID on this server (2 Nov). One client crash during the test, cause unknown"
+007,282881,Arcane Charge,202052,action,".aura 282881, .learn 100 (Charge), then do what the tooltip says",Charge deals Arcane Charge damage (the mana part is not done),"partly: mana parts work; damage only hits enemies near you as Charge starts. Retargeting it at the Charge target broke the whole helper, reverted (2 Nov)"
 007,92252,Arcane Charge,131043,action,".aura 92252, .learn 100 (Charge), then do what the tooltip says",Charge also deals Arcane Charge damage,
 007,283584,Bane of the Wicked,404420,action,".aura 283584, .learn 53595 (Hammer of the Righteous), then do what the tooltip says",Hammer of the Righteous applies Bane of the Wicked,
 007,986084,Beacon of Divinity,132662,action,".aura 986084, .learn 635 (Holy Light), then do what the tooltip says",Holy Light heals take 3 sec off Divine Favor (the Beacon part is not done),
@@ -281,7 +281,7 @@ file,spell,name,scroll item,test type,commands,expected,result
 007,1181190,Electric Surge,201604,action,".aura 1181190, .learn 403 (Lightning Bolt), then do what the tooltip says",Lightning Bolt or Chain Lightning triggers Flurry (the extra charges are not done),
 007,299938,Elemental Reload,404157,action,".aura 299938, .learn 954807 (Elemental Blast), then do what the tooltip says",Elemental Blast damage resets Chimera Shot,
 007,92438,Fel Charge,2178951,action,".aura 92438, .learn 100 (Charge), then do what the tooltip says",Charge leaves a Fiery Trail,
-007,92247,Fiery Charge,131040,action,".aura 92247, .learn 100 (Charge), then do what the tooltip says",Charge also deals Fiery Charge damage,
+007,92247,Fiery Charge,131040,action,".aura 92247, .learn 100 (Charge), then do what the tooltip says",Charge also deals Fiery Charge damage,"fail: aura stays on but Charge never triggers it, although the rule loads; sister enchants 92249/92250/92252/92438 suspect (2 Nov)"
 007,274179,Fingers of Death,201039,action,".aura 274179, .learn 30455 (Ice Lance), then do what the tooltip says",gaining Fingers of Frost grants Fingers of Death,
 007,271997,Forbidden Dance,200780,action,".aura 271997, .learn 271980 (Forbidden Technique), then do what the tooltip says",Forbidden Technique grants Forbidden Dance,
 007,92249,Frosty Charge,131041,action,".aura 92249, .learn 100 (Charge), then do what the tooltip says",Charge also deals Frosty Charge damage,
@@ -299,7 +299,7 @@ file,spell,name,scroll item,test type,commands,expected,result
 007,284475,Quick on Your Feet,201749,action,".aura 284475, .learn 53625 (Heroic Leap), then do what the tooltip says","Heroic Leap, Colossus Smash or Warbreaker grants Quick on Your Feet",
 007,276302,Relentless Reflexes,201295,action,".aura 276302, .learn 2098 (Eviscerate), then do what the tooltip says",finishing moves grant Relentless Reflexes,
 007,92250,Shadow Charge,131042,action,".aura 92250, .learn 100 (Charge), then do what the tooltip says",Charge also deals Shadow Charge damage,
-007,979137,Starburst Barrage,132329,action,".aura 979137, .learn 2912 (Starfire), then do what the tooltip says","Starfire, Starsurge or Arcane Barrage grants Starburst Barrage",
+007,979137,Starburst Barrage,132329,action,".aura 979137, .learn 2912 (Starfire), then do what the tooltip says","Starfire, Starsurge or Arcane Barrage grants Starburst Barrage","pass: Starfire grants Starburst Barrage, stacks to 4 (2 Nov)"
 007,281602,Swashbuckler: Flurry of Blows,201943,aura link,".aura 281602, then get Swashbuckling","while Swashbuckling is on you, the granted buff is too (melee haste while Swashbuckling)",
 007,281597,Swashbuckler: Matched Blows,201942,aura link,".aura 281597, then get Swashbuckling","while Swashbuckling is on you, the granted buff is too (parry while Swashbuckling)",
 007,277790,Talonshrike,202435,action,".aura 277790, .learn 2973 (Raptor Strike), then do what the tooltip says",Raptor Strike takes 4 sec off Fury of the Eagle,
@@ -309,31 +309,24 @@ file,spell,name,scroll item,test type,commands,expected,result
 007,272256,Total Solar Eclipse,200819,aura link,".aura 272256, then get ","while  is on you, the granted buff is too (Solar Eclipse raises Nature crit)",
 007,273713,Traumatic Wounds,200988,action,".aura 273713, .learn 1822 (Rake), then do what the tooltip says",Rake ticks restore energy (the Rip and Rake extension is not done),
 007,299988,Vengeful Plague,404169,aura link,".aura 299988, then get Seal of Vengeance","while Seal of Vengeance is on you, the granted buff is too (Blood Plague damage while Seal of Vengeance is active)",
-007,81408,War Mage,1176028,action,".aura 81408, .learn 1449 (Arcane Explosion), then do what the tooltip says",each Arcane Explosion hit takes 5 sec off Blink (the 15 sec cap is not enforced),
+007,81408,War Mage,1176028,action,".aura 81408, .learn 1449 (Arcane Explosion), then do what the tooltip says",each Arcane Explosion hit takes 5 sec off Blink (the 15 sec cap is not enforced),pass: each Arcane Explosion hit takes 5 sec off Blink (2 Nov)
 007,901048,Wave of Despair,1234984,action,".aura 901048, .learn 30108 (Unstable Affliction), then do what the tooltip says","crits with Unstable Affliction, Mind Flay or Drain Soul grant Dreading Despair",
 007,271680,Wrath of the Sun,200755,aura link,".aura 271680, then get ","while  is on you, the granted buff is too (Wrath boost during Solar Eclipse)",
-008,983635,Aftershock,100090,teach,".aura 983635, open your spellbook (once per family: .additem 100090 and use the altar instead)",the taught spell is in your spellbook and works,
+008,983635,Aftershock,100090,teach,".aura 983635, open your spellbook (once per family: .additem 100090 and use the altar instead)",the taught spell is in your spellbook and works,pass: Tectonic Shockwave taught and works (2 Nov)
 008,851993,Arcane Slam,404453,teach,".aura 851993, open your spellbook (once per family: .additem 404453 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850088,Astral Reconstitution,405080,teach,".aura 850088, open your spellbook (once per family: .additem 405080 and use the altar instead)",the taught spell is in your spellbook and works,
 008,979237,Beacon of Virtue,200731,teach,".aura 979237, open your spellbook (once per family: .additem 200731 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852290,Beacon of Virtue,404750,teach,".aura 852290, open your spellbook (once per family: .additem 404750 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1133071,Binding Shot,201018,teach,".aura 1133071, open your spellbook (once per family: .additem 201018 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1591156,Black Widow Strike,554405,teach,".aura 1591156, open your spellbook (once per family: .additem 554405 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1398215,Bloodbath,200115,teach,".aura 1398215, open your spellbook (once per family: .additem 200115 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852219,Bloom,404679,teach,".aura 852219, open your spellbook (once per family: .additem 404679 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852013,Brilliant Slam,404473,teach,".aura 852013, open your spellbook (once per family: .additem 404473 and use the altar instead)",the taught spell is in your spellbook and works,
 008,851995,Burning Slam,404455,teach,".aura 851995, open your spellbook (once per family: .additem 404455 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850138,Caltrops,405047,teach,".aura 850138, open your spellbook (once per family: .additem 405047 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850098,Champion of the Sun,405087,teach,".aura 850098, open your spellbook (once per family: .additem 405087 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852310,Conduit,404770,teach,".aura 852310, open your spellbook (once per family: .additem 404770 and use the altar instead)",the taught spell is in your spellbook and works,
-008,852455,Death Tap,404915,teach,".aura 852455, open your spellbook (once per family: .additem 404915 and use the altar instead)",the taught spell is in your spellbook and works,
 008,954081,Deconstruction,1178439,teach,".aura 954081, open your spellbook (once per family: .additem 1178439 and use the altar instead)",the taught spell is in your spellbook and works,
 008,997082,Desolate Wind Bolt,132680,teach,".aura 997082, open your spellbook (once per family: .additem 132680 and use the altar instead)",the taught spell is in your spellbook and works,
 008,997121,Devastating Pound,134871,teach,".aura 997121, open your spellbook (once per family: .additem 134871 and use the altar instead)",the taught spell is in your spellbook and works,
 008,850090,Divine Charge,405110,teach,".aura 850090, open your spellbook (once per family: .additem 405110 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852452,Divine Missiles,404912,teach,".aura 852452, open your spellbook (once per family: .additem 404912 and use the altar instead)",the taught spell is in your spellbook and works,
-008,991022,Divine Steed,201131,teach,".aura 991022, open your spellbook (once per family: .additem 201131 and use the altar instead)",the taught spell is in your spellbook and works,
-008,852442,Divine Steed,404902,teach,".aura 852442, open your spellbook (once per family: .additem 404902 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852206,Dragon Charge,404666,teach,".aura 852206, open your spellbook (once per family: .additem 404666 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1398164,Enslave Demon,200131,teach,".aura 1398164, open your spellbook (once per family: .additem 200131 and use the altar instead)",the taught spell is in your spellbook and works,
 008,850143,Entropic Singularity,405003,teach,".aura 850143, open your spellbook (once per family: .additem 405003 and use the altar instead)",the taught spell is in your spellbook and works,
@@ -341,7 +334,6 @@ file,spell,name,scroll item,test type,commands,expected,result
 008,852440,Feral Frenzy,404900,teach,".aura 852440, open your spellbook (once per family: .additem 404900 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1591031,Fire Storm,200319,teach,".aura 1591031, open your spellbook (once per family: .additem 200319 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852322,Fire Storm,404782,teach,".aura 852322, open your spellbook (once per family: .additem 404782 and use the altar instead)",the taught spell is in your spellbook and works,
-008,92580,Flesh Hook,132717,teach,".aura 92580, open your spellbook (once per family: .additem 132717 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1398255,Focus Magic,200163,teach,".aura 1398255, open your spellbook (once per family: .additem 200163 and use the altar instead)",the taught spell is in your spellbook and works,
 008,954262,Frost Bomb,1178448,teach,".aura 954262, open your spellbook (once per family: .additem 1178448 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1590912,Frost Bomb,200181,teach,".aura 1590912, open your spellbook (once per family: .additem 200181 and use the altar instead)",the taught spell is in your spellbook and works,
@@ -350,39 +342,57 @@ file,spell,name,scroll item,test type,commands,expected,result
 008,852218,Grasp of Darkness,404678,teach,".aura 852218, open your spellbook (once per family: .additem 404678 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1591029,Hailstorm,200317,teach,".aura 1591029, open your spellbook (once per family: .additem 200317 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852320,Hailstorm,404780,teach,".aura 852320, open your spellbook (once per family: .additem 404780 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850156,Hammer of Kings,405084,teach,".aura 850156, open your spellbook (once per family: .additem 405084 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1398222,Healing Rain,200124,teach,".aura 1398222, open your spellbook (once per family: .additem 200124 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1569697,Hydromancer: Water Bolt,201475,teach,".aura 1569697, open your spellbook (once per family: .additem 201475 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852239,Ice Shock,404699,teach,".aura 852239, open your spellbook (once per family: .additem 404699 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852199,Icy Penance,404659,teach,".aura 852199, open your spellbook (once per family: .additem 404659 and use the altar instead)",the taught spell is in your spellbook and works,
 008,850136,Incarnation of Chaos,405066,teach,".aura 850136, open your spellbook (once per family: .additem 405066 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850166,Infused Aegis,405078,teach,".aura 850166, open your spellbook (once per family: .additem 405078 and use the altar instead)",the taught spell is in your spellbook and works,
 008,852201,Lava Sweep,404661,teach,".aura 852201, open your spellbook (once per family: .additem 404661 and use the altar instead)",the taught spell is in your spellbook and works,
 008,1590905,Lava Sweep,200174,teach,".aura 1590905, open your spellbook (once per family: .additem 200174 and use the altar instead)",the taught spell is in your spellbook and works,
-008,852243,Lightning Blade,404703,teach,".aura 852243, open your spellbook (once per family: .additem 404703 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1180520,Power Word: Barrier,201517,teach,".aura 1180520, open your spellbook (once per family: .additem 201517 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1398220,Raging Blow,200122,teach,".aura 1398220, open your spellbook (once per family: .additem 200122 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1591030,Rain of Arrows,200318,teach,".aura 1591030, open your spellbook (once per family: .additem 200318 and use the altar instead)",the taught spell is in your spellbook and works,
-008,852321,Rain of Arrows,404781,teach,".aura 852321, open your spellbook (once per family: .additem 404781 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1398221,Ring of Frost,200123,teach,".aura 1398221, open your spellbook (once per family: .additem 200123 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850130,Sacred Grove,405062,teach,".aura 850130, open your spellbook (once per family: .additem 405062 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1398250,Seal of Command,200156,teach,".aura 1398250, open your spellbook (once per family: .additem 200156 and use the altar instead)",the taught spell is in your spellbook and works,
-008,852256,Shadow Missiles,404716,teach,".aura 852256, open your spellbook (once per family: .additem 404716 and use the altar instead)",the taught spell is in your spellbook and works,
-008,851994,Shadow Slam,404454,teach,".aura 851994, open your spellbook (once per family: .additem 404454 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850087,Shadowcrawl,405031,teach,".aura 850087, open your spellbook (once per family: .additem 405031 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850207,Snatch,405203,teach,".aura 850207, open your spellbook (once per family: .additem 405203 and use the altar instead)",the taught spell is in your spellbook and works,
-008,852457,Soul Reaper,404917,teach,".aura 852457, open your spellbook (once per family: .additem 404917 and use the altar instead)",the taught spell is in your spellbook and works,
+008,852243,Lightning Blade,404703,teach,".aura 852243, open your spellbook (once per family: .additem 404703 and use the altar instead)",the taught spell is in your spellbook and works,works; does not have or use charges
+008,1180520,Power Word: Barrier,201517,teach,".aura 1180520, open your spellbook (once per family: .additem 201517 and use the altar instead)",the taught spell is in your spellbook and works,pass; tooltip does not give the duration
+008,1398220,Raging Blow,200122,teach,".aura 1398220, open your spellbook (once per family: .additem 200122 and use the altar instead)",the taught spell is in your spellbook and works,instant damage works; no attack animation
+008,1591030,Rain of Arrows,200318,teach,".aura 1591030, open your spellbook (once per family: .additem 200318 and use the altar instead)",the taught spell is in your spellbook and works,"would not cast, tooltip numbers broken; retest with a ranged weapon equipped (tooltip requires one)"
+008,852321,Rain of Arrows,404781,teach,".aura 852321, open your spellbook (once per family: .additem 404781 and use the altar instead)",the taught spell is in your spellbook and works,"would not cast, tooltip numbers broken; retest with a ranged weapon equipped (tooltip requires one)"
+008,851994,Shadow Slam,404454,teach,".aura 851994, open your spellbook (once per family: .additem 404454 and use the altar instead)",the taught spell is in your spellbook and works,pass
 008,852402,Stone Shard,404862,teach,".aura 852402, open your spellbook (once per family: .additem 404862 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1590422,Stoneclaw,1013988,teach,".aura 1590422, open your spellbook (once per family: .additem 1013988 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850127,Sunwell,405083,teach,".aura 850127, open your spellbook (once per family: .additem 405083 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1398163,Tame Dragonkin,200053,teach,".aura 1398163, open your spellbook (once per family: .additem 200053 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1398162,Tether Elemental,200052,teach,".aura 1398162, open your spellbook (once per family: .additem 200052 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1398256,Tidal Force,200164,teach,".aura 1398256, open your spellbook (once per family: .additem 200164 and use the altar instead)",the taught spell is in your spellbook and works,
-008,1591076,Touch of the Magi,200372,teach,".aura 1591076, open your spellbook (once per family: .additem 200372 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850190,Twilight Shieldtoss,405007,teach,".aura 850190, open your spellbook (once per family: .additem 405007 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850128,Valkyr's Calling,405089,teach,".aura 850128, open your spellbook (once per family: .additem 405089 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850199,Vampiric Tonic,405103,teach,".aura 850199, open your spellbook (once per family: .additem 405103 and use the altar instead)",the taught spell is in your spellbook and works,
-008,852368,Warbreaker,404828,teach,".aura 852368, open your spellbook (once per family: .additem 404828 and use the altar instead)",the taught spell is in your spellbook and works,
+008,1398163,Tame Dragonkin,200053,teach,".aura 1398163, open your spellbook (once per family: .additem 200053 and use the altar instead)",the taught spell is in your spellbook and works,"pass: call, dismiss, revive"
+008,1398162,Tether Elemental,200052,teach,".aura 1398162, open your spellbook (once per family: .additem 200052 and use the altar instead)",the taught spell is in your spellbook and works,"pass: raise, revive, dismiss"
+008,1398256,Tidal Force,200164,teach,".aura 1398256, open your spellbook (once per family: .additem 200164 and use the altar instead)",the taught spell is in your spellbook and works,pass
+008,852368,Warbreaker,404828,teach,".aura 852368, open your spellbook (once per family: .additem 404828 and use the altar instead)",the taught spell is in your spellbook and works,pass
 008,852345,Wave of Despair,404805,teach,".aura 852345, open your spellbook (once per family: .additem 404805 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850145,Waves of Time,405122,teach,".aura 850145, open your spellbook (once per family: .additem 405122 and use the altar instead)",the taught spell is in your spellbook and works,
-008,850099,Xorothian Sigil,405045,teach,".aura 850099, open your spellbook (once per family: .additem 405045 and use the altar instead)",the taught spell is in your spellbook and works,
+008,850145,Waves of Time,405122,teach,".aura 850145, open your spellbook (once per family: .additem 405122 and use the altar instead)",the taught spell is in your spellbook and works,works; no tooltip text
+009,911367,Critical Mass,1175671,new spell,/run print(GetSpellInfo(911367)) (nil = client lacks it); .aura 911367; .list auras shows 911367; then use Fire spells and abilities,critical strike chance of Fire spells and abilities changes by 2%,
+009,916940,Brutal Impact,1175746,new spell,/run print(GetSpellInfo(916940)) (nil = client lacks it); .aura 916940; .list auras shows 916940; then use Bash,cooldown of Bash changes by 2 sec,
+009,86012,Concentrated Power Word: Shield,1176251,new spell,/run print(GetSpellInfo(86012)) (nil = client lacks it); .aura 86012; .list auras shows 86012; then use Power Word: Shield,mana cost of Power Word: Shield changes by 5%,
+009,86024,Hardy Power Word: Shield,1176252,new spell,/run print(GetSpellInfo(86024)) (nil = client lacks it); .aura 86024; .list auras shows 86024; then use Power Word: Shield,dispel resistance of Power Word: Shield changes by 7%,
+009,86118,Accurate Shield Bash,1176263,new spell,/run print(GetSpellInfo(86118)) (nil = client lacks it); .aura 86118; .list auras shows 86118; then use Shield Bash,hit chance of Shield Bash changes by 4%,
+009,86131,Powerful Auto Shot,1176265,new spell,/run print(GetSpellInfo(86131)) (nil = client lacks it); .aura 86131; .list auras shows 86131; then use Auto Shot,damage of Auto Shot changes by 2%,
+009,86136,Critical Auto Shot,1176267,new spell,/run print(GetSpellInfo(86136)) (nil = client lacks it); .aura 86136; .list auras shows 86136; then use Auto Shot,critical strike chance of Auto Shot changes by 2%,
+009,86143,Brutal Auto Shot,1176268,new spell,/run print(GetSpellInfo(86143)) (nil = client lacks it); .aura 86143; .list auras shows 86143; then use Auto Shot,critical strike damage of Auto Shot changes by 2%,
+009,86151,Focused Auto Shot,1176270,new spell,/run print(GetSpellInfo(86151)) (nil = client lacks it); .aura 86151; .list auras shows 86151; then use Auto Shot,bonus scaling of Auto Shot changes by 3%,
+009,86399,Quick Fireball,1176307,new spell,/run print(GetSpellInfo(86399)) (nil = client lacks it); .aura 86399; .list auras shows 86399; then use Fireball,casting time of Fireball changes by 1%,
+009,86410,Accrual Fireball,1176311,new spell,/run print(GetSpellInfo(86410)) (nil = client lacks it); .aura 86410; .list auras shows 86410; then use Fireball,damage over time of Fireball changes by 2%,
+009,99967,Hasty Lava Burst,99074,new spell,/run print(GetSpellInfo(99967)) (nil = client lacks it); .aura 99967; .list auras shows 99967; then use Lava Burst,cooldown of Lava Burst changes by 5%,
+011,84025,Critical Mind Flay,1176074,new spell (named targets),".aura 84025; .list auras shows 84025; then use Mind Flay, and one other spell of the same class to check it is not changed",critical strike chance of Mind Flay changes by 2%; other spells unchanged,
+011,84027,Brutal Mind Flay,1176076,new spell (named targets),".aura 84027; .list auras shows 84027; then use Mind Flay, and one other spell of the same class to check it is not changed",critical strike damage of Mind Flay changes by 2%; other spells unchanged,
+011,84028,Accurate Mind Flay,1176077,new spell (named targets),".aura 84028; .list auras shows 84028; then use Mind Flay, and one other spell of the same class to check it is not changed",hit chance of Mind Flay changes by 4%; other spells unchanged,
+011,84029,Accrual Mind Flay,1176078,new spell (named targets),".aura 84029; .list auras shows 84029; then use Mind Flay, and one other spell of the same class to check it is not changed",damage over time of Mind Flay changes by 2%; other spells unchanged,
+011,84030,Focused Mind Flay,1176079,new spell (named targets),".aura 84030; .list auras shows 84030; then use Mind Flay, and one other spell of the same class to check it is not changed",bonus scaling of Mind Flay changes by 3%; other spells unchanged,
+011,84036,Powerful Slam,1176081,new spell (named targets),".aura 84036; .list auras shows 84036; then use Slam, and one other spell of the same class to check it is not changed",damage of Slam changes by 2%; other spells unchanged,
+011,86244,Hasty Cone of Cold,1176280,new spell (named targets),".aura 86244; .list auras shows 86244; then use Cone of Cold, and one other spell of the same class to check it is not changed",cooldown of Cone of Cold changes by 0.5 sec; other spells unchanged,
+011,86246,Concentrated Cone of Cold,1176281,new spell (named targets),".aura 86246; .list auras shows 86246; then use Cone of Cold, and one other spell of the same class to check it is not changed",mana cost of Cone of Cold changes by 5%; other spells unchanged,
+011,86258,Hardy Cone of Cold,1176285,new spell (named targets),".aura 86258; .list auras shows 86258; then use Cone of Cold, and one other spell of the same class to check it is not changed",dispel resistance of Cone of Cold changes by 7%; other spells unchanged,
+011,86295,Quick Eye of Kilrogg,1176296,new spell (named targets),".aura 86295; .list auras shows 86295; then use Eye of Kilrogg, and one other spell of the same class to check it is not changed",casting time of Eye of Kilrogg changes by 1%; other spells unchanged,
+011,88909,Focused Slam,1176607,new spell (named targets),".aura 88909; .list auras shows 88909; then use Slam, and one other spell of the same class to check it is not changed",bonus multiplier of Slam changes by 2%; other spells unchanged,
+audit,901323,Unthreatening Presence,1275815,probably already works,.aura 901323; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+audit,901324,Holy Bystander,1275814,probably already works,.aura 901324; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+audit,901325,Calming Fire,1275813,probably already works,.aura 901325; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+audit,901326,Naturally Unthreatening,1275812,probably already works,.aura 901326; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+audit,901327,Ice Subordinate,1275811,probably already works,.aura 901327; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+audit,901328,Revealing Shadow,1275810,probably already works,.aura 901328; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+audit,901329,Arcane Calmness,1275809,probably already works,.aura 901329; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+audit,901330,Unthreatening Personality,1275808,probably already works,.aura 901330; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+audit,901227,Threatening Presence,200645,probably already works,.aura 901227; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+audit,919572,Improved Mend Pet,1175790,probably already works,.aura 919572; check the effect its tooltip names (threat or Mend Pet cost),tooltip effect happens; if so mark the tracker row working,
+012,118607,Glyph of Obliterate,202845,modifier,.aura 118607; use Obliterate,Obliterate deals 25% more damage,
