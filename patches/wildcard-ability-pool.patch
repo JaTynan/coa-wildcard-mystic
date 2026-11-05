@@ -1,5 +1,5 @@
 diff --git a/src/server/coa/AscensionWildcard.cpp b/src/server/coa/AscensionWildcard.cpp
-index 4c44667f6..ea0a81ae5 100644
+index 4c44667..ea0a81a 100644
 --- a/src/server/coa/AscensionWildcard.cpp
 +++ b/src/server/coa/AscensionWildcard.cpp
 @@ -56,6 +56,37 @@ namespace
@@ -116,7 +116,7 @@ index 4c44667f6..ea0a81ae5 100644
  
      void OnStartup() override
 diff --git a/src/server/coa/conf/wildcard.conf.dist b/src/server/coa/conf/wildcard.conf.dist
-index 63e8807b3..49820668d 100644
+index 63e8807..4982066 100644
 --- a/src/server/coa/conf/wildcard.conf.dist
 +++ b/src/server/coa/conf/wildcard.conf.dist
 @@ -110,3 +110,13 @@ Wildcard.Synergy.LogRolls = 1

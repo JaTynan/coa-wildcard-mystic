@@ -3,8 +3,8 @@
 
 Usage: resolve_release.py <release tag | latest>
 
-The build repository (changelog/history.json) and the manager (src/data/server-history.json) list every
-server release, with the exact commit of each part. Building from those commits gives
+The manager lists every server release it installs, with the exact commit of
+each part, in src/data/server-history.json. Building from those commits gives
 the same program the manager installed, plus our patch.
 
 Writes the commits to $GITHUB_OUTPUT (when set) and prints them.
@@ -14,9 +14,8 @@ import os
 import sys
 import urllib.request
 
-# The build repository's list is updated first; the manager's copy can lag a release behind.
-HISTORIES = ("https://raw.githubusercontent.com/Corfirean/coa-server-build/main/changelog/history.json",
-             "https://raw.githubusercontent.com/Corfirean/coa-server-manager/master/src/data/server-history.json")
+HISTORY = ("https://raw.githubusercontent.com/Corfirean/coa-server-manager/"
+           "master/src/data/server-history.json")
 NEEDED = {
     "core": "Corfirean/azerothcore-wotlk-coa",
     "bots": "Corfirean/mod-coa-playerbots",
@@ -29,22 +28,13 @@ def main():
     if len(sys.argv) != 2:
         sys.exit(__doc__)
     wanted = sys.argv[1].strip()
-    by_tag = {}
-    for url in HISTORIES:
-        try:
-            with urllib.request.urlopen(url, timeout=60) as response:
-                history = json.load(response)
-        except (OSError, ValueError) as error:
-            print(f"Could not read {url}: {error}")
-            continue
-        for r in history.get("releases", []):
-            if r.get("tag", "").startswith("server-") and "components" in r:
-                by_tag.setdefault(r["tag"], r)
-    releases = sorted(by_tag.values(), key=lambda r: (r.get("date", ""), r["tag"]))
-    if not releases:
-        sys.exit("No release list could be read.")
+    with urllib.request.urlopen(HISTORY, timeout=60) as response:
+        history = json.load(response)
+
+    releases = [r for r in history["releases"]
+                if r.get("tag", "").startswith("server-") and "components" in r]
     if wanted in ("", "latest"):
-        release = releases[-1]
+        release = max(releases, key=lambda r: r.get("date", ""))
     else:
         matches = [r for r in releases if r["tag"] == wanted]
         if not matches:

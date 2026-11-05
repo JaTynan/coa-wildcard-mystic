@@ -125,6 +125,14 @@ jobs:
           ref: 906eb2a45f5b3b815a281977005371193517eb32
           path: core/modules/mod-ollama-chat
 
+      - name: Fit mod-ollama-chat to the CoA core (its WorldSession::IsHeadless is IsBot here)
+        shell: pwsh
+        run: |
+          $file = 'core/modules/mod-ollama-chat/src/mod-ollama-chat_world.cpp'
+          $text = Get-Content $file -Raw
+          if ($text -notmatch 'session->IsHeadless\(\)') { throw 'mod-ollama-chat changed: IsHeadless call not found' }
+          Set-Content $file ($text -replace 'session->IsHeadless\(\)', 'session->IsBot()') -NoNewline
+
       - name: Place the modules where the core expects them (as the manager's build does)
         shell: pwsh
         run: |

@@ -155,13 +155,6 @@ function FetchRepo {
             Copy-Item (Join-Path $fixes '*.sql') $local -Force
             Log "Downloaded $(@(Get-ChildItem $local -Filter *.sql).Count) Mystic Enchant fix file(s)."
         }
-        # AI chat for bots (mod-ollama-chat): its config template and characters-database tables.
-        $chat = Join-Path $repoRoot 'ollama-chat'
-        $localChat = Join-Path $here 'ollama-chat'
-        if (Test-Path $chat) {
-            if (Test-Path $localChat) { Remove-Item $localChat -Recurse -Force }
-            Copy-Item $chat $localChat -Recurse -Force
-        }
         $scripts = Join-Path $repoRoot 'patch-night'
         if (Test-Path (Join-Path $scripts 'PatchNight.ps1')) {
             Get-ChildItem $scripts -File | Copy-Item -Destination $here -Force
@@ -195,46 +188,6 @@ function ApplyEnchantFixes {
     foreach ($file in $files) {
         $result = Invoke-Quiet $mysql @("--defaults-file=`"$ini`"", "--database=$db", '--batch') (Get-Content $file.FullName -Raw) 5
         if ($result.Code) { Log "Enchant fix $($file.Name) failed: $($result.Text)" 'WARN' } else { Log "Applied enchant fix $($file.Name) to $db." }
-    }
-}
-
-function PrepareOllamaChat {
-    # mod-ollama-chat (in builds from 5 Nov on). Keeps its config template current and creates a config with the
-    # module switched off if there is none (its built-in default is on). Its tables go into the active realm's
-    # characters database, each file once: the files are not safe to run twice, so applied ones are recorded.
-    $chat = Join-Path $here 'ollama-chat'
-    if (-not (Test-Path $chat)) { return }
-    $modules = Join-Path $configs 'modules'
-    $dist = Join-Path $chat 'mod_ollama_chat.conf.dist'
-    if ((Test-Path $dist) -and (Test-Path $modules)) {
-        Copy-Item $dist $modules -Force
-        $conf = Join-Path $modules 'mod_ollama_chat.conf'
-        if (-not (Test-Path $conf)) {
-            $lines = @(Get-Content $dist) -replace '^\s*OllamaChat\.Enable\s*=.*', 'OllamaChat.Enable = 0'
-            [IO.File]::WriteAllLines($conf, [string[]] $lines)
-            Log 'Created mod_ollama_chat.conf with AI chat switched off.'
-        }
-    }
-    $files = @(Get-ChildItem (Join-Path $chat 'sql-characters') -Filter *.sql -ErrorAction SilentlyContinue | Sort-Object Name)
-    if (-not $files.Count) { return }
-    $db = 'acore_characters'
-    $wconf = Join-Path $configs 'worldserver.conf'
-    if (Test-Path $wconf) {
-        $line = Select-String -Path $wconf -Pattern '^\s*CharacterDatabaseInfo\s*=' | Select-Object -Last 1
-        if ($line -and $line.Line -match '"([^"]*)"') { $parts = $Matches[1] -split ';'; if ($parts.Count -ge 5) { $db = $parts[4] } }
-    }
-    $mysql = Join-Path $Server 'mysql\bin\mysql.exe'
-    $ini = Join-Path $Server 'mysql\admin-client.ini'
-    $done = Sql ("CREATE TABLE IF NOT EXISTS ``$db``.wcme_applied_sql (file VARCHAR(255) NOT NULL PRIMARY KEY, applied DATETIME NOT NULL); " +
-                 "SELECT file FROM ``$db``.wcme_applied_sql;")
-    if ($done.Code) { Log "Cannot check the AI chat tables in $db : $($done.Text)" 'WARN'; return }
-    $applied = @($done.Text -split "`r?`n" | Where-Object { $_ })
-    foreach ($file in $files) {
-        if ($applied -contains $file.Name) { continue }
-        $result = Invoke-Quiet $mysql @("--defaults-file=`"$ini`"", "--database=$db", '--batch') (Get-Content $file.FullName -Raw) 5
-        if ($result.Code) { Log "AI chat table file $($file.Name) failed: $($result.Text)" 'WARN'; continue }
-        $null = Sql "INSERT INTO ``$db``.wcme_applied_sql VALUES ('$($file.Name)', NOW());"
-        Log "Applied AI chat table file $($file.Name) to $db."
     }
 }
 
@@ -320,7 +273,7 @@ function StartAndCheck([string] $expected) {
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
     # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
     $db = Launcher 'start-mysql' '' 10
-    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat }
+    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes }
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
@@ -453,19 +406,6 @@ $officialExe = OfficialExe
 $installed = Revision $officialExe
 if (-not $installed) { Finish "Cannot read the revision of $officialExe; nothing was changed." 1 }
 Log "The manager's installed core is $installed (from $(Split-Path $officialExe -Leaf))."
-# A manager update keeps a world server it sees was changed (ours), so the saved official copy goes stale.
-# The auth server is always the manager's own, so its revision shows which release is really installed.
-$authRev = Revision (Join-Path $core 'authserver.exe')
-$staleOfficial = $false
-Log "The auth server reports core $authRev."
-if (-not $authRev) {
-    Log 'The auth server did not report its core; trusting the world server.' 'WARN'
-} elseif (-not ($authRev.StartsWith($installed) -or $installed.StartsWith($authRev))) {
-    Log ("The manager installed core $authRev (auth server), but kept our patched world server from core $installed, " +
-        'so the saved official copy is out of date. Going by the auth server.') 'WARN'
-    $installed = $authRev
-    $staleOfficial = $true
-}
 
 # 2. Our patched build of that release, if GitHub has one.
 $release = $null; $releaseCore = $null
@@ -533,10 +473,7 @@ if ($installNeeded) {
     Log "Installing $($release.tag_name)..."
     # The newest installer from this repository (it knows -Unattended), pointed at the downloaded build.
     $installer = if ($repoInstaller -and (Test-Path $repoInstaller)) { $repoInstaller } else { Join-Path $package 'Install-WildcardServer.ps1' }
-    $installArgs = @('-Server', "`"$Server`"", '-Package', "`"$package`"", '-Unattended')
-    # The saved official copy is from an older core, so its revision check would refuse a build that does match.
-    if ($staleOfficial) { $installArgs += '-Force' }
-    $code = RunScript $installer $installArgs
+    $code = RunScript $installer @('-Server', "`"$Server`"", '-Package', "`"$package`"", '-Unattended')
     if ($code) {
         Log 'The installer refused or failed; continuing with the server as it was.' 'WARN'
         $installNeeded = $false
