@@ -118,6 +118,13 @@ jobs:
           ref: ${{ needs.check.outputs.squid_sha }}
           path: core/modules/mod-playerbots
 
+      - name: AI chat for bots (mod-ollama-chat, pinned; off until its config enables it)
+        uses: actions/checkout@v7
+        with:
+          repository: DustinHendrickson/mod-ollama-chat
+          ref: 906eb2a45f5b3b815a281977005371193517eb32
+          path: core/modules/mod-ollama-chat
+
       - name: Place the modules where the core expects them (as the manager's build does)
         shell: pwsh
         run: |
@@ -229,6 +236,7 @@ jobs:
             "CoA bots:        Corfirean/mod-coa-playerbots ${{ needs.check.outputs.bots_sha }}"
             "Content Scaling: Corfirean/mod-coa-content-scaling ${{ needs.check.outputs.scaling_sha }}"
             "SQUID bots:      Zyth45/mod-playerbots ${{ needs.check.outputs.squid_tag }} ${{ needs.check.outputs.squid_sha }}"
+            "AI chat:         DustinHendrickson/mod-ollama-chat 906eb2a45f5b3b815a281977005371193517eb32"
             "Patches:         $((Get-ChildItem _mine/patches -Filter *.patch | ForEach-Object Name) -join ', ')"
             "This repository: ${{ github.repository }} ${{ github.sha }}"
             "Built:           $([DateTime]::UtcNow.ToString('u'))"
