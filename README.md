@@ -100,3 +100,11 @@ differs (`addon/WildcardEnchants/TooltipData.lua`), so what an enchant says matc
 
 Server plan: [docs/roadmap.md](docs/roadmap.md). Enchant plan, method and progress: [docs/enchant-restoration.md](docs/enchant-restoration.md); per-enchant status:
 [enchants/tracker.csv](enchants/tracker.csv).
+
+## Branches
+
+- `main`: everything patch night reads (SQL fixes, addon, scripts, settings) and the patches for the newest core.
+- `for-083`: the build branch for the server's current core (release .83). Its patches differ from `main`'s on
+  purpose. **Never merge it into `main` or `main` into it**; close any pull request between the two. It goes away
+  once the server moves to a newer release.
+- Any other branch is a single change with its own pull request; merging those is the normal workflow.
