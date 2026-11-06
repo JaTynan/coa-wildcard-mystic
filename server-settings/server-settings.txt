@@ -120,6 +120,9 @@ modules\playerbots.conf | AiPlayerbot.DisabledWithoutRealPlayer = 1
 modules\playerbots.conf | AiPlayerbot.RandomBotTalk = 0
 # More bots: 1,000 (SQUID's notes: 500 fit comfortably in 16 GB, 5,000 ran in about 9 GB). New bots are created
 # and log in gradually after the first start. Watch World speed in the manager; lower these if it drops.
+# 1,000 bots kept one core busy while the other seven idled (21% CPU, 30 ms a tick, 7 Nov). Maps (each continent,
+# each dungeon copy) update in parallel with more threads. Back to 1 if anything odd shows up.
+worldserver.conf | MapUpdate.Threads = 4
 modules\playerbots.conf | AiPlayerbot.MinRandomBots = 1000
 modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 1000
 # Capitals felt empty: bots pick a city visit three times as often (bank, auction house, trainers; 10-30 minutes).
