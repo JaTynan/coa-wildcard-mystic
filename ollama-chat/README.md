@@ -7,8 +7,11 @@ This folder holds that commit's config template and characters-database tables; 
 default is on), and applies each table file once to the active realm's characters database.
 
 To try it: on trundle set Ollama to listen on the network (`OLLAMA_HOST=0.0.0.0`) and pull a small model. Then in
-`mod_ollama_chat.conf` set `OllamaChat.Enable = 1`, `OllamaChat.ApiEndpoint = http://<trundle>:11434` and
+`mod_ollama_chat.conf` set `OllamaChat.Enable = 1`, `OllamaChat.Url = http://<trundle>:11434/api/generate` and
 `OllamaChat.Model` to that model, and restart the server. Roleplay (`OllamaChat.Roleplay.Enable`) stays off for plain
 chat. Turn down the bots' own chatter in `playerbots.conf` (`AiPlayerbot.RandomBotTalk` and friends) if it competes.
 
 The module is AGPL-3.0 (see LICENSE), by Dustin Hendrickson; these files are unchanged copies.
+
+This server's values (address, model, and random chatter tuned for long-time WoW players) are in
+`server-settings/server-settings.txt`, which patch night and Start-Server apply.
