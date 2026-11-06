@@ -116,6 +116,12 @@ modules\playerbots.conf | AiPlayerbot.BotActiveAlone = 15
 modules\playerbots.conf | AiPlayerbot.RandomBotConcentrateInPlayerZone = 1
 # Bots log in when the first player does and out 5 minutes after the last one leaves
 modules\playerbots.conf | AiPlayerbot.DisabledWithoutRealPlayer = 1
+# More bots: 1,000 (SQUID's notes: 500 fit comfortably in 16 GB, 5,000 ran in about 9 GB). New bots are created
+# and log in gradually after the first start. Watch World speed in the manager; lower these if it drops.
+modules\playerbots.conf | AiPlayerbot.MinRandomBots = 1000
+modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 1000
+# Capitals felt empty: bots pick a city visit three times as often (bank, auction house, trainers; 10-30 minutes).
+modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.GoCity = 30
 
 # ---------------------------------------------------------------- Wildcard Mystic Enchants
 # Needs the patched world server (Install.cmd); the official one ignores it
