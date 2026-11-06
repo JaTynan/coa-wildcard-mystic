@@ -159,6 +159,12 @@ modules\mod_ollama_chat.conf | OllamaChat.MaxRandomInterval = 75
 modules\mod_ollama_chat.conf | OllamaChat.RandomChatterRealPlayerDistance = 400.0
 modules\mod_ollama_chat.conf | OllamaChat.RandomChatterBotCommentChance = 15
 modules\mod_ollama_chat.conf | OllamaChat.RandomChatterMaxBotsPerPlayer = 3
-modules\mod_ollama_chat.conf | OllamaChat.BotReplyChance.Say = 20
+modules\mod_ollama_chat.conf | OllamaChat.BotReplyChance.Say = 25
 modules\mod_ollama_chat.conf | OllamaChat.BotReplyChance.Channel = 8
 modules\mod_ollama_chat.conf | OllamaChat.BotReplyChance.Party = 35
+# Local chat (say, yell, party) always gets an answer; other bots join in now and then. Bots answer in combat too.
+modules\mod_ollama_chat.conf | OllamaChat.PlayerReplyChance.Say = 100
+modules\mod_ollama_chat.conf | OllamaChat.PlayerReplyChance.Party = 100
+modules\mod_ollama_chat.conf | OllamaChat.DirectAddressReplyChance = 100
+modules\mod_ollama_chat.conf | OllamaChat.DisableRepliesInCombat = 0
+modules\mod_ollama_chat.conf | OllamaChat.RateLimit.ScopePerMinute = 12
