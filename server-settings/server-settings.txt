@@ -122,6 +122,9 @@ modules\playerbots.conf | AiPlayerbot.MinRandomBots = 1000
 modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 1000
 # Capitals felt empty: bots pick a city visit three times as often (bank, auction house, trainers; 10-30 minutes).
 modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.GoCity = 30
+# Bot levels near the real players: 70% of bots roll within 5 levels of a random online player when they are
+# created or re-randomised; the rest roll 1-60 as before (so newbies and 60s stay). Builds from 7 Nov on.
+modules\playerbots.conf | AiPlayerbot.WildcardLevelNearPlayersPct = 70
 
 # ---------------------------------------------------------------- Wildcard Mystic Enchants
 # Needs the patched world server (Install.cmd); the official one ignores it

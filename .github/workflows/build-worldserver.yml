@@ -133,6 +133,44 @@ jobs:
           if ($text -notmatch 'session->IsHeadless\(\)') { throw 'mod-ollama-chat changed: IsHeadless call not found' }
           Set-Content $file ($text -replace 'session->IsHeadless\(\)', 'session->IsBot()') -NoNewline
 
+      - name: Bot levels near real players (AiPlayerbot.WildcardLevelNearPlayersPct, off at 0)
+        shell: pwsh
+        run: |
+          $file = 'core/modules/mod-playerbots/src/Bot/RandomPlayerbotMgr.cpp'
+          $text = Get-Content $file -Raw
+          $roll = "        uint32 roll = urand(1, 100);`n        if (roll <= 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)"
+          $text = $text -replace "`r`n", "`n"
+          if (-not $text.Contains($roll)) { throw 'SQUID changed: the level roll in RandomizeFirst was not found' }
+          if (-not $text.Contains('#include "Player.h"')) { throw 'SQUID changed: #include "Player.h" not found' }
+          $near = @'
+                  uint32 roll = urand(1, 100);
+                  uint32 wildcardNearLevel = 0;
+                  uint32 wildcardNearPct = sConfigMgr->GetOption<uint32>("AiPlayerbot.WildcardLevelNearPlayersPct", 0);
+                  if (wildcardNearPct && urand(1, 100) <= wildcardNearPct)
+                  {
+                      std::vector<uint32> realLevels;
+                      for (Player* real : players)
+                          if (real && real->IsInWorld() && real->GetSession() && !real->GetSession()->IsBot())
+                              realLevels.push_back(real->GetLevel());
+                      if (!realLevels.empty())
+                      {
+                          uint32 centre = realLevels[urand(0, realLevels.size() - 1)];
+                          uint32 low = std::max(minLevel, centre > 5 ? centre - 5 : 1u);
+                          uint32 high = std::min(maxLevel, centre + 5);
+                          if (low <= high)
+                              wildcardNearLevel = urand(low, high);
+                      }
+                  }
+                  if (wildcardNearLevel)
+                  {
+                      level = wildcardNearLevel;
+                  }
+                  else if (roll <= 100 * sPlayerbotAIConfig.randomBotMaxLevelChance)
+          '@
+          $text = $text.Replace($roll, $near.TrimEnd())
+          $text = $text.Replace('#include "Player.h"', "#include `"Player.h`"`n#include `"Config.h`"")
+          Set-Content $file $text -NoNewline
+
       - name: Place the modules where the core expects them (as the manager's build does)
         shell: pwsh
         run: |
