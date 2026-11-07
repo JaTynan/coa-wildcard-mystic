@@ -114,7 +114,9 @@ modules\playerbots.conf | AiPlayerbot.CoaRulesetWarModePct = 55
 
 # ---------------------------------------------------------------- SQUID's bots: lower load
 # Bots far from any player mostly idle (bots in your zone, within 150 yards or in combat stay active)
-modules\playerbots.conf | AiPlayerbot.BotActiveAlone = 15
+# Away from real players only 5% of bots are awake (was 15%); bots in a player's zone or within 150 yards stay
+# fully active. Lets the far world sleep so the zones with players get the CPU (7 Nov, 1,250 bots).
+modules\playerbots.conf | AiPlayerbot.BotActiveAlone = 5
 # Bots move into the zones players are levelling in
 modules\playerbots.conf | AiPlayerbot.RandomBotConcentrateInPlayerZone = 1
 # Bots log in when the first player does and out 5 minutes after the last one leaves
