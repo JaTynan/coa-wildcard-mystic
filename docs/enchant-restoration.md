@@ -99,7 +99,8 @@ The game client reads two spell lists: `Data/area-52/patch-D.MPQ` only on Ascens
 `Data/patch-T.MPQ` everywhere else, including this server. The 1,206 enchants whose spell was missing are only in
 the Area 52 list. [`client-patch/build_client_patch.py`](../client-patch/build_client_patch.py) copies them into the
 Wildcard list and packs it as `patch-ZZW.MPQ`, which sorts after `patch-T` and wins. Tested 2 Nov on trundle:
-`GetSpellInfo(911367)` returns Critical Mass with its icon.
+`GetSpellInfo(911367)` returns Critical Mass with its icon. The added spells carry no class family or flags in the
+client copy: with them, the character-creation screen crashed (fixed and tested 7 Nov).
 
 The archive is the client's own data, so it is never published here: build it from your own client files and copy
 it into the client's `Data` folder (`F:\CoAClient\Data` on the VM, which friends sync from). The server side of the
