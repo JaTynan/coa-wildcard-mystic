@@ -169,6 +169,16 @@ function FetchRepo {
             if (Test-Path $localChat) { Remove-Item $localChat -Recurse -Force }
             Copy-Item $chat $localChat -Recurse -Force
         }
+        # The friends' sign-up page; restart it so it runs the new copy (once Register-WildcardSignup has set it up).
+        $signup = Join-Path $repoRoot 'signup'
+        $localSignup = Join-Path $here 'signup'
+        if (Test-Path $signup) {
+            $task = Get-ScheduledTask -TaskName 'Wildcard Sign-up' -ErrorAction SilentlyContinue
+            if ($task) { Stop-ScheduledTask -TaskName 'Wildcard Sign-up' -ErrorAction SilentlyContinue; Start-Sleep -Seconds 2 }
+            if (Test-Path $localSignup) { Remove-Item $localSignup -Recurse -Force }
+            Copy-Item $signup $localSignup -Recurse -Force
+            if ($task) { Start-ScheduledTask -TaskName 'Wildcard Sign-up' -ErrorAction SilentlyContinue }
+        }
         $scripts = Join-Path $repoRoot 'patch-night'
         if (Test-Path (Join-Path $scripts 'PatchNight.ps1')) {
             Get-ChildItem $scripts -File | Copy-Item -Destination $here -Force
