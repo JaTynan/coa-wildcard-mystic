@@ -74,9 +74,13 @@ worldserver.conf | Rate.Drop.Money = 1.25
 # Mostly solo levelling and grinding for Mystic Enchants: open-world mobs come back in about a minute, so a cleared
 # pack can be pulled again. The respawn time is divided by the number of characters in the zone, bots included, and
 # multiplied by 0.3, but never below 60 s; normal mobs are usually 5 minutes. Dungeons, rares, world bosses and
-# quest givers keep their own timers. Herbs, ore and chests are unchanged.
+# quest givers keep their own timers.
 worldserver.conf | Respawn.DynamicRateCreature = 0.3
 worldserver.conf | Respawn.DynamicMinimumCreature = 60
+# Herbs, ore, chests and other objects the same way (7 Nov): back in about 2 minutes instead of 5-30. Objects in
+# dungeons keep their own timers.
+worldserver.conf | Respawn.DynamicRateGameObject = 0.3
+worldserver.conf | Respawn.DynamicMinimumGameObject = 120
 
 # ---------------------------------------------------------------- Auction House bot
 modules\mod_ahbot.conf | AuctionHouseBot.Enable = 1
