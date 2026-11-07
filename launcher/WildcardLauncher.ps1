@@ -214,7 +214,7 @@ function Get-Md5([string] $path) {
     finally { $stream.Close(); $md5.Dispose() }
 }
 
-function Unix-Seconds([datetime] $utc) { [long] [Math]::Floor(($utc - [datetime]::new(1970, 1, 1, 0, 0, 0, 'Utc')).TotalSeconds) }
+function Unix-Seconds([datetime] $utc) { ([DateTimeOffset] [datetime]::SpecifyKind($utc, 'Utc')).ToUnixTimeSeconds() }
 
 function Read-State {
     $state = @{}
@@ -328,7 +328,7 @@ function Sync-Client {
         $url = "$site/client/" + (($file.path -split '[\\/]' | ForEach-Object { [Uri]::EscapeDataString($_) }) -join '/')
         Log "Downloading $($file.path) ($(Size $file.size))"
         Get-File $url $target ("Updating {0} ({1} of {2})" -f (Split-Path $file.path -Leaf), $count, $stale.Count)
-        if ($file.mtime) { (Get-Item -LiteralPath $target).LastWriteTimeUtc = [datetime]::new(1970, 1, 1, 0, 0, 0, 'Utc').AddSeconds([long] $file.mtime) }
+        if ($file.mtime) { (Get-Item -LiteralPath $target).LastWriteTimeUtc = [DateTimeOffset]::FromUnixTimeSeconds([long] $file.mtime).UtcDateTime }
         $done += $file.size
         if ($total -gt 0) { Progress ($done / $total) }
         $null = Local-Hash $state $file.path $file

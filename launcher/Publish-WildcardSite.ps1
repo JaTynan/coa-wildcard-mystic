@@ -43,7 +43,7 @@ foreach ($item in Get-ChildItem -LiteralPath $root -Recurse -File -Force) {
         finally { $stream.Close() }
     }
     $newCache[$relative] = [pscustomobject] @{ stamp = $stamp; md5 = $hash }
-    $mtime = [long] [Math]::Floor(($item.LastWriteTimeUtc - [datetime]::new(1970, 1, 1, 0, 0, 0, 'Utc')).TotalSeconds)
+    $mtime = ([DateTimeOffset] [datetime]::SpecifyKind($item.LastWriteTimeUtc, 'Utc')).ToUnixTimeSeconds()
     $files.Add([pscustomobject] @{ path = $relative; size = $item.Length; md5 = $hash; mtime = $mtime })
 }
 $md5.Dispose()
