@@ -402,8 +402,8 @@ $form.Add_Shown({
         $info = Get-Json "$site/launcher.json"
         if (Update-Self $info) { $form.Close(); return }
         Install-Client $info
+        if (Test-Path (Join-Path $clientDir 'Ascension.exe')) { Set-Realm $info.realm }
         $changed = Sync-Client
-        Set-Realm $info.realm
         if ($changed) { Ready "Up to date ($changed file(s) updated). Have fun!" } else { Ready 'Up to date. Have fun!' }
     }
     catch {
@@ -415,6 +415,10 @@ $form.Add_Shown({
         else { Say "Something went wrong: $message. The Log button shows the details for James."; $bar.Value = 0 }
     }
     $realm = if ($info -and $info.realm) { $info.realm } else { 'wow.jtlab.cc' }
+    # Point the game at the server even when the site or an update failed, so it never keeps an old address.
+    if (Test-Path (Join-Path $clientDir 'Ascension.exe')) {
+        try { Set-Realm $realm; Log "Game points at $realm" } catch { Log "Could not set the server address: $($_.Exception.Message)" }
+    }
     Check-Server $realm
 })
 
