@@ -5,39 +5,193 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wildcard</title>
 <style>
-  :root { --bg: #18181c; --panel: #222228; --text: #e2e2e6; --muted: #a0a0aa; --gold: #e6b43c; }
+  :root { --bg: #18181c; --panel: #222228; --line: #33333c; --text: #e2e2e6; --muted: #a0a0aa; --gold: #e6b43c;
+          --good: #7ad97a; --bad: #ff7a6b; --wait: #a0a0aa; }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 "Segoe UI", system-ui, sans-serif; }
-  main { max-width: 640px; margin: 0 auto; padding: 48px 20px; }
+  main { max-width: 860px; margin: 0 auto; padding: 44px 16px 64px; }
   h1 { color: var(--gold); font-size: 44px; margin: 0 0 4px; letter-spacing: 1px; }
-  .tag { color: var(--muted); margin: 0 0 32px; }
-  .download { display: inline-block; background: var(--gold); color: #111; font-weight: 700; font-size: 19px;
-              padding: 14px 28px; border-radius: 8px; text-decoration: none; }
-  .download:hover { filter: brightness(1.1); }
-  ol { background: var(--panel); border-radius: 10px; padding: 22px 22px 22px 44px; margin: 32px 0; }
-  li { margin: 0 0 12px; }
-  li:last-child { margin: 0; }
-  code { background: #2e2e36; padding: 1px 6px; border-radius: 4px; }
+  h2 { font-size: 20px; margin: 0 0 14px; }
+  h3 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; }
+  .tag { color: var(--muted); margin: 0 0 28px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .panel { background: var(--panel); border-radius: 10px; padding: 20px 22px; }
+  .wide { grid-column: 1 / -1; }
+  .button { display: inline-block; background: var(--gold); color: #111; font-weight: 700; font-size: 18px;
+            padding: 12px 24px; border-radius: 8px; text-decoration: none; }
+  .button:hover { filter: brightness(1.1); }
+  .button.quiet { background: transparent; color: var(--gold); border: 2px solid var(--gold); }
+  .rows { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0; }
+  .rows dt { color: var(--muted); }
+  .rows dd { margin: 0; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; background: var(--wait); }
+  .up .dot { background: var(--good); } .down .dot { background: var(--bad); }
+  .up { color: var(--good); } .down { color: var(--bad); }
   .note { color: var(--muted); font-size: 15px; }
+  details { margin-top: 16px; }
+  summary { cursor: pointer; color: var(--gold); }
+  ol { padding-left: 22px; margin: 12px 0 0; }
+  li { margin: 0 0 10px; }
+  code { background: #2e2e36; padding: 1px 6px; border-radius: 4px; }
+  .settings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .setting { padding: 8px 0; border-top: 1px solid var(--line); }
+  .setting:first-of-type { border-top: 0; }
+  .setting b { display: block; font-weight: 600; }
+  .setting .value { color: var(--gold); font-weight: 700; }
+  .setting .why { color: var(--muted); font-size: 14px; }
+  @media (max-width: 720px) {
+    .grid, .settings { grid-template-columns: 1fr; }
+    h1 { font-size: 36px; }
+  }
 </style>
 </head>
 <body>
 <main>
   <h1>Wildcard</h1>
   <p class="tag">James's World of Warcraft server. Random abilities, Mystic Enchants, and a world full of bots.</p>
-  <a class="download" href="WildcardLauncher.zip">Download the launcher</a>
-  <p class="note" style="margin-top:14px">No account yet? Make one at <a href="https://join.jtlab.cc" style="color:var(--gold)">join.jtlab.cc</a>
-    with the invite code James gave you. The download can run while you do.</p>
-  <ol>
-    <li>Unzip it into a new folder on a drive with about <strong>100 GB free</strong>, for example <code>C:\Games\Wildcard</code>.</li>
-    <li>Double-click <strong>Start Wildcard</strong>. If Windows asks whether to run it, choose <em>Run</em>
-        (or <em>More info</em>, then <em>Run anyway</em>). That only happens the first time.</li>
-    <li>The first time, it downloads the game (about 45 GB) and unpacks it. Leave it running; if it stops,
-        just start it again and it carries on where it left off.</li>
-    <li>When it says <em>Up to date</em>, press <strong>Play</strong> and log in with your account.</li>
-  </ol>
-  <p class="note">From then on, always start the game with <strong>Start Wildcard</strong>: it fetches any updates
-    first, which only takes a moment. Tip: right-click it and choose <em>Send to</em>, <em>Desktop (create shortcut)</em>.</p>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="status-title">
+      <h2 id="status-title">Server status</h2>
+      <dl class="rows">
+        <dt>Login server</dt><dd id="login"><span class="dot"></span>Checking...</dd>
+        <dt>World server</dt><dd id="world"><span class="dot"></span>Checking...</dd>
+        <dt>Players online</dt><dd id="players">-</dd>
+        <dt>Bots in the world</dt><dd id="bots">-</dd>
+        <dt>Up for</dt><dd id="uptime">-</dd>
+        <dt>Server version</dt><dd id="version">-</dd>
+      </dl>
+      <p class="note" id="restart" style="margin:14px 0 0"></p>
+    </section>
+
+    <section class="panel" aria-labelledby="account-title">
+      <h2 id="account-title">Account</h2>
+      <p style="margin:0 0 16px">New here? Make your game account with the invite code James gave you.</p>
+      <a class="button quiet" href="https://join.jtlab.cc">Create an account</a>
+      <p class="note" style="margin:16px 0 0">Already have one? Log in through the launcher below.
+        Forgotten your password? Ask James.</p>
+    </section>
+
+    <section class="panel wide" aria-labelledby="play-title">
+      <h2 id="play-title">Play</h2>
+      <a class="button" href="WildcardLauncher.zip">Download the launcher</a>
+      <p class="note" id="client" style="margin:14px 0 0">Client version: checking...</p>
+      <p style="margin:12px 0 0">Already installed? Just start <strong>Start Wildcard</strong>: it fetches any updates
+        first, then press <strong>Play</strong>.</p>
+      <details>
+        <summary>First time? How to install</summary>
+        <ol>
+          <li>Unzip it into a new folder on a drive with about <strong>100 GB free</strong>, for example
+            <code>C:\Games\Wildcard</code>.</li>
+          <li>Double-click <strong>Start Wildcard</strong>. If Windows asks whether to run it, choose <em>Run</em>
+            (or <em>More info</em>, then <em>Run anyway</em>). That only happens the first time.</li>
+          <li>The first time, it downloads the game (about 45 GB) and unpacks it. Leave it running; if it stops, just
+            start it again and it carries on where it left off.</li>
+          <li>When it says <em>Up to date</em>, press <strong>Play</strong> and log in with your account.</li>
+        </ol>
+        <p class="note">Tip: right-click <strong>Start Wildcard</strong> and choose <em>Send to</em>, <em>Desktop
+          (create shortcut)</em>. If something goes wrong, the launcher's <strong>Log</strong> button shows what
+          happened; send that to James.</p>
+      </details>
+    </section>
+
+    <section class="panel wide" aria-labelledby="settings-title">
+      <h2 id="settings-title">Realm settings</h2>
+      <div class="settings" id="settings"><p class="note">Loading...</p></div>
+    </section>
+  </div>
 </main>
+<script>
+const STATUS = "https://join.jtlab.cc/api/status";
+const $ = (id) => document.getElementById(id);
+
+function light(id, up, upText, downText) {
+  const cell = $(id);
+  cell.className = up ? "up" : "down";
+  cell.innerHTML = '<span class="dot"></span>';
+  cell.append(up ? upText : downText);
+}
+
+function text(id, value) { $(id).textContent = value; }
+
+async function loadStatus() {
+  try {
+    const reply = await fetch(STATUS, { cache: "no-store" });
+    if (!reply.ok) throw new Error(reply.status);
+    const s = await reply.json();
+    light("login", s.login, "Online", "Offline");
+    light("world", s.world, "Online", s.login ? "Starting or restarting" : "Offline");
+    const real = typeof s.players === "number" ? s.players : null;
+    text("players", real === null ? "-" : String(real));
+    text("bots", typeof s.characters === "number" && real !== null
+      ? Math.max(0, s.characters - real).toLocaleString() : "-");
+    text("uptime", s.uptime || "-");
+    const v = s.server || {};
+    text("version", v.release ? `CoA ${v.release}, Wildcard build ${v.build}` : (v.tag || "-"));
+    text("restart", s.restart || "");
+    showSettings(s.settings || []);
+  } catch (error) {
+    for (const id of ["login", "world"]) {
+      $(id).className = "";
+      $(id).innerHTML = '<span class="dot"></span>Status unavailable';
+    }
+    if ($("settings").textContent.includes("Loading")) {
+      $("settings").innerHTML = '<p class="note">Settings unavailable right now; try again in a minute.</p>';
+    }
+  }
+}
+
+function showSettings(groups) {
+  const box = $("settings");
+  box.textContent = "";
+  for (const group of groups) {
+    const column = document.createElement("div");
+    const title = document.createElement("h3");
+    title.textContent = group.title;
+    column.append(title);
+    for (const item of group.items) {
+      const row = document.createElement("div");
+      row.className = "setting";
+      const label = document.createElement("b");
+      label.textContent = item.label + " ";
+      const value = document.createElement("span");
+      value.className = "value";
+      value.textContent = item.value;
+      label.append(value);
+      row.append(label);
+      if (item.note) {
+        const why = document.createElement("span");
+        why.className = "why";
+        why.textContent = item.note;
+        row.append(why);
+      }
+      column.append(row);
+    }
+    box.append(column);
+  }
+}
+
+async function loadClient() {
+  try {
+    const [manifest, launcher] = await Promise.all([
+      fetch("manifest.json", { cache: "no-store" }).then((r) => r.json()),
+      fetch("launcher.json", { cache: "no-store" }).then((r) => r.json()),
+    ]);
+    const files = manifest.files || [];
+    const bytes = files.reduce((sum, f) => sum + (f.size || 0), 0);
+    const when = new Date(String(manifest.generated).replace(/\.(\d{3})\d+/, ".$1"));
+    const date = when.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+    const time = when.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    text("client", `Client updated ${date}, ${time} (${(bytes / 1073741824).toFixed(1)} GB, ${files.length} files)` +
+      ` · Launcher version ${launcher.launcherVersion}`);
+  } catch (error) {
+    text("client", "Client version: unavailable right now.");
+  }
+}
+
+loadStatus();
+loadClient();
+setInterval(loadStatus, 60000);
+</script>
 </body>
 </html>

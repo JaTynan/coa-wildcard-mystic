@@ -1,4 +1,5 @@
 """Friends' sign-up page for the Wildcard server: https://join.jtlab.cc (Cloudflare tunnel to this VM, port 8089).
+Also serves GET /api/status, the live status and realm settings the homepage (wildcard.jtlab.cc) shows.
 
 A friend enters an account name, a password and the invite code, and passes Cloudflare's human check (Turnstile).
 The account is then created through the server manager's own one-account command (create-account-once), the same
@@ -27,6 +28,10 @@ import urllib.parse
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+# The manager's Python may be the embeddable kind, which does not add the script's folder to the import path.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import WildcardStatus  # noqa: E402
 
 DAY = 24 * 60 * 60
 NAME = re.compile(r"[A-Za-z0-9]{3,16}")
@@ -214,7 +219,7 @@ PAGE = """<!doctype html>
     <button id="submit" type="submit">Create account</button>
     <p id="result" role="status"></p>
   </form>
-  <p class="tag" style="margin-top:24px">Then get the game from <a href="https://wildcard.jtlab.cc">wildcard.jtlab.cc</a>.</p>
+  <p class="tag" style="margin-top:24px">Then get the game, and see the server's status and rates, at <a href="https://wildcard.jtlab.cc">wildcard.jtlab.cc</a>.</p>
 </main>
 <script>
 const form = document.getElementById("join"), result = document.getElementById("result"), submit = document.getElementById("submit");
@@ -249,9 +254,11 @@ def handler_for(options):
         def address(self):
             return self.headers.get("CF-Connecting-IP") or self.client_address[0]
 
-        def send(self, status, body, kind):
+        def send(self, status, body, kind, public=False):
             data = body.encode("utf-8")
             self.send_response(status)
+            if public:
+                self.send_header("Access-Control-Allow-Origin", "*")
             self.send_header("Content-Type", kind)
             self.send_header("Content-Length", str(len(data)))
             self.send_header("Cache-Control", "no-store")
@@ -261,6 +268,14 @@ def handler_for(options):
             self.wfile.write(data)
 
         def do_GET(self):
+            if self.path.split("?")[0] == "/api/status":
+                try:
+                    body = json.dumps(WildcardStatus.status(options))
+                    self.send(200, body, "application/json", public=True)
+                except Exception as error:  # the homepage shows "status unavailable"; the log says why
+                    log(f"Status failed: {error!r}")
+                    self.send(500, json.dumps({"message": "Status unavailable"}), "application/json", public=True)
+                return
             if self.path.split("?")[0] not in ("/", "/index.html"):
                 self.send(404, "Not found", "text/plain; charset=utf-8")
                 return
