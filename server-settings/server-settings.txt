@@ -189,3 +189,5 @@ modules\mod_ollama_chat.conf | OllamaChat.TypingSimulationMaxDelay = 1500
 modules\mod_ollama_chat.conf | OllamaChat.Cooldown.PerScopeSeconds = 3
 modules\mod_ollama_chat.conf | OllamaChat.Cooldown.PerBotSeconds = 20
 modules\mod_ollama_chat.conf | OllamaChat.RateLimit.GlobalPerMinute = 100
+# Fewer gestures (7 Nov: six emotes in three seconds). A gesture is offered on 12% of lines instead of 40%.
+modules\mod_ollama_chat.conf | OllamaChat.GestureChance = 12
