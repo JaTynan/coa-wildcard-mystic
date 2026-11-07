@@ -1,7 +1,7 @@
 {
   "site": "https://wildcard.jtlab.cc",
   "realm": "wow.jtlab.cc",
-  "clientArchiveUrl": "PASTE-THE-SEEDBOX-SHARE-LINK-HERE",
+  "clientArchiveUrl": "https://cdn.seedbucket.cloud/api/share/8GxliLlgsBsK3pEEeZiT/CoAClient.tar",
   "clientArchiveBytes": 46456369152,
   "remove": []
 }
