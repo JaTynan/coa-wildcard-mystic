@@ -13,7 +13,7 @@ If the site cannot be reached, the game can still be started with whatever is in
 Every step and error goes to launcher.log next to this file (the Log button opens it), and the window says
 whether the game server itself is reachable.
 #>
-$LauncherVersion = 3
+$LauncherVersion = 4
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
@@ -98,7 +98,7 @@ function Say([string] $text) { $status.Text = $text; [Windows.Forms.Application]
 function Step([string] $text) { Log $text; Say $text }
 function Progress([double] $fraction) {
     $bar.Style = 'Blocks'
-    $bar.Value = [int] [Math]::Max(0, [Math]::Min(1000, $fraction * 1000))
+    $bar.Value = [int] [Math]::Max([double] 0, [Math]::Min([double] 1000, [double] $fraction * 1000))
     [Windows.Forms.Application]::DoEvents()
 }
 function Busy { $bar.Style = 'Marquee'; [Windows.Forms.Application]::DoEvents() }
@@ -175,7 +175,7 @@ function Get-File([string] $url, [string] $path, [string] $label, [bool] $sendHe
                 $done += $read
                 if ($clock.ElapsedMilliseconds - $last -ge 250) {
                     $last = $clock.ElapsedMilliseconds
-                    $speed = ($done - $have) / [Math]::Max(1, $clock.Elapsed.TotalSeconds)
+                    $speed = ($done - $have) / [Math]::Max([double] 1, [double] $clock.Elapsed.TotalSeconds)
                     $left = if ($speed -gt 0 -and $total -gt 0) { [TimeSpan]::FromSeconds(($total - $done) / $speed) } else { [TimeSpan]::Zero }
                     Say ("{0}: {1} of {2}, {3}/s, about {4:hh\:mm\:ss} left" -f $label, (Size $done), (Size $total), (Size $speed), $left)
                     if ($total -gt 0) { Progress ($done / $total) }
@@ -311,7 +311,7 @@ function Sync-Client {
         if ((Local-Hash $state $file.path $file) -ne $file.md5) { $stale.Add($file) }
         if ($script:checkedBytes -eq $before) { $script:checkedBytes += [long] $file.size }
         Say ("Checking your game files: {0} of {1} ({2} of {3} files)" -f (Size $script:checkedBytes), (Size $script:checkTotal), $index, $files.Count)
-        Progress ($script:checkedBytes / [Math]::Max(1, $script:checkTotal))
+        Progress ([double] $script:checkedBytes / [Math]::Max([double] 1, [double] $script:checkTotal))
         if ($index % 20 -eq 0) { Save-State $state }
     }
     $script:checkTotal = 0
