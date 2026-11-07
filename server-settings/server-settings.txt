@@ -192,5 +192,8 @@ modules\mod_ollama_chat.conf | OllamaChat.TypingSimulationMaxDelay = 1500
 modules\mod_ollama_chat.conf | OllamaChat.Cooldown.PerScopeSeconds = 3
 modules\mod_ollama_chat.conf | OllamaChat.Cooldown.PerBotSeconds = 20
 modules\mod_ollama_chat.conf | OllamaChat.RateLimit.GlobalPerMinute = 100
-# Fewer gestures (7 Nov: six emotes in three seconds). A gesture is offered on 12% of lines instead of 40%.
-modules\mod_ollama_chat.conf | OllamaChat.GestureChance = 12
+# Gestures with AI lines: offered on 20% of lines (module default 40% was too twitchy). Bots react to a player's
+# emote 90% of the time (mostly a free mirrored or counter emote). Bots never react to other bots' emotes, and in
+# raids (groups over 5) the usual pacing and per-channel caps apply, so raids and battlegrounds stay readable.
+modules\mod_ollama_chat.conf | OllamaChat.GestureChance = 20
+modules\mod_ollama_chat.conf | OllamaChat.EmoteReplyChance = 90
