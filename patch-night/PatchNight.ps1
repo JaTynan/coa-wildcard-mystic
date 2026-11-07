@@ -1,8 +1,9 @@
 <#
 Patch night: keeps the server on the patched world server and James's settings, unattended.
 
-Run nightly by the scheduled task (Register-PatchNight.cmd: starts 3:30 am, warns players, restarts at 4 am), or by
-hand (Run-PatchNight-Now.cmd).
+Run by two scheduled tasks (Register-PatchNight.cmd): the weekly patch night (Tuesday 11 pm), which also installs a
+new patched build, and the nightly restart (counts down from 3:30 am, restarts at 4 am), which applies this repository's
+fixes and settings but leaves new builds for Tuesday. Or by hand (Run-PatchNight-Now.cmd).
 
   1. Finds which manager release is installed (from the official world server's revision).
   2. Looks for this repository's patched build of that release (GitHub Releases).
@@ -21,6 +22,8 @@ param(
     [string] $Client = 'F:\CoAClient',
     [int] $WarnMinutes = 10,
     [switch] $Unattended,
+    # The nightly restart: apply fixes and settings, but leave a new patched build for the weekly patch night
+    [switch] $NoInstall,
     # Start-Server.cmd: only apply the local settings and start the server (keeps SQUID's bots on Wildcard)
     [switch] $StartOnly,
     # Rebuild-WildcardBots.cmd: remove the non-Hero bots of the Wildcard realm, then start (SQUID creates Heroes)
@@ -444,7 +447,7 @@ if (-not $Updated) {
         Log 'Running the newer patch-night script just downloaded...'
         $again = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$PSCommandPath`"", '-Updated',
                    '-Server', "`"$Server`"", '-Repo', $Repo, '-Client', "`"$Client`"", '-WarnMinutes', $WarnMinutes)
-        foreach ($name in 'Unattended', 'StartOnly', 'RebuildWildcardBots') { if ((Get-Variable $name -ValueOnly).IsPresent) { $again += "-$name" } }
+        foreach ($name in 'Unattended', 'NoInstall', 'StartOnly', 'RebuildWildcardBots') { if ((Get-Variable $name -ValueOnly).IsPresent) { $again += "-$name" } }
         & powershell.exe @again
         exit $LASTEXITCODE
     }
@@ -567,6 +570,7 @@ if ($release) {
     Log "Patched build available: $($release.tag_name)."
     $installNeeded = $release.tag_name -ne $installedTag
     if (-not $installNeeded) { Log 'It is already installed.' }
+    elseif ($NoInstall) { Log 'Nightly restart: the new build is left for the weekly patch night.'; $installNeeded = $false }
 } elseif ($liveIsOurs) {
     Log 'No patched build found for this core, but the installed patched server matches it already.' 'WARN'
 } else {
