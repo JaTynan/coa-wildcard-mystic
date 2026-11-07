@@ -273,6 +273,41 @@ function EnsureWildcardBotNames {
     }
 }
 
+function DatabaseName([string] $key, [string] $fallback) {
+    # The database a worldserver.conf connection points at (WorldDatabaseInfo, CharacterDatabaseInfo).
+    $conf = Join-Path $configs 'worldserver.conf'
+    if (Test-Path $conf) {
+        $line = Select-String -Path $conf -Pattern "^\s*$key\s*=" | Select-Object -Last 1
+        if ($line -and $line.Line -match '"([^"]*)"') { $parts = $Matches[1] -split ';'; if ($parts.Count -ge 5) { return $parts[4] } }
+    }
+    return $fallback
+}
+
+function SkipUnusedAuctionItems {
+    # The auction bot lists leftover developer items named "UNUSED..." (its own name filter misses them). Put every
+    # such item on its never-list (AuctionHouseBot.DisabledCustomItemIDs), worked out from the world database at
+    # each start, and take the Auctioneer's current listings of them down if nobody has bid.
+    $world = DatabaseName 'WorldDatabaseInfo' 'acore_world'
+    $chars = DatabaseName 'CharacterDatabaseInfo' 'acore_characters'
+    $found = Sql "SELECT entry FROM ``$world``.item_template WHERE name LIKE BINARY 'UNUSED%' ORDER BY entry;"
+    if ($found.Code) { Log "Could not look up UNUSED items: $($found.Text)" 'WARN'; return }
+    $ids = @($found.Text -split "`r?`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d+$' })
+    if (-not $ids.Count) { Log 'No UNUSED items in the world database.'; return }
+    $conf = Join-Path $configs 'modules\mod_ahbot.conf'
+    if (-not (Test-Path $conf)) { Log "No $conf; the auction bot never-list was not set." 'WARN'; return }
+    $setting = "AuctionHouseBot.DisabledCustomItemIDs = $($ids -join ',')"
+    $lines = [Collections.Generic.List[string]] @(Get-Content $conf)
+    $at = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) { if ($lines[$i] -match '^\s*AuctionHouseBot\.DisabledCustomItemIDs\s*=') { $at = $i } }
+    if ($at -ge 0) { $lines[$at] = $setting } else { $lines.Add($setting) }
+    Set-Content -Path $conf -Value $lines -Encoding ASCII
+    $removed = Sql ("DELETE ah, ii FROM ``$chars``.auctionhouse ah JOIN ``$chars``.item_instance ii ON ii.guid = ah.itemguid " +
+        "JOIN ``$chars``.characters c ON c.guid = ah.itemowner JOIN ``$world``.item_template it ON it.entry = ii.itemEntry " +
+        "WHERE c.name = 'Auctioneer' AND ah.buyguid = 0 AND it.name LIKE BINARY 'UNUSED%'; SELECT ROW_COUNT();")
+    if ($removed.Code) { Log "Could not remove the Auctioneer's UNUSED listings: $($removed.Text)" 'WARN' }
+    Log "Auction bot skips $($ids.Count) UNUSED items; removed listings (rows): $($removed.Text.Trim())."
+}
+
 function RestoreRealmAddress {
     # The launcher resets the realm list to 127.0.0.1 at every start; the manager then writes the "Play with
     # friends" address back (friends.rs, reapply). Do the same, or other computers see the realm but cannot join it.
@@ -345,7 +380,7 @@ function StartAndCheck([string] $expected) {
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
     # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
     $db = Launcher 'start-mysql' '' 10
-    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat }
+    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems }
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
