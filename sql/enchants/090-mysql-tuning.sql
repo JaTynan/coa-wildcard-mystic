@@ -10,9 +10,14 @@
 --   innodb_log_buffer_size 64 MB     holds those seconds of saves in memory (default 16 MB).
 --   performance_schema OFF           MySQL's built-in profiler, which nothing here uses: a little CPU and a few hundred
 --                                    MB back. Takes effect from the next restart (PERSIST_ONLY).
+--   innodb_io_capacity 1000 / max 2000  how fast MySQL may write in the background; the default 200 suits spinning disks.
+--                                    The VM is on a SATA SSD shared with other VMs, so a moderate value. Max is set first
+--                                    because the capacity may not exceed it.
 SET PERSIST innodb_buffer_pool_size = 4294967296;
 SET PERSIST innodb_redo_log_capacity = 1073741824;
 SET PERSIST innodb_flush_log_at_trx_commit = 2;
 SET PERSIST innodb_flush_log_at_timeout = 3;
 SET PERSIST innodb_log_buffer_size = 67108864;
 SET PERSIST_ONLY performance_schema = OFF;
+SET PERSIST innodb_io_capacity_max = 2000;
+SET PERSIST innodb_io_capacity = 1000;
