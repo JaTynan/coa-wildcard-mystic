@@ -1,7 +1,9 @@
 <#
 Patch night: keeps the server on the patched world server and James's settings, unattended.
 
-Run weekly by the scheduled task (Register-PatchNight.cmd), or by hand (Run-PatchNight-Now.cmd).
+Run by two scheduled tasks (Register-PatchNight.cmd): the weekly patch night (Tuesday 11 pm), which also installs a
+new patched build, and the nightly restart (counts down from 3:30 am, restarts at 4 am), which applies this repository's
+fixes and settings but leaves new builds for Tuesday. Or by hand (Run-PatchNight-Now.cmd).
 
   1. Finds which manager release is installed (from the official world server's revision).
   2. Looks for this repository's patched build of that release (GitHub Releases).
@@ -20,6 +22,8 @@ param(
     [string] $Client = 'F:\CoAClient',
     [int] $WarnMinutes = 10,
     [switch] $Unattended,
+    # The nightly restart: apply fixes and settings, but leave a new patched build for the weekly patch night
+    [switch] $NoInstall,
     # Start-Server.cmd: only apply the local settings and start the server (keeps SQUID's bots on Wildcard)
     [switch] $StartOnly,
     # Rebuild-WildcardBots.cmd: remove the non-Hero bots of the Wildcard realm, then start (SQUID creates Heroes)
@@ -443,7 +447,7 @@ if (-not $Updated) {
         Log 'Running the newer patch-night script just downloaded...'
         $again = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$PSCommandPath`"", '-Updated',
                    '-Server', "`"$Server`"", '-Repo', $Repo, '-Client', "`"$Client`"", '-WarnMinutes', $WarnMinutes)
-        foreach ($name in 'Unattended', 'StartOnly', 'RebuildWildcardBots') { if ((Get-Variable $name -ValueOnly).IsPresent) { $again += "-$name" } }
+        foreach ($name in 'Unattended', 'NoInstall', 'StartOnly', 'RebuildWildcardBots') { if ((Get-Variable $name -ValueOnly).IsPresent) { $again += "-$name" } }
         & powershell.exe @again
         exit $LASTEXITCODE
     }
@@ -566,6 +570,7 @@ if ($release) {
     Log "Patched build available: $($release.tag_name)."
     $installNeeded = $release.tag_name -ne $installedTag
     if (-not $installNeeded) { Log 'It is already installed.' }
+    elseif ($NoInstall) { Log 'Nightly restart: the new build is left for the weekly patch night.'; $installNeeded = $false }
 } elseif ($liveIsOurs) {
     Log 'No patched build found for this core, but the installed patched server matches it already.' 'WARN'
 } else {
@@ -596,12 +601,18 @@ if ($installNeeded) {
 if (WorldRunning) {
     $info = Ra 'server info'
     $players = if ($info -match 'Connected players:\s*(\d+)') { [int] $Matches[1] } else { -1 }
-    if ($players -ne 0 -and $WarnMinutes -gt 0) {
-        Log "Players online: $(if ($players -lt 0) { 'unknown' } else { $players }). Warning them $WarnMinutes minutes ahead."
-        Ra "announce Patch night: the server restarts in $WarnMinutes minutes for maintenance." | Out-Null
-        Start-Sleep -Seconds (60 * ($WarnMinutes - 1))
-        Ra 'announce Patch night: the server restarts in 1 minute. Find a safe spot!' | Out-Null
-        Start-Sleep -Seconds 60
+    # The scheduled run always counts down the full time (so the restart lands at the same time every night, and
+    # anyone who logs in during the countdown still hears the later warnings); a run by hand skips it if nobody is on.
+    if ($WarnMinutes -gt 0 -and ($players -ne 0 -or $Unattended)) {
+        Log "Players online: $(if ($players -lt 0) { 'unknown' } else { $players }). Counting down $WarnMinutes minutes."
+        $marks = @(@($WarnMinutes) + @(15, 10, 5, 1) | Where-Object { $_ -le $WarnMinutes } | Sort-Object -Descending -Unique)
+        for ($i = 0; $i -lt $marks.Count; $i++) {
+            $minutes = [int] $marks[$i]
+            $text = if ($minutes -eq 1) { 'the server restarts in 1 minute. Find a safe spot! It is back within 10 minutes.' } else { "the server restarts in $minutes minutes for maintenance and is back within 10 minutes." }
+            Ra "announce Nightly restart: $text" | Out-Null
+            $next = if ($i + 1 -lt $marks.Count) { [int] $marks[$i + 1] } else { 0 }
+            Start-Sleep -Seconds (60 * ($minutes - $next))
+        }
     } else {
         Log 'No players online.'
     }
