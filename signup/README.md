@@ -9,6 +9,9 @@ human check (Turnstile). The account is created through the server manager's own
 - **Secrets** live on the VM in `signup-settings.json` next to the patch-night scripts, never in GitHub:
   the Turnstile site key and secret key, and the invite code(s). Edits apply straight away.
 - `signup.log` (same folder) records every account created and every refusal, never passwords.
+- The same service answers `GET /api/status` for the homepage (wildcard.jtlab.cc): login and world server up or
+  down, players, bots, uptime and the installed build, plus the rates and features read from the live config files.
+  Public, read-only, cached 30 seconds (players: 60).
 
 ## Setting it up
 
