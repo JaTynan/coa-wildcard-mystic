@@ -70,6 +70,14 @@ worldserver.conf | Rate.Drop.Item.Epic = 3
 worldserver.conf | Rate.Drop.Item.Legendary = 3
 worldserver.conf | Rate.Drop.Money = 1.25
 
+# ---------------------------------------------------------------- Faster respawns for AoE farming (7 Nov)
+# Mostly solo levelling and grinding for Mystic Enchants: open-world mobs come back in about a minute, so a cleared
+# pack can be pulled again. The respawn time is divided by the number of characters in the zone, bots included, and
+# multiplied by 0.3, but never below 60 s; normal mobs are usually 5 minutes. Dungeons, rares, world bosses and
+# quest givers keep their own timers. Herbs, ore and chests are unchanged.
+worldserver.conf | Respawn.DynamicRateCreature = 0.3
+worldserver.conf | Respawn.DynamicMinimumCreature = 60
+
 # ---------------------------------------------------------------- Auction House bot
 modules\mod_ahbot.conf | AuctionHouseBot.Enable = 1
 modules\mod_ahbot.conf | AuctionHouseBot.Buyer.Enabled = true
