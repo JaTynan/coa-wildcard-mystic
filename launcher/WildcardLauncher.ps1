@@ -13,7 +13,7 @@ If the site cannot be reached, the game can still be started with whatever is in
 Every step and error goes to launcher.log next to this file (the Log button opens it), and the window says
 whether the game server itself is reachable.
 #>
-$LauncherVersion = 4
+$LauncherVersion = 5
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
@@ -321,13 +321,21 @@ function Sync-Client {
     $total = ($stale | Measure-Object -Property size -Sum).Sum
     $done = 0
     $count = 0
+    $failed = New-Object Collections.Generic.List[string]
     foreach ($file in $stale) {
         $count++
+        if ($file.path -match '(^|[\\/])web\.config$') { continue }
         $target = Join-Path $clientDir $file.path
         New-Item -ItemType Directory -Force -Path (Split-Path $target) | Out-Null
         $url = "$site/client/" + (($file.path -split '[\\/]' | ForEach-Object { [Uri]::EscapeDataString($_) }) -join '/')
         Log "Downloading $($file.path) ($(Size $file.size))"
-        Get-File $url $target ("Updating {0} ({1} of {2})" -f (Split-Path $file.path -Leaf), $count, $stale.Count)
+        try { Get-File $url $target ("Updating {0} ({1} of {2})" -f (Split-Path $file.path -Leaf), $count, $stale.Count) }
+        catch {
+            # One missing file should not stop the rest; it is reported at the end and retried next start.
+            Log "Could not download $($file.path): $($_.Exception.Message)"
+            $failed.Add($file.path)
+            continue
+        }
         if ($file.mtime) { (Get-Item -LiteralPath $target).LastWriteTimeUtc = [DateTimeOffset]::FromUnixTimeSeconds([long] $file.mtime).UtcDateTime }
         $done += $file.size
         if ($total -gt 0) { Progress ($done / $total) }
@@ -340,6 +348,9 @@ function Sync-Client {
         $state.Remove($gone)
     }
     Save-State $state
+    if ($failed.Count) {
+        throw ("{0} file(s) could not be downloaded, first {1}: see the log; tell James" -f $failed.Count, $failed[0])
+    }
     return $stale.Count
 }
 
@@ -391,8 +402,8 @@ $form.Add_Shown({
         $info = Get-Json "$site/launcher.json"
         if (Update-Self $info) { $form.Close(); return }
         Install-Client $info
+        if (Test-Path (Join-Path $clientDir 'Ascension.exe')) { Set-Realm $info.realm }
         $changed = Sync-Client
-        Set-Realm $info.realm
         if ($changed) { Ready "Up to date ($changed file(s) updated). Have fun!" } else { Ready 'Up to date. Have fun!' }
     }
     catch {
@@ -404,6 +415,10 @@ $form.Add_Shown({
         else { Say "Something went wrong: $message. The Log button shows the details for James."; $bar.Value = 0 }
     }
     $realm = if ($info -and $info.realm) { $info.realm } else { 'wow.jtlab.cc' }
+    # Point the game at the server even when the site or an update failed, so it never keeps an old address.
+    if (Test-Path (Join-Path $clientDir 'Ascension.exe')) {
+        try { Set-Realm $realm; Log "Game points at $realm" } catch { Log "Could not set the server address: $($_.Exception.Message)" }
+    }
     Check-Server $realm
 })
 
