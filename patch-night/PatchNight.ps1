@@ -286,7 +286,8 @@ function DatabaseName([string] $key, [string] $fallback) {
 function SkipUnusedAuctionItems {
     # The auction bot lists leftover developer items named "UNUSED..." (its own name filter misses them). Put every
     # such item on its never-list (AuctionHouseBot.DisabledCustomItemIDs), worked out from the world database at
-    # each start, and take the Auctioneer's current listings of them down if nobody has bid.
+    # each start, and take the Auctioneer's current listings of them down if nobody has bid. (MySQL refuses a
+    # multi-table DELETE with aliases unless a database is selected, hence the USE.)
     $world = DatabaseName 'WorldDatabaseInfo' 'acore_world'
     $chars = DatabaseName 'CharacterDatabaseInfo' 'acore_characters'
     $found = Sql "SELECT entry FROM ``$world``.item_template WHERE name LIKE BINARY 'UNUSED%' ORDER BY entry;"
@@ -301,7 +302,7 @@ function SkipUnusedAuctionItems {
     for ($i = 0; $i -lt $lines.Count; $i++) { if ($lines[$i] -match '^\s*AuctionHouseBot\.DisabledCustomItemIDs\s*=') { $at = $i } }
     if ($at -ge 0) { $lines[$at] = $setting } else { $lines.Add($setting) }
     Set-Content -Path $conf -Value $lines -Encoding ASCII
-    $removed = Sql ("DELETE ah, ii FROM ``$chars``.auctionhouse ah JOIN ``$chars``.item_instance ii ON ii.guid = ah.itemguid " +
+    $removed = Sql ("USE ``$chars``; DELETE ah, ii FROM ``$chars``.auctionhouse ah JOIN ``$chars``.item_instance ii ON ii.guid = ah.itemguid " +
         "JOIN ``$chars``.characters c ON c.guid = ah.itemowner JOIN ``$world``.item_template it ON it.entry = ii.itemEntry " +
         "WHERE c.name = 'Auctioneer' AND ah.buyguid = 0 AND it.name LIKE BINARY 'UNUSED%'; SELECT ROW_COUNT();")
     if ($removed.Code) { Log "Could not remove the Auctioneer's UNUSED listings: $($removed.Text)" 'WARN' }
