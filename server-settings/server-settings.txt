@@ -21,6 +21,8 @@ modules\coa.conf | CoA.GameModeMask = 64
 modules\coa.conf | CoA.MapClass10ToWarrior = 0
 modules\coa.conf | CoA.RealmType = "live seasonal"
 modules\coa.conf | CoA.ClientBooleanConfigs = "CONFIG_LEGACY_CHARACTER_ADVANCEMENT_ENABLED=0"
+# Runes at live rates come from every zone being a quiet "test zone" (sql/enchants/100-rune-rate.sql); no world spam.
+modules\coa.conf | CoA.TestZoneBonus.AnnounceIntervalMinutes = 0
 worldserver.conf | RealmID = 2
 worldserver.conf | AlwaysMaxSkillForLevel = 1
 worldserver.conf | PlayerStart.CustomSpells = 1
