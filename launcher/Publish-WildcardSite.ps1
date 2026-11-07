@@ -74,8 +74,10 @@ $changeCount = 0
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 try {
     $since = (Get-Date).Date.AddDays(1 - $ChangelogDays)
-    $pulls = @(Invoke-RestMethod -UseBasicParsing -Headers @{ 'User-Agent' = 'wildcard-site' } `
-        -Uri "https://api.github.com/repos/$Repo/pulls?state=closed&base=main&sort=updated&direction=desc&per_page=100")
+    # Windows PowerShell hands back a top-level JSON array as ONE object; assigning it directly (no @(), which would
+    # nest it) keeps the array itself, so foreach sees each pull request.
+    $pulls = Invoke-RestMethod -UseBasicParsing -Headers @{ 'User-Agent' = 'wildcard-site' } `
+        -Uri "https://api.github.com/repos/$Repo/pulls?state=closed&base=main&sort=updated&direction=desc&per_page=100"
     $entries = New-Object Collections.Generic.List[object]
     foreach ($pull in $pulls) {
         if (-not $pull.merged_at) { continue }
@@ -100,7 +102,7 @@ try {
     $changelog = [pscustomobject] @{ generated = (Get-Date).ToUniversalTime().ToString('o'); days = $days.ToArray() }
     ConvertTo-Json -InputObject $changelog -Depth 5 | Set-Content (Join-Path $Site 'changelog.json') -Encoding UTF8
 }
-catch { $changeCount = -1 }
+catch { $changeCount = -1; $changeError = $_.Exception.Message }
 $stage = Join-Path $env:TEMP 'wildcard-launcher'
 if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 New-Item -ItemType Directory -Path $stage | Out-Null
@@ -109,5 +111,5 @@ Set-Content (Join-Path $stage 'launcher-site.txt') $config.site -Encoding ASCII
 Compress-Archive -Path (Join-Path $stage '*') -DestinationPath (Join-Path $Site 'WildcardLauncher.zip') -Force
 Remove-Item $stage -Recurse -Force
 
-$changes = if ($changeCount -lt 0) { 'changelog not refreshed (GitHub unreachable)' } else { "$changeCount change(s) in the last $ChangelogDays days" }
+$changes = if ($changeCount -lt 0) { "changelog not refreshed ($changeError)" } else { "$changeCount change(s) in the last $ChangelogDays days" }
 "Published {0} client files ({1:N1} GB), launcher version {2}, {3}, to {4}." -f $files.Count, (($files | Measure-Object -Property size -Sum).Sum / 1GB), $launcherVersion, $changes, $Site
