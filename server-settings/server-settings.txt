@@ -122,6 +122,9 @@ modules\playerbots.conf | AiPlayerbot.DisabledWithoutRealPlayer = 1
 # SQUID's own canned lines back on (chat felt dead without them), with the quest ones cut to about a tenth so they do
 # not flood General as before ("just accepted [quest], let's do this!").
 modules\playerbots.conf | AiPlayerbot.RandomBotTalk = 1
+# SQUID's own emotes off (7 Nov): every bot emote set off the bots around it (agrees, nods, questions, "wants to know
+# the meaning of life"), a chain reaction. Bots still gesture with their AI chat lines and keep SQUID's other chatter.
+modules\playerbots.conf | AiPlayerbot.RandomBotEmote = 0
 modules\playerbots.conf | AiPlayerbot.BroadcastChanceQuestAccepted = 600
 modules\playerbots.conf | AiPlayerbot.BroadcastChanceQuestTurnedIn = 1500
 modules\playerbots.conf | AiPlayerbot.BroadcastChanceQuestUpdateComplete = 150
