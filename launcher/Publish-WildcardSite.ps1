@@ -33,6 +33,7 @@ $newCache = @{}
 foreach ($item in Get-ChildItem -LiteralPath $root -Recurse -File -Force) {
     $relative = $item.FullName.Substring($root.Length + 1)
     if ($skipFolders -contains ($relative -split '\\')[0]) { continue }
+    if ($item.Name -ieq 'realmlist.wtf') { continue }   # the launcher writes its own (the server address)
     $stamp = "$($item.Length)|$($item.LastWriteTimeUtc.Ticks)"
     $known = $cache[$relative]
     if ($known -and $known.stamp -eq $stamp) { $hash = $known.md5 }
