@@ -148,6 +148,10 @@ modules\playerbots.conf | AiPlayerbot.BroadcastChanceSuggestQuest = 1500
 # 1,000 bots kept one core busy while the other seven idled (21% CPU, 30 ms a tick, 7 Nov). Maps (each continent,
 # each dungeon copy) update in parallel with more threads. Back to 1 if anything odd shows up.
 worldserver.conf | MapUpdate.Threads = 4
+# How far away you see other characters and creatures in the open world (8 Nov): 100 -> 75 yards. Every visible
+# character's movement goes to every player who can see it, so a capital full of bots costs a lot; 75 is still well
+# past spell range and mob aggro range. Dungeons and battlegrounds keep their own distances.
+worldserver.conf | Visibility.Distance.Continents = 75
 # Database threads (8 Nov): with 1,250 bots, every bot login, save and logout went through one character-database
 # connection, so a real player's character list or new character waited behind them (slow "retrieving character
 # list", slow creation while bots start up). More connections let player requests through alongside the bots.
