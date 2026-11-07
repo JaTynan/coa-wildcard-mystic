@@ -5,9 +5,10 @@
 -- @drop_rune_percent as often: the chance rises first (up to 100%), then the amount; rows in a loot group (where
 -- one item is picked from several) only change the amount, so the other items keep their odds.
 -- The original numbers are kept in wcme_rune_original_* the first time, so every start recomputes from them and
--- 100 restores them. Rune pouches and bought runes are not affected.
-SET @quest_rune_percent := 200;
-SET @drop_rune_percent := 200;
+-- 100 restores them. Rune pouches and bought runes are not affected. Quests weigh more than drops (7 Nov): rewards
+-- levelling and prestiging over grinding one spot.
+SET @quest_rune_percent := 250;
+SET @drop_rune_percent := 150;
 SET @rune := 375250;
 
 CREATE TABLE IF NOT EXISTS `wcme_rune_original_quest` (
