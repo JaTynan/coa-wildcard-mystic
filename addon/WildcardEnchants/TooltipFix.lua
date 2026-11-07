@@ -5,8 +5,12 @@
 local scan = CreateFrame("GameTooltip", "WildcardEnchantsScanTooltip", nil, "GameTooltipTemplate")
 scan:SetOwner(UIParent, "ANCHOR_NONE")
 
--- The description is the first line under the name. Enchant tooltips can add more below it (a separator and
--- the buff they grant, with its own text), so the last line is not always the description.
+-- The description is the first real line under the name. Enchant tooltips can add more below it (a separator
+-- and the buff they grant, with its own text), so the last line is not always the description. Many enchants
+-- start with a "Requires <spell>" line; that is not the description and must never be used as one, or the
+-- swap below would rewrite "Requires Level 60" on every item tooltip.
+local MIN_LENGTH = 30
+
 local function Description(spellID)
 	scan:SetOwner(UIParent, "ANCHOR_NONE")
 	scan:ClearLines()
@@ -14,7 +18,7 @@ local function Description(spellID)
 	for i = 2, scan:NumLines() do
 		local line = _G["WildcardEnchantsScanTooltipTextLeft" .. i]
 		local text = line and line:GetText()
-		if text and text ~= "" then
+		if text and string.len(text) >= MIN_LENGTH and not string.find(text, "^Requires") then
 			return text
 		end
 	end
@@ -34,6 +38,8 @@ local function Replacements()
 	return replacements
 end
 
+-- Only text that is plainly an enchant description is touched: a whole line equal to the old text, or a line
+-- that contains it (scroll items quote the description inside a longer line). Requirement lines never change.
 local function Fix(tooltip)
 	local list = Replacements()
 	if not next(list) then
@@ -44,7 +50,7 @@ local function Fix(tooltip)
 	for i = 2, tooltip:NumLines() do
 		local line = _G[name .. "TextLeft" .. i]
 		local text = line and line:GetText()
-		if text then
+		if text and not string.find(text, "^Requires") and not string.find(text, "Requires Level") then
 			local new = list[text]
 			if not new then
 				for old, replacement in pairs(list) do
