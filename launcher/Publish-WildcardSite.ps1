@@ -6,7 +6,7 @@ The site folder (default F:\wildcard-site) is what the web server serves at the 
 or by hand after changing the client (for example after a client update in the manager).
 
   - launcher.json    realm address, first-install archive link and size, current launcher version
-  - manifest.json    every client file with its size and MD5 (personal folders left out)
+  - manifest.json    every client file with its size, MD5 and modified time (personal folders left out)
   - WildcardLauncher.zip, WildcardLauncher.ps1, index.html
 #>
 param(
@@ -43,7 +43,8 @@ foreach ($item in Get-ChildItem -LiteralPath $root -Recurse -File -Force) {
         finally { $stream.Close() }
     }
     $newCache[$relative] = [pscustomobject] @{ stamp = $stamp; md5 = $hash }
-    $files.Add([pscustomobject] @{ path = $relative; size = $item.Length; md5 = $hash })
+    $mtime = [long] [Math]::Floor(($item.LastWriteTimeUtc - [datetime]::new(1970, 1, 1, 0, 0, 0, 'Utc')).TotalSeconds)
+    $files.Add([pscustomobject] @{ path = $relative; size = $item.Length; md5 = $hash; mtime = $mtime })
 }
 $md5.Dispose()
 $manifest = [pscustomobject] @{ generated = (Get-Date).ToUniversalTime().ToString('o'); files = $files; remove = @($config.remove) }
