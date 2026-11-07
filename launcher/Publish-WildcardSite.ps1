@@ -8,11 +8,15 @@ or by hand after changing the client (for example after a client update in the m
   - launcher.json    realm address, first-install archive link and size, current launcher version
   - manifest.json    every client file with its size, MD5 and modified time (personal folders left out)
   - WildcardLauncher.zip, WildcardLauncher.ps1, index.html
+  - changelog.json   the last week of merged pull requests, by day, for the homepage's "Recent changes". A PR body
+                     line "Changelog: <text>" replaces its title there; "Changelog: skip" leaves it out.
 #>
 param(
     [string] $Client = 'F:\CoAClient',
     [string] $Site = 'F:\wildcard-site',
-    [string] $Settings = (Join-Path $PSScriptRoot 'launcher-settings.json')
+    [string] $Settings = (Join-Path $PSScriptRoot 'launcher-settings.json'),
+    [string] $Repo = 'JaTynan/coa-wildcard-mystic',
+    [int] $ChangelogDays = 7
 )
 $ErrorActionPreference = 'Stop'
 
@@ -64,6 +68,39 @@ $launcherVersion = [int] ((Select-String -Path (Join-Path $PSScriptRoot 'Wildcar
 
 Copy-Item (Join-Path $PSScriptRoot 'WildcardLauncher.ps1') $Site -Force
 Copy-Item (Join-Path $PSScriptRoot 'site\index.html') $Site -Force
+
+# ---------------------------------------------------------------- changelog (a GitHub hiccup keeps the last one)
+$changeCount = 0
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+try {
+    $since = (Get-Date).Date.AddDays(1 - $ChangelogDays)
+    $pulls = @(Invoke-RestMethod -UseBasicParsing -Headers @{ 'User-Agent' = 'wildcard-site' } `
+        -Uri "https://api.github.com/repos/$Repo/pulls?state=closed&base=main&sort=updated&direction=desc&per_page=100")
+    $entries = New-Object Collections.Generic.List[object]
+    foreach ($pull in $pulls) {
+        if (-not $pull.merged_at) { continue }
+        # Windows PowerShell may already have turned the date into a DateTime; otherwise parse GitHub's ISO text.
+        $merged = if ($pull.merged_at -is [datetime]) { $pull.merged_at.ToLocalTime() }
+                  else { [DateTimeOffset]::Parse([string] $pull.merged_at, [Globalization.CultureInfo]::InvariantCulture).ToLocalTime().DateTime }
+        if ($merged -lt $since) { continue }
+        $text = [string] $pull.title
+        if ([string] $pull.body -match '(?m)^Changelog:[ \t]*(.+?)\s*$') {
+            if ($Matches[1] -ieq 'skip') { continue }
+            $text = $Matches[1]
+        }
+        $entries.Add([pscustomobject] @{ merged = $merged; text = $text; number = [int] $pull.number })
+    }
+    $days = New-Object Collections.Generic.List[object]
+    foreach ($group in ($entries | Sort-Object merged -Descending | Group-Object { $_.merged.ToString('yyyy-MM-dd') } | Sort-Object Name -Descending)) {
+        $first = $group.Group[0].merged
+        $items = @($group.Group | ForEach-Object { [pscustomobject] @{ text = $_.text; number = $_.number } })
+        $days.Add([pscustomobject] @{ date = $group.Name; label = $first.ToString('dddd d MMMM'); items = $items })
+    }
+    $changeCount = $entries.Count
+    $changelog = [pscustomobject] @{ generated = (Get-Date).ToUniversalTime().ToString('o'); days = $days.ToArray() }
+    ConvertTo-Json -InputObject $changelog -Depth 5 | Set-Content (Join-Path $Site 'changelog.json') -Encoding UTF8
+}
+catch { $changeCount = -1 }
 $stage = Join-Path $env:TEMP 'wildcard-launcher'
 if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 New-Item -ItemType Directory -Path $stage | Out-Null
@@ -72,4 +109,5 @@ Set-Content (Join-Path $stage 'launcher-site.txt') $config.site -Encoding ASCII
 Compress-Archive -Path (Join-Path $stage '*') -DestinationPath (Join-Path $Site 'WildcardLauncher.zip') -Force
 Remove-Item $stage -Recurse -Force
 
-"Published {0} client files ({1:N1} GB), launcher version {2}, to {3}." -f $files.Count, (($files | Measure-Object -Property size -Sum).Sum / 1GB), $launcherVersion, $Site
+$changes = if ($changeCount -lt 0) { 'changelog not refreshed (GitHub unreachable)' } else { "$changeCount change(s) in the last $ChangelogDays days" }
+"Published {0} client files ({1:N1} GB), launcher version {2}, {3}, to {4}." -f $files.Count, (($files | Measure-Object -Property size -Sum).Sum / 1GB), $launcherVersion, $changes, $Site
