@@ -1,7 +1,8 @@
 <#
 Patch night: keeps the server on the patched world server and James's settings, unattended.
 
-Run weekly by the scheduled task (Register-PatchNight.cmd), or by hand (Run-PatchNight-Now.cmd).
+Run nightly by the scheduled task (Register-PatchNight.cmd: starts 3:30 am, warns players, restarts at 4 am), or by
+hand (Run-PatchNight-Now.cmd).
 
   1. Finds which manager release is installed (from the official world server's revision).
   2. Looks for this repository's patched build of that release (GitHub Releases).
@@ -596,12 +597,18 @@ if ($installNeeded) {
 if (WorldRunning) {
     $info = Ra 'server info'
     $players = if ($info -match 'Connected players:\s*(\d+)') { [int] $Matches[1] } else { -1 }
-    if ($players -ne 0 -and $WarnMinutes -gt 0) {
-        Log "Players online: $(if ($players -lt 0) { 'unknown' } else { $players }). Warning them $WarnMinutes minutes ahead."
-        Ra "announce Patch night: the server restarts in $WarnMinutes minutes for maintenance." | Out-Null
-        Start-Sleep -Seconds (60 * ($WarnMinutes - 1))
-        Ra 'announce Patch night: the server restarts in 1 minute. Find a safe spot!' | Out-Null
-        Start-Sleep -Seconds 60
+    # The scheduled run always counts down the full time (so the restart lands at the same time every night, and
+    # anyone who logs in during the countdown still hears the later warnings); a run by hand skips it if nobody is on.
+    if ($WarnMinutes -gt 0 -and ($players -ne 0 -or $Unattended)) {
+        Log "Players online: $(if ($players -lt 0) { 'unknown' } else { $players }). Counting down $WarnMinutes minutes."
+        $marks = @(@($WarnMinutes) + @(15, 10, 5, 1) | Where-Object { $_ -le $WarnMinutes } | Sort-Object -Descending -Unique)
+        for ($i = 0; $i -lt $marks.Count; $i++) {
+            $minutes = [int] $marks[$i]
+            $text = if ($minutes -eq 1) { 'the server restarts in 1 minute. Find a safe spot!' } else { "the server restarts in $minutes minutes for maintenance." }
+            Ra "announce Nightly restart: $text" | Out-Null
+            $next = if ($i + 1 -lt $marks.Count) { [int] $marks[$i + 1] } else { 0 }
+            Start-Sleep -Seconds (60 * ($minutes - $next))
+        }
     } else {
         Log 'No players online.'
     }
