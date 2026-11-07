@@ -608,7 +608,7 @@ if (WorldRunning) {
         $marks = @(@($WarnMinutes) + @(15, 10, 5, 1) | Where-Object { $_ -le $WarnMinutes } | Sort-Object -Descending -Unique)
         for ($i = 0; $i -lt $marks.Count; $i++) {
             $minutes = [int] $marks[$i]
-            $text = if ($minutes -eq 1) { 'the server restarts in 1 minute. Find a safe spot!' } else { "the server restarts in $minutes minutes for maintenance." }
+            $text = if ($minutes -eq 1) { 'the server restarts in 1 minute. Find a safe spot! It is back within 10 minutes.' } else { "the server restarts in $minutes minutes for maintenance and is back within 10 minutes." }
             Ra "announce Nightly restart: $text" | Out-Null
             $next = if ($i + 1 -lt $marks.Count) { [int] $marks[$i + 1] } else { 0 }
             Start-Sleep -Seconds (60 * ($minutes - $next))
