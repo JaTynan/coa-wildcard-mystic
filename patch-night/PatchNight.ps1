@@ -270,11 +270,12 @@ function RestoreRealmAddress {
     # The launcher resets the realm list to 127.0.0.1 at every start; the manager then writes the "Play with
     # friends" address back (friends.rs, reapply). Do the same, or other computers see the realm but cannot join it.
     # 1. "realmlist | address = ..." in server-settings.txt, if set; 2. the manager's Play with friends address.
-    $address = ''; $source = ''; $lan = $false
+    $address = ''; $source = ''; $lan = $false; $homeAddress = ''; $homePrefix = 0
     $list = Join-Path $settingsDir 'server-settings.txt'
     if (Test-Path $list) {
         foreach ($line in Get-Content $list) {
             if ($line -match '^\s*realmlist\s*\|\s*address\s*=\s*(\S+)\s*$') { $address = $Matches[1]; $source = 'server-settings' }
+            if ($line -match '^\s*realmlist\s*\|\s*local\s*=\s*(\d+\.\d+\.\d+\.\d+)/(\d+)\s*$') { $homeAddress = $Matches[1]; $homePrefix = [int] $Matches[2] }
         }
     }
     if (-not $address) {
@@ -306,6 +307,13 @@ function RestoreRealmAddress {
         $ids = @($active)
         if ($state.simultaneous) { $ids += $(if ($active -eq 1) { 2 } else { 1 }) }
         if ($state.with_reborn) { $ids += 3 }
+    }
+    # A public address for friends outside, plus "realmlist | local = ip/prefix" for the computers at home: clients
+    # inside that range are sent to the home address instead, so they never go out and back in through the gateway.
+    if ($homeAddress -and $homePrefix -ge 1 -and $homePrefix -le 32) {
+        $bits = ('1' * $homePrefix).PadRight(32, '0')
+        $mask = (0..3 | ForEach-Object { [Convert]::ToInt32($bits.Substring($_ * 8, 8), 2) }) -join '.'
+        $local = ",localAddress='$homeAddress',localSubnetMask='$mask'"
     }
     $sql = "UPDATE acore_auth.realmlist SET address='$address'$local WHERE id IN ($($ids -join ','));"
     $mysql = Join-Path $Server 'mysql\bin\mysql.exe'
