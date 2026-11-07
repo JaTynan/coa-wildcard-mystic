@@ -155,6 +155,13 @@ function FetchRepo {
             Copy-Item (Join-Path $fixes '*.sql') $local -Force
             Log "Downloaded $(@(Get-ChildItem $local -Filter *.sql).Count) Mystic Enchant fix file(s)."
         }
+        # The friends' launcher and download site (published by PublishFriendsSite once Setup-WildcardSite has run).
+        $launcher = Join-Path $repoRoot 'launcher'
+        $localLauncher = Join-Path $here 'launcher'
+        if (Test-Path $launcher) {
+            if (Test-Path $localLauncher) { Remove-Item $localLauncher -Recurse -Force }
+            Copy-Item $launcher $localLauncher -Recurse -Force
+        }
         # AI chat for bots (mod-ollama-chat): its config template and characters-database tables.
         $chat = Join-Path $repoRoot 'ollama-chat'
         $localChat = Join-Path $here 'ollama-chat'
@@ -323,6 +330,16 @@ function RestoreRealmAddress {
     else { Log "Realm list points friends at $address again, from $source (realm $($ids -join ', '))." }
 }
 
+function PublishFriendsSite {
+    # Refreshes the friends' download site (launcher, its settings, the client manifest) after the client folder
+    # may have changed. Does nothing until Setup-WildcardSite.ps1 has created the site folder.
+    $publish = Join-Path $here 'launcher\Publish-WildcardSite.ps1'
+    $site = 'F:\wildcard-site'
+    if (-not (Test-Path $publish) -or -not (Test-Path $site)) { return }
+    try { Log ((& $publish -Client $Client -Site $site | Out-String).Trim()) }
+    catch { Log "Publishing the friends' download site failed: $_" 'WARN' }
+}
+
 function StartAndCheck([string] $expected) {
     $started = Get-Date
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
@@ -332,6 +349,7 @@ function StartAndCheck([string] $expected) {
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
+    PublishFriendsSite
     # The world is up when this start's Server.log says so, from the expected build.
     $deadline = (Get-Date).AddMinutes(30)
     while ((Get-Date) -lt $deadline) {
