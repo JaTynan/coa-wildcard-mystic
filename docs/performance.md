@@ -12,8 +12,9 @@ spins at about 250).
 | 1,000 bots, 1 map thread | 33 | 30 ms | 61 ms | 489 ms | ~10 GB |
 | 1,000 bots, 4 map threads | 50 | 20 ms | 39 ms | 58 ms | ~10 GB |
 | 1,500 bots, 4 map threads | 26 | 38 ms | 66 ms | 301 ms | 8.9 GB |
+| 1,250 bots, 4 map threads | 30 | 33 ms | 64 ms | 112 ms | |
 
-Settled on 1,250. Memory is not the limit; one busy thread per map is (most bots are on Eastern Kingdoms and
+Settled on 1,250: the 95% figure is close to 1,500's, but the spikes players feel are a third as large. Memory is not the limit; one busy thread per map is (most bots are on Eastern Kingdoms and
 Kalimdor), so more vCPUs or map threads add little. The Proxmox host showed no CPU, memory or IO pressure.
 
 ## Levers for later (not changed yet)
