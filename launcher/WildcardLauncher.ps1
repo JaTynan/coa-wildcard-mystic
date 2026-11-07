@@ -5,11 +5,12 @@ Wildcard launcher: keeps a friend's copy of the client up to date with James's s
   2. Updates itself if the site has a newer launcher.
   3. First run: downloads the whole client (one archive, from the seedbox), resuming if interrupted, and unpacks it.
   4. Every run: compares the client with the site's manifest and downloads only the files that differ.
-  5. Points the game at the server (realmList in WTF\Config.wtf), then the Play button starts it.
+  5. Points the game at the server (realmList in WTF\Config.wtf and realmlist.wtf in each Data\<locale>
+     folder, which the game reads first), then the Play button starts it.
 
 If the site cannot be reached, the game can still be started with whatever is installed.
 #>
-$LauncherVersion = 1
+$LauncherVersion = 2
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
@@ -170,6 +171,11 @@ function Set-Realm([string] $realm) {
     if (Test-Path $config) { $lines = @(Get-Content $config | Where-Object { $_ -notmatch '^\s*SET\s+realmList\s' }) }
     $lines += "SET realmList `"$realm`""
     Set-Content $config $lines -Encoding ASCII
+    # The game reads Data\<locale>\realmlist.wtf over Config.wtf; set it in every locale folder (enUS, enGB, ...).
+    $data = Join-Path $clientDir 'Data'
+    $locales = @(Get-ChildItem $data -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -cmatch '^[a-z]{2}[A-Z]{2}$' })
+    if (-not $locales.Count) { $locales = @(New-Item -ItemType Directory -Force -Path (Join-Path $data 'enUS')) }
+    foreach ($locale in $locales) { Set-Content (Join-Path $locale.FullName 'realmlist.wtf') "set realmlist $realm" -Encoding ASCII }
 }
 
 # ------------------------------------------------------------------ steps
