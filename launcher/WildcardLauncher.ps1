@@ -13,7 +13,7 @@ If the site cannot be reached, the game can still be started with whatever is in
 Every step and error goes to launcher.log next to this file (the Log button opens it), and the window says
 whether the game server itself is reachable.
 #>
-$LauncherVersion = 4
+$LauncherVersion = 5
 $ErrorActionPreference = 'Stop'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
