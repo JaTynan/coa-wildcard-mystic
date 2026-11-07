@@ -284,16 +284,24 @@ function DatabaseName([string] $key, [string] $fallback) {
 }
 
 function SkipUnusedAuctionItems {
-    # The auction bot lists leftover developer items named "UNUSED..." (its own name filter misses them). Put every
-    # such item on its never-list (AuctionHouseBot.DisabledCustomItemIDs), worked out from the world database at
-    # each start, and take the Auctioneer's current listings of them down if nobody has bid. (MySQL refuses a
-    # multi-table DELETE with aliases unless a database is selected, hence the USE.)
+    # The auction bot lists everything in item_template, including items players should not be able to buy:
+    # leftover developer items named "UNUSED...", and Ascension's Bloodforged and Sanguine PvP gear (extra stats and
+    # resilience; on CoA a High-Risk open-world drop, switched off here). Put every such item on the bot's never-list
+    # (AuctionHouseBot.DisabledCustomItemIDs), worked out from the world database at each start, and take the
+    # Auctioneer's current listings of them down if nobody has bid. Resilience did not exist up to level 60 in the
+    # original game, so any level 1-60 item with it counts as that gear. (MySQL refuses a multi-table DELETE with
+    # aliases unless a database is selected, hence the USE.)
     $world = DatabaseName 'WorldDatabaseInfo' 'acore_world'
     $chars = DatabaseName 'CharacterDatabaseInfo' 'acore_characters'
-    $found = Sql "SELECT entry FROM ``$world``.item_template WHERE name LIKE BINARY 'UNUSED%' ORDER BY entry;"
-    if ($found.Code) { Log "Could not look up UNUSED items: $($found.Text)" 'WARN'; return }
+    $resilience = (1..10 | ForEach-Object { "stat_type$_ = 35" }) -join ' OR '
+    $catalogue = Sql "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$world' AND TABLE_NAME = 'coa_bloodforged_catalogue';"
+    $fromCatalogue = if ($catalogue.Text.Trim() -eq '1') { " OR entry IN (SELECT entry FROM ``$world``.coa_bloodforged_catalogue)" } else { '' }
+    $skip = "(name LIKE BINARY 'UNUSED%' OR name LIKE BINARY 'Bloodforged %' OR name LIKE BINARY 'Sanguine %'" +
+        " OR (RequiredLevel <= 60 AND ($resilience))$fromCatalogue)"
+    $found = Sql "SELECT entry FROM ``$world``.item_template WHERE $skip ORDER BY entry;"
+    if ($found.Code) { Log "Could not look up the items the auction bot should skip: $($found.Text)" 'WARN'; return }
     $ids = @($found.Text -split "`r?`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d+$' })
-    if (-not $ids.Count) { Log 'No UNUSED items in the world database.'; return }
+    if (-not $ids.Count) { Log 'No items for the auction bot to skip.'; return }
     $conf = Join-Path $configs 'modules\mod_ahbot.conf'
     if (-not (Test-Path $conf)) { Log "No $conf; the auction bot never-list was not set." 'WARN'; return }
     $setting = "AuctionHouseBot.DisabledCustomItemIDs = $($ids -join ',')"
@@ -304,9 +312,9 @@ function SkipUnusedAuctionItems {
     Set-Content -Path $conf -Value $lines -Encoding ASCII
     $removed = Sql ("USE ``$chars``; DELETE ah, ii FROM ``$chars``.auctionhouse ah JOIN ``$chars``.item_instance ii ON ii.guid = ah.itemguid " +
         "JOIN ``$chars``.characters c ON c.guid = ah.itemowner JOIN ``$world``.item_template it ON it.entry = ii.itemEntry " +
-        "WHERE c.name = 'Auctioneer' AND ah.buyguid = 0 AND it.name LIKE BINARY 'UNUSED%'; SELECT ROW_COUNT();")
-    if ($removed.Code) { Log "Could not remove the Auctioneer's UNUSED listings: $($removed.Text)" 'WARN' }
-    Log "Auction bot skips $($ids.Count) UNUSED items; removed listings (rows): $($removed.Text.Trim())."
+        "WHERE c.name = 'Auctioneer' AND ah.buyguid = 0 AND it.entry IN ($($ids -join ',')); SELECT ROW_COUNT();")
+    if ($removed.Code) { Log "Could not remove the Auctioneer's listings of skipped items: $($removed.Text)" 'WARN' }
+    Log "Auction bot skips $($ids.Count) items (UNUSED, Bloodforged, Sanguine, PvP); removed listings (rows): $($removed.Text.Trim())."
 }
 
 function RestoreRealmAddress {
