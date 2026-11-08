@@ -221,6 +221,75 @@ jobs:
           $text = $text.Replace($loop, "                GuidVector const waveGhosts = itr->second;`n                for (ObjectGuid const& guid : waveGhosts)`n")
           Set-Content $file $text -NoNewline
 
+      - name: Bots tell friend from foe by team, not race (cross-faction battlegrounds)
+        shell: pwsh
+        run: |
+          $file = 'core/modules/mod-playerbots/src/Bot/PlayerbotAI.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $race = 'bool PlayerbotAI::IsOpposing(Player* player) { return IsOpposing(player->getRace(), bot->getRace()); }'
+          if (-not $text.Contains($race)) { throw 'SQUID changed: PlayerbotAI::IsOpposing(Player*) was not found' }
+          # With CFBG.KeepRace a player on the other side keeps their race; their team (setTeamId by CFBG) is what counts.
+          $team = 'bool PlayerbotAI::IsOpposing(Player* player) { return player->GetTeamId() != bot->GetTeamId(); }'
+          Set-Content $file $text.Replace($race, $team) -NoNewline
+
+      - name: Wildcard skill card drops weighted by quality (Wildcard.CardDropQualityWeights, off when empty)
+        shell: pwsh
+        run: |
+          $file = 'core/src/server/coa/AscensionWildcard.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $old = @'
+          std::optional<std::uint32_t> RollCardDrop(Tables const& tables, RandomBelow const& random)
+          {
+              if (tables.DropItems.empty() || random(1000) >= CARD_DROP_CHANCE_PER_MILLE)
+                  return std::nullopt;
+              return tables.DropItems[random(std::uint32_t(tables.DropItems.size()))];
+          }
+          '@
+          $new = @'
+          std::optional<std::uint32_t> RollCardDrop(Tables const& tables, RandomBelow const& random)
+          {
+              std::uint32_t const chance = sConfigMgr->GetOption<std::uint32_t>("Wildcard.CardDropChancePerMille", CARD_DROP_CHANCE_PER_MILLE);
+              if (tables.DropItems.empty() || random(1000) >= chance)
+                  return std::nullopt;
+              std::string const weightText = sConfigMgr->GetOption<std::string>("Wildcard.CardDropQualityWeights", "");
+              std::array<std::uint32_t, SKILL_CARD_QUALITY_COUNT> weights{};
+              std::size_t parsed = 0;
+              for (std::string_view part : Acore::Tokenize(weightText, ',', false))
+              {
+                  if (parsed >= weights.size())
+                      break;
+                  weights[parsed++] = Acore::StringTo<std::uint32_t>(part).value_or(0);
+              }
+              if (parsed != weights.size())
+                  return tables.DropItems[random(std::uint32_t(tables.DropItems.size()))];
+              std::array<std::vector<std::uint32_t>, SKILL_CARD_QUALITY_COUNT> byQuality;
+              for (std::uint32_t item : tables.DropItems)
+                  if (auto const card = tables.CardItems.find(item); card != tables.CardItems.end())
+                      if (auto const info = tables.Cards.find(card->second); info != tables.Cards.end())
+                          byQuality[info->second.Quality].push_back(item);
+              std::uint32_t total = 0;
+              for (std::size_t quality = 0; quality < byQuality.size(); ++quality)
+                  if (!byQuality[quality].empty())
+                      total += weights[quality];
+              if (!total)
+                  return tables.DropItems[random(std::uint32_t(tables.DropItems.size()))];
+              std::uint32_t pick = random(total);
+              for (std::size_t quality = 0; quality < byQuality.size(); ++quality)
+              {
+                  if (byQuality[quality].empty())
+                      continue;
+                  if (pick < weights[quality])
+                      return byQuality[quality][random(std::uint32_t(byQuality[quality].size()))];
+                  pick -= weights[quality];
+              }
+              return tables.DropItems[random(std::uint32_t(tables.DropItems.size()))];
+          }
+          '@
+          $old = $old.Replace("`r`n", "`n")
+          if (-not $text.Contains($old)) { throw 'CoA changed: RollCardDrop in AscensionWildcard.cpp was not found' }
+          if (-not $text.Contains('#include "StringConvert.h"')) { $text = $text.Replace('#include "StringFormat.h"', "#include `"StringConvert.h`"`n#include `"StringFormat.h`"") }
+          Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
+
       - name: Place the modules where the core expects them (as the manager's build does)
         shell: pwsh
         run: |
