@@ -142,7 +142,9 @@ modules\playerbots.conf | AiPlayerbot.BotActiveAlone = 5
 # bots and the world update slowed (95% under 62-72 ms, spikes to 485). Only bots within 300 yards of a real player
 # (view distance is 100) stay fully awake; the far side of a zone sleeps until someone gets close, so each extra
 # player costs a circle, not a zone. Bots in combat, dungeons, groups or a player's guild stay awake regardless.
-modules\playerbots.conf | AiPlayerbot.BotActiveAloneForceWhenInZone = 0
+# 8 Nov, later: with zone waking off, bots near players still froze (walked a few steps, then stood for 20 minutes or
+# more) although the radius check reads correctly; zone waking is back on until that is understood. The radius stays.
+modules\playerbots.conf | AiPlayerbot.BotActiveAloneForceWhenInZone = 1
 modules\playerbots.conf | AiPlayerbot.BotActiveAloneForceWhenInRadius = 300
 # Bots move into the zones players are levelling in
 modules\playerbots.conf | AiPlayerbot.RandomBotConcentrateInPlayerZone = 1
