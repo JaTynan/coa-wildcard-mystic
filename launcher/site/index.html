@@ -8,6 +8,9 @@
   :root { --bg: #18181c; --panel: #222228; --line: #33333c; --text: #e2e2e6; --muted: #a0a0aa; --gold: #e6b43c;
           --good: #7ad97a; --bad: #ff7a6b; --wait: #a0a0aa; }
   * { box-sizing: border-box; }
+  nav.top { display: flex; gap: 18px; margin: 0 0 24px; font-size: 15px; }
+  nav.top a { color: var(--muted); text-decoration: none; }
+  nav.top a:hover, nav.top a[aria-current] { color: var(--gold); }
   body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 "Segoe UI", system-ui, sans-serif; }
   main { max-width: 860px; margin: 0 auto; padding: 44px 16px 64px; }
   h1 { color: var(--gold); font-size: 44px; margin: 0 0 4px; letter-spacing: 1px; }
@@ -52,8 +55,10 @@
 </head>
 <body>
 <main>
+  <nav class="top"><a href="./" aria-current="page">Home</a><a href="how-to-play.html">How to play</a><a href="https://join.jtlab.cc">Create an account</a></nav>
   <h1>Wildcard</h1>
-  <p class="tag">James's World of Warcraft server. Random abilities, Mystic Enchants, and a world full of bots.</p>
+  <p class="tag">James's World of Warcraft server. Random abilities, Mystic Enchants, and a world full of bots.
+    New here? Start with <a href="how-to-play.html" style="color:var(--gold)">How to play</a>.</p>
 
   <div class="grid">
     <section class="panel" aria-labelledby="status-title">
