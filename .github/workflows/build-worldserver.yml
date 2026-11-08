@@ -171,6 +171,16 @@ jobs:
           $text = $text.Replace('#include "Player.h"', "#include `"Player.h`"`n#include `"Config.h`"")
           Set-Content $file $text -NoNewline
 
+      - name: Free class training on Wildcard (Wildcard.FreeClassTraining, off at 0)
+        shell: pwsh
+        run: |
+          $file = 'core/src/server/coa/AscensionWildcard.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $head = "uint32 TrainerPrice(uint32 spellId, uint32 level)`n{`n"
+          if (-not $text.Contains($head)) { throw 'CoA changed: TrainerPrice in AscensionWildcard.cpp was not found' }
+          $free = $head + "    if (sConfigMgr->GetOption<bool>(`"Wildcard.FreeClassTraining`", false))`n        return 0;`n"
+          Set-Content $file $text.Replace($head, $free) -NoNewline
+
       - name: Place the modules where the core expects them (as the manager's build does)
         shell: pwsh
         run: |
