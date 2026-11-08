@@ -104,7 +104,9 @@
         <ul>
           <li>Steam (Proton), the easiest: close Steam, then run <code>python3 WildcardLauncher.py --add-to-steam</code>.
             It adds Wildcard to your Steam library, sets it to Proton Experimental, and makes <code>--play</code> start it
-            through Steam. Your Steam settings are backed up first (<code>*.wildcard-backup</code>).</li>
+            through Steam. It also puts a <strong>Wildcard</strong> shortcut in your app menu and on your desktop: click it
+            and the game updates, then opens through Steam. Your Steam settings are backed up first
+            (<code>*.wildcard-backup</code>).</li>
           <li>Plain Wine: <code>python3 WildcardLauncher.py --set-play "wine {exe}"</code></li>
           <li>Bottles (Flatpak), with a bottle called CoA: <code>python3 WildcardLauncher.py --set-play "flatpak run
             --command=bottles-cli com.usebottles.bottles run -b CoA -e {exe}"</code></li>
@@ -123,6 +125,9 @@
       <li>Run <code>python3 WildcardLauncher.py --set-play "steam steam://rungameid/THE-NUMBER"</code> (Flatpak Steam:
         <code>"flatpak run com.valvesoftware.Steam steam://rungameid/THE-NUMBER"</code>).</li>
     </ol>
+    <p class="note">Using Wine or Bottles instead of Steam? Run <code>python3 WildcardLauncher.py --add-shortcut</code>
+      once for the same one-click shortcut. If the desktop icon won't open, right-click it and choose
+      <strong>Allow Launching</strong>.</p>
     <p class="note">Already have the game in a Bottles or Wine folder? Put the launcher next to that <code>CoAClient</code>
       folder instead and it just keeps it updated. It updates itself too. If something goes wrong,
       <code>launcher.log</code> in the same folder shows what happened; send it to James.</p>
