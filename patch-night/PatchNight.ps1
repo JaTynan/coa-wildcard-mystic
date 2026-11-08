@@ -117,6 +117,20 @@ function Ra([string] $command) {
 
 function WorldRunning { [bool] (Get-Process worldserver -ErrorAction SilentlyContinue) }
 
+# Whether the world accepts players yet (its game port answers). While it is still loading nobody can be on it.
+function WorldAcceptsPlayers {
+    $port = 8085
+    try { $port = [int] (Get-Content (Join-Path $Server 'Settings\repack.json') -Raw | ConvertFrom-Json).worldPort } catch { }
+    $client = New-Object Net.Sockets.TcpClient
+    try {
+        $pending = $client.BeginConnect('127.0.0.1', $port, $null, $null)
+        if ($pending.AsyncWaitHandle.WaitOne(2000) -and $client.Connected) { $client.EndConnect($pending); return $true }
+        return $false
+    }
+    catch { return $false }
+    finally { $client.Close() }
+}
+
 function StopServer {
     if (-not (WorldRunning)) { Log 'Server is already stopped.'; return }
     $result = Launcher 'stop-all'
@@ -601,9 +615,12 @@ if ($installNeeded) {
 if (WorldRunning) {
     $info = Ra 'server info'
     $players = if ($info -match 'Connected players:\s*(\d+)') { [int] $Matches[1] } else { -1 }
+    # No answer from the console while the world is still loading (or stuck) means nobody can be on it.
+    $worldClosed = $players -lt 0 -and -not (WorldAcceptsPlayers)
+    if ($worldClosed) { Log 'The world is not accepting players (still starting or stuck), so there is nobody to warn.'; $players = 0 }
     # The scheduled run always counts down the full time (so the restart lands at the same time every night, and
     # anyone who logs in during the countdown still hears the later warnings); a run by hand skips it if nobody is on.
-    if ($WarnMinutes -gt 0 -and ($players -ne 0 -or $Unattended)) {
+    if ($WarnMinutes -gt 0 -and -not $worldClosed -and ($players -ne 0 -or $Unattended)) {
         Log "Players online: $(if ($players -lt 0) { 'unknown' } else { $players }). Counting down $WarnMinutes minutes."
         $marks = @(@($WarnMinutes) + @(15, 10, 5, 1) | Where-Object { $_ -le $WarnMinutes } | Sort-Object -Descending -Unique)
         for ($i = 0; $i -lt $marks.Count; $i++) {
