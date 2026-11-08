@@ -232,6 +232,19 @@ jobs:
           $team = 'bool PlayerbotAI::IsOpposing(Player* player) { return player->GetTeamId() != bot->GetTeamId(); }'
           Set-Content $file $text.Replace($race, $team) -NoNewline
 
+      - name: Bots attack Mercenaries of their own faction too (when the bot is in a PvP ruleset)
+        shell: pwsh
+        run: |
+          $file = 'core/modules/mod-playerbots/src/Ai/Base/Value/EnemyPlayerValue.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $old = 'if (enemy && botAI->IsOpposing(enemy) && enemy->IsPvP() &&'
+          if (-not $text.Contains($old)) { throw 'SQUID changed: the enemy player check in NearestEnemyPlayersValue was not found' }
+          if (-not $text.Contains('static bool CoaPvpRuleset(Unit const* unit)')) { throw 'SQUID changed: CoaPvpRuleset was not found' }
+          # CoA's Mercenary (aura 9930874, core AscensionMercenary.cpp) is free-for-all against anyone in War Mode or
+          # High Risk, own faction included; the core already lets those characters attack them.
+          $new = 'if (enemy && (botAI->IsOpposing(enemy) || (enemy->HasAura(9930874) && CoaPvpRuleset(bot))) && enemy->IsPvP() &&'
+          Set-Content $file $text.Replace($old, $new) -NoNewline
+
       - name: Wildcard skill card drops weighted by quality (Wildcard.CardDropQualityWeights, off when empty)
         shell: pwsh
         run: |
