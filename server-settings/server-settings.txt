@@ -30,6 +30,8 @@ worldserver.conf | PlayerStart.CustomSpells = 1
 modules\wildcard.conf | Wildcard.AbilityPool = "classic"
 # Pete Arr beside Silas Darkmoon (Stormwind, Orgrimmar): free, unlimited Scrolls of Fortune for rerolls.
 modules\wildcard.conf | Wildcard.FreeScrolls = 1
+# Class skills from the Wildcard trainer cost nothing (8 Nov; needs the build with the FreeClassTraining patch).
+modules\wildcard.conf | Wildcard.FreeClassTraining = 1
 
 # ---------------------------------------------------------------- Experience
 # Double XP everywhere (CoA's stock master rate is 0.9295; this keeps its per-source balance)
