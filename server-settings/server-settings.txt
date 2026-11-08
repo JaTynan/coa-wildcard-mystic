@@ -129,6 +129,12 @@ modules\playerbots.conf | AiPlayerbot.CoaRulesetWarModePct = 55
 # Away from real players only 5% of bots are awake (was 15%); bots in a player's zone or within 150 yards stay
 # fully active. Lets the far world sleep so the zones with players get the CPU (7 Nov, 1,250 bots).
 modules\playerbots.conf | AiPlayerbot.BotActiveAlone = 5
+# Wake bots near players, not whole zones (8 Nov): with two players questing in different zones, each zone woke all its
+# bots and the world update slowed (95% under 62-72 ms, spikes to 485). Only bots within 300 yards of a real player
+# (view distance is 100) stay fully awake; the far side of a zone sleeps until someone gets close, so each extra
+# player costs a circle, not a zone. Bots in combat, dungeons, groups or a player's guild stay awake regardless.
+modules\playerbots.conf | AiPlayerbot.BotActiveAloneForceWhenInZone = 0
+modules\playerbots.conf | AiPlayerbot.BotActiveAloneForceWhenInRadius = 300
 # Bots move into the zones players are levelling in
 modules\playerbots.conf | AiPlayerbot.RandomBotConcentrateInPlayerZone = 1
 # Bots log in when the first player does and out 5 minutes after the last one leaves
