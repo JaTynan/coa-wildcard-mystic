@@ -11,6 +11,8 @@
   figure { margin: 16px 0 0; }
   figure img { width: 100%; height: auto; border-radius: 8px; display: block; border: 1px solid var(--line); }
   figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  figure.small { max-width: 560px; }
+  li figure { margin: 10px 0 14px; }
   .toc { columns: 2; font-size: 15px; }
   .toc a { color: var(--text); }
   @media (max-width: 720px) { .toc { columns: 1; } }
@@ -64,9 +66,40 @@
       only needs Python 3, which every Linux desktop already has.</p>
     <ol>
       <li>Make a folder with about 100 GB free, for example <code>~/Games/Wildcard</code>, and save
-        <a href="WildcardLauncher.py" download>WildcardLauncher.py</a> into it.</li>
-      <li>In a terminal in that folder, run <code>python3 WildcardLauncher.py</code>. The first time, it downloads and
-        unpacks the game (about 45 GB). If it stops, run it again and it carries on.</li>
+        <a href="WildcardLauncher.py" download>WildcardLauncher.py</a> into it.
+        <figure class="small">
+          <img src="images/linux-1-save.png" width="818" height="329" loading="lazy"
+               alt="A save dialog saving WildcardLauncher.py into the folder james, Games, Wildcard">
+          <figcaption>Save it straight into your new Wildcard folder.</figcaption>
+        </figure>
+      </li>
+      <li>Open a terminal in that folder: in the file manager, right-click an empty space in the folder and choose
+        <strong>Open in Terminal</strong>.
+        <figure>
+          <img src="images/linux-2-open-terminal.png" width="1180" height="437" loading="lazy"
+               alt="The Files app showing the Wildcard folder with WildcardLauncher.py in it, and a note to right-click the empty space and choose Open in Terminal">
+        </figure>
+      </li>
+      <li>Type <code>python3 WildcardLauncher.py</code> and press Enter.
+        <figure>
+          <img src="images/linux-3-run.png" width="1180" height="437" loading="lazy"
+               alt="A terminal in the Wildcard folder with the command python3 WildcardLauncher.py typed in">
+        </figure>
+        The first time, it downloads and unpacks the game (about 45 GB). It shows how far along it is and roughly how
+        long is left. If it stops, run it again and it carries on.
+        <figure>
+          <img src="images/linux-4-downloading.png" width="1180" height="437" loading="lazy"
+               alt="The terminal showing: Downloading the game, 299 MB of 43.3 GB, 25 MB/s, about 28 minutes left">
+          <figcaption>Downloading. Leave the terminal open until it finishes.</figcaption>
+        </figure>
+        Then it unpacks the game, checks every file and fetches any updates. When it says <strong>Up to date</strong>,
+        the game is ready.
+        <figure>
+          <img src="images/linux-5-up-to-date.png" width="1470" height="489" loading="lazy"
+               alt="The terminal showing the download finished, the game unpacked, the files checked, and: Up to date (2 files updated). Have fun!">
+          <figcaption>Done: the CoAClient folder now holds the game.</figcaption>
+        </figure>
+      </li>
       <li>Tell it once how you start Windows games. <code>{exe}</code> stands for the game's <code>Ascension.exe</code>:
         <ul>
           <li>Steam (Proton), the easiest: close Steam, then run <code>python3 WildcardLauncher.py --add-to-steam</code>.
