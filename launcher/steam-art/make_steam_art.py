@@ -187,8 +187,8 @@ def main():
     img = background(w, h, 2)
     fan(img, (w * 0.14, h * 0.55), int(h * 0.36), 3, 18, h * 0.04, s)
     e = logo(int(w * 0.8))
-    e = e.resize((int(e.width * h * 0.86 / e.height), int(h * 0.86)), Image.LANCZOS)
-    img.alpha_composite(e, (int(w * 0.6 - e.width / 2), (h - e.height) // 2))
+    e = e.resize((int(e.width * h * 0.8 / e.height), int(h * 0.8)), Image.LANCZOS)
+    img.alpha_composite(e, (int(w * 0.585 - e.width / 2), (h - e.height) // 2))
     save(img, "header.png", (920, 430))
 
     w, h = 1920 * s, 620 * s  # hero: no text, Steam puts the logo over it

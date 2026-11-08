@@ -106,31 +106,44 @@ def emblem(width, fonts):
     H = int(W * 0.62)
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     cx, cy = W / 2, H * 0.47
-    pw, ph = W * 0.76, H * 0.42
-    point = W * 0.07
+    K = 0.74  # plate size within the canvas, leaving room for the wings
+    pw, ph = W * 0.76 * K, H * 0.42 * K
+    point = W * 0.07 * K
     rng = random.Random(7)
 
-    # blades behind the plate: original wing/blade fan
-    blades = Image.new("L", (W, H), 0)
-    d = ImageDraw.Draw(blades)
+    # drooping wings behind the plate: feathers fan out and DOWN from each end (Descension, not Ascension)
+    wings = Image.new("L", (W, H), 0)
+    wing_shade = Image.new("L", (W, H), 0)
+    d = ImageDraw.Draw(wings)
+    ds = ImageDraw.Draw(wing_shade)
+    # angle below horizontal, length, width: short at the top, longest hanging lowest, like a folded-down wing
+    feathers = [(4, 0.15, 0.030), (15, 0.19, 0.032), (26, 0.23, 0.034), (37, 0.27, 0.036), (48, 0.30, 0.037),
+                (58, 0.32, 0.037), (67, 0.33, 0.036), (75, 0.32, 0.034)]
     for side in (-1, 1):
-        for i, (ang, length, thick) in enumerate([(-38, 0.20, 0.030), (-14, 0.24, 0.034), (12, 0.20, 0.030),
-                                                   (34, 0.15, 0.026)]):
+        root_x, root_y = cx + side * pw * 0.42, cy - ph * 0.30
+        for i, (ang, length, thick) in enumerate(reversed(feathers)):
             a = math.radians(ang)
-            bx = cx + side * pw * 0.38
-            by = cy + ph * 0.05
-            tipx = bx + side * math.cos(a) * W * length
-            tipy = by + math.sin(a) * W * length * 0.9
-            nx, ny = -math.sin(a) * W * thick, math.cos(a) * W * thick
-            d.polygon([(bx - nx, by - ny), (tipx, tipy), (bx + nx, by + ny)], fill=255)
-    # crest blades above
-    for ang, length in ((-90, 0.17), (-112, 0.12), (-68, 0.12)):
-        a = math.radians(ang)
-        bx, by = cx, cy - ph * 0.45
-        tipx, tipy = bx + math.cos(a) * W * length, by + math.sin(a) * W * length
-        nx, ny = -math.sin(a) * W * 0.024, math.cos(a) * W * 0.024
-        d.polygon([(bx - nx, by - ny), (tipx, tipy), (bx + nx, by + ny)], fill=255)
-    img.alpha_composite(metal(blades, [(250, 226, 160), (200, 146, 60), (110, 66, 20)], bevel=W // 220))
+            dx, dy = side * math.cos(a), math.sin(a)  # positive dy points down the image
+            length, thick = length * K, thick * K
+            tip = (root_x + dx * W * length, root_y + dy * W * length * 0.95)
+            nx, ny = -dy * W * thick, dx * W * thick
+            mid = (root_x + dx * W * length * 0.55, root_y + dy * W * length * 0.55 * 0.95)
+            outline = [(root_x - nx * 0.5, root_y - ny * 0.5), (mid[0] - nx, mid[1] - ny), tip,
+                       (mid[0] + nx, mid[1] + ny), (root_x + nx * 0.5, root_y + ny * 0.5)]
+            d.polygon(outline, fill=255)
+            # dark gap between feathers so each reads separately
+            ds.line([(root_x, root_y), tip], fill=255, width=max(2, W // 500))
+            ds.polygon([(mid[0] + nx * 0.85, mid[1] + ny * 0.85), tip, (mid[0] + nx, mid[1] + ny)], fill=200)
+    wing_metal = metal(wings, [(250, 230, 170), (214, 162, 72), (140, 88, 26), (90, 52, 14)], bevel=W // 260)
+    grooves = Image.new("RGBA", (W, H), (60, 30, 6, 0))
+    grooves.putalpha(ImageChops.multiply(wing_shade, wings).filter(ImageFilter.GaussianBlur(1)).point(lambda v: int(v * 0.7)))
+    wing_metal.alpha_composite(grooves)
+    img.alpha_composite(wing_metal)
+    # a single blade pointing down beneath the ribbon
+    tipd = Image.new("L", (W, H), 0)
+    ImageDraw.Draw(tipd).polygon([(cx - W * 0.03 * K, cy + ph * 0.5), (cx, cy + ph * 0.5 + H * 0.26 * K),
+                                  (cx + W * 0.03 * K, cy + ph * 0.5)], fill=255)
+    img.alpha_composite(metal(tipd, [(250, 226, 160), (200, 146, 60), (110, 66, 20)], bevel=W // 300))
 
     # outer plate
     pts = plate_points(cx, cy, pw, ph, point)
@@ -145,11 +158,12 @@ def emblem(width, fonts):
     panel = inset(pts, cx, cy, 0.93, 0.78)
     rim_mask = shape((W, H), lambda dd: dd.polygon(rim, fill=255))
     img.alpha_composite(metal(rim_mask, [(120, 70, 20), (230, 180, 90), (90, 50, 14)], bevel=W // 300))
-    rivet = metal(shape((W // 60, W // 60), lambda dd: dd.ellipse((1, 1, W // 60 - 2, W // 60 - 2), fill=255)),
+    rv = int(W / 60 * K)
+    rivet = metal(shape((rv, rv), lambda dd: dd.ellipse((1, 1, rv - 2, rv - 2), fill=255)),
                   bevel=max(1, W // 600))
     ring = inset(pts, cx, cy, 0.985, 0.93)
     for (x0, y0), (x1, y1) in zip(ring, ring[1:] + ring[:1]):
-        steps = int(math.hypot(x1 - x0, y1 - y0) // (W * 0.06))
+        steps = int(math.hypot(x1 - x0, y1 - y0) // (W * 0.06 * K))
         for k in range(1, steps):
             x, y = x0 + (x1 - x0) * k / steps, y0 + (y1 - y0) * k / steps
             img.alpha_composite(rivet, (int(x - rivet.width / 2), int(y - rivet.height / 2)))
@@ -170,16 +184,16 @@ def emblem(width, fonts):
     img.alpha_composite(ember)
 
     # gems: crest and the two points
-    g = gem(int(W * 0.075), (150, 90, 230))
-    img.alpha_composite(g, (int(cx - g.width / 2), int(cy - ph * 0.62 - g.height / 2)))
-    sg = gem(int(W * 0.042), (150, 90, 230))
+    g = gem(int(W * 0.075 * K), (150, 90, 230))
+    img.alpha_composite(g, (int(cx - g.width / 2), int(cy - ph * 0.55 - g.height / 2)))
+    sg = gem(int(W * 0.042 * K), (150, 90, 230))
     for side in (-1, 1):
         x = cx + side * (pw / 2 + point * 0.45)
         img.alpha_composite(sg, (int(x - sg.width / 2), int(cy - sg.height / 2)))
 
     # text
     title_font = fonts["title"]
-    big = int(H * 0.2)
+    big = int(H * 0.2 * K)
     while True:
         line = gold_text("DESCENSION", ImageFont.truetype(title_font, big), max(3, big // 14))
         if line.width <= pw * 0.98:
@@ -190,7 +204,7 @@ def emblem(width, fonts):
     img.alpha_composite(line, (int(cx - line.width / 2), int(cy - line.height * 0.36)))
 
     # ribbon
-    rw, rh = pw * 0.56, H * 0.12
+    rw, rh = pw * 0.56, H * 0.12 * K
     ry = cy + ph * 0.5 + rh * 0.15
     tail = rw * 0.14
     ribbon_pts = [(cx - rw / 2, ry - rh / 2), (cx + rw / 2, ry - rh / 2), (cx + rw / 2 + tail, ry - rh * 0.1),
