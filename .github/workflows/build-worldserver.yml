@@ -171,6 +171,56 @@ jobs:
           $text = $text.Replace('#include "Player.h"', "#include `"Player.h`"`n#include `"Config.h`"")
           Set-Content $file $text -NoNewline
 
+      - name: Free class training on Wildcard (Wildcard.FreeClassTraining, off at 0)
+        shell: pwsh
+        run: |
+          $file = 'core/src/server/coa/AscensionWildcard.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $head = "uint32 TrainerPrice(uint32 spellId, uint32 level)`n{`n"
+          if (-not $text.Contains($head)) { throw 'CoA changed: TrainerPrice in AscensionWildcard.cpp was not found' }
+          $free = $head + "    if (sConfigMgr->GetOption<bool>(`"Wildcard.FreeClassTraining`", false))`n        return 0;`n"
+          Set-Content $file $text.Replace($head, $free) -NoNewline
+
+      - name: Battleground spirit guides raise every ghost beside them at each wave
+        shell: pwsh
+        run: |
+          $file = 'core/src/server/game/Battlegrounds/Battleground.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $wave = "    if (m_LastResurrectTime >= RESURRECTION_INTERVAL)`n    {`n"
+          $loop = "                for (ObjectGuid const& guid : itr->second)`n"
+          if (-not $text.Contains($wave)) { throw 'Core changed: the resurrection wave in Battleground::_ProcessResurrect was not found' }
+          if (-not $text.Contains($loop)) { throw 'Core changed: the revive queue loop in Battleground::_ProcessResurrect was not found' }
+          $sweep = @'
+                  // Wildcard: a ghost standing at its own team's spirit guide is raised at the wave even if it dropped out of
+                  // the queue (players reported needing a second wave, or talking to the guide, in Warsong Gulch).
+                  for (auto const& [ghostGuid, ghostEntry] : GetPlayers())
+                  {
+                      Player* ghost = ObjectAccessor::FindPlayer(ghostGuid);
+                      if (!ghost || ghost->IsAlive() || !ghost->HasPlayerFlag(PLAYER_FLAGS_GHOST) || !ghost->IsInWorld())
+                          continue;
+                      bool queued = false;
+                      for (auto const& [queuedGuide, queuedGhosts] : m_ReviveQueue)
+                          if (std::find(queuedGhosts.begin(), queuedGhosts.end(), ghostGuid) != queuedGhosts.end())
+                              queued = true;
+                      if (queued)
+                          continue;
+                      uint32 const ownGuide = ghost->GetBgTeamId() == TEAM_ALLIANCE ? BG_CREATURE_ENTRY_A_SPIRITGUIDE : BG_CREATURE_ENTRY_H_SPIRITGUIDE;
+                      for (ObjectGuid const& creatureGuid : BgCreatures)
+                      {
+                          Creature* guide = ghost->GetMap()->GetCreature(creatureGuid);
+                          if (guide && guide->IsSpiritGuide() && guide->GetEntry() == ownGuide && ghost->IsWithinDistInMap(guide, 30.0f))
+                          {
+                              m_ReviveQueue[guide->GetGUID()].push_back(ghostGuid);
+                              break;
+                          }
+                      }
+                  }
+          '@
+          $text = $text.Replace($wave, $wave + $sweep.Replace("`r`n", "`n").TrimEnd() + "`n")
+          # Walk a copy: removing a ghost from the queue mid-wave must not skip the next one.
+          $text = $text.Replace($loop, "                GuidVector const waveGhosts = itr->second;`n                for (ObjectGuid const& guid : waveGhosts)`n")
+          Set-Content $file $text -NoNewline
+
       - name: Place the modules where the core expects them (as the manager's build does)
         shell: pwsh
         run: |
