@@ -37,6 +37,9 @@ modules\wildcard.conf | Wildcard.FreeClassTraining = 1
 # so epics and legendaries dropped as often as commons. Weights common,uncommon,rare,epic,legendary; 3% per kill.
 modules\wildcard.conf | Wildcard.CardDropQualityWeights = "50,28,14,6,2"
 modules\wildcard.conf | Wildcard.CardDropChancePerMille = 30
+# Scrolls of Fortune from caches, claims and loot count straight away, instead of filling the bags with scrolls
+# to right-click one by one (8 Nov; needs the build with the ScrollsStraightToCurrency patch).
+modules\wildcard.conf | Wildcard.ScrollsStraightToCurrency = 1
 
 # ---------------------------------------------------------------- Experience
 # Double XP everywhere (CoA's stock master rate is 0.9295; this keeps its per-source balance)
