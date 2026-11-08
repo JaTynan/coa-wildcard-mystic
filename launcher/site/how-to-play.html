@@ -27,6 +27,7 @@
     <ul class="toc">
       <li><a href="#wildcard">What Wildcard is</a></li>
       <li><a href="#start">Getting started</a></li>
+      <li><a href="#linux">Playing on Linux</a></li>
       <li><a href="#abilities">Choosing your starting abilities</a></li>
       <li><a href="#rerolls">Swapping abilities later</a></li>
       <li><a href="#enchants">Mystic Enchants</a></li>
@@ -54,6 +55,30 @@
       <li>Press <strong>Play</strong>, log in, and make a character. Race decides your looks and racial traits; your
         abilities come from Wildcard.</li>
     </ol>
+  </section>
+
+  <section class="panel" id="linux">
+    <h2>Playing on Linux</h2>
+    <p>The game runs well under Wine or Bottles. The Linux launcher does the same job as the Windows one from a terminal:
+      it downloads the game the first time, keeps it updated, points it at the server, and can start it for you. It
+      only needs Python 3, which every Linux desktop already has.</p>
+    <ol>
+      <li>Make a folder with about 100 GB free, for example <code>~/Games/Wildcard</code>, and save
+        <a href="WildcardLauncher.py" download>WildcardLauncher.py</a> into it.</li>
+      <li>In a terminal in that folder, run <code>python3 WildcardLauncher.py</code>. The first time, it downloads and
+        unpacks the game (about 45 GB). If it stops, run it again and it carries on.</li>
+      <li>Tell it once how you start Windows games. <code>{exe}</code> stands for the game's <code>Ascension.exe</code>:
+        <ul>
+          <li>Plain Wine: <code>python3 WildcardLauncher.py --set-play "wine {exe}"</code></li>
+          <li>Bottles (Flatpak), with a bottle called CoA: <code>python3 WildcardLauncher.py --set-play "flatpak run
+            --command=bottles-cli com.usebottles.bottles run -b CoA -e {exe}"</code></li>
+        </ul>
+      </li>
+      <li>From then on, <code>python3 WildcardLauncher.py --play</code> updates the game and starts it.</li>
+    </ol>
+    <p class="note">Already have the game in a Bottles or Wine folder? Put the launcher next to that <code>CoAClient</code>
+      folder instead and it just keeps it updated. It updates itself too. If something goes wrong,
+      <code>launcher.log</code> in the same folder shows what happened; send it to James.</p>
   </section>
 
   <section class="panel" id="abilities">

@@ -7,7 +7,7 @@ or by hand after changing the client (for example after a client update in the m
 
   - launcher.json    realm address, first-install archive link and size, current launcher version
   - manifest.json    every client file with its size, MD5 and modified time (personal folders left out)
-  - WildcardLauncher.zip, WildcardLauncher.ps1, and the site folder (index.html, how-to-play.html, images)
+  - WildcardLauncher.zip, WildcardLauncher.ps1, WildcardLauncher.py (Linux), and the site folder (index.html, how-to-play.html, images)
   - changelog.json   the last week of merged pull requests, by day, for the homepage's "Recent changes". A PR body
                      line "Changelog: <text>" replaces its title there; "Changelog: skip" leaves it out.
 #>
@@ -59,14 +59,17 @@ $newCache | ConvertTo-Json -Depth 3 -Compress | Set-Content $cacheFile -Encoding
 
 # ---------------------------------------------------------------- launcher and page
 $launcherVersion = [int] ((Select-String -Path (Join-Path $PSScriptRoot 'WildcardLauncher.ps1') -Pattern '^\$LauncherVersion = (\d+)').Matches[0].Groups[1].Value)
+$linuxVersion = [int] ((Select-String -Path (Join-Path $PSScriptRoot 'WildcardLauncher.py') -Pattern '^LAUNCHER_VERSION = (\d+)').Matches[0].Groups[1].Value)
 [pscustomobject] @{
     realm = $config.realm
     clientArchiveUrl = $config.clientArchiveUrl
     clientArchiveBytes = [long] $config.clientArchiveBytes
     launcherVersion = $launcherVersion
+    linuxLauncherVersion = $linuxVersion
 } | ConvertTo-Json | Set-Content (Join-Path $Site 'launcher.json') -Encoding UTF8
 
 Copy-Item (Join-Path $PSScriptRoot 'WildcardLauncher.ps1') $Site -Force
+Copy-Item (Join-Path $PSScriptRoot 'WildcardLauncher.py') $Site -Force
 # The whole site folder: pages (index.html, how-to-play.html) and images.
 Copy-Item (Join-Path $PSScriptRoot 'site\*') $Site -Recurse -Force
 
