@@ -30,6 +30,9 @@ worldserver.conf | PlayerStart.CustomSpells = 1
 modules\wildcard.conf | Wildcard.AbilityPool = "classic"
 # Pete Arr beside Silas Darkmoon (Stormwind, Orgrimmar): free, unlimited Scrolls of Fortune for rerolls.
 modules\wildcard.conf | Wildcard.FreeScrolls = 1
+# Scrolls of Fortune from caches, claims and loot count straight away, instead of filling the bags with scrolls
+# to right-click one by one (8 Nov; needs the build with the ScrollsStraightToCurrency patch).
+modules\wildcard.conf | Wildcard.ScrollsStraightToCurrency = 1
 # Class skills from the Wildcard trainer cost nothing (8 Nov; needs the build with the FreeClassTraining patch).
 modules\wildcard.conf | Wildcard.FreeClassTraining = 1
 # Skill card drops by quality (8 Nov; needs the build with the card patch). Cards were picked evenly from every card,
