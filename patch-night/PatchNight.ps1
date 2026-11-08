@@ -297,6 +297,26 @@ function DatabaseName([string] $key, [string] $fallback) {
     return $fallback
 }
 
+function EnsureCharacterSpellIndexes {
+    # The core "deletes a spell from every character" (DELETE FROM character_spell / character_talent WHERE spell = ?)
+    # whenever it is asked to teach a spell that does not exist. CoA teaches every character its hidden Reset Talents
+    # spell (14009999) at each login, which the Wildcard world database lacks, so every login (bots included) scanned
+    # all ~1.7 million learned-spell rows and held locks for seconds: the 40-second "Retrieving character list".
+    # An index on the spell column makes that delete an instant lookup. Added once; later starts see it and skip.
+    $chars = DatabaseName 'CharacterDatabaseInfo' 'acore_characters'
+    foreach ($table in 'character_spell', 'character_talent') {
+        $have = Sql ("SELECT COUNT(*) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = '$chars' AND TABLE_NAME = '$table'" +
+            " AND INDEX_NAME = 'idx_spell';")
+        if ($have.Code) { Log "Could not check the $table index: $($have.Text)" 'WARN'; continue }
+        if ($have.Text.Trim() -ne '0') { continue }
+        Log "Adding an index on $table.spell (one time; a minute or so on a big table)..."
+        $mysql = Join-Path $Server 'mysql\bin\mysql.exe'
+        $ini = Join-Path $Server 'mysql\admin-client.ini'
+        $added = Invoke-Quiet $mysql @("--defaults-file=`"$ini`"", '--batch') "ALTER TABLE ``$chars``.``$table`` ADD INDEX ``idx_spell`` (``spell``);" 15
+        if ($added.Code) { Log "Could not add the $table index: $($added.Text)" 'WARN' } else { Log "Indexed $table.spell." }
+    }
+}
+
 function SkipUnusedAuctionItems {
     # The auction bot lists everything in item_template, including items players should not be able to buy:
     # leftover developer items named "UNUSED...", and Ascension's Bloodforged and Sanguine PvP gear (extra stats and
@@ -403,7 +423,7 @@ function StartAndCheck([string] $expected) {
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
     # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
     $db = Launcher 'start-mysql' '' 10
-    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems }
+    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems; EnsureCharacterSpellIndexes }
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
