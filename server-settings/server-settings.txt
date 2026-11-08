@@ -207,11 +207,13 @@ modules\mod_ollama_chat.conf | OllamaChat.EventChatterPromptTemplate = "You are 
 # Room for the longer lines (about 75 words; the reply is still cut to fit WoW's 255-character chat limit).
 modules\mod_ollama_chat.conf | OllamaChat.NumPredict = 120
 # More chatter: at most about 10 players, so the world should not feel empty. Roughly 3-4x the module's defaults (7 Nov: a touch livelier).
-modules\mod_ollama_chat.conf | OllamaChat.MinRandomInterval = 15
-modules\mod_ollama_chat.conf | OllamaChat.MaxRandomInterval = 50
+# 8 Nov: with bots only awake near players there are fewer bots around to talk, so each one chats a little more often
+# (every 10-35 s, was 15-50), up to 5 per player (was 3), and others join in more (25%, was 15%).
+modules\mod_ollama_chat.conf | OllamaChat.MinRandomInterval = 10
+modules\mod_ollama_chat.conf | OllamaChat.MaxRandomInterval = 35
 modules\mod_ollama_chat.conf | OllamaChat.RandomChatterRealPlayerDistance = 400.0
-modules\mod_ollama_chat.conf | OllamaChat.RandomChatterBotCommentChance = 15
-modules\mod_ollama_chat.conf | OllamaChat.RandomChatterMaxBotsPerPlayer = 3
+modules\mod_ollama_chat.conf | OllamaChat.RandomChatterBotCommentChance = 25
+modules\mod_ollama_chat.conf | OllamaChat.RandomChatterMaxBotsPerPlayer = 5
 modules\mod_ollama_chat.conf | OllamaChat.BotReplyChance.Say = 35
 modules\mod_ollama_chat.conf | OllamaChat.BotReplyChance.Channel = 8
 modules\mod_ollama_chat.conf | OllamaChat.BotReplyChance.Party = 35
