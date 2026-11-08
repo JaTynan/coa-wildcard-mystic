@@ -221,6 +221,17 @@ jobs:
           $text = $text.Replace($loop, "                GuidVector const waveGhosts = itr->second;`n                for (ObjectGuid const& guid : waveGhosts)`n")
           Set-Content $file $text -NoNewline
 
+      - name: Bots tell friend from foe by team, not race (cross-faction battlegrounds)
+        shell: pwsh
+        run: |
+          $file = 'core/modules/mod-playerbots/src/Bot/PlayerbotAI.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $race = 'bool PlayerbotAI::IsOpposing(Player* player) { return IsOpposing(player->getRace(), bot->getRace()); }'
+          if (-not $text.Contains($race)) { throw 'SQUID changed: PlayerbotAI::IsOpposing(Player*) was not found' }
+          # With CFBG.KeepRace a player on the other side keeps their race; their team (setTeamId by CFBG) is what counts.
+          $team = 'bool PlayerbotAI::IsOpposing(Player* player) { return player->GetTeamId() != bot->GetTeamId(); }'
+          Set-Content $file $text.Replace($race, $team) -NoNewline
+
       - name: Place the modules where the core expects them (as the manager's build does)
         shell: pwsh
         run: |
