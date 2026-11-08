@@ -95,6 +95,24 @@ modules\mod_ahbot.conf | AuctionHouseBot.ItemsPerCycle = 150
 modules\mod_ahbot.conf | AuctionHouseBot.Alliance.MaxItems = 2000
 modules\mod_ahbot.conf | AuctionHouseBot.Horde.MaxItems = 2000
 modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MaxItems = 2000
+#
+# Prices (8 Nov). Buyout = item sell price x quality x category-quality, +/- a little. Rares and epics were going for
+# about their vendor price and raid bags for 1g, which made the Auction House the easiest way to gear. Now about
+# 4x vendor for rare gear and recipes, about 8x for epic, 30x for rare bags and 150x for epic bags, so dungeons and
+# raids stay the better source. Bags with no sell price start from 1g instead of 10s.
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.Quality.Uncommon = 1.8
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.Quality.Rare = 2
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.Quality.Epic = 2.5
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.Quality.Legendary = 3
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryArmor.QualityRare = 2
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryArmor.QualityEpic = 3.2
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryWeapon.QualityRare = 2
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryWeapon.QualityEpic = 3.2
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryRecipe.QualityRare = 2
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryRecipe.QualityEpic = 3.2
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryContainer.QualityRare = 15
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryContainer.QualityEpic = 60
+modules\mod_ahbot.conf | AuctionHouseBot.PriceMinimumCenterBase.Container = 10000
 
 # ---------------------------------------------------------------- Play with friends (home network)
 # The manager writes these when the server is shared; kept here so a start outside the manager keeps them.
