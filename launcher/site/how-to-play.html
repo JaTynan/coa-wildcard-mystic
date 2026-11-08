@@ -69,12 +69,26 @@
         unpacks the game (about 45 GB). If it stops, run it again and it carries on.</li>
       <li>Tell it once how you start Windows games. <code>{exe}</code> stands for the game's <code>Ascension.exe</code>:
         <ul>
+          <li>Steam (Proton), the easiest: close Steam, then run <code>python3 WildcardLauncher.py --add-to-steam</code>.
+            It adds Wildcard to your Steam library, sets it to Proton Experimental, and makes <code>--play</code> start it
+            through Steam. Your Steam settings are backed up first (<code>*.wildcard-backup</code>).</li>
           <li>Plain Wine: <code>python3 WildcardLauncher.py --set-play "wine {exe}"</code></li>
           <li>Bottles (Flatpak), with a bottle called CoA: <code>python3 WildcardLauncher.py --set-play "flatpak run
             --command=bottles-cli com.usebottles.bottles run -b CoA -e {exe}"</code></li>
         </ul>
       </li>
       <li>From then on, <code>python3 WildcardLauncher.py --play</code> updates the game and starts it.</li>
+    </ol>
+    <h3>Adding it to Steam by hand</h3>
+    <p>If <code>--add-to-steam</code> can't find your Steam, do it in Steam itself:</p>
+    <ol>
+      <li><strong>Add a Game</strong>, <strong>Add a Non-Steam Game</strong>, and pick <code>CoAClient/Ascension.exe</code>.</li>
+      <li>Right-click it, <strong>Properties</strong>, <strong>Compatibility</strong>: tick <em>Force the use of a specific
+        Steam Play compatibility tool</em> and choose <strong>Proton Experimental</strong>.</li>
+      <li>Right-click it, <strong>Manage</strong>, <strong>Add desktop shortcut</strong>. Open that shortcut file in a text
+        editor and copy the <code>steam://rungameid/...</code> link.</li>
+      <li>Run <code>python3 WildcardLauncher.py --set-play "steam steam://rungameid/THE-NUMBER"</code> (Flatpak Steam:
+        <code>"flatpak run com.valvesoftware.Steam steam://rungameid/THE-NUMBER"</code>).</li>
     </ol>
     <p class="note">Already have the game in a Bottles or Wine folder? Put the launcher next to that <code>CoAClient</code>
       folder instead and it just keeps it updated. It updates itself too. If something goes wrong,
