@@ -14,6 +14,8 @@ The same job as the Windows launcher (WildcardLauncher.ps1), from a terminal, wi
 Usage:
   python3 WildcardLauncher.py                 update, then exit
   python3 WildcardLauncher.py --play          update, then start the game
+  python3 WildcardLauncher.py --add-to-steam  add the game to Steam with Proton (close Steam first); --play then
+                                              starts it through Steam
   python3 WildcardLauncher.py --set-play "flatpak run --command=bottles-cli com.usebottles.bottles run -b CoA -e {exe}"
                                               remember how to start the game ({exe} = full path to Ascension.exe)
 
@@ -22,6 +24,7 @@ Everything lives next to this file: the CoAClient folder, launcher-state.json (f
 """
 
 import argparse
+import zlib
 import hashlib
 import json
 import os
@@ -38,7 +41,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-LAUNCHER_VERSION = 1
+LAUNCHER_VERSION = 2
 
 HERE = Path(__file__).resolve().parent
 CLIENT = HERE / "CoAClient"
@@ -361,12 +364,223 @@ def play():
     return 0
 
 
+# ---------------------------------------------------------------- Steam (Proton)
+STEAM_NAME = "Wildcard"
+STEAM_PROTON = "proton_experimental"
+
+
+def steam_roots():
+    """Steam installs on this machine: (path, is_flatpak), native first."""
+    home = Path.home()
+    found = []
+    for path, flatpak in ((home / ".steam" / "steam", False), (home / ".local" / "share" / "Steam", False),
+                          (home / ".var" / "app" / "com.valvesoftware.Steam" / ".local" / "share" / "Steam", True),
+                          (home / ".var" / "app" / "com.valvesoftware.Steam" / "data" / "Steam", True)):
+        try:
+            real = path.resolve()
+        except OSError:
+            continue
+        if (real / "userdata").is_dir() and real not in [r for r, _ in found]:
+            found.append((real, flatpak))
+    return found
+
+
+def steam_running():
+    for proc in Path("/proc").iterdir():
+        if proc.name.isdigit():
+            try:
+                if (proc / "comm").read_text().strip() in ("steam", "steamwebhelper"):
+                    return True
+            except OSError:
+                continue
+    return False
+
+
+# Steam's binary VDF (shortcuts.vdf): maps are lists of [key, value] to keep the order Steam wrote them in.
+def vdf_binary_load(data):
+    position = 0
+
+    def text():
+        nonlocal position
+        end = data.index(b"\0", position)
+        value = data[position:end].decode("utf-8", "replace")
+        position = end + 1
+        return value
+
+    def mapping():
+        nonlocal position
+        items = []
+        while True:
+            kind = data[position]
+            position += 1
+            if kind == 0x08:
+                return items
+            key = text()
+            if kind == 0x00:
+                items.append([key, mapping()])
+            elif kind == 0x01:
+                items.append([key, text()])
+            elif kind == 0x02:
+                items.append([key, int.from_bytes(data[position:position + 4], "little", signed=True)])
+                position += 4
+            elif kind in (0x03, 0x07):
+                width = 4 if kind == 0x03 else 8
+                items.append([key, ("raw", kind, data[position:position + width])])
+                position += width
+            else:
+                raise ValueError(f"unknown VDF field type {kind}")
+
+    return mapping()
+
+
+def vdf_binary_dump(items):
+    out = bytearray()
+    for key, value in items:
+        name = key.encode("utf-8") + b"\0"
+        if isinstance(value, list):
+            out += b"\x00" + name + vdf_binary_dump(value)
+        elif isinstance(value, tuple):
+            out += bytes([value[1]]) + name + value[2]
+        elif isinstance(value, int):
+            out += b"\x02" + name + int(value).to_bytes(4, "little", signed=True)
+        else:
+            out += b"\x01" + name + str(value).encode("utf-8") + b"\0"
+    return bytes(out + b"\x08")
+
+
+# Steam's text VDF (config.vdf).
+def vdf_text_load(text):
+    tokens = re.findall(r'("(?:[^"\\]|\\.)*")|([{}])|//[^\n]*', text)
+
+    def unescape(value):
+        return re.sub(r"\\(.)", lambda m: {"n": "\n", "t": "\t"}.get(m.group(1), m.group(1)), value)
+
+    stream = iter([(unescape(q[1:-1]), "") if q else ("", b) for q, b in tokens if q or b])
+
+    def mapping():
+        items = []
+        for value, brace in stream:
+            if brace == "}":
+                return items
+            key = value
+            nxt_value, nxt_brace = next(stream)
+            items.append([key, mapping() if nxt_brace == "{" else nxt_value])
+        return items
+
+    return mapping()
+
+
+def vdf_text_dump(items, depth=0):
+    def escape(value):
+        return value.replace("\\", "\\\\").replace('"', '\\"')
+
+    out = []
+    pad = "\t" * depth
+    for key, value in items:
+        if isinstance(value, list):
+            out.append(f'{pad}"{escape(key)}"\n{pad}{{\n{vdf_text_dump(value, depth + 1)}{pad}}}\n')
+        else:
+            out.append(f'{pad}"{escape(key)}"\t\t"{escape(value)}"\n')
+    return "".join(out)
+
+
+def vdf_child(items, key, create=True):
+    for pair in items:
+        if pair[0].lower() == key.lower() and isinstance(pair[1], list):
+            return pair[1]
+    if not create:
+        return None
+    child = []
+    items.append([key, child])
+    return child
+
+
+def backup(path):
+    """Keeps Steam's original: the first backup is never overwritten by later runs."""
+    copy = path.with_name(path.name + ".wildcard-backup")
+    if path.exists() and not copy.exists():
+        shutil.copy2(path, copy)
+
+
+def add_to_steam():
+    exe = CLIENT / "Ascension.exe"
+    if not exe.exists():
+        say("Install the game first (run the launcher once without options), then add it to Steam.")
+        return 1
+    roots = steam_roots()
+    if not roots:
+        say("Steam was not found in your home folder. Add the game by hand: see How to play on the website.")
+        return 1
+    if steam_running():
+        say("Close Steam first (Steam menu, Exit), then run this again: Steam overwrites its settings when it exits.")
+        return 1
+    root, flatpak = roots[0]
+    exe_field, start_field = f'"{exe}"', f'"{CLIENT}"'
+    appid = zlib.crc32((exe_field + STEAM_NAME).encode("utf-8")) | 0x80000000
+    signed = appid - (1 << 32)
+
+    users = [user for user in (root / "userdata").iterdir() if user.is_dir() and user.name.isdigit() and user.name != "0"]
+    if not users:
+        say("Steam has no signed-in user yet. Start Steam, sign in, exit it, then run this again.")
+        return 1
+    for user in users:
+        path = user / "config" / "shortcuts.vdf"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        top = vdf_binary_load(path.read_bytes()) if path.exists() and path.stat().st_size else [["shortcuts", []]]
+        shortcuts = vdf_child(top, "shortcuts")
+        entry = next((item[1] for item in shortcuts if isinstance(item[1], list) and any(
+            k.lower() == "appname" and v == STEAM_NAME for k, v in item[1])), None)
+        fields = [["appid", signed], ["AppName", STEAM_NAME], ["Exe", exe_field], ["StartDir", start_field],
+                  ["icon", ""], ["ShortcutPath", ""], ["LaunchOptions", ""], ["IsHidden", 0],
+                  ["AllowDesktopConfig", 1], ["AllowOverlay", 1], ["OpenVR", 0], ["Devkit", 0],
+                  ["DevkitGameID", ""], ["DevkitOverrideAppID", 0], ["LastPlayTime", 0], ["FlatpakAppID", ""],
+                  ["tags", []]]
+        if entry is None:
+            shortcuts.append([str(len(shortcuts)), fields])
+        else:
+            keep = {k.lower(): v for k, v in entry}
+            entry[:] = [[k, keep.get(k.lower(), v) if k in ("LastPlayTime", "tags", "icon") else v] for k, v in fields]
+        backup(path)
+        path.write_bytes(b"\x00shortcuts\x00" + vdf_binary_dump(shortcuts) + b"\x08")
+        log(f"Steam shortcut written to {path} (appid {appid})")
+
+    config = root / "config" / "config.vdf"
+    if config.exists():
+        tree = vdf_text_load(config.read_text(encoding="utf-8", errors="replace"))
+        store = vdf_child(tree, "InstallConfigStore")
+        steam = vdf_child(vdf_child(vdf_child(store, "Software"), "Valve"), "Steam")
+        mapping = vdf_child(steam, "CompatToolMapping")
+        mapping[:] = [pair for pair in mapping if pair[0] != str(appid)]
+        mapping.append([str(appid), [["name", STEAM_PROTON], ["config", ""], ["priority", "250"]]])
+        backup(config)
+        config.write_text(vdf_text_dump(tree), encoding="utf-8")
+        log(f"Proton ({STEAM_PROTON}) set for appid {appid} in {config}")
+        proton_note = f"set to {STEAM_PROTON.replace('_', ' ').title()}"
+    else:
+        proton_note = "not set (no config.vdf yet): pick Proton in the game's Properties, Compatibility"
+
+    gameid = (appid << 32) | 0x02000000
+    prefix = "flatpak run com.valvesoftware.Steam" if flatpak else "steam"
+    saved = settings()
+    saved["play"] = f"{prefix} steam://rungameid/{gameid}"
+    SETTINGS_FILE.write_text(json.dumps(saved, indent=2), encoding="utf-8")
+    say(f"Added {STEAM_NAME} to Steam ({'Flatpak' if flatpak else 'native'}), Proton {proton_note}.")
+    say(f"--play now updates the game and starts it through Steam. Backups: *.wildcard-backup next to Steam's files.")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description="Wildcard launcher for Linux")
     parser.add_argument("--play", action="store_true", help="start the game after updating")
+    parser.add_argument("--add-to-steam", action="store_true",
+                        help="add the game to Steam with Proton (Steam must be closed) and make --play use it")
     parser.add_argument("--set-play", metavar="COMMAND",
                         help='remember how to start the game; {exe} becomes the path to Ascension.exe')
     options = parser.parse_args()
+
+    if options.add_to_steam:
+        log(f"---- Linux launcher {LAUNCHER_VERSION}: add to Steam")
+        return add_to_steam()
 
     if options.set_play:
         saved = settings()
