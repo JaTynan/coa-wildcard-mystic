@@ -179,32 +179,19 @@ PAGE = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wildcard sign-up</title>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<link rel="stylesheet" href="/style.css">
 <style>
-  :root { --bg: #18181c; --panel: #222228; --text: #e2e2e6; --muted: #a0a0aa; --gold: #e6b43c; --bad: #ff7a6b; --good: #7ad97a; }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 "Segoe UI", system-ui, sans-serif; }
-  main { max-width: 480px; margin: 0 auto; padding: 48px 16px; }
-  h1 { color: var(--gold); font-size: 40px; margin: 0 0 4px; letter-spacing: 1px; }
-  .tag { color: var(--muted); margin: 0 0 28px; }
-  form { background: var(--panel); border-radius: 10px; padding: 22px; }
-  label { display: block; font-weight: 600; margin: 0 0 4px; }
-  .hint { color: var(--muted); font-size: 14px; margin: 0 0 6px; }
-  input { width: 100%; font: inherit; color: var(--text); background: #2e2e36; border: 1px solid #44444e;
-          border-radius: 6px; padding: 9px 11px; margin: 0 0 16px; }
-  input:focus { outline: 2px solid var(--gold); border-color: transparent; }
-  button { background: var(--gold); color: #111; font: inherit; font-weight: 700; border: 0; border-radius: 8px;
-           padding: 12px 24px; cursor: pointer; margin-top: 8px; }
-  button:disabled { opacity: .6; cursor: default; }
+  /* Sign-up page only */
+  #join { max-width: 560px; }
   #result { min-height: 1.5em; margin: 16px 0 0; }
-  .bad { color: var(--bad); } .good { color: var(--good); }
-  a { color: var(--gold); }
 </style>
 </head>
 <body>
 <main>
-  <h1>Wildcard</h1>
+  <nav class="top"><a href="https://wildcard.jtlab.cc/">Home</a><a href="https://wildcard.jtlab.cc/how-to-play.html">How to play</a><a href="/" aria-current="page">Create an account</a></nav>
+  <h1>Create an account</h1>
   <p class="tag">Make your game account. You need the invite code James gave you.</p>
-  <form id="join" autocomplete="off">
+  <form id="join" class="panel" autocomplete="off">
     <label for="name">Account name</label>
     <p class="hint">3 to 16 letters or digits. This is what you log in with, not your character's name.</p>
     <input id="name" name="name" maxlength="16" pattern="[A-Za-z0-9]{3,16}" required>
@@ -216,10 +203,11 @@ PAGE = """<!doctype html>
     <label for="invite">Invite code</label>
     <input id="invite" name="invite" required>
     <div class="cf-turnstile" data-sitekey="__SITEKEY__" data-theme="dark"></div>
-    <button id="submit" type="submit">Create account</button>
+    <button id="submit" class="button" type="submit" style="margin-top:16px">Create account</button>
     <p id="result" role="status"></p>
   </form>
-  <p class="tag" style="margin-top:24px">Then get the game, and see the server's status and rates, at <a href="https://wildcard.jtlab.cc">wildcard.jtlab.cc</a>.</p>
+  <p class="note" style="margin-top:20px">Then get the game, and see the server's status and rates, on the
+    <a href="https://wildcard.jtlab.cc/">home page</a>. New to Wildcard? Read <a href="https://wildcard.jtlab.cc/how-to-play.html">How to play</a>.</p>
 </main>
 <script>
 const form = document.getElementById("join"), result = document.getElementById("result"), submit = document.getElementById("submit");
@@ -275,6 +263,16 @@ def handler_for(options):
                 except Exception as error:  # the homepage shows "status unavailable"; the log says why
                     log(f"Status failed: {error!r}")
                     self.send(500, json.dumps({"message": "Status unavailable"}), "application/json", public=True)
+                return
+            if self.path.split("?")[0] == "/style.css":
+                # The site's shared stylesheet, from the launcher folder patch night keeps next to these scripts.
+                try:
+                    css = (patch_night / "launcher" / "site" / "style.css").read_text(encoding="utf-8-sig")
+                    self.send(200, css, "text/css; charset=utf-8")
+                except OSError:
+                    self.send_response(302)
+                    self.send_header("Location", "https://wildcard.jtlab.cc/style.css")
+                    self.end_headers()
                 return
             if self.path.split("?")[0] not in ("/", "/index.html"):
                 self.send(404, "Not found", "text/plain; charset=utf-8")

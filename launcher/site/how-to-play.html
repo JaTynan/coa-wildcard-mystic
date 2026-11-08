@@ -4,40 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>How to play Wildcard</title>
+<link rel="stylesheet" href="style.css">
 <style>
-  :root { --bg: #18181c; --panel: #222228; --line: #33333c; --text: #e2e2e6; --muted: #a0a0aa; --gold: #e6b43c; --bad: #ff7a6b; }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 "Segoe UI", system-ui, sans-serif; }
-  main { max-width: 860px; margin: 0 auto; padding: 36px 16px 64px; }
-  nav { display: flex; gap: 18px; margin: 0 0 28px; font-size: 15px; }
-  nav a { color: var(--muted); text-decoration: none; }
-  nav a:hover, nav a[aria-current] { color: var(--gold); }
-  h1 { color: var(--gold); font-size: 40px; margin: 0 0 6px; letter-spacing: 1px; }
-  h2 { font-size: 22px; margin: 0 0 12px; color: var(--gold); }
-  h3 { font-size: 17px; margin: 18px 0 6px; }
-  p { margin: 0 0 12px; }
-  .tag { color: var(--muted); margin: 0 0 28px; }
-  section { background: var(--panel); border-radius: 10px; padding: 22px 24px; margin: 0 0 16px; }
-  ol, ul { padding-left: 22px; margin: 0 0 12px; }
-  li { margin: 0 0 8px; }
-  .note { color: var(--muted); font-size: 15px; }
-  .warn { border-left: 3px solid var(--bad); padding: 6px 0 6px 14px; margin: 14px 0; }
+  /* How to play only */
+  .warn { border-left: 3px solid var(--bad); padding: 6px 0 6px 14px; margin: 14px 0 0; }
   figure { margin: 16px 0 0; }
   figure img { width: 100%; height: auto; border-radius: 8px; display: block; border: 1px solid var(--line); }
   figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
   .toc { columns: 2; font-size: 15px; }
   .toc a { color: var(--text); }
-  a { color: var(--gold); }
-  @media (max-width: 640px) { h1 { font-size: 32px; } .toc { columns: 1; } section { padding: 18px; } }
+  @media (max-width: 720px) { .toc { columns: 1; } }
 </style>
 </head>
 <body>
 <main>
-  <nav><a href="./">Home</a><a href="how-to-play.html" aria-current="page">How to play</a><a href="https://join.jtlab.cc">Create an account</a></nav>
+  <nav class="top"><a href="./">Home</a><a href="how-to-play.html" aria-current="page">How to play</a><a href="https://join.jtlab.cc">Create an account</a></nav>
   <h1>How to play</h1>
   <p class="tag">A quick guide to Wildcard, choosing your abilities, Mystic Enchants and challenges.</p>
+  <div class="stack">
 
-  <section>
+  <section class="panel">
     <ul class="toc">
       <li><a href="#wildcard">What Wildcard is</a></li>
       <li><a href="#start">Getting started</a></li>
@@ -49,7 +35,7 @@
     </ul>
   </section>
 
-  <section id="wildcard">
+  <section class="panel" id="wildcard">
     <h2>What Wildcard is</h2>
     <p>Wildcard is World of Warcraft without fixed classes. Instead of picking a Mage or a Warrior, your character builds
       a kit from abilities drawn from all the classic classes: a Frost Nova next to a Divine Storm, a Rend next to a
@@ -59,7 +45,7 @@
       from one character to the next.</p>
   </section>
 
-  <section id="start">
+  <section class="panel" id="start">
     <h2>Getting started</h2>
     <ol>
       <li>Make an account at <a href="https://join.jtlab.cc">join.jtlab.cc</a> with the invite code James gave you.</li>
@@ -70,7 +56,7 @@
     </ol>
   </section>
 
-  <section id="abilities">
+  <section class="panel" id="abilities">
     <h2>Choosing your starting abilities</h2>
     <p>You don't have to leave your first abilities to chance. New characters get <strong>starter skill cards</strong>,
       which let you pick abilities yourself:</p>
@@ -93,14 +79,14 @@
     </figure>
   </section>
 
-  <section id="rerolls">
+  <section class="panel" id="rerolls">
     <h2>Swapping abilities later</h2>
     <p>Got an ability you don't like? On this server, <strong>Scrolls of Fortune are free and unlimited</strong>. Get them
       from <strong>Pete Arr</strong>, who stands beside Silas Darkmoon in Stormwind and Orgrimmar, and use them to
       reroll abilities until your kit feels right.</p>
   </section>
 
-  <section id="enchants">
+  <section class="panel" id="enchants">
     <h2>Mystic Enchants</h2>
     <p>Mystic Enchants are passive bonuses that change your abilities: extra effects, faster casts, new procs.
       They come on <strong>Mystic scrolls</strong>.</p>
@@ -116,7 +102,7 @@
       or scroll usually means you don't have that ability yet.</p>
   </section>
 
-  <section id="challenges">
+  <section class="panel" id="challenges">
     <h2>Challenges</h2>
     <p>Challenges (also called trials) are optional rule sets you can level under for rewards and bragging rights:
       think hardcore rules, a limited number of lives, or survival mechanics like hunger, thirst and fatigue. Each
@@ -136,7 +122,7 @@
       If you want to try again, make a new character.</p>
   </section>
 
-  <section id="world">
+  <section class="panel" id="world">
     <h2>Bots, chat and restarts</h2>
     <ul>
       <li>The world is full of <strong>bots</strong>: characters run by the server that quest, level near you, fill the
@@ -148,6 +134,7 @@
     <p class="note">Something not working? The launcher's <strong>Log</strong> button shows what happened; send that and a
       screenshot to James.</p>
   </section>
+  </div>
 </main>
 </body>
 </html>

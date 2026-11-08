@@ -4,42 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wildcard</title>
+<link rel="stylesheet" href="style.css">
 <style>
-  :root { --bg: #18181c; --panel: #222228; --line: #33333c; --text: #e2e2e6; --muted: #a0a0aa; --gold: #e6b43c;
-          --good: #7ad97a; --bad: #ff7a6b; --wait: #a0a0aa; }
-  * { box-sizing: border-box; }
-  nav.top { display: flex; gap: 18px; margin: 0 0 24px; font-size: 15px; }
-  nav.top a { color: var(--muted); text-decoration: none; }
-  nav.top a:hover, nav.top a[aria-current] { color: var(--gold); }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.55 "Segoe UI", system-ui, sans-serif; }
-  main { max-width: 860px; margin: 0 auto; padding: 44px 16px 64px; }
-  h1 { color: var(--gold); font-size: 44px; margin: 0 0 4px; letter-spacing: 1px; }
-  h2 { font-size: 20px; margin: 0 0 14px; }
-  h3 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; }
-  .tag { color: var(--muted); margin: 0 0 28px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .panel { background: var(--panel); border-radius: 10px; padding: 20px 22px; }
-  .wide { grid-column: 1 / -1; }
-  .button { display: inline-block; background: var(--gold); color: #111; font-weight: 700; font-size: 18px;
-            padding: 12px 24px; border-radius: 8px; text-decoration: none; }
-  .button:hover { filter: brightness(1.1); }
-  .button.quiet { background: transparent; color: var(--gold); border: 2px solid var(--gold); }
+  /* Home page only */
   .rows { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0; }
   .rows dt { color: var(--muted); }
   .rows dd { margin: 0; }
-  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; background: var(--wait); }
-  .up .dot { background: var(--good); } .down .dot { background: var(--bad); }
-  .up { color: var(--good); } .down { color: var(--bad); }
-  .note { color: var(--muted); font-size: 15px; }
-  details { margin-top: 16px; }
-  summary { cursor: pointer; color: var(--gold); }
-  ol { padding-left: 22px; margin: 12px 0 0; }
-  li { margin: 0 0 10px; }
-  code { background: #2e2e36; padding: 1px 6px; border-radius: 4px; }
+  .rows + .note { margin-top: 14px; }
   .day { margin: 0 0 14px; }
   .day:last-child { margin: 0; }
-  .day h3 { margin: 0 0 4px; text-transform: none; letter-spacing: 0; font-size: 16px; color: var(--gold); }
-  .day ul { margin: 0; padding-left: 20px; }
+  .day h3 { margin: 0 0 4px; color: var(--gold); font-size: 16px; }
+  .day ul { margin: 0; }
   .day li { margin: 0 0 4px; }
   .settings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .setting { padding: 8px 0; border-top: 1px solid var(--line); }
@@ -47,10 +22,7 @@
   .setting b { display: block; font-weight: 600; }
   .setting .value { color: var(--gold); font-weight: 700; }
   .setting .why { color: var(--muted); font-size: 14px; }
-  @media (max-width: 720px) {
-    .grid, .settings { grid-template-columns: 1fr; }
-    h1 { font-size: 36px; }
-  }
+  @media (max-width: 720px) { .settings { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -58,7 +30,7 @@
   <nav class="top"><a href="./" aria-current="page">Home</a><a href="how-to-play.html">How to play</a><a href="https://join.jtlab.cc">Create an account</a></nav>
   <h1>Wildcard</h1>
   <p class="tag">James's World of Warcraft server. Random abilities, Mystic Enchants, and a world full of bots.
-    New here? Start with <a href="how-to-play.html" style="color:var(--gold)">How to play</a>.</p>
+    New here? Start with <a href="how-to-play.html">How to play</a>.</p>
 
   <div class="grid">
     <section class="panel" aria-labelledby="status-title">
@@ -71,22 +43,22 @@
         <dt>Up for</dt><dd id="uptime">-</dd>
         <dt>Server version</dt><dd id="version">-</dd>
       </dl>
-      <p class="note" id="restart" style="margin:14px 0 0"></p>
+      <p class="note" id="restart"></p>
     </section>
 
     <section class="panel" aria-labelledby="account-title">
       <h2 id="account-title">Account</h2>
-      <p style="margin:0 0 16px">New here? Make your game account with the invite code James gave you.</p>
+      <p>New here? Make your game account with the invite code James gave you.</p>
       <a class="button quiet" href="https://join.jtlab.cc">Create an account</a>
-      <p class="note" style="margin:16px 0 0">Already have one? Log in through the launcher below.
+      <p class="note">Already have one? Log in through the launcher below.
         Forgotten your password? Ask James.</p>
     </section>
 
     <section class="panel wide" aria-labelledby="play-title">
       <h2 id="play-title">Play</h2>
       <a class="button" href="WildcardLauncher.zip">Download the launcher</a>
-      <p class="note" id="client" style="margin:14px 0 0">Client version: checking...</p>
-      <p style="margin:12px 0 0">Already installed? Just start <strong>Start Wildcard</strong>: it fetches any updates
+      <p class="note" id="client">Client version: checking...</p>
+      <p>Already installed? Just start <strong>Start Wildcard</strong>: it fetches any updates
         first, then press <strong>Play</strong>.</p>
       <details>
         <summary>First time? How to install</summary>
@@ -108,7 +80,7 @@
     <section class="panel wide" aria-labelledby="changes-title">
       <h2 id="changes-title">Recent changes</h2>
       <div id="changes"><p class="note">Loading...</p></div>
-      <p class="note" style="margin:12px 0 0">Changes go live at the nightly restart (4:00 am), sometimes sooner.</p>
+      <p class="note">Changes go live at the nightly restart (4:00 am), sometimes sooner.</p>
     </section>
 
     <section class="panel wide" aria-labelledby="settings-title">
@@ -162,7 +134,8 @@ function showSettings(groups) {
   box.textContent = "";
   for (const group of groups) {
     const column = document.createElement("div");
-    const title = document.createElement("h3");
+    const title = document.createElement("p");
+    title.className = "label";
     title.textContent = group.title;
     column.append(title);
     for (const item of group.items) {
