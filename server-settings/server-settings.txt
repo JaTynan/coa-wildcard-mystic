@@ -118,12 +118,15 @@ worldserver.conf | Rate.Honor = 2
 worldserver.conf | HonorPointsAfterDuel = 10
 
 # ---------------------------------------------------------------- SQUID's bots: world PvP
-# 25% High Risk, 55% War Mode, the remaining 20% PvE
+# More world PvP (8 Nov): 35% High Risk, 55% War Mode, 10% PvE (was 25/55/20). Flagged bots attack War Mode and High
+# Risk characters on sight (PvE characters are never attacked, as on Ascension) and fight flagged bots of the other
+# faction, so contested levelling zones (Hillsbrad: Tarren Mill and Southshore) see regular skirmishes.
 modules\playerbots.conf | AiPlayerbot.CoaRulesetForBots = 1
-modules\playerbots.conf | AiPlayerbot.CoaRulesetHighRiskPct = 25
+modules\playerbots.conf | AiPlayerbot.CoaRulesetHighRiskPct = 35
 modules\playerbots.conf | AiPlayerbot.CoaRulesetWarModePct = 55
-# Optional, not decided yet: more time at capture points, and Alterac Valley games
-# modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.OutdoorPvp = 30
+# Bots in an outdoor PvP zone spend more time at its capture points (default 10).
+modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.OutdoorPvp = 30
+# Optional, not decided yet: Alterac Valley games
 # modules\playerbots.conf | AiPlayerbot.RandomBotAutoJoinBGAVCount = 1
 
 # ---------------------------------------------------------------- SQUID's bots: lower load
