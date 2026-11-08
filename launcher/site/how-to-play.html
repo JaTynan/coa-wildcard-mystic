@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to play Wildcard</title>
+<style>
+  :root { --bg: #18181c; --panel: #222228; --line: #33333c; --text: #e2e2e6; --muted: #a0a0aa; --gold: #e6b43c; --bad: #ff7a6b; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 36px 16px 64px; }
+  nav { display: flex; gap: 18px; margin: 0 0 28px; font-size: 15px; }
+  nav a { color: var(--muted); text-decoration: none; }
+  nav a:hover, nav a[aria-current] { color: var(--gold); }
+  h1 { color: var(--gold); font-size: 40px; margin: 0 0 6px; letter-spacing: 1px; }
+  h2 { font-size: 22px; margin: 0 0 12px; color: var(--gold); }
+  h3 { font-size: 17px; margin: 18px 0 6px; }
+  p { margin: 0 0 12px; }
+  .tag { color: var(--muted); margin: 0 0 28px; }
+  section { background: var(--panel); border-radius: 10px; padding: 22px 24px; margin: 0 0 16px; }
+  ol, ul { padding-left: 22px; margin: 0 0 12px; }
+  li { margin: 0 0 8px; }
+  .note { color: var(--muted); font-size: 15px; }
+  .warn { border-left: 3px solid var(--bad); padding: 6px 0 6px 14px; margin: 14px 0; }
+  figure { margin: 16px 0 0; }
+  figure img { width: 100%; height: auto; border-radius: 8px; display: block; border: 1px solid var(--line); }
+  figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .toc { columns: 2; font-size: 15px; }
+  .toc a { color: var(--text); }
+  a { color: var(--gold); }
+  @media (max-width: 640px) { h1 { font-size: 32px; } .toc { columns: 1; } section { padding: 18px; } }
+</style>
+</head>
+<body>
+<main>
+  <nav><a href="./">Home</a><a href="how-to-play.html" aria-current="page">How to play</a><a href="https://join.jtlab.cc">Create an account</a></nav>
+  <h1>How to play</h1>
+  <p class="tag">A quick guide to Wildcard, choosing your abilities, Mystic Enchants and challenges.</p>
+
+  <section>
+    <ul class="toc">
+      <li><a href="#wildcard">What Wildcard is</a></li>
+      <li><a href="#start">Getting started</a></li>
+      <li><a href="#abilities">Choosing your starting abilities</a></li>
+      <li><a href="#rerolls">Swapping abilities later</a></li>
+      <li><a href="#enchants">Mystic Enchants</a></li>
+      <li><a href="#challenges">Challenges</a></li>
+      <li><a href="#world">Bots, chat and restarts</a></li>
+    </ul>
+  </section>
+
+  <section id="wildcard">
+    <h2>What Wildcard is</h2>
+    <p>Wildcard is World of Warcraft without fixed classes. Instead of picking a Mage or a Warrior, your character builds
+      a kit from abilities drawn from all the classic classes: a Frost Nova next to a Divine Storm, a Rend next to a
+      Renew. Every character turns out different.</p>
+    <p>You get new abilities as you level, either by picking them from cards (below) or by rolling for them. On top of
+      that, <strong>Mystic Enchants</strong> change how your abilities work, so the same spell can play very differently
+      from one character to the next.</p>
+  </section>
+
+  <section id="start">
+    <h2>Getting started</h2>
+    <ol>
+      <li>Make an account at <a href="https://join.jtlab.cc">join.jtlab.cc</a> with the invite code James gave you.</li>
+      <li>Download the launcher from the <a href="./">home page</a>, unzip it into a folder with about 100 GB free, and
+        run <strong>Start Wildcard</strong>. The first run downloads the game.</li>
+      <li>Press <strong>Play</strong>, log in, and make a character. Race decides your looks and racial traits; your
+        abilities come from Wildcard.</li>
+    </ol>
+  </section>
+
+  <section id="abilities">
+    <h2>Choosing your starting abilities</h2>
+    <p>You don't have to leave your first abilities to chance. New characters get <strong>starter skill cards</strong>,
+      which let you pick abilities yourself:</p>
+    <ol>
+      <li>Open <strong>Character Advancement</strong> (the button on your action bar) and go to the
+        <strong>Skill Cards</strong> tab.</li>
+      <li>Under <strong>Ability Cards Collection</strong>, pick two abilities for your two normal card slots.</li>
+      <li>Under <strong>Golden Ability Cards Collection</strong>, pick two more for your two golden slots.</li>
+    </ol>
+    <h3>Worth knowing</h3>
+    <ul>
+      <li>Normal and golden abilities are the same abilities; golden is just a second set of slots.</li>
+      <li>Rarity matters. If you start with more rare abilities, you'll see fewer rares come up early on. It all
+        evens out at higher levels.</li>
+    </ul>
+    <figure>
+      <img src="images/starting-abilities.jpg" width="1447" height="1377" loading="lazy"
+           alt="The Skill Cards tab of Character Advancement, showing two normal and two golden card slots filled from the Ability Cards and Golden Ability Cards collections">
+      <figcaption>Character Advancement, Skill Cards tab: pick two Ability Cards (2) and two Golden Ability Cards (3).</figcaption>
+    </figure>
+  </section>
+
+  <section id="rerolls">
+    <h2>Swapping abilities later</h2>
+    <p>Got an ability you don't like? On this server, <strong>Scrolls of Fortune are free and unlimited</strong>. Get them
+      from <strong>Pete Arr</strong>, who stands beside Silas Darkmoon in Stormwind and Orgrimmar, and use them to
+      reroll abilities until your kit feels right.</p>
+  </section>
+
+  <section id="enchants">
+    <h2>Mystic Enchants</h2>
+    <p>Mystic Enchants are passive bonuses that change your abilities: extra effects, faster casts, new procs.
+      They come on <strong>Mystic scrolls</strong>.</p>
+    <ul>
+      <li>Mobs level 11 and up drop an <strong>Unidentified Mystic Scroll</strong> about 1 kill in 25. Right-click it
+        to reveal which enchant it is. Mobs level 10 and under never drop them, so don't worry if you see none in the
+        starting zones.</li>
+      <li>Every dungeon boss drops at least one (one per 10 boss levels).</li>
+      <li>Use the <strong>Mystic Enchant</strong> tab in Character Advancement to see and apply the enchants you've
+        collected.</li>
+    </ul>
+    <p class="note">Some enchants only do something if you have the ability they improve. A red enchant line on an item
+      or scroll usually means you don't have that ability yet.</p>
+  </section>
+
+  <section id="challenges">
+    <h2>Challenges</h2>
+    <p>Challenges (also called trials) are optional rule sets you can level under for rewards and bragging rights:
+      think hardcore rules, a limited number of lives, or survival mechanics like hunger, thirst and fatigue. Each
+      challenge shows its rules, its lives and its rewards before you start it.</p>
+    <h3>How they work here</h3>
+    <ul>
+      <li><strong>Start early.</strong> Most challenges are meant to be taken from level 1, and some have conditions
+        you have to meet when you start.</li>
+      <li><strong>Changed your mind?</strong> You can cancel a challenge for free as long as nothing has happened yet:
+        no progress, no deaths, no broken rules. After that, cancelling counts as failing it.</li>
+      <li><strong>Grouping:</strong> you can only group with players on the same challenge.</li>
+      <li><strong>Finishing:</strong> reach the level cap with the challenge's goals met and it completes on its own.
+        Rewards arrive <strong>by mail</strong>.</li>
+    </ul>
+    <p class="warn"><strong>Failing is permanent.</strong> Break a rule or run out of lives and the challenge fails.
+      On this server, a character that has failed a challenge <strong>can't start any other challenge</strong> either.
+      If you want to try again, make a new character.</p>
+  </section>
+
+  <section id="world">
+    <h2>Bots, chat and restarts</h2>
+    <ul>
+      <li>The world is full of <strong>bots</strong>: characters run by the server that quest, level near you, fill the
+        cities and chat. Some of the chat is written by AI, so expect old-school banter.</li>
+      <li>Mobs respawn in about a minute, and herbs and ore in about two, so you can farm without waiting around.</li>
+      <li>The server restarts <strong>every night at 4:00 am</strong> (Sydney time). Warnings start in chat at 3:30, and
+        it's back within 10 minutes. Changes from the day go live then; see the home page for what's new.</li>
+    </ul>
+    <p class="note">Something not working? The launcher's <strong>Log</strong> button shows what happened; send that and a
+      screenshot to James.</p>
+  </section>
+</main>
+</body>
+</html>
