@@ -15,7 +15,9 @@ Usage:
   python3 WildcardLauncher.py                 update, then exit
   python3 WildcardLauncher.py --play          update, then start the game
   python3 WildcardLauncher.py --add-to-steam  add the game to Steam with Proton (close Steam first); --play then
-                                              starts it through Steam
+                                              starts it through Steam (also makes the shortcut below)
+  python3 WildcardLauncher.py --add-shortcut  add a Wildcard shortcut to the app menu and desktop that updates the
+                                              game and starts it in one click
   python3 WildcardLauncher.py --set-play "flatpak run --command=bottles-cli com.usebottles.bottles run -b CoA -e {exe}"
                                               remember how to start the game ({exe} = full path to Ascension.exe)
 
@@ -41,7 +43,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-LAUNCHER_VERSION = 2
+LAUNCHER_VERSION = 3
 
 HERE = Path(__file__).resolve().parent
 CLIENT = HERE / "CoAClient"
@@ -569,6 +571,60 @@ def add_to_steam():
     return 0
 
 
+# ---------------------------------------------------------------- App menu and desktop shortcut
+def desktop_quote(text):
+    """Quote one argument for a .desktop Exec line (freedesktop spec)."""
+    escaped = text.replace("\\", "\\\\").replace('"', '\\"').replace("`", "\\`").replace("$", "\\$")
+    return '"' + escaped.replace("%", "%%") + '"'
+
+
+def desktop_folder():
+    try:
+        found = subprocess.run(["xdg-user-dir", "DESKTOP"], capture_output=True, text=True, timeout=5).stdout.strip()
+        if found and Path(found).is_dir() and Path(found) != Path.home():
+            return Path(found)
+    except (OSError, subprocess.SubprocessError):
+        pass
+    fallback = Path.home() / "Desktop"
+    return fallback if fallback.is_dir() else None
+
+
+def add_shortcut():
+    me = Path(__file__).resolve()
+    command = " ".join(desktop_quote(part) for part in [sys.executable, str(me), "--play", "--from-shortcut"])
+    entry = "\n".join([
+        "[Desktop Entry]",
+        "Type=Application",
+        "Name=Wildcard",
+        "Comment=Update Wildcard and start it",
+        f"Exec={command}",
+        f"Path={HERE}",
+        "Icon=applications-games",
+        "Terminal=true",
+        "Categories=Game;",
+        "",
+    ])
+    menu = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share") / "applications"
+    menu.mkdir(parents=True, exist_ok=True)
+    places = [menu / "wildcard.desktop"]
+    desktop = desktop_folder()
+    if desktop:
+        places.append(desktop / "wildcard.desktop")
+    for place in places:
+        place.write_text(entry, encoding="utf-8")
+        place.chmod(0o755)
+        log(f"Shortcut written: {place}")
+    if desktop and shutil.which("gio"):
+        # GNOME only runs desktop icons it trusts; this is what "Allow Launching" does.
+        subprocess.run(["gio", "set", str(places[-1]), "metadata::trusted", "true"],
+                       capture_output=True, timeout=5)
+    where = "your app menu" + (" and desktop" if desktop else "")
+    say(f"Added a Wildcard shortcut to {where}. It updates the game, then starts it.")
+    if desktop:
+        say("If the desktop icon won't open, right-click it and choose Allow Launching.")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description="Wildcard launcher for Linux")
     parser.add_argument("--play", action="store_true", help="start the game after updating")
@@ -576,11 +632,40 @@ def main():
                         help="add the game to Steam with Proton (Steam must be closed) and make --play use it")
     parser.add_argument("--set-play", metavar="COMMAND",
                         help='remember how to start the game; {exe} becomes the path to Ascension.exe')
+    parser.add_argument("--add-shortcut", action="store_true",
+                        help="add a Wildcard shortcut to the app menu and desktop (update, then play)")
+    parser.add_argument("--from-shortcut", action="store_true", help=argparse.SUPPRESS)
     options = parser.parse_args()
+
+    if options.add_shortcut:
+        return add_shortcut()
+
+    if options.from_shortcut:
+        # The shortcut's terminal closes when we finish: keep it open long enough to read, and on a problem until
+        # the player presses Enter.
+        status = run(options)
+        try:
+            if status:
+                input("\nSomething went wrong (see above, or launcher.log). Press Enter to close.")
+            else:
+                time.sleep(4)
+        except (EOFError, KeyboardInterrupt):
+            pass
+        return status
+    return run(options)
+
+
+def run(options):
 
     if options.add_to_steam:
         log(f"---- Linux launcher {LAUNCHER_VERSION}: add to Steam")
-        return add_to_steam()
+        status = add_to_steam()
+        if status == 0:
+            try:
+                add_shortcut()
+            except OSError as error:
+                say(f"Could not add the app menu shortcut: {error}")
+        return status
 
     if options.set_play:
         saved = settings()
