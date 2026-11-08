@@ -1,0 +1,66 @@
+/* Shared look for every Wildcard page: wildcard.jtlab.cc (home, how to play) and join.jtlab.cc (sign-up, which
+   serves this same file). Page files only add rules for things that exist on that page alone. */
+:root {
+  --bg: #18181c; --panel: #222228; --line: #33333c; --field: #2e2e36; --text: #e2e2e6; --muted: #a0a0aa;
+  --gold: #e6b43c; --good: #7ad97a; --bad: #ff7a6b; --wait: #a0a0aa;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.6 "Segoe UI", system-ui, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 36px 16px 64px; }
+a { color: var(--gold); }
+
+/* Navigation bar */
+nav.top { display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0 0 28px; font-size: 15px; }
+nav.top a { color: var(--muted); text-decoration: none; }
+nav.top a:hover, nav.top a[aria-current] { color: var(--gold); }
+
+/* Headings and text */
+h1 { color: var(--gold); font-size: 40px; line-height: 1.2; margin: 0 0 6px; letter-spacing: 1px; }
+h2 { color: var(--gold); font-size: 21px; margin: 0 0 12px; }
+h3 { font-size: 17px; margin: 18px 0 6px; }
+.label { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 8px; }
+p { margin: 0 0 12px; }
+p:last-child { margin-bottom: 0; }
+.tag { color: var(--muted); margin: 0 0 28px; }
+.note { color: var(--muted); font-size: 15px; }
+code { background: var(--field); padding: 1px 6px; border-radius: 4px; }
+ol, ul { padding-left: 22px; margin: 0 0 12px; }
+li { margin: 0 0 8px; }
+ol:last-child, ul:last-child { margin-bottom: 0; }
+
+/* Panels */
+.panel { background: var(--panel); border-radius: 10px; padding: 22px 24px; }
+.stack > .panel + .panel { margin-top: 16px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.wide { grid-column: 1 / -1; }
+
+/* Buttons */
+.button { display: inline-block; background: var(--gold); color: #111; font: inherit; font-weight: 700;
+          padding: 11px 24px; border-radius: 8px; border: 2px solid var(--gold); text-decoration: none; cursor: pointer; }
+.button:hover { filter: brightness(1.1); }
+.button:disabled { opacity: .6; cursor: default; }
+.button.quiet { background: transparent; color: var(--gold); }
+.button + p { margin-top: 14px; }
+
+/* Forms */
+label { display: block; font-weight: 600; margin: 0 0 4px; }
+.hint { color: var(--muted); font-size: 15px; margin: 0 0 6px; }
+input { width: 100%; font: inherit; color: var(--text); background: var(--field); border: 1px solid #44444e;
+        border-radius: 6px; padding: 9px 11px; margin: 0 0 16px; }
+input:focus { outline: 2px solid var(--gold); border-color: transparent; }
+
+/* Status colours */
+.good, .up { color: var(--good); }
+.bad, .down { color: var(--bad); }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; background: var(--wait); }
+.up .dot { background: var(--good); }
+.down .dot { background: var(--bad); }
+
+details { margin-top: 16px; }
+summary { cursor: pointer; color: var(--gold); }
+
+@media (max-width: 720px) {
+  .grid { grid-template-columns: 1fr; }
+  h1 { font-size: 34px; }
+  .panel { padding: 18px; }
+}
