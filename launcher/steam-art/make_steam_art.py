@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Draws the Steam library artwork for the Linux launcher's --add-to-steam (original art: no game assets).
+"""Draws the Steam library artwork, built around the Project Descension: Wildcard emblem (emblem.py), for the Linux launcher's --add-to-steam (original art: no game assets).
 
   python3 make_steam_art.py FONT_DIR OUT_DIR
 
@@ -13,6 +13,9 @@ import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from emblem import emblem, gem  # noqa: E402
 
 FONTS, OUT = Path(sys.argv[1]), Path(sys.argv[2])
 TITLE_FONT = FONTS / "CinzelDecorative-Bold.ttf"
@@ -164,37 +167,45 @@ def save(img, name, size):
     print(name, size)
 
 
+def logo(width):
+    return emblem(width, {"title": str(TITLE_FONT), "sub": str(SUB_FONT)})
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     s = 2  # draw at 2x, then scale down
 
     w, h = 600 * s, 900 * s
     img = background(w, h, 1)
-    fan(img, (w * 0.5, h * 0.36), int(w * 0.3), 5, 24, h * 0.04, s)
-    t = title_block(int(w * 0.9), s * 0.9)
-    img.alpha_composite(t, ((w - t.width) // 2, int(h * 0.62)))
+    fan(img, (w * 0.5, h * 0.3), int(w * 0.28), 5, 24, h * 0.04, s)
+    e = logo(int(w * 1.0))
+    e = e.resize((int(w * 0.96), int(e.height * w * 0.96 / e.width)), Image.LANCZOS)
+    img.alpha_composite(e, ((w - e.width) // 2, int(h * 0.56)))
     save(img, "portrait.png", (600, 900))
 
     w, h = 920 * s, 430 * s
     img = background(w, h, 2)
-    fan(img, (w * 0.235, h * 0.52), int(h * 0.4), 3, 18, h * 0.04, s)
-    t = title_block(int(w * 0.56), s * 0.9)
-    img.alpha_composite(t, (int(w * 0.39), (h - t.height) // 2))
+    fan(img, (w * 0.14, h * 0.55), int(h * 0.36), 3, 18, h * 0.04, s)
+    e = logo(int(w * 0.8))
+    e = e.resize((int(e.width * h * 0.86 / e.height), int(h * 0.86)), Image.LANCZOS)
+    img.alpha_composite(e, (int(w * 0.6 - e.width / 2), (h - e.height) // 2))
     save(img, "header.png", (920, 430))
 
     w, h = 1920 * s, 620 * s  # hero: no text, Steam puts the logo over it
     img = background(w, h, 3, 22000)
-    fan(img, (w * 0.78, h * 0.55), int(h * 0.4), 5, 26, h * 0.05, s)
+    fan(img, (w * 0.8, h * 0.55), int(h * 0.4), 5, 26, h * 0.05, s)
     save(img, "hero.png", (1920, 620))
 
-    t = title_block(1280 * s, s * 1.1)
-    logo = Image.new("RGBA", (t.width + 40, t.height + 40), (0, 0, 0, 0))
-    logo.alpha_composite(t, (20, 20))
-    save(logo, "logo.png", (logo.width // s, logo.height // s))
+    e = logo(1600)
+    save(e, "logo.png", (800, int(e.height * 800 / e.width)))
 
     n = 512
     icon = Image.new("RGBA", (n, n), (0, 0, 0, 0))
-    face = card(int(n * 0.66), int(n * 0.94), 2.5)
+    face = card(int(n * 0.68), int(n * 0.96), 2.5)
+    fd = ImageDraw.Draw(face)
+    fd.rectangle((face.width * 0.2, face.height * 0.3, face.width * 0.8, face.height * 0.7), fill=(20, 22, 40, 255))
+    g = gem(int(face.width * 0.62), (160, 96, 240))
+    face.alpha_composite(g, ((face.width - g.width) // 2, (face.height - g.height) // 2))
     icon.alpha_composite(face, ((n - face.width) // 2, (n - face.height) // 2))
     save(icon, "icon.png", (256, 256))
 
