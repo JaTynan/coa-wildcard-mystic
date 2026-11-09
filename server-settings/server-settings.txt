@@ -188,6 +188,10 @@ modules\playerbots.conf | AiPlayerbot.BroadcastChanceSuggestQuest = 1500
 # each dungeon copy) update in parallel with more threads. Back to 1 if anything odd shows up.
 # 6 from 8 Nov, with the VM at 10 cores (was 4 on 8 cores: 30 -> 50 ticks/s at 1,000 bots).
 worldserver.conf | MapUpdate.Threads = 6
+# View distance in the open world (9 Nov): 150 yards, up from the default 100, so mobs in big open zones like the
+# Barrens stop popping in out of nowhere. Bots are players too, so each bot also sees further: watch the tick
+# summary in .server info after this; if spikes get worse, try 125. Dungeons, raids and battlegrounds keep their own.
+worldserver.conf | Visibility.Distance.Continents = 150
 # Database threads (8 Nov): with 1,250 bots, every bot login, save and logout went through one character-database
 # connection, so a real player's character list or new character waited behind them (slow "retrieving character
 # list", slow creation while bots start up). More connections let player requests through alongside the bots.
