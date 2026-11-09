@@ -142,3 +142,33 @@ if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'CoA c
 $new = $old + "    SendPayload(player, SMSG_SKILL_CARD_COLLECTION_LIST, SkillCardCollectionPayload(Loaded, collection));`n"
 Set-Content $file $text.Replace($old, $new) -NoNewline
 }
+
+# ---- Every duplicate card fills the free-pack bar (Wildcard.AllDuplicatesFillPackBar, off when unset)
+Write-Host "Patch: Every duplicate card fills the free-pack bar (Wildcard.AllDuplicatesFillPackBar)"
+& {
+$file = 'core/src/server/coa/AscensionWildcard.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$old = @'
+    if (!atMaxRank)
+    {
+        collection.Progress[card] += progress;
+        return bonusPacks;
+    }
+    collection.BonusProgress += progress;
+'@
+$old = $old.Replace("`r`n", "`n")
+if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'CoA changed: the duplicate progress in CollectCard was not found' }
+# Only duplicates of rank 1 cards filled the free-pack bar; others went to the card's own progress only, so the bar
+# could sit at 99 for a long time. With the setting on, every duplicate also fills the bar (the card's own progress is
+# kept as before).
+$new = @'
+    if (!atMaxRank)
+    {
+        collection.Progress[card] += progress;
+        if (!sConfigMgr->GetOption<bool>("Wildcard.AllDuplicatesFillPackBar", false))
+            return bonusPacks;
+    }
+    collection.BonusProgress += progress;
+'@
+Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
+}
