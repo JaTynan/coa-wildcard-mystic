@@ -21,6 +21,7 @@ for good by deleting its part from the script.
 | `mystic-enchants-*.patch` | Mystic Enchants on Wildcard: enchant actions, SpellAffect data, altars on Wildcard | always on |
 | `wildcard-ability-pool.patch` | Which classes' abilities Wildcard rolls from | `Wildcard.AbilityPool` |
 | `10-mod-ollama-chat-fit.ps1` | Makes the AI chat module compile on the CoA core | always on |
+| | Less bot chat in raids and dungeons (direct answers to players kept) | `OllamaChat.RaidChatterPct`, `OllamaChat.DungeonChatterPct` |
 | `20-bots.ps1` | Bots level near real players | `AiPlayerbot.WildcardLevelNearPlayersPct` |
 | | Bots without a resurrection raise dead group members after a fight | always on |
 | | Bots fight by faction (team), not race, so cross-faction battlegrounds work | always on |
@@ -28,9 +29,12 @@ for good by deleting its part from the script.
 | `30-wildcard-rewards.ps1` | Free class training at the Wildcard trainer | `Wildcard.FreeClassTraining` |
 | | Skill card drops weighted by quality | `Wildcard.CardDropQualityWeights`, `Wildcard.CardDropChancePerMille` |
 | | Scrolls of Fortune count straight away instead of filling bags | `Wildcard.ScrollsStraightToCurrency` |
+| | The free-pack bar updates when a duplicate card is revealed (was only at login) | always on |
+| | Every duplicate card fills the free-pack bar, not only rank 1 duplicates | `Wildcard.AllDuplicatesFillPackBar` |
 | `40-battlegrounds.ps1` | Spirit guides raise every ghost beside them at each wave | always on |
 | `50-manastorm.ps1` | Dead bots are raised at the end of a Manastorm floor | always on |
 | | Every resurrection in a run (item, player spell or bot) uses one of the run's 5 shared charges | always on |
+| | Manastorm caches open straight into the bags, one per use; empty caches removed, stacks keep working | `Manastorm.CachesOpenIntoBags` |
 
 ## Settings (summary)
 
@@ -43,6 +47,7 @@ load, waking, zones), PvP rewards, AI chat, MySQL and world server performance, 
 
 `sql/enchants/000-013`: Mystic Enchant data fixes. `090-mysql-tuning.sql`: MySQL settings that survive the manager.
 `100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
+`110-manastorm-caches-unstack.sql`: Manastorm caches no longer stack, so each one opens and disappears when emptied.
 
 ## How changes are made
 

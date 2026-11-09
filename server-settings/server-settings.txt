@@ -40,17 +40,40 @@ modules\wildcard.conf | Wildcard.CardDropChancePerMille = 30
 # Scrolls of Fortune from caches, claims and loot count straight away, instead of filling the bags with scrolls
 # to right-click one by one (8 Nov; needs the build with the ScrollsStraightToCurrency patch).
 modules\wildcard.conf | Wildcard.ScrollsStraightToCurrency = 1
+# Every duplicate skill card fills the free-pack bar (9 Nov; needs the build with the patch). Before, only duplicates
+# of rank 1 cards did, so the bar could sit at 99 for ages. 100 points = one free sealed card pack.
+modules\wildcard.conf | Wildcard.AllDuplicatesFillPackBar = 1
+# Manastorm caches open straight into the bags, one cache per use (10 Nov; needs the build with the patch): no loot
+# window, the empty cache is removed, stacked caches stay usable, a full bag sends the rest to the mailbox, and the
+# Scrolls of Fortune inside count straight away (ScrollsStraightToCurrency above).
+worldserver.conf | Manastorm.CachesOpenIntoBags = 1
 
 # ---------------------------------------------------------------- Experience
-# Double XP everywhere (CoA's stock master rate is 0.9295; this keeps its per-source balance)
-worldserver.conf | Rate.XP.Global = 1.859
-# Prestige multiplies on top of that: 150% of 2x = 3x while a prestige cycle is active
-modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 150
-# Exploring: 2.7 x the master rate 1.859 = about 5x normal exploration XP.
-worldserver.conf | Rate.XP.Explore = 2.7
+# Triple XP everywhere (9 Nov, was 2x; CoA's stock master rate is 0.9295 and 3 x 0.9295 = 2.7885, which keeps its
+# per-source balance)
+worldserver.conf | Rate.XP.Global = 2.7885
+# Prestige multiplies on top of that: 167% of 3x = 5x while a prestige cycle is active (was 150% of 2x = 3x)
+modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 167
+# Exploring: 20x normal exploration XP (9 Nov): 6.6667 x the master rate 2.7885 = 18.59 = 20 x the stock 0.9295.
+worldserver.conf | Rate.XP.Explore = 6.6667
 # Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
 modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
+
+# ---------------------------------------------------------------- Cross-faction play (9 Nov)
+# Alliance and Horde can be friends, group (dungeons, raids, Manastorm), share guilds, talk, whisper, mail and trade,
+# as on Ascension. The Auction House stays split by faction (the Auctioneer stocks each one). World PvP and
+# battlegrounds still go by faction. Friends across factions are an account permission, not a setting: patch night
+# gives it to every account (AllowCrossFactionFriends).
+worldserver.conf | AllowTwoSide.Interaction.Group = 1
+worldserver.conf | AllowTwoSide.Interaction.Guild = 1
+worldserver.conf | AllowTwoSide.Interaction.Chat = 1
+worldserver.conf | AllowTwoSide.Interaction.Channel = 1
+worldserver.conf | AllowTwoSide.Interaction.Mail = 1
+worldserver.conf | AllowTwoSide.Interaction.Calendar = 1
+worldserver.conf | AllowTwoSide.Interaction.Arena = 1
+worldserver.conf | AllowTwoSide.WhoList = 1
+worldserver.conf | AllowTwoSide.Trade = 1
 
 # ---------------------------------------------------------------- Progression (earned, not handed out)
 # Vanity items are earned or bought, not all owned from the start (the default 1 unlocks the whole catalog).
@@ -79,6 +102,10 @@ worldserver.conf | Rate.Drop.Item.Rare = 1.5
 worldserver.conf | Rate.Drop.Item.Epic = 3
 worldserver.conf | Rate.Drop.Item.Legendary = 3
 worldserver.conf | Rate.Drop.Money = 1.25
+# Professions level 3x as fast (9 Nov): each skill-up gives 3 points instead of 1, for crafting (and cooking, first
+# aid) and for gathering (mining, herbalism, skinning, fishing). The chance of a skill-up per attempt is unchanged.
+worldserver.conf | SkillGain.Crafting = 3
+worldserver.conf | SkillGain.Gathering = 3
 
 # ---------------------------------------------------------------- Faster respawns for AoE farming (7 Nov)
 # Mostly solo levelling and grinding for Mystic Enchants: open-world mobs come back in about 90 seconds, so a cleared
@@ -188,18 +215,18 @@ modules\playerbots.conf | AiPlayerbot.BroadcastChanceSuggestQuest = 1500
 # each dungeon copy) update in parallel with more threads. Back to 1 if anything odd shows up.
 # 6 from 8 Nov, with the VM at 10 cores (was 4 on 8 cores: 30 -> 50 ticks/s at 1,000 bots).
 worldserver.conf | MapUpdate.Threads = 6
-# View distance in the open world (9 Nov): 150 yards, up from the default 100, so mobs in big open zones like the
-# Barrens stop popping in out of nowhere. Bots are players too, so each bot also sees further: watch the tick
-# summary in .server info after this; if spikes get worse, try 125. Dungeons, raids and battlegrounds keep their own.
-worldserver.conf | Visibility.Distance.Continents = 150
+# View distance in the open world stays at 100 yards (9 Nov: 150 was tried in settings but backed out before it went
+# live, while chasing lag spikes with 3 players on; every bot is a player too, so each bot would see further).
+worldserver.conf | Visibility.Distance.Continents = 100
 # Database threads (8 Nov): with 1,250 bots, every bot login, save and logout went through one character-database
 # connection, so a real player's character list or new character waited behind them (slow "retrieving character
 # list", slow creation while bots start up). More connections let player requests through alongside the bots.
 worldserver.conf | CharacterDatabase.WorkerThreads = 4
 worldserver.conf | CharacterDatabase.SynchThreads = 2
 worldserver.conf | LoginDatabase.WorkerThreads = 2
-modules\playerbots.conf | AiPlayerbot.MinRandomBots = 1250
-modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 1250
+# 1,000 bots (9 Nov, was 1,250): lag spikes with 3 players on (95% under 74 ms, 99% 147 ms, worst 1.3 s).
+modules\playerbots.conf | AiPlayerbot.MinRandomBots = 1000
+modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 1000
 # Capitals felt empty: bots pick a city visit three times as often (bank, auction house, trainers; 10-30 minutes).
 modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.GoCity = 30
 # Bot levels near the real players: 70% of bots roll within 5 levels of a random online player when they are
@@ -254,6 +281,11 @@ modules\mod_ollama_chat.conf | OllamaChat.PlayerReplyChance.Say = 100
 modules\mod_ollama_chat.conf | OllamaChat.PlayerReplyChance.Party = 100
 modules\mod_ollama_chat.conf | OllamaChat.DirectAddressReplyChance = 100
 modules\mod_ollama_chat.conf | OllamaChat.DisableRepliesInCombat = 0
+# Quieter in raids and dungeons (9 Nov; needs the build with the chatter patch): bots keep this share of their event
+# lines, random chatter and replies to each other inside a raid or dungeon. Answers to a player talking to them
+# directly are never dropped. 100 = no change.
+modules\mod_ollama_chat.conf | OllamaChat.RaidChatterPct = 25
+modules\mod_ollama_chat.conf | OllamaChat.DungeonChatterPct = 50
 modules\mod_ollama_chat.conf | OllamaChat.RateLimit.ScopePerMinute = 20
 # Typing like a person (7 Nov, second go): 1.5 s to read, then about 60 ms a character, so a short line takes 2-3 s and a long
 # one up to 7 s. The answer is still generated straight away; only its delivery waits.
