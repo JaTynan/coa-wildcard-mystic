@@ -1,0 +1,53 @@
+# What we change on top of Conquest of Azeroth
+
+Every customisation on James's Wildcard server, in one place. Nothing is edited on the running server by hand: each
+change lives in this repository and is laid back on top of CoA's own files every time, so a CoA update can never
+quietly undo it.
+
+| Layer | Where | When it is applied |
+|---|---|---|
+| Code | `patches/` (`*.patch` files and `NN-name.ps1` scripts) | Each build, on a clean copy of CoA's code for that release. A patch that no longer fits stops the build and names itself. |
+| Settings | `server-settings/server-settings.txt` | Every server start (patch night writes them into the config files). |
+| Database | `sql/enchants/` | Every server start (safe to run again). |
+| Client addon | `addon/WildcardEnchants` | Shipped to players by the launcher. |
+
+## Code patches
+
+Each script groups related changes. Turn a change off with its setting where it has one (no rebuild needed). Remove one
+for good by deleting its part from the script.
+
+| Script / patch | Change | Setting |
+|---|---|---|
+| `mystic-enchants-*.patch` | Mystic Enchants on Wildcard: enchant actions, SpellAffect data, altars on Wildcard | always on |
+| `wildcard-ability-pool.patch` | Which classes' abilities Wildcard rolls from | `Wildcard.AbilityPool` |
+| `10-mod-ollama-chat-fit.ps1` | Makes the AI chat module compile on the CoA core | always on |
+| `20-bots.ps1` | Bots level near real players | `AiPlayerbot.WildcardLevelNearPlayersPct` |
+| | Bots without a resurrection raise dead group members after a fight | always on |
+| | Bots fight by faction (team), not race, so cross-faction battlegrounds work | always on |
+| | Bots in War Mode or High Risk attack Mercenaries of their own faction | always on |
+| `30-wildcard-rewards.ps1` | Free class training at the Wildcard trainer | `Wildcard.FreeClassTraining` |
+| | Skill card drops weighted by quality | `Wildcard.CardDropQualityWeights`, `Wildcard.CardDropChancePerMille` |
+| | Scrolls of Fortune count straight away instead of filling bags | `Wildcard.ScrollsStraightToCurrency` |
+| `40-battlegrounds.ps1` | Spirit guides raise every ghost beside them at each wave | always on |
+| `50-manastorm.ps1` | Dead bots are raised at the end of a Manastorm floor | always on |
+| | Every resurrection in a run (item, player spell or bot) uses one of the run's 5 shared charges | always on |
+
+## Settings (summary)
+
+Grouped and explained line by line in `server-settings.txt`: Wildcard realm (ability pool, no Pete Arr), experience
+(2x, prestige, exploring, rested), progression earned not handed out, professions and drops, faster respawns (90 s
+mobs, 2 min nodes), Auction House bot (stock, skipped items, prices), play with friends, SQUID's bots (world PvP,
+load, waking, zones), PvP rewards, AI chat, MySQL and world server performance, view distance.
+
+## Database
+
+`sql/enchants/000-013`: Mystic Enchant data fixes. `090-mysql-tuning.sql`: MySQL settings that survive the manager.
+`100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
+
+## How changes are made
+
+- Changes collect on one branch and go in as **one PR per patch night**, so each night is one merge, and one thing to
+  roll back if it goes wrong.
+- Every new code change gets a setting to turn it off where that's practical, and a line in this file.
+- Fixes that are really CoA bugs are worth reporting to the CoA team; when they fix one, its patch stops fitting, the
+  build says so, and we delete it.
