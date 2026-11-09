@@ -5,6 +5,10 @@ A friend enters an account name, a password and the invite code, and passes Clou
 The account is then created through the server manager's own one-account command (create-account-once), the same
 way the manager's Create account button does it.
 
+Recruit-a-Friend: the form takes an optional recruiter's account name, and POST /api/recruit lets an existing account
+link (or change) its recruiter after proving its password (checked against the account's SRP6 verifier, the same
+maths the login server uses). Anyone may recruit anyone; the link takes effect at the next login.
+
 Limits, counted over the last 24 hours: accounts per internet address, accounts in total, and failed attempts
 (wrong invite code or failed human check) per address, after which that address is turned away for the day.
 
@@ -16,6 +20,7 @@ Run by the "Wildcard Sign-up" scheduled task (Register-WildcardSignup.cmd); stan
 """
 
 import argparse
+import hashlib
 import hmac
 import html
 import json
@@ -37,6 +42,9 @@ DAY = 24 * 60 * 60
 NAME = re.compile(r"[A-Za-z0-9]{3,16}")
 PASSWORD = re.compile(r"[A-Za-z0-9]{6,16}")
 VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+# The login server's SRP6 group (AzerothCore SRP6: g = 7, 256-bit N); verifiers are stored little-endian.
+SRP_N = int("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7", 16)
+SRP_G = 7
 
 here = Path(__file__).resolve().parent
 patch_night = here.parent
@@ -128,6 +136,116 @@ def create_account(options, name, password):
     return False, "The server said: " + text
 
 
+def auth_database(options):
+    """The login database worldserver.conf points at (LoginDatabaseInfo), e.g. acore_auth."""
+    try:
+        text = (options.server / "Core" / "configs" / "worldserver.conf").read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return "acore_auth"
+    found = None
+    for line in text.splitlines():
+        match = re.match(r'\s*LoginDatabaseInfo\s*=\s*"([^"]*)"', line)
+        if match:
+            found = match.group(1)
+    parts = found.split(";") if found else []
+    name = parts[4] if len(parts) >= 5 else "acore_auth"
+    return name if re.fullmatch(r"[A-Za-z0-9_]+", name) else "acore_auth"
+
+
+def mysql(options, sql):
+    """Runs SQL with the server's own MySQL client and admin login. Returns (ok, output lines)."""
+    client = options.server / "mysql" / "bin" / "mysql.exe"
+    ini = options.server / "mysql" / "admin-client.ini"
+    try:
+        result = subprocess.run([str(client), f"--defaults-file={ini}", "--batch", "--skip-column-names", "-e", sql],
+                                capture_output=True, text=True, timeout=30,
+                                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    except (OSError, subprocess.TimeoutExpired) as error:
+        log(f"MySQL did not run: {error}")
+        return False, []
+    if result.returncode:
+        log(f"MySQL failed: {(result.stderr or '').strip()[-300:]}")
+        return False, []
+    return True, [line for line in result.stdout.splitlines() if line.strip()]
+
+
+def find_account(options, name):
+    """(found, id, salt, verifier) for an account name already checked against NAME (so safe to put in SQL)."""
+    ok, rows = mysql(options, f"SELECT id, HEX(salt), HEX(verifier) FROM `{auth_database(options)}`.account "
+                              f"WHERE username = '{name.upper()}';")
+    if not ok:
+        return None
+    if not rows:
+        return False, 0, b"", b""
+    account, salt, verifier = rows[0].split("\t")
+    return True, int(account), bytes.fromhex(salt), bytes.fromhex(verifier)
+
+
+def password_matches(name, password, salt, verifier):
+    inner = hashlib.sha1(f"{name.upper()}:{password.upper()}".encode()).digest()
+    x = int.from_bytes(hashlib.sha1(salt + inner).digest(), "little")
+    return hmac.compare_digest(pow(SRP_G, x, SRP_N).to_bytes(32, "little"), verifier)
+
+
+def set_recruiter(options, name, recruiter):
+    database = auth_database(options)
+    ok, _ = mysql(options, f"UPDATE `{database}`.account f JOIN `{database}`.account r ON r.username = '{recruiter.upper()}' "
+                           f"SET f.recruiter = r.id WHERE f.username = '{name.upper()}';")
+    return ok
+
+
+def check_recruiter(options, name, recruiter):
+    """None when the recruiter is usable, else the message to show."""
+    if not NAME.fullmatch(recruiter):
+        return "The recruiter's account name must be 3 to 16 letters or digits."
+    if recruiter.upper() == name.upper():
+        return "You can't recruit yourself."
+    found = find_account(options, recruiter)
+    if found is None:
+        return "The server did not answer. Try again in a few minutes."
+    if not found[0]:
+        return f"There's no account called {recruiter.upper()}. Check the name with your friend (it's their login, not a character)."
+    return None
+
+
+def recruit(options, form, address):
+    config = settings()
+    if not config:
+        return 503, "Sign-up is not open yet. Ask James."
+    name = str(form.get("name", "")).strip()
+    password = str(form.get("password", ""))
+    recruiter = str(form.get("recruiter", "")).strip()
+    token = str(form.get("token", ""))
+    if not NAME.fullmatch(name) or not PASSWORD.fullmatch(password):
+        return 400, "Enter your account name and password."
+    failures = int(config.get("failuresPerAddressPerDay", 10))
+    with lock:
+        state = load_state()
+        if count(state["failed"], address) >= failures:
+            return 429, "Too many failed attempts from your connection today. Try again tomorrow or ask James."
+
+        def fail(status, message):
+            state["failed"].append({"ip": address, "t": time.time()})
+            save_state(state)
+            log(f"Refused recruiter link for {name} from {address}: {message}")
+            return status, message
+
+        if not human(config["turnstileSecret"], token, address):
+            return fail(403, "The human check did not pass. Tick it again and retry.")
+        account = find_account(options, name)
+        if account is None:
+            return 502, "The server did not answer. Try again in a few minutes."
+        if not account[0] or not password_matches(name, password, account[2], account[3]):
+            return fail(403, "That account name and password don't match.")
+    problem = check_recruiter(options, name, recruiter)
+    if problem:
+        return 400, problem
+    if not set_recruiter(options, name, recruiter):
+        return 502, "Something went wrong saving the link. Ask James."
+    log(f"Linked {name.upper()} to recruiter {recruiter.upper()} for {address}")
+    return 200, f"{name.upper()} is now recruited by {recruiter.upper()}. Log out to character select and back in."
+
+
 def join(options, form, address):
     config = settings()
     if not config:
@@ -135,6 +253,7 @@ def join(options, form, address):
     name = str(form.get("name", "")).strip()
     password = str(form.get("password", ""))
     invite = str(form.get("invite", "")).strip()
+    recruiter = str(form.get("recruiter", "")).strip()
     token = str(form.get("token", ""))
     if not NAME.fullmatch(name):
         return 400, "The account name must be 3 to 16 letters or digits."
@@ -163,11 +282,22 @@ def join(options, form, address):
             return fail(403, "The human check did not pass. Tick it again and retry.")
         if not any(hmac.compare_digest(invite.upper().encode(), code.upper().encode()) for code in config["inviteCodes"]):
             return fail(403, "That invite code is not right.")
+        if recruiter:
+            problem = check_recruiter(options, name, recruiter)
+            if problem:
+                return 400, problem
         created, message = create_account(options, name, password)
         if created:
             state["created"].append({"ip": address, "t": time.time()})
             save_state(state)
             log(f"Created account {name.upper()} for {address}")
+            if recruiter:
+                if set_recruiter(options, name, recruiter):
+                    log(f"Linked {name.upper()} to recruiter {recruiter.upper()}")
+                    return 200, (f"Account {name.upper()} created, recruited by {recruiter.upper()}. "
+                                 "Log in with it in the game.")
+                return 200, (f"Account {name.upper()} created. Log in with it in the game. (The recruiter link didn't "
+                             "save; use Link a recruiter below.)")
             return 200, f"Account {name.upper()} created. Log in with it in the game."
         return 409 if "taken" in message else 502, message
 
@@ -182,8 +312,8 @@ PAGE = """<!doctype html>
 <link rel="stylesheet" href="/style.css">
 <style>
   /* Sign-up page only */
-  #join { max-width: 560px; }
-  #result { min-height: 1.5em; margin: 16px 0 0; }
+  #join, #recruit { max-width: 560px; }
+  .result { min-height: 1.5em; margin: 16px 0 0; }
 </style>
 </head>
 <body>
@@ -202,32 +332,61 @@ PAGE = """<!doctype html>
     <input id="again" type="password" maxlength="16" required>
     <label for="invite">Invite code</label>
     <input id="invite" name="invite" required>
+    <label for="recruiter">Recruited by (optional)</label>
+    <p class="hint">The account name of the friend who invited you. You both get triple XP while you play together,
+      up to level 60.</p>
+    <input id="recruiter" name="recruiter" maxlength="16" pattern="[A-Za-z0-9]{3,16}">
     <div class="cf-turnstile" data-sitekey="__SITEKEY__" data-theme="dark"></div>
-    <button id="submit" class="button" type="submit" style="margin-top:16px">Create account</button>
-    <p id="result" role="status"></p>
+    <button class="button" type="submit" style="margin-top:16px">Create account</button>
+    <p class="result" role="status"></p>
+  </form>
+
+  <h2 style="margin-top:32px">Recruit-a-Friend</h2>
+  <p class="tag">Already have an account? Link it to the friend who recruited you. Linked friends get triple XP while
+    grouped and near each other (up to level 60, no more than 30 levels apart). Anyone can recruit anyone; each account
+    has one recruiter, and you can change it here.</p>
+  <form id="recruit" class="panel" autocomplete="off">
+    <label for="r-name">Your account name</label>
+    <input id="r-name" name="name" maxlength="16" pattern="[A-Za-z0-9]{3,16}" required>
+    <label for="r-password">Your password</label>
+    <p class="hint">So nobody can change someone else's link.</p>
+    <input id="r-password" name="password" type="password" maxlength="16" required>
+    <label for="r-recruiter">Recruited by</label>
+    <p class="hint">Your friend's account name (their login, not a character).</p>
+    <input id="r-recruiter" name="recruiter" maxlength="16" pattern="[A-Za-z0-9]{3,16}" required>
+    <div class="cf-turnstile" data-sitekey="__SITEKEY__" data-theme="dark"></div>
+    <button class="button" type="submit" style="margin-top:16px">Link recruiter</button>
+    <p class="result" role="status"></p>
   </form>
   <p class="note" style="margin-top:20px">Then get the game, and see the server's status and rates, on the
     <a href="https://wildcard.jtlab.cc/">home page</a>. New to Wildcard? Read <a href="https://wildcard.jtlab.cc/how-to-play.html">How to play</a>.</p>
 </main>
 <script>
-const form = document.getElementById("join"), result = document.getElementById("result"), submit = document.getElementById("submit");
-function show(text, good) { result.textContent = text; result.className = good ? "good" : "bad"; }
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (form.password.value !== document.getElementById("again").value) { show("The two passwords are different."); return; }
-  const token = (form.querySelector("[name=cf-turnstile-response]") || {}).value || "";
-  if (!token) { show("Tick the human check first."); return; }
-  submit.disabled = true; show("Creating your account...", true);
-  try {
-    const reply = await fetch("/api/join", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: form.name.value, password: form.password.value, invite: form.invite.value, token }) });
-    const data = await reply.json();
-    show(data.message, reply.ok);
-    if (reply.ok) { form.reset(); }
-  } catch (error) { show("Could not reach the server. Try again in a minute."); }
-  submit.disabled = false;
-  if (window.turnstile) { turnstile.reset(); }
-});
+function wire(form, url, fields, check) {
+  const result = form.querySelector(".result"), submit = form.querySelector("button[type=submit]");
+  const show = (text, good) => { result.textContent = text; result.className = "result " + (good ? "good" : "bad"); };
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const problem = check ? check(form) : "";
+    if (problem) { show(problem); return; }
+    const token = (form.querySelector("[name=cf-turnstile-response]") || {}).value || "";
+    if (!token) { show("Tick the human check first."); return; }
+    submit.disabled = true; show("Working...", true);
+    const body = { token };
+    for (const field of fields) { body[field] = form.elements[field].value; }
+    try {
+      const reply = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const data = await reply.json();
+      show(data.message, reply.ok);
+      if (reply.ok) { form.reset(); }
+    } catch (error) { show("Could not reach the server. Try again in a minute."); }
+    submit.disabled = false;
+    if (window.turnstile) { turnstile.reset(form.querySelector(".cf-turnstile")); }
+  });
+}
+wire(document.getElementById("join"), "/api/join", ["name", "password", "invite", "recruiter"],
+  (form) => form.password.value !== document.getElementById("again").value ? "The two passwords are different." : "");
+wire(document.getElementById("recruit"), "/api/recruit", ["name", "password", "recruiter"]);
 </script>
 </body>
 </html>
@@ -286,7 +445,7 @@ def handler_for(options):
                       "text/html; charset=utf-8")
 
         def do_POST(self):
-            if self.path != "/api/join":
+            if self.path not in ("/api/join", "/api/recruit"):
                 self.send(404, json.dumps({"message": "Not found"}), "application/json")
                 return
             try:
@@ -296,7 +455,8 @@ def handler_for(options):
                     form = {}
             except ValueError:
                 form = {}
-            status, message = join(options, form, self.address())
+            action = join if self.path == "/api/join" else recruit
+            status, message = action(options, form, self.address())
             self.send(status, json.dumps({"message": message}), "application/json")
 
         def log_message(self, format, *args):
