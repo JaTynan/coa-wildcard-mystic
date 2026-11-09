@@ -13,6 +13,8 @@
   figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
   figure.small { max-width: 560px; }
   li figure { margin: 10px 0 14px; }
+  .video { position: relative; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); background: #000; }
+  .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .toc { columns: 2; font-size: 15px; }
   .toc a { color: var(--text); }
   @media (max-width: 720px) { .toc { columns: 1; } }
@@ -46,6 +48,16 @@
     <p>You get new abilities as you level, either by picking them from cards (below) or by rolling for them. On top of
       that, <strong>Mystic Enchants</strong> change how your abilities work, so the same spell can play very differently
       from one character to the next.</p>
+    <figure>
+      <div class="video">
+        <iframe src="https://www.youtube-nocookie.com/embed/4kfJNFsmcXs" title="A quick guide to Wildcard (YouTube)"
+                loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+      <figcaption>New to Wildcard? This video is a quick guide.
+        <a href="https://www.youtube.com/watch?v=4kfJNFsmcXs">Watch it on YouTube</a>.</figcaption>
+    </figure>
   </section>
 
   <section class="panel" id="start">
@@ -193,6 +205,16 @@
     </ul>
     <p class="note">Some enchants only do something if you have the ability they improve. A red enchant line on an item
       or scroll usually means you don't have that ability yet.</p>
+    <figure>
+      <div class="video">
+        <iframe src="https://www.youtube-nocookie.com/embed/aQO4a4Gt5hQ" title="Mystic Enchants guide (YouTube)"
+                loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+      <figcaption>A video guide to Mystic Enchants: how the system works, and finding and using enchants.
+        <a href="https://www.youtube.com/watch?v=aQO4a4Gt5hQ">Watch it on YouTube</a>.</figcaption>
+    </figure>
   </section>
 
   <section class="panel" id="challenges">
