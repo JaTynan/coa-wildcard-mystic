@@ -43,6 +43,10 @@ modules\wildcard.conf | Wildcard.ScrollsStraightToCurrency = 1
 # Every duplicate skill card fills the free-pack bar (9 Nov; needs the build with the patch). Before, only duplicates
 # of rank 1 cards did, so the bar could sit at 99 for ages. 100 points = one free sealed card pack.
 modules\wildcard.conf | Wildcard.AllDuplicatesFillPackBar = 1
+# Manastorm caches open straight into the bags, one cache per use (10 Nov; needs the build with the patch): no loot
+# window, the empty cache is removed, stacked caches stay usable, a full bag sends the rest to the mailbox, and the
+# Scrolls of Fortune inside count straight away (ScrollsStraightToCurrency above).
+worldserver.conf | Manastorm.CachesOpenIntoBags = 1
 
 # ---------------------------------------------------------------- Experience
 # Triple XP everywhere (9 Nov, was 2x; CoA's stock master rate is 0.9295 and 3 x 0.9295 = 2.7885, which keeps its
