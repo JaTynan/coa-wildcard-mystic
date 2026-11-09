@@ -52,6 +52,21 @@ worldserver.conf | Rate.XP.Explore = 2.7
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
 modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
 
+# ---------------------------------------------------------------- Cross-faction play (9 Nov)
+# Alliance and Horde can be friends, group (dungeons, raids, Manastorm), share guilds, talk, whisper, mail and trade,
+# as on Ascension. The Auction House stays split by faction (the Auctioneer stocks each one). World PvP and
+# battlegrounds still go by faction. Friends across factions are an account permission, not a setting: patch night
+# gives it to every account (AllowCrossFactionFriends).
+worldserver.conf | AllowTwoSide.Interaction.Group = 1
+worldserver.conf | AllowTwoSide.Interaction.Guild = 1
+worldserver.conf | AllowTwoSide.Interaction.Chat = 1
+worldserver.conf | AllowTwoSide.Interaction.Channel = 1
+worldserver.conf | AllowTwoSide.Interaction.Mail = 1
+worldserver.conf | AllowTwoSide.Interaction.Calendar = 1
+worldserver.conf | AllowTwoSide.Interaction.Arena = 1
+worldserver.conf | AllowTwoSide.WhoList = 1
+worldserver.conf | AllowTwoSide.Trade = 1
+
 # ---------------------------------------------------------------- Progression (earned, not handed out)
 # Vanity items are earned or bought, not all owned from the start (the default 1 unlocks the whole catalog).
 modules\coa.conf | CoA.UnlockAllVanity = 0

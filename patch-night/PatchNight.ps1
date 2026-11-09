@@ -331,6 +331,15 @@ function EnsureCharacterSpellIndexes {
     }
 }
 
+function AllowCrossFactionFriends {
+    # Cross-faction friends are not a config switch in this core: adding a friend of the other faction needs the
+    # account permission "two side add friend" (29). Give it to the Player role (199), which every account has, so
+    # Alliance and Horde can be friends to match the AllowTwoSide settings (groups, guilds, chat). Safe to repeat.
+    $auth = DatabaseName 'LoginDatabaseInfo' 'acore_auth'
+    $done = Sql "INSERT IGNORE INTO ``$auth``.rbac_linked_permissions (id, linkedId) VALUES (199, 29);"
+    if ($done.Code) { Log "Could not allow cross-faction friends: $($done.Text)" 'WARN' }
+}
+
 function SkipUnusedAuctionItems {
     # The auction bot lists everything in item_template, including items players should not be able to buy:
     # leftover developer items named "UNUSED...", and Ascension's Bloodforged and Sanguine PvP gear (extra stats and
@@ -456,7 +465,7 @@ function StartAndCheck([string] $expected) {
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
     # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
     $db = Launcher 'start-mysql' '' 10
-    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems; RepriceAuctionsWhenPricesChange; EnsureCharacterSpellIndexes }
+    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems; RepriceAuctionsWhenPricesChange; EnsureCharacterSpellIndexes; AllowCrossFactionFriends }
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
