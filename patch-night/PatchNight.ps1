@@ -365,6 +365,25 @@ function SkipUnusedAuctionItems {
     Log "Auction bot skips $($ids.Count) items (UNUSED, Bloodforged, Sanguine, PvP); removed listings (rows): $($removed.Text.Trim())."
 }
 
+function RepriceAuctionsWhenPricesChange {
+    # The auction bot prices an item when it lists it; listings already up keep their old price for up to a day.
+    # When the price lines in server-settings.txt change, take down the Auctioneer's listings nobody has bid on, so
+    # the bot relists everything at the new prices over its next few cycles (about 15 minutes). Runs once per change.
+    $list = Join-Path $settingsDir 'server-settings.txt'
+    if (-not (Test-Path $list)) { return }
+    $prices = @(Get-Content $list | Where-Object { $_ -match '^\s*modules\\mod_ahbot\.conf\s*\|\s*AuctionHouseBot\.Price' } |
+        ForEach-Object { $_.Trim() }) -join "`n"
+    $record = Join-Path $core 'ahbot-prices.txt'
+    $before = if (Test-Path $record) { (Get-Content $record -Raw).Trim() } else { '' }
+    if ($prices -eq $before) { return }
+    $chars = DatabaseName 'CharacterDatabaseInfo' 'acore_characters'
+    $removed = Sql ("USE ``$chars``; DELETE ah, ii FROM ``$chars``.auctionhouse ah JOIN ``$chars``.item_instance ii ON ii.guid = ah.itemguid " +
+        "JOIN ``$chars``.characters c ON c.guid = ah.itemowner WHERE c.name = 'Auctioneer' AND ah.buyguid = 0; SELECT ROW_COUNT();")
+    if ($removed.Code) { Log "Could not clear the Auctioneer's listings for the new prices: $($removed.Text)" 'WARN'; return }
+    Set-Content -Path $record -Value $prices -Encoding ASCII
+    Log "Auction prices changed: removed the Auctioneer's unbid listings (rows: $($removed.Text.Trim())); the bot relists them at the new prices."
+}
+
 function RestoreRealmAddress {
     # The launcher resets the realm list to 127.0.0.1 at every start; the manager then writes the "Play with
     # friends" address back (friends.rs, reapply). Do the same, or other computers see the realm but cannot join it.
@@ -437,7 +456,7 @@ function StartAndCheck([string] $expected) {
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
     # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
     $db = Launcher 'start-mysql' '' 10
-    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems; EnsureCharacterSpellIndexes }
+    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems; RepriceAuctionsWhenPricesChange; EnsureCharacterSpellIndexes }
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress

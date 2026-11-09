@@ -311,6 +311,19 @@ jobs:
           $team = 'bool PlayerbotAI::IsOpposing(Player* player) { return player->GetTeamId() != bot->GetTeamId(); }'
           Set-Content $file $text.Replace($race, $team) -NoNewline
 
+      - name: Bots attack Mercenaries of their own faction too (when the bot is in a PvP ruleset)
+        shell: pwsh
+        run: |
+          $file = 'core/modules/mod-playerbots/src/Ai/Base/Value/EnemyPlayerValue.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $old = 'if (enemy && botAI->IsOpposing(enemy) && enemy->IsPvP() &&'
+          if (-not $text.Contains($old)) { throw 'SQUID changed: the enemy player check in NearestEnemyPlayersValue was not found' }
+          if (-not $text.Contains('static bool CoaPvpRuleset(Unit const* unit)')) { throw 'SQUID changed: CoaPvpRuleset was not found' }
+          # CoA's Mercenary (aura 9930874, core AscensionMercenary.cpp) is free-for-all against anyone in War Mode or
+          # High Risk, own faction included; the core already lets those characters attack them.
+          $new = 'if (enemy && (botAI->IsOpposing(enemy) || (enemy->HasAura(9930874) && CoaPvpRuleset(bot))) && enemy->IsPvP() &&'
+          Set-Content $file $text.Replace($old, $new) -NoNewline
+
       - name: Wildcard skill card drops weighted by quality (Wildcard.CardDropQualityWeights, off when empty)
         shell: pwsh
         run: |
@@ -368,6 +381,55 @@ jobs:
           if (-not $text.Contains($old)) { throw 'CoA changed: RollCardDrop in AscensionWildcard.cpp was not found' }
           if (-not $text.Contains('#include "StringConvert.h"')) { $text = $text.Replace('#include "StringFormat.h"', "#include `"StringConvert.h`"`n#include `"StringFormat.h`"") }
           Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
+
+      - name: Scrolls of Fortune go straight to the scroll count (Wildcard.ScrollsStraightToCurrency, off when unset)
+        shell: pwsh
+        run: |
+          $file = 'core/src/server/coa/AscensionWildcard.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $before = 'class AscensionWildcardSpecializationCache final : public ItemScript'
+          $register = '    new AscensionWildcard::AscensionWildcardItems();'
+          foreach ($anchor in $before, $register, 'std::optional<ScrollToken> RedeemToken(SpellInfo const* spellInfo)') {
+              if (-not $text.Contains($anchor)) { throw "CoA changed: '$anchor' was not found in AscensionWildcard.cpp" }
+          }
+          # Caches and claims hand out Scroll of Fortune items that each have to be right-clicked to count (the redeem
+          # spell). Do that for the player: any scroll item that lands in their bags is turned into its count a moment
+          # later (next update, so the code that stored it is finished with the item).
+          $class = @'
+          class AscensionWildcardScrollsToCurrency final : public PlayerScript
+          {
+          public:
+              AscensionWildcardScrollsToCurrency() : PlayerScript("AscensionWildcardScrollsToCurrency",
+                  { PLAYERHOOK_ON_STORE_NEW_ITEM }) { }
+
+              void OnPlayerStoreNewItem(Player* player, Item* item, uint32) override
+              {
+                  if (!player || !item || !RedeemToken(sSpellMgr->GetSpellInfo(uint32(item->GetTemplate()->Spells[0].SpellId))))
+                      return;
+                  if (!sConfigMgr->GetOption<bool>("Wildcard.ScrollsStraightToCurrency", false))
+                      return;
+                  ObjectGuid const itemGuid = item->GetGUID();
+                  player->m_Events.AddEventAtOffset([player, itemGuid]()
+                  {
+                      Item* held = player->GetItemByGuid(itemGuid);
+                      if (!held)
+                          return;
+                      SpellInfo const* redeem = sSpellMgr->GetSpellInfo(uint32(held->GetTemplate()->Spells[0].SpellId));
+                      std::optional<ScrollToken> const token = RedeemToken(redeem);
+                      if (!token)
+                          return;
+                      uint32 count = held->GetCount();
+                      uint32 const redeemed = count;
+                      player->DestroyItemCount(held, count, true);
+                      SetScrolls(player, *token, ScrollCounts(player, token->Spec)[token->Kind] + RedeemAmount(redeem) * redeemed);
+                  }, Milliseconds(1));
+              }
+          };
+
+          '@
+          $text = $text.Replace($before, $class.Replace("`r`n", "`n") + $before)
+          $text = $text.Replace($register, $register + "`n    new AscensionWildcard::AscensionWildcardScrollsToCurrency();")
+          Set-Content $file $text -NoNewline
 
       - name: Place the modules where the core expects them (as the manager's build does)
         shell: pwsh

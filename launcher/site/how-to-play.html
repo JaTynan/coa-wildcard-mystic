@@ -103,10 +103,12 @@
       <li>Tell it once how you start Windows games. <code>{exe}</code> stands for the game's <code>Ascension.exe</code>:
         <ul>
           <li>Steam (Proton), the easiest: close Steam, then run <code>python3 WildcardLauncher.py --add-to-steam</code>.
-            It adds Wildcard to your Steam library, sets it to Proton Experimental, and makes <code>--play</code> start it
-            through Steam. It also puts a <strong>Wildcard</strong> shortcut in your app menu and on your desktop: click it
-            and the game updates, then opens through Steam. Your Steam settings are backed up first
-            (<code>*.wildcard-backup</code>).</li>
+            It adds <strong>Project Descension</strong> to your Steam library with its own artwork, sets it to Proton
+            Experimental with the fix for the endless loading screen, and makes <code>--play</code> start it through
+            Steam. It also puts a <strong>Project Descension</strong> shortcut in your app menu and on your desktop:
+            click it and the game updates, then opens through Steam. Your Steam settings are backed up first
+            (<code>*.wildcard-backup</code>). Added it with an older launcher? Run it again and it replaces the old
+            entry.</li>
           <li>Plain Wine: <code>python3 WildcardLauncher.py --set-play "wine {exe}"</code></li>
           <li>Bottles (Flatpak), with a bottle called CoA: <code>python3 WildcardLauncher.py --set-play "flatpak run
             --command=bottles-cli com.usebottles.bottles run -b CoA -e {exe}"</code></li>
@@ -115,7 +117,7 @@
       <li>From then on, <code>python3 WildcardLauncher.py --play</code> updates the game and starts it.
         <figure>
           <img src="images/linux-6-steam-play.png" width="1470" height="489" loading="lazy"
-               alt="The terminal after --add-to-steam: Added Wildcard to Steam, Proton set to Proton Experimental. Then --play: Up to date, Game server online, Starting the game through Steam">
+               alt="The terminal after --add-to-steam: Added the game to Steam, Proton set to Proton Experimental. Then --play: Up to date, Game server online, Starting the game through Steam">
           <figcaption><code>--add-to-steam</code> once, then <code>--play</code> every time after.</figcaption>
         </figure>
         Steam opens and starts the game. Log in with the account you made at join.jtlab.cc.
@@ -132,6 +134,9 @@
       <li><strong>Add a Game</strong>, <strong>Add a Non-Steam Game</strong>, and pick <code>CoAClient/Ascension.exe</code>.</li>
       <li>Right-click it, <strong>Properties</strong>, <strong>Compatibility</strong>: tick <em>Force the use of a specific
         Steam Play compatibility tool</em> and choose <strong>Proton Experimental</strong>.</li>
+      <li>Still in <strong>Properties</strong>, under <strong>General</strong>, set <strong>Launch Options</strong> to
+        <code>WINEDLLOVERRIDES="divxtac=d" %command%</code>. Without it the game gets stuck on the loading screen and
+        disconnects.</li>
       <li>Right-click it, <strong>Manage</strong>, <strong>Add desktop shortcut</strong>. Open that shortcut file in a text
         editor and copy the <code>steam://rungameid/...</code> link.</li>
       <li>Run <code>python3 WildcardLauncher.py --set-play "steam steam://rungameid/THE-NUMBER"</code> (Flatpak Steam:
@@ -170,9 +175,8 @@
 
   <section class="panel" id="rerolls">
     <h2>Swapping abilities later</h2>
-    <p>Got an ability you don't like? On this server, <strong>Scrolls of Fortune are free and unlimited</strong>. Get them
-      from <strong>Pete Arr</strong>, who stands beside Silas Darkmoon in Stormwind and Orgrimmar, and use them to
-      reroll abilities until your kit feels right.</p>
+    <p>Got an ability you don't like? A <strong>Scroll of Fortune</strong> rerolls it. Scrolls aren't handed out
+      for free here, so save them for the abilities you really want gone.</p>
   </section>
 
   <section class="panel" id="enchants">

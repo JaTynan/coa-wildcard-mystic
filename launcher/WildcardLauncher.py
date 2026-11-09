@@ -43,7 +43,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-LAUNCHER_VERSION = 3
+LAUNCHER_VERSION = 4
 
 HERE = Path(__file__).resolve().parent
 CLIENT = HERE / "CoAClient"
@@ -367,8 +367,13 @@ def play():
 
 
 # ---------------------------------------------------------------- Steam (Proton)
-STEAM_NAME = "Wildcard"
+STEAM_NAME = "Project Descension"
+OLD_STEAM_NAMES = ("Wildcard",)  # earlier launchers' name for the same shortcut: replaced, not duplicated
 STEAM_PROTON = "proton_experimental"
+# The client's DivxTac.dll hangs the loading screen under Proton (endless load, then a disconnect): switch it off.
+STEAM_LAUNCH_OPTIONS = 'WINEDLLOVERRIDES="divxtac=d" %command%'
+ART_FOLDER = HERE / "steam-art"
+ART_FILES = ("portrait.png", "header.png", "hero.png", "logo.png", "icon.png")
 
 
 def steam_roots():
@@ -504,6 +509,41 @@ def backup(path):
         shutil.copy2(path, copy)
 
 
+def fetch_art():
+    """Library artwork from the site (launcher/site/steam), kept in steam-art/. Missing art never stops anything."""
+    got = {}
+    for name in ART_FILES:
+        target = ART_FOLDER / name
+        try:
+            get_file(f"{site()}/steam/{name}", target, f"Artwork {name}")
+            got[name] = target
+        except (RuntimeError, OSError) as error:
+            log(f"Artwork {name} not downloaded: {error}")
+            if target.exists():
+                got[name] = target
+    if got:
+        print()
+    return got
+
+
+def place_art(user, appid, art):
+    """Steam reads custom library art from userdata/<user>/config/grid, named after the shortcut's appid."""
+    grid = user / "config" / "grid"
+    grid.mkdir(parents=True, exist_ok=True)
+    for source, suffix in (("portrait.png", "p"), ("header.png", ""), ("hero.png", "_hero"), ("logo.png", "_logo")):
+        if source in art:
+            shutil.copy2(art[source], grid / f"{appid}{suffix}.png")
+
+
+def remove_art(user, appid):
+    for suffix in ("p", "", "_hero", "_logo"):
+        for ext in (".png", ".jpg"):
+            try:
+                (user / "config" / "grid" / f"{appid}{suffix}{ext}").unlink()
+            except OSError:
+                pass
+
+
 def add_to_steam():
     exe = CLIENT / "Ascension.exe"
     if not exe.exists():
@@ -525,15 +565,32 @@ def add_to_steam():
     if not users:
         say("Steam has no signed-in user yet. Start Steam, sign in, exit it, then run this again.")
         return 1
+    art = fetch_art()
+    icon = str(art["icon.png"]) if "icon.png" in art else ""
+    old_appids = {zlib.crc32((exe_field + name).encode("utf-8")) | 0x80000000 for name in OLD_STEAM_NAMES}
     for user in users:
         path = user / "config" / "shortcuts.vdf"
         path.parent.mkdir(parents=True, exist_ok=True)
         top = vdf_binary_load(path.read_bytes()) if path.exists() and path.stat().st_size else [["shortcuts", []]]
         shortcuts = vdf_child(top, "shortcuts")
+
+        def field(item, key):
+            return next((v for k, v in item if k.lower() == key.lower()), None)
+
+        before = len(shortcuts)
+        shortcuts[:] = [item for item in shortcuts if not (
+            isinstance(item[1], list) and field(item[1], "AppName") in OLD_STEAM_NAMES
+            and field(item[1], "Exe") == exe_field)]
+        if len(shortcuts) != before:
+            for old in old_appids:
+                remove_art(user, old)
+            log(f"Replaced the old Steam shortcut ({', '.join(OLD_STEAM_NAMES)}) in {path}")
+        for number, item in enumerate(shortcuts):
+            item[0] = str(number)
         entry = next((item[1] for item in shortcuts if isinstance(item[1], list) and any(
             k.lower() == "appname" and v == STEAM_NAME for k, v in item[1])), None)
         fields = [["appid", signed], ["AppName", STEAM_NAME], ["Exe", exe_field], ["StartDir", start_field],
-                  ["icon", ""], ["ShortcutPath", ""], ["LaunchOptions", ""], ["IsHidden", 0],
+                  ["icon", icon], ["ShortcutPath", ""], ["LaunchOptions", STEAM_LAUNCH_OPTIONS], ["IsHidden", 0],
                   ["AllowDesktopConfig", 1], ["AllowOverlay", 1], ["OpenVR", 0], ["Devkit", 0],
                   ["DevkitGameID", ""], ["DevkitOverrideAppID", 0], ["LastPlayTime", 0], ["FlatpakAppID", ""],
                   ["tags", []]]
@@ -541,10 +598,11 @@ def add_to_steam():
             shortcuts.append([str(len(shortcuts)), fields])
         else:
             keep = {k.lower(): v for k, v in entry}
-            entry[:] = [[k, keep.get(k.lower(), v) if k in ("LastPlayTime", "tags", "icon") else v] for k, v in fields]
+            entry[:] = [[k, keep.get(k.lower(), v) if k in ("LastPlayTime", "tags") else v] for k, v in fields]
         backup(path)
         path.write_bytes(b"\x00shortcuts\x00" + vdf_binary_dump(shortcuts) + b"\x08")
         log(f"Steam shortcut written to {path} (appid {appid})")
+        place_art(user, appid, art)
 
     config = root / "config" / "config.vdf"
     if config.exists():
@@ -552,7 +610,8 @@ def add_to_steam():
         store = vdf_child(tree, "InstallConfigStore")
         steam = vdf_child(vdf_child(vdf_child(store, "Software"), "Valve"), "Steam")
         mapping = vdf_child(steam, "CompatToolMapping")
-        mapping[:] = [pair for pair in mapping if pair[0] != str(appid)]
+        drop = {str(appid)} | {str(old) for old in old_appids}
+        mapping[:] = [pair for pair in mapping if pair[0] not in drop]
         mapping.append([str(appid), [["name", STEAM_PROTON], ["config", ""], ["priority", "250"]]])
         backup(config)
         config.write_text(vdf_text_dump(tree), encoding="utf-8")
@@ -566,7 +625,8 @@ def add_to_steam():
     saved = settings()
     saved["play"] = f"{prefix} steam://rungameid/{gameid}"
     SETTINGS_FILE.write_text(json.dumps(saved, indent=2), encoding="utf-8")
-    say(f"Added {STEAM_NAME} to Steam ({'Flatpak' if flatpak else 'native'}), Proton {proton_note}.")
+    say(f"Added {STEAM_NAME} to Steam ({'Flatpak' if flatpak else 'native'}), Proton {proton_note}"
+        + (", with its library artwork." if art else "."))
     say(f"--play now updates the game and starts it through Steam. Backups: *.wildcard-backup next to Steam's files.")
     return 0
 
@@ -591,15 +651,19 @@ def desktop_folder():
 
 def add_shortcut():
     me = Path(__file__).resolve()
+    icon_file = ART_FOLDER / "icon.png"
+    if not icon_file.exists():
+        fetch_art()
+    icon = str(icon_file) if icon_file.exists() else "applications-games"
     command = " ".join(desktop_quote(part) for part in [sys.executable, str(me), "--play", "--from-shortcut"])
     entry = "\n".join([
         "[Desktop Entry]",
         "Type=Application",
-        "Name=Wildcard",
-        "Comment=Update Wildcard and start it",
+        f"Name={STEAM_NAME}",
+        "Comment=Update the game and start it (Conquest of Azeroth, Wildcard realm)",
         f"Exec={command}",
         f"Path={HERE}",
-        "Icon=applications-games",
+        f"Icon={icon}",
         "Terminal=true",
         "Categories=Game;",
         "",
@@ -619,7 +683,7 @@ def add_shortcut():
         subprocess.run(["gio", "set", str(places[-1]), "metadata::trusted", "true"],
                        capture_output=True, timeout=5)
     where = "your app menu" + (" and desktop" if desktop else "")
-    say(f"Added a Wildcard shortcut to {where}. It updates the game, then starts it.")
+    say(f"Added a {STEAM_NAME} shortcut to {where}. It updates the game, then starts it.")
     if desktop:
         say("If the desktop icon won't open, right-click it and choose Allow Launching.")
     return 0
