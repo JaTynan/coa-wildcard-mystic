@@ -42,11 +42,12 @@ modules\wildcard.conf | Wildcard.CardDropChancePerMille = 30
 modules\wildcard.conf | Wildcard.ScrollsStraightToCurrency = 1
 
 # ---------------------------------------------------------------- Experience
-# Double XP everywhere (CoA's stock master rate is 0.9295; this keeps its per-source balance)
-worldserver.conf | Rate.XP.Global = 1.859
-# Prestige multiplies on top of that: 150% of 2x = 3x while a prestige cycle is active
-modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 150
-# Exploring: 2.7 x the master rate 1.859 = about 5x normal exploration XP.
+# Triple XP everywhere (9 Nov, was 2x; CoA's stock master rate is 0.9295 and 3 x 0.9295 = 2.7885, which keeps its
+# per-source balance)
+worldserver.conf | Rate.XP.Global = 2.7885
+# Prestige multiplies on top of that: 167% of 3x = 5x while a prestige cycle is active (was 150% of 2x = 3x)
+modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 167
+# Exploring: 2.7 x the master rate 2.7885 = about 8x normal exploration XP (it scales with the master rate).
 worldserver.conf | Rate.XP.Explore = 2.7
 # Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
