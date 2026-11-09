@@ -208,18 +208,18 @@ modules\playerbots.conf | AiPlayerbot.BroadcastChanceSuggestQuest = 1500
 # each dungeon copy) update in parallel with more threads. Back to 1 if anything odd shows up.
 # 6 from 8 Nov, with the VM at 10 cores (was 4 on 8 cores: 30 -> 50 ticks/s at 1,000 bots).
 worldserver.conf | MapUpdate.Threads = 6
-# View distance in the open world (9 Nov): 150 yards, up from the default 100, so mobs in big open zones like the
-# Barrens stop popping in out of nowhere. Bots are players too, so each bot also sees further: watch the tick
-# summary in .server info after this; if spikes get worse, try 125. Dungeons, raids and battlegrounds keep their own.
-worldserver.conf | Visibility.Distance.Continents = 150
+# View distance in the open world stays at 100 yards (9 Nov: 150 was tried in settings but backed out before it went
+# live, while chasing lag spikes with 3 players on; every bot is a player too, so each bot would see further).
+worldserver.conf | Visibility.Distance.Continents = 100
 # Database threads (8 Nov): with 1,250 bots, every bot login, save and logout went through one character-database
 # connection, so a real player's character list or new character waited behind them (slow "retrieving character
 # list", slow creation while bots start up). More connections let player requests through alongside the bots.
 worldserver.conf | CharacterDatabase.WorkerThreads = 4
 worldserver.conf | CharacterDatabase.SynchThreads = 2
 worldserver.conf | LoginDatabase.WorkerThreads = 2
-modules\playerbots.conf | AiPlayerbot.MinRandomBots = 1250
-modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 1250
+# 1,000 bots (9 Nov, was 1,250): lag spikes with 3 players on (95% under 74 ms, 99% 147 ms, worst 1.3 s).
+modules\playerbots.conf | AiPlayerbot.MinRandomBots = 1000
+modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 1000
 # Capitals felt empty: bots pick a city visit three times as often (bank, auction house, trainers; 10-30 minutes).
 modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.GoCity = 30
 # Bot levels near the real players: 70% of bots roll within 5 levels of a random online player when they are
