@@ -123,3 +123,22 @@ $text = $text.Replace($before, $class.Replace("`r`n", "`n") + $before)
 $text = $text.Replace($register, $register + "`n    new AscensionWildcard::AscensionWildcardScrollsToCurrency();")
 Set-Content $file $text -NoNewline
 }
+
+# ---- The free-pack bar refreshes when a duplicate card is revealed (it only updated at login)
+Write-Host "Patch: The free-pack bar refreshes when a duplicate card is revealed"
+& {
+$file = 'core/src/server/coa/AscensionWildcard.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$old = @'
+    for (uint32 pack : bonusPacks)
+        player->AddItem(pack, 1);
+    LOG_INFO("coa", "Wildcard skill card item {} revealed card {} for {}", item, card, player->GetName());
+'@
+$old = $old.Replace("`r`n", "`n")
+if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'CoA changed: RevealCardItem in AscensionWildcard.cpp was not found' }
+# Revealing a card sends only SMSG_SKILL_CARD_COLLECTED (card and rank); the bonus-pack progress (and each card's own
+# progress) is in the full collection list, which was only sent at login, so the bar looked stuck. Send the list
+# again from the collection already held under the lock (SendSkillCardCollection would take the lock again).
+$new = $old + "    SendPayload(player, SMSG_SKILL_CARD_COLLECTION_LIST, SkillCardCollectionPayload(Loaded, collection));`n"
+Set-Content $file $text.Replace($old, $new) -NoNewline
+}
