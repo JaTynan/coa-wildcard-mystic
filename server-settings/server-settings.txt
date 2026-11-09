@@ -269,6 +269,11 @@ modules\mod_ollama_chat.conf | OllamaChat.PlayerReplyChance.Say = 100
 modules\mod_ollama_chat.conf | OllamaChat.PlayerReplyChance.Party = 100
 modules\mod_ollama_chat.conf | OllamaChat.DirectAddressReplyChance = 100
 modules\mod_ollama_chat.conf | OllamaChat.DisableRepliesInCombat = 0
+# Quieter in raids and dungeons (9 Nov; needs the build with the chatter patch): bots keep this share of their event
+# lines, random chatter and replies to each other inside a raid or dungeon. Answers to a player talking to them
+# directly are never dropped. 100 = no change.
+modules\mod_ollama_chat.conf | OllamaChat.RaidChatterPct = 25
+modules\mod_ollama_chat.conf | OllamaChat.DungeonChatterPct = 50
 modules\mod_ollama_chat.conf | OllamaChat.RateLimit.ScopePerMinute = 20
 # Typing like a person (7 Nov, second go): 1.5 s to read, then about 60 ms a character, so a short line takes 2-3 s and a long
 # one up to 7 s. The answer is still generated straight away; only its delivery waits.

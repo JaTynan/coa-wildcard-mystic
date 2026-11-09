@@ -21,6 +21,7 @@ for good by deleting its part from the script.
 | `mystic-enchants-*.patch` | Mystic Enchants on Wildcard: enchant actions, SpellAffect data, altars on Wildcard | always on |
 | `wildcard-ability-pool.patch` | Which classes' abilities Wildcard rolls from | `Wildcard.AbilityPool` |
 | `10-mod-ollama-chat-fit.ps1` | Makes the AI chat module compile on the CoA core | always on |
+| | Less bot chat in raids and dungeons (direct answers to players kept) | `OllamaChat.RaidChatterPct`, `OllamaChat.DungeonChatterPct` |
 | `20-bots.ps1` | Bots level near real players | `AiPlayerbot.WildcardLevelNearPlayersPct` |
 | | Bots without a resurrection raise dead group members after a fight | always on |
 | | Bots fight by faction (team), not race, so cross-faction battlegrounds work | always on |
