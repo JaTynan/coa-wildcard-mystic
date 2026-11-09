@@ -47,8 +47,8 @@ modules\wildcard.conf | Wildcard.ScrollsStraightToCurrency = 1
 worldserver.conf | Rate.XP.Global = 2.7885
 # Prestige multiplies on top of that: 167% of 3x = 5x while a prestige cycle is active (was 150% of 2x = 3x)
 modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 167
-# Exploring: 2.7 x the master rate 2.7885 = about 8x normal exploration XP (it scales with the master rate).
-worldserver.conf | Rate.XP.Explore = 2.7
+# Exploring: 20x normal exploration XP (9 Nov): 6.6667 x the master rate 2.7885 = 18.59 = 20 x the stock 0.9295.
+worldserver.conf | Rate.XP.Explore = 6.6667
 # Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
 modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
@@ -95,6 +95,10 @@ worldserver.conf | Rate.Drop.Item.Rare = 1.5
 worldserver.conf | Rate.Drop.Item.Epic = 3
 worldserver.conf | Rate.Drop.Item.Legendary = 3
 worldserver.conf | Rate.Drop.Money = 1.25
+# Professions level 3x as fast (9 Nov): each skill-up gives 3 points instead of 1, for crafting (and cooking, first
+# aid) and for gathering (mining, herbalism, skinning, fishing). The chance of a skill-up per attempt is unchanged.
+worldserver.conf | SkillGain.Crafting = 3
+worldserver.conf | SkillGain.Gathering = 3
 
 # ---------------------------------------------------------------- Faster respawns for AoE farming (7 Nov)
 # Mostly solo levelling and grinding for Mystic Enchants: open-world mobs come back in about 90 seconds, so a cleared
