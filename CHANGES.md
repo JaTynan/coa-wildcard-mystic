@@ -46,6 +46,7 @@ load, waking, zones), PvP rewards, AI chat, MySQL and world server performance, 
 
 `sql/enchants/000-013`: Mystic Enchant data fixes. `090-mysql-tuning.sql`: MySQL settings that survive the manager.
 `100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
+`110-manastorm-caches-unstack.sql`: Manastorm caches no longer stack, so each one opens and disappears when emptied.
 
 ## How changes are made
 
