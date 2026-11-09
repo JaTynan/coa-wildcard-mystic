@@ -221,6 +221,85 @@ jobs:
           $text = $text.Replace($loop, "                GuidVector const waveGhosts = itr->second;`n                for (ObjectGuid const& guid : waveGhosts)`n")
           Set-Content $file $text -NoNewline
 
+      - name: Manastorm raises every dead member of the run when a floor is cleared, bots included
+        shell: pwsh
+        run: |
+          $file = 'core/src/server/coa/AscensionManastorm.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $old = @'
+                      run.encounter->phase = Phase::Completed;
+                      if (!player->IsAlive())
+                      {
+                          player->ResurrectPlayer(1.0f);
+                          player->SpawnCorpseBones();
+                      }
+          '@
+          $old = $old.Replace("`r`n", "`n")
+          if (-not $text.Contains($old)) { throw 'CoA changed: the resurrection in Manastorm Finish() was not found' }
+          # Finish() only raised the members with their own run (real players); bots in the group stayed dead at the
+          # end of the floor. Raise everyone dead in the run's private scene.
+          $new = $old + "`n" + @'
+                      for (auto const& reference : player->GetMap()->GetPlayers())
+                          if (Player* member = reference.GetSource(); member && member != player && !member->IsAlive()
+                              && player->GetMap()->IsScriptedPrivateMember(member->GetGUID()))
+                          {
+                              member->ResurrectPlayer(1.0f);
+                              member->SpawnCorpseBones();
+                          }
+          '@
+          Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
+
+      - name: Wildcard bots without a resurrection still raise dead group members out of combat
+        shell: pwsh
+        run: |
+          $file = 'core/modules/mod-playerbots/src/Ai/Class/Coa/CoaAiObjectContext.cpp'
+          $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+          $trigger = @'
+                  return bot->IsAlive() && !bot->IsInCombat() && ClassHas(bot, KIND_RESURRECT) && DeadGroupMember(bot) &&
+                         !GroupFighting(bot) &&
+                         HasReadyAbility(botAI, bot, [](uint16 kind) { return (kind & KIND_RESURRECT) != 0; });
+          '@
+          $cast = @'
+                  SpellInfo const* cast = CastFirst(botAI, bot,
+                      KnownAbilities(bot, [](uint16 kind) { return (kind & KIND_RESURRECT) != 0; }), dead);
+                  if (cast)
+                      botAI->SayToParty("Resurrecting " + dead->GetName() + ".");
+          '@
+          $trigger = $trigger.Replace("`r`n", "`n"); $cast = $cast.Replace("`r`n", "`n")
+          foreach ($anchor in $trigger, $cast) {
+              if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'SQUID changed: the CoA resurrect trigger or action was not found' }
+          }
+          # A Wildcard bot only knows a resurrection if it rolled one, so most groups watched their dead. One that has
+          # none uses the priest's Resurrection for its level (no mana cost, normal cast time), only out of combat.
+          $triggerNew = @'
+                  return bot->IsAlive() && !bot->IsInCombat() && DeadGroupMember(bot) && !GroupFighting(bot) &&
+                         ((ClassHas(bot, KIND_RESURRECT) &&
+                           HasReadyAbility(botAI, bot, [](uint16 kind) { return (kind & KIND_RESURRECT) != 0; })) ||
+                          IsWildcardHeroBot(bot));
+          '@
+          $castNew = @'
+                  SpellInfo const* cast = CastFirst(botAI, bot,
+                      KnownAbilities(bot, [](uint16 kind) { return (kind & KIND_RESURRECT) != 0; }), dead);
+                  if (!cast && IsWildcardHeroBot(bot))
+                  {
+                      static constexpr std::array<std::pair<uint8, uint32>, 7> ResurrectionRanks = { {
+                          { 78, 48171 }, { 68, 25435 }, { 58, 20770 }, { 46, 10881 }, { 34, 10880 }, { 22, 2010 }, { 1, 2006 } } };
+                      uint32 spellId = 2006;
+                      for (auto const& [level, id] : ResurrectionRanks)
+                          if (bot->GetLevel() >= level)
+                          {
+                              spellId = id;
+                              break;
+                          }
+                      if (bot->CastSpell(dead, spellId, TriggerCastFlags(TRIGGERED_IGNORE_POWER_AND_REAGENT_COST)) == SPELL_CAST_OK)
+                          cast = sSpellMgr->GetSpellInfo(spellId);
+                  }
+                  if (cast)
+                      botAI->SayToParty("Resurrecting " + dead->GetName() + ".");
+          '@
+          $text = $text.Replace($trigger, $triggerNew.Replace("`r`n", "`n")).Replace($cast, $castNew.Replace("`r`n", "`n"))
+          Set-Content $file $text -NoNewline
+
       - name: Bots tell friend from foe by team, not race (cross-faction battlegrounds)
         shell: pwsh
         run: |
