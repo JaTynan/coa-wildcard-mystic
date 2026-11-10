@@ -376,11 +376,11 @@ function SkipUnusedAuctionItems {
 
 function RepriceAuctionsWhenPricesChange {
     # The auction bot prices an item when it lists it; listings already up keep their old price for up to a day.
-    # When the price lines in server-settings.txt change, take down the Auctioneer's listings nobody has bid on, so
+    # When the price or level-limit lines in server-settings.txt change, take down the Auctioneer's listings nobody has bid on, so
     # the bot relists everything at the new prices over its next few cycles (about 15 minutes). Runs once per change.
     $list = Join-Path $settingsDir 'server-settings.txt'
     if (-not (Test-Path $list)) { return }
-    $prices = @(Get-Content $list | Where-Object { $_ -match '^\s*modules\\mod_ahbot\.conf\s*\|\s*AuctionHouseBot\.Price' } |
+    $prices = @(Get-Content $list | Where-Object { $_ -match '^\s*modules\\mod_ahbot\.conf\s*\|\s*AuctionHouseBot\.(Price|EquipItemUseOrEquipLevelRestrict)' } |
         ForEach-Object { $_.Trim() }) -join "`n"
     $record = Join-Path $core 'ahbot-prices.txt'
     $before = if (Test-Path $record) { (Get-Content $record -Raw).Trim() } else { '' }
