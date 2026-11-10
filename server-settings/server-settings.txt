@@ -49,6 +49,10 @@ modules\wildcard.conf | Wildcard.AllDuplicatesFillPackBar = 1
 worldserver.conf | Manastorm.CachesOpenIntoBags = 1
 
 # ---------------------------------------------------------------- Experience
+# Level cap 60 (10 Nov). The .95 update put MaxPlayerLevel back to the core default of 80, and prestige follows the
+# level cap (mod-coa-prestige: "Prestige activation and completion follow MaxPlayerLevel"), so nobody could prestige
+# at 60. Setting it here keeps it at 60 through future updates.
+worldserver.conf | MaxPlayerLevel = 60
 # Triple XP everywhere (9 Nov, was 2x; CoA's stock master rate is 0.9295 and 3 x 0.9295 = 2.7885, which keeps its
 # per-source balance)
 worldserver.conf | Rate.XP.Global = 2.7885
