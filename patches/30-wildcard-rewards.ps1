@@ -172,3 +172,50 @@ $new = @'
 '@
 Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
 }
+
+# ---- A Case of Fortune is used up once opened (Wildcard.CasesOfFortuneConsumed, off when unset)
+Write-Host "Patch: A Case of Fortune is used up once opened (Wildcard.CasesOfFortuneConsumed)"
+& {
+$file = 'core/src/server/coa/AscensionWildcard.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$old = @'
+    void OnSpellCast(Spell*, Unit* caster, SpellInfo const* spellInfo, bool) override
+    {
+        Player* player = caster ? caster->ToPlayer() : nullptr;
+        if (!player)
+            return;
+'@
+$old = $old.Replace("`r`n", "`n")
+if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'CoA changed: OnSpellCast in AscensionWildcardItemSpells was not found' }
+# Opening a Case of Fortune (normal, Talents, Leveling, Legacy) gave its scrolls but left the case behind, so empty
+# cases piled up and had to be deleted by hand. A moment after the case's spell is cast, if the stack it came from
+# still holds as many cases as before, one is removed. When the core does use one up, the count has already dropped
+# (or the case is gone) and nothing more happens, so a case is never taken twice.
+$new = @'
+    void OnSpellCast(Spell* spell, Unit* caster, SpellInfo const* spellInfo, bool) override
+    {
+        Player* player = caster ? caster->ToPlayer() : nullptr;
+        if (!player)
+            return;
+
+        if (Item* used = spell ? spell->m_CastItem : nullptr)
+        {
+            static constexpr std::array<uint32, 6> CasesOfFortune = { 1278048, 1278049, 98453, 98454, 98465, 98466 };
+            if (std::find(CasesOfFortune.begin(), CasesOfFortune.end(), used->GetEntry()) != CasesOfFortune.end()
+                && sConfigMgr->GetOption<bool>("Wildcard.CasesOfFortuneConsumed", false))
+            {
+                ObjectGuid const caseGuid = used->GetGUID();
+                uint32 const countAtCast = used->GetCount();
+                player->m_Events.AddEventAtOffset([player, caseGuid, countAtCast]()
+                {
+                    if (Item* left = player->GetItemByGuid(caseGuid); left && left->GetCount() == countAtCast)
+                    {
+                        uint32 one = 1;
+                        player->DestroyItemCount(left, one, true);
+                    }
+                }, Milliseconds(1));
+            }
+        }
+'@
+Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
+}
