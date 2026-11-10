@@ -34,7 +34,7 @@ for good by deleting its part from the script.
 | `40-battlegrounds.ps1` | Spirit guides raise every ghost beside them at each wave | always on |
 | `50-manastorm.ps1` | Dead bots are raised at the end of a Manastorm floor | always on |
 | | Every resurrection in a run (item, player spell or bot) uses one of the run's 5 shared charges | always on |
-| | Manastorm caches open straight into the bags, one per use; empty caches removed, stacks keep working | `Manastorm.CachesOpenIntoBags` |
+| | Opening a Manastorm cache puts its contents straight in the bags (mail if full) and removes that one cache, so stacks never get stuck | `Manastorm.CachesOpenIntoBags` |
 
 ## Settings (summary)
 

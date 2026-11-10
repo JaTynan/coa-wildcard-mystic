@@ -117,7 +117,8 @@ Write-Host "Patch: Manastorm caches open straight into the bags, one at a time (
 $file = 'core/src/server/coa/AscensionManastorm.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
 $include = '#include "AscensionManastorm.h"'
-$old = @'
+$classAt = "    class item_ascension_manastorm_cache final : public ItemScript`n"
+$onUse = @'
         bool OnUse(Player* player, Item* item, SpellCastTargets const&) override
         {
             if (player->IsAlive() && !player->IsInCombat())
@@ -125,54 +126,97 @@ $old = @'
             return true;
         }
 '@
-$old = $old.Replace("`r`n", "`n")
-foreach ($anchor in $include, $old) {
-    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'CoA changed: the Manastorm cache OnUse was not found' }
+$register = "    new item_ascension_manastorm_cache();`n"
+$onUse = $onUse.Replace("`r`n", "`n")
+foreach ($anchor in $include, $classAt, $onUse, $register) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'CoA changed: a Manastorm cache anchor was not found' }
 }
-# The caches opened a loot window on the item as if it were a corpse: the empty cache was never removed, a stack of
-# caches shared one loot (so the rest of the stack was stuck once the first was emptied), and every Scroll of Fortune
-# had to be looted one by one into the bags. Now each use rolls one cache's loot (Manastorm's own loot rules still
-# pick it), puts the items in the bags (or the mailbox when full, AscensionCacheRewards::Deliver, as other CoA caches
-# do) and removes that one cache. With Wildcard.ScrollsStraightToCurrency on, the scrolls then count straight away.
-$new = @'
+# Right-clicking a cache sends CMSG_OPEN_ITEM (the caches have the "has loot" flag), which opens a loot window. The
+# core only removes a container once its loot is empty, and the loot belongs to the whole stack, so a cache whose
+# scrolls didn't all fit (one per specialisation) was never removed and blocked the rest of its stack. Now opening a
+# cache gives its contents straight to the bags (the mailbox takes what doesn't fit: AscensionCacheRewards::Deliver,
+# as other CoA caches do) and removes that one cache. Manastorm's own loot rules still pick the contents. A cache
+# left half-looted by the old way hands over what it still had. With Wildcard.ScrollsStraightToCurrency on, the
+# scrolls then count straight away.
+$helpers = @'
+    bool IsManastormCache(uint32 entry)
+    {
+        return (entry >= 97877 && entry <= 97884) || (entry >= 1278050 && entry <= 1278084)
+            || (entry >= 1288050 && entry <= 1288074) || (entry >= 1289056 && entry <= 1289074)
+            || entry == 1478051 || entry == 1478052;
+    }
+
+    void OpenManastormCacheIntoBags(Player* player, Item* item)
+    {
+        Loot fresh;
+        Loot* loot = &item->loot;
+        if (!item->m_lootGenerated || item->loot.isLooted())
+        {
+            fresh.containerGUID = item->GetGUID();
+            fresh.FillLoot(item->GetEntry(), LootTemplates_Item, player, true, true);
+            loot = &fresh;
+        }
+        if (loot->gold)
+            player->ModifyMoney(loot->gold);
+        std::vector<AscensionCacheRewards::Reward> rewards;
+        uint32 const slots = loot->GetMaxSlotInLootFor(player);
+        for (uint32 slot = 0; slot < slots; ++slot)
+            if (LootItem const* reward = loot->LootItemInSlot(slot, player))
+                if (ItemTemplate const* proto = sObjectMgr->GetItemTemplate(reward->itemid))
+                    rewards.push_back({ reward->itemid, uint16(proto->ItemLevel), uint8(5), uint8(proto->SubClass),
+                        uint32(reward->count ? reward->count : 1), reward->randomPropertyId });
+        // The stack keeps no loot of its own afterwards: the next cache in it starts fresh.
+        sLootItemStorage->RemoveStoredLoot(item->GetGUID());
+        item->m_lootGenerated = false;
+        item->loot.clear();
+        if (rewards.empty())
+        {
+            uint32 one = 1;
+            player->DestroyItemCount(item, one, true);
+        }
+        else
+            AscensionCacheRewards::Deliver(player, rewards, item);
+    }
+
+    class ManastormCacheOpen final : public ServerScript
+    {
+    public:
+        ManastormCacheOpen() : ServerScript("AscensionManastormCacheOpen", {SERVERHOOK_CAN_PACKET_RECEIVE}) { }
+
+        bool CanPacketReceive(WorldSession* session, WorldPacket const& packet) override
+        {
+            if (packet.GetOpcode() != CMSG_OPEN_ITEM || packet.size() < 2
+                || !sConfigMgr->GetOption<bool>("Manastorm.CachesOpenIntoBags", false))
+                return true;
+            Player* player = session ? session->GetPlayer() : nullptr;
+            if (!player || player->m_mover != player || !player->IsAlive() || player->IsInCombat())
+                return true;
+            Item* item = player->GetItemByPos(packet.read<uint8>(0), packet.read<uint8>(1));
+            if (!item || !IsManastormCache(item->GetEntry()))
+                return true;
+            ObjectGuid const cache = item->GetGUID();
+            OpenManastormCacheIntoBags(player, item);
+            player->SendLootRelease(cache);
+            return false;
+        }
+    };
+
+'@
+$onUseNew = @'
         bool OnUse(Player* player, Item* item, SpellCastTargets const&) override
         {
             if (!player->IsAlive() || player->IsInCombat())
                 return true;
-            if (!sConfigMgr->GetOption<bool>("Manastorm.CachesOpenIntoBags", false))
-            {
-                player->SendLoot(item->GetGUID(), LOOT_CORPSE);
-                return true;
-            }
-            if (item->m_lootGenerated && !item->loot.isLooted())
-            {
-                player->SendLoot(item->GetGUID(), LOOT_CORPSE); // opened before this change: finish that loot first
-                return true;
-            }
-            item->m_lootGenerated = false;
-            item->loot.clear();
-            Loot loot;
-            loot.containerGUID = item->GetGUID();
-            loot.FillLoot(item->GetEntry(), LootTemplates_Item, player, true, true);
-            if (loot.gold)
-                player->ModifyMoney(loot.gold);
-            std::vector<AscensionCacheRewards::Reward> rewards;
-            uint32 const slots = loot.GetMaxSlotInLootFor(player);
-            for (uint32 slot = 0; slot < slots; ++slot)
-                if (LootItem const* reward = loot.LootItemInSlot(slot, player))
-                    if (ItemTemplate const* proto = sObjectMgr->GetItemTemplate(reward->itemid))
-                        rewards.push_back({ reward->itemid, uint16(proto->ItemLevel), uint8(5), uint8(proto->SubClass),
-                            uint32(reward->count ? reward->count : 1), reward->randomPropertyId });
-            if (rewards.empty())
-            {
-                uint32 one = 1;
-                player->DestroyItemCount(item, one, true);
-            }
+            if (sConfigMgr->GetOption<bool>("Manastorm.CachesOpenIntoBags", false))
+                OpenManastormCacheIntoBags(player, item);
             else
-                AscensionCacheRewards::Deliver(player, rewards, item);
+                player->SendLoot(item->GetGUID(), LOOT_CORPSE);
             return true;
         }
 '@
-$text = $text.Replace($include, $include + "`n#include `"AscensionCacheRewards.h`"").Replace($old, $new.Replace("`r`n", "`n"))
+$text = $text.Replace($include, $include + "`n#include `"AscensionCacheRewards.h`"`n#include `"LootItemStorage.h`"")
+$text = $text.Replace($classAt, $helpers.Replace("`r`n", "`n") + $classAt)
+$text = $text.Replace($onUse, $onUseNew.Replace("`r`n", "`n"))
+$text = $text.Replace($register, $register + "    new ManastormCacheOpen();`n")
 Set-Content $file $text -NoNewline
 }
