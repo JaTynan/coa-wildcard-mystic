@@ -129,10 +129,15 @@ worldserver.conf | Respawn.DynamicMinimumGameObject = 120
 # ---------------------------------------------------------------- Auction House bot
 modules\mod_ahbot.conf | AuctionHouseBot.Enable = 1
 modules\mod_ahbot.conf | AuctionHouseBot.Buyer.Enabled = true
-modules\mod_ahbot.conf | AuctionHouseBot.ItemsPerCycle = 150
-modules\mod_ahbot.conf | AuctionHouseBot.Alliance.MaxItems = 2000
-modules\mod_ahbot.conf | AuctionHouseBot.Horde.MaxItems = 2000
-modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MaxItems = 2000
+# Stock (11 Nov): 4,000 listings per auction house, up from 2,000, which felt empty. Min = Max so the bot keeps each
+# house topped up to the same number; 300 new listings a minute refills a house in about 15 minutes.
+modules\mod_ahbot.conf | AuctionHouseBot.ItemsPerCycle = 300
+modules\mod_ahbot.conf | AuctionHouseBot.Alliance.MinItems = 4000
+modules\mod_ahbot.conf | AuctionHouseBot.Alliance.MaxItems = 4000
+modules\mod_ahbot.conf | AuctionHouseBot.Horde.MinItems = 4000
+modules\mod_ahbot.conf | AuctionHouseBot.Horde.MaxItems = 4000
+modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MinItems = 4000
+modules\mod_ahbot.conf | AuctionHouseBot.Neutral.MaxItems = 4000
 #
 # Prices (8 Nov). Buyout = item sell price x quality x category-quality, +/- a little. Rares and epics were going for
 # about their vendor price and raid bags for 1g, which made the Auction House the easiest way to gear. Now about
