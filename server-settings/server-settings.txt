@@ -148,6 +148,12 @@ modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryRecipe.QualityE
 modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryContainer.QualityRare = 15
 modules\mod_ahbot.conf | AuctionHouseBot.PriceMultiplier.CategoryContainer.QualityEpic = 60
 modules\mod_ahbot.conf | AuctionHouseBot.PriceMinimumCenterBase.Container = 10000
+#
+# Nothing above the level cap (10 Nov): the bot only lists items whose required level (to equip or use) is 60 or
+# lower. Items with no required level, like most trade goods, are still listed.
+modules\mod_ahbot.conf | AuctionHouseBot.EquipItemUseOrEquipLevelRestrict.Enabled = true
+modules\mod_ahbot.conf | AuctionHouseBot.EquipItemUseOrEquipLevelRestrict.MinLevel = 0
+modules\mod_ahbot.conf | AuctionHouseBot.EquipItemUseOrEquipLevelRestrict.MaxLevel = 60
 
 # ---------------------------------------------------------------- Play with friends (home network)
 # The manager writes these when the server is shared; kept here so a start outside the manager keeps them.
