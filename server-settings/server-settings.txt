@@ -47,6 +47,9 @@ modules\wildcard.conf | Wildcard.AllDuplicatesFillPackBar = 1
 # window, the empty cache is removed, stacked caches stay usable, a full bag sends the rest to the mailbox, and the
 # Scrolls of Fortune inside count straight away (ScrollsStraightToCurrency above).
 worldserver.conf | Manastorm.CachesOpenIntoBags = 1
+# A Case of Fortune (any kind) is used up once opened instead of staying in the bag empty (10 Nov; needs the build
+# with the patch).
+modules\wildcard.conf | Wildcard.CasesOfFortuneConsumed = 1
 
 # ---------------------------------------------------------------- Experience
 # Level cap 60 (10 Nov). The .95 update put MaxPlayerLevel back to the core default of 80, and prestige follows the
