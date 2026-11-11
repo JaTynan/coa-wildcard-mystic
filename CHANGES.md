@@ -38,6 +38,7 @@ for good by deleting its part from the script.
 | | Honourable world PvP kills give XP (killer and group nearby; same victim once per 5 minutes) | `WorldPvP.KillXPPercentOfLevel`, `WorldPvP.KillXPSameVictimSeconds` |
 | | Battleground Spoils and quest-reward caches can hold a Case of Fortune and a sealed card pack (quest caches mostly golden packs) | `Battleground.Spoils*Percent`, `Wildcard.QuestCache*Percent` |
 | | Supplies in Adventurer's Caches, quest caches and Battleground Spoils come as a stack of 20, not 1 to 3 | `AdventurerCache.SupplyStack` |
+| | Gear caches (random dungeon cache, Adventurer's Cache, Battleground Spoils) give 2 pieces of gear and twice the supplies | `AdventurerCache.RewardRounds` |
 | `50-manastorm.ps1` | Dead bots are raised at the end of a Manastorm floor | always on |
 | | Every resurrection in a run (item, player spell or bot) uses one of the run's 5 shared charges | always on |
 | | Opening a Manastorm cache puts its contents straight in the bags (mail if full) and removes that one cache, so stacks never get stuck | `Manastorm.CachesOpenIntoBags` |

@@ -277,3 +277,46 @@ $new = @'
 '@
 Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
 }
+
+# ---- Gear caches give their gear and supplies more than once (AdventurerCache.RewardRounds)
+Write-Host "Patch: Gear caches give gear and supplies more than once (AdventurerCache.RewardRounds)"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$old = @'
+        uint32 const cacheQuality = container->GetTemplate()->Quality;
+        AddGear(player, entries, cacheQuality, loot);
+        AddSupplies(player, entries, AdventurerCache::SupplyCount(cacheQuality), loot);
+        return false;
+'@
+$old = $old.Replace("`r`n", "`n")
+if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'Core changed: the gear and supplies roll in adventurer_cache_loot was not found' }
+# The rare Adventurer's Cache (random dungeon reward), the Adventurer's Cache and Battleground Spoils gave one
+# piece of gear and one or two supplies. AdventurerCache.RewardRounds (1 = as CoA) rolls both that many times;
+# a repeated piece of gear is rolled again, up to five tries.
+$new = @'
+        uint32 const cacheQuality = container->GetTemplate()->Quality;
+        uint32 const rounds = std::max<uint32>(1, sConfigMgr->GetOption<uint32>("AdventurerCache.RewardRounds", 1));
+        for (uint32 round = 0; round < rounds; ++round)
+        {
+            for (uint32 attempt = 0; attempt < 5; ++attempt)
+            {
+                std::size_t const before = loot.items.size();
+                AddGear(player, entries, cacheQuality, loot);
+                if (loot.items.size() == before)
+                    break;
+                uint32 const picked = loot.items.back().itemid;
+                bool const repeated = std::any_of(loot.items.begin(), loot.items.end() - 1,
+                    [picked](LootItem const& held) { return held.itemid == picked; });
+                if (!repeated || attempt == 4)
+                    break;
+                loot.items.pop_back();
+                if (loot.unlootedCount)
+                    --loot.unlootedCount;
+            }
+            AddSupplies(player, entries, AdventurerCache::SupplyCount(cacheQuality), loot);
+        }
+        return false;
+'@
+Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
+}
