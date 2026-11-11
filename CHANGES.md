@@ -31,6 +31,7 @@ for good by deleting its part from the script.
 | | Scrolls of Fortune count straight away instead of filling bags | `Wildcard.ScrollsStraightToCurrency` |
 | | The free-pack bar updates when a duplicate card is revealed (was only at login) | always on |
 | | Every duplicate card fills the free-pack bar, not only rank 1 duplicates | `Wildcard.AllDuplicatesFillPackBar` |
+| | A full free-pack bar gives one of each sealed card pack, not one at random | `Wildcard.FreePackBarGivesAllPacks` |
 | | A Case of Fortune is used up once opened (was left behind empty) | `Wildcard.CasesOfFortuneConsumed` |
 | `40-battlegrounds.ps1` | Spirit guides raise every ghost beside them at each wave | always on |
 | `50-manastorm.ps1` | Dead bots are raised at the end of a Manastorm floor | always on |
@@ -46,7 +47,8 @@ load, waking, zones), PvP rewards, AI chat, MySQL and world server performance, 
 
 ## Database
 
-`sql/enchants/000-013`: Mystic Enchant data fixes. `090-mysql-tuning.sql`: MySQL settings that survive the manager.
+`sql/enchants/000-014`: Mystic Enchant data fixes (`014`: "your next X" buffs such as Empowered Light are used up
+by that next spell). `090-mysql-tuning.sql`: MySQL settings that survive the manager.
 `100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
 `110-manastorm-caches-unstack.sql`: Manastorm caches no longer stack, so each one opens and disappears when emptied.
 
