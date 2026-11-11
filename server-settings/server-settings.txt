@@ -73,6 +73,14 @@ modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 167
 # Exploring: 40x normal exploration XP (12 Nov, was 20x): 13.3333 x the master rate 2.7885 = 37.18 = 40 x the stock
 # 0.9295. Rewards hunting players or nodes in new areas.
 worldserver.conf | Rate.XP.Explore = 13.3333
+# Questing pays 50% more XP and money (12 Nov). XP: CoA's stock quest rates x1.5 (Classic and TBC 1.26 -> 1.89,
+# WotLK 1.05 -> 1.575), on top of the 3x master rate. Dungeon Finder reward quests (Rate.XP.Quest.DF) stay as
+# they are. Money: quest gold x1.5, and the gold paid instead of XP at the level cap x1.5.
+worldserver.conf | Rate.XP.Quest = 1.89
+worldserver.conf | Rate.XP.Quest.TBC = 1.89
+worldserver.conf | Rate.XP.Quest.WotLK = 1.575
+worldserver.conf | Rate.RewardQuestMoney = 1.5
+worldserver.conf | Rate.RewardBonusMoney = 1.5
 # Gathering pays more XP (12 Nov), so it keeps up with Manastorm (2 levels an hour). With the 3x master rate (each
 # 1.0 of a rate is about 1.1% of a level): ore node 6% of a level, herb 4%, skin about 1% (plus the kill), fish
 # about 0.7% a catch (double stock). Crafting stays stock: it already pays well. Change these live with .reload config.

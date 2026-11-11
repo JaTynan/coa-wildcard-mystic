@@ -43,7 +43,7 @@ for good by deleting its part from the script.
 ## Settings (summary)
 
 Grouped and explained line by line in `server-settings.txt`: Wildcard realm (ability pool, no Pete Arr), experience
-(3x, prestige, exploring, gathering, world PvP, rested), progression earned not handed out, professions and drops, faster respawns (90 s
+(3x, prestige, exploring, quests, gathering, world PvP, rested), progression earned not handed out, professions and drops, faster respawns (90 s
 mobs, 2 min nodes), Auction House bot (stock, skipped items, prices), play with friends, SQUID's bots (world PvP,
 load, waking, zones), PvP rewards, AI chat, MySQL and world server performance, view distance.
 
