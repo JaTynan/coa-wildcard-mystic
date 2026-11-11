@@ -219,3 +219,30 @@ $new = @'
 '@
 Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
 }
+
+# ---- A full free-pack bar gives one of each sealed card pack (Wildcard.FreePackBarGivesAllPacks, off when unset)
+Write-Host "Patch: A full free-pack bar gives one of each sealed card pack (Wildcard.FreePackBarGivesAllPacks)"
+& {
+$file = 'core/src/server/coa/AscensionWildcard.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$old = @'
+    for (; collection.BonusProgress >= BONUS_PACK_PROGRESS; collection.BonusProgress -= BONUS_PACK_PROGRESS)
+        bonusPacks.push_back(CARD_PACKS[random(std::uint32_t(CARD_PACKS.size()))].Item);
+'@
+$old = $old.Replace("`r`n", "`n")
+if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'CoA changed: the free-pack reward in CollectCard was not found' }
+# Each full bar gave one sealed card pack picked at random. As on live, it now gives one of each: Ability, Talent,
+# Golden Ability and Golden Talent.
+$new = @'
+    bool const allPacks = sConfigMgr->GetOption<bool>("Wildcard.FreePackBarGivesAllPacks", false);
+    for (; collection.BonusProgress >= BONUS_PACK_PROGRESS; collection.BonusProgress -= BONUS_PACK_PROGRESS)
+    {
+        if (allPacks)
+            for (CardPack const& pack : CARD_PACKS)
+                bonusPacks.push_back(pack.Item);
+        else
+            bonusPacks.push_back(CARD_PACKS[random(std::uint32_t(CARD_PACKS.size()))].Item);
+    }
+'@
+Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
+}
