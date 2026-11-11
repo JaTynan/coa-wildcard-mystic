@@ -83,11 +83,11 @@ worldserver.conf | Rate.RewardQuestMoney = 1.5
 worldserver.conf | Rate.RewardBonusMoney = 1.5
 # Gathering pays more XP (12 Nov), so it keeps up with Manastorm (2 levels an hour). With the 3x master rate (each
 # 1.0 of a rate is about 1.1% of a level): ore node 6% of a level, herb 4%, skin about 1% (plus the kill), fish
-# about 0.9% a catch: a cast waits 8, 14 or 18 s for a bite (13 s on average) in a 21 s channel, about 16 s a fish
-# with looting and recasting, so about 220 fish and 2 levels an hour. Crafting stays stock: it already pays well. Change these live with .reload config.
+# 1% a catch (0.9% plus room for missed bobbers): a cast waits 8, 14 or 18 s for a bite (13 s on average) in a 21 s channel, about 16 s a fish
+# with looting and recasting, so about 220 fish and 2 levels an hour, still about 2 with some missed. Crafting stays stock: it already pays well. Change these live with .reload config.
 worldserver.conf | Rate.XP.Profession.Mining = 5.38
 worldserver.conf | Rate.XP.Profession.Herbalism = 3.59
-worldserver.conf | Rate.XP.Profession.Fishing = 0.82
+worldserver.conf | Rate.XP.Profession.Fishing = 0.9
 worldserver.conf | Rate.XP.Profession.Skinning = 1.1
 # World PvP kills give XP (12 Nov; needs the build with the patch): 2.15% of a level per honourable kill before
 # the boosts, 6% with the 3x master rate, so about 17 kills a level. Group members nearby get it too.
