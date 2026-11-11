@@ -61,6 +61,12 @@ worldserver.conf | Battleground.SpoilsForLoss = 1
 worldserver.conf | Battleground.SpoilsCasePercent = 100
 worldserver.conf | Battleground.SpoilsPackPercent = 100
 worldserver.conf | Battleground.SpoilsGoldenPackPercent = 25
+# Weekend bonus: double XP and reputation from Friday to Sunday (server time; days are 0 = Sunday ... 6 = Saturday).
+# Stacks with the realm rates and prestige. Players are told at login. Needs the build with the patch.
+worldserver.conf | WeekendBonus.Enabled = 1
+worldserver.conf | WeekendBonus.Days = "5,6,0"
+worldserver.conf | WeekendBonus.XPRate = 2
+worldserver.conf | WeekendBonus.ReputationRate = 2
 # Quest-reward caches (Adventurer's Satchel and Caches, also the random dungeon reward) can hold a Case of
 # Fortune and a sealed card pack, mostly golden packs, so questing progresses a Wildcard too (12 Nov; needs the
 # build). Percent chance per cache; GoldenPackPercent is the share of packs that are golden. Live: .reload config.
