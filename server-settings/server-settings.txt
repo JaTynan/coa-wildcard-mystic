@@ -139,11 +139,11 @@ worldserver.conf | SkipCinematics = 2
 # ---------------------------------------------------------------- Rested XP (weekend players)
 # In an inn or city: 8 = about 5% of a level per 30 minutes online. Cap: up to 5 levels of rested XP
 # Logged out (12 Nov, was stock): the stock rate is 5% of a level per 8 hours in an inn or city and a quarter of
-# that elsewhere, so a night offline gave almost nothing. 20x: a night (8 hours) logged out in an inn or city gives
-# a full level of rested XP, 1/4 level elsewhere.
+# that elsewhere, so a night offline gave almost nothing. Now (weekend players): logged out in an inn or city, a full
+# level of rested XP every 16 hours (10x); logged out anywhere else, a level every 32 hours (20.2x of the slower rate).
 worldserver.conf | Rate.Rest.InGame = 8
-worldserver.conf | Rate.Rest.Offline.InTavernOrCity = 20
-worldserver.conf | Rate.Rest.Offline.InWilderness = 20
+worldserver.conf | Rate.Rest.Offline.InTavernOrCity = 10
+worldserver.conf | Rate.Rest.Offline.InWilderness = 20.2
 worldserver.conf | Rate.Rest.MaxBonus = 5
 
 # ---------------------------------------------------------------- Professions and drops
