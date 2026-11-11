@@ -196,9 +196,12 @@ public:
                     itr->second = now;
                 }
             }
-            uint32 const xp = uint32(float(player->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) * percent / 100.0f);
-            if (xp)
-                player->GiveXP(xp, killed, 1.0f, false, XPSOURCE_BATTLEGROUND);
+            uint32 xp = uint32(float(player->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) * percent / 100.0f);
+            if (!xp)
+                continue;
+            // The realm's XP boosts (Rate.XP.Global, prestige) are applied by this hook, as for every other XP source.
+            sScriptMgr->OnPlayerGiveXP(player, xp, killed, XPSOURCE_BATTLEGROUND);
+            player->GiveXP(xp, killed, 1.0f, false, XPSOURCE_BATTLEGROUND);
         }
     }
 
