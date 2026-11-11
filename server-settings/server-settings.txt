@@ -56,6 +56,17 @@ worldserver.conf | Manastorm.CachesOpenIntoBags = 1
 worldserver.conf | Battleground.SpoilsEnabled = 1
 worldserver.conf | Battleground.SpoilsForWin = 3
 worldserver.conf | Battleground.SpoilsForLoss = 1
+# Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
+# gives 3 and a loss 1, and half of them hold a sealed card pack (ability or talent, normal like Manastorm's).
+worldserver.conf | Battleground.SpoilsCasePercent = 100
+worldserver.conf | Battleground.SpoilsPackPercent = 50
+worldserver.conf | Battleground.SpoilsGoldenPackPercent = 0
+# Quest-reward caches (Adventurer's Satchel and Caches, also the random dungeon reward) can hold a Case of
+# Fortune and a sealed card pack, mostly golden packs, so questing progresses a Wildcard too (12 Nov; needs the
+# build). Percent chance per cache; GoldenPackPercent is the share of packs that are golden. Live: .reload config.
+worldserver.conf | Wildcard.QuestCacheCasePercent = 25
+worldserver.conf | Wildcard.QuestCachePackPercent = 25
+worldserver.conf | Wildcard.QuestCacheGoldenPackPercent = 75
 # A Case of Fortune (any kind) is used up once opened instead of staying in the bag empty (10 Nov; needs the build
 # with the patch).
 modules\wildcard.conf | Wildcard.CasesOfFortuneConsumed = 1

@@ -216,3 +216,40 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, "    new battleground_spoils_reward();`n    new world_pvp_kill_xp();`n}`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Battleground Spoils and quest-reward caches also hold Cases of Fortune and card packs
+Write-Host "Patch: Battleground Spoils and quest caches hold Cases of Fortune and card packs"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$deliver = "    if (rewards.empty())`n        return;`n`n    AscensionCacheRewards::Deliver(player, rewards, item);`n"
+if (-not $text.Contains($deliver)) { throw 'Core changed: OpenCache in AscensionAdventurerCache.cpp no longer delivers its rewards as before' }
+if (-not $text.Contains('bool IsBattlegroundSpoils(uint32 entry)')) { throw 'The Battleground Spoils part must run before this one' }
+$extras = @'
+    // Wildcard: Battleground Spoils (Battleground.Spoils*) and the quest-reward Adventurer caches (Wildcard.QuestCache*)
+    // can also hold a Case of Fortune (ability or talent, at random, as Manastorm gives) and a sealed card pack, so
+    // other content than Manastorm progresses a Wildcard. GoldenPackPercent is the share of packs that are golden.
+    {
+        std::string const prefix = IsBattlegroundSpoils(item->GetEntry()) ? "Battleground.Spoils" : "Wildcard.QuestCache";
+        uint32 const casePercent = sConfigMgr->GetOption<uint32>(prefix + "CasePercent", 0);
+        uint32 const packPercent = sConfigMgr->GetOption<uint32>(prefix + "PackPercent", 0);
+        uint32 const goldenPercent = sConfigMgr->GetOption<uint32>(prefix + "GoldenPackPercent", 0);
+        auto addExtra = [&rewards](uint32 entry)
+        {
+            if (ItemTemplate const* proto = sObjectMgr->GetItemTemplate(entry))
+                rewards.push_back({ entry, uint16(proto->ItemLevel), uint8(5), uint8(proto->SubClass), 1u, 0 });
+        };
+        if (casePercent && urand(1, 100) <= casePercent)
+            addExtra(urand(0, 1) ? 1278049u : 1278048u);
+        if (packPercent && urand(1, 100) <= packPercent)
+        {
+            bool const golden = goldenPercent && urand(1, 100) <= goldenPercent;
+            bool const talent = urand(0, 1) == 1;
+            addExtra(golden ? (talent ? 97870u : 778998u) : (talent ? 97886u : 97885u));
+        }
+    }
+
+'@
+$text = $text.Replace($deliver, $extras.Replace("`r`n", "`n") + $deliver)
+Set-Content $file $text -NoNewline
+}
