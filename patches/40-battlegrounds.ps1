@@ -140,3 +140,76 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, "    new adventurer_cache_loot();`n    new battleground_spoils_reward();`n}`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- World PvP: honourable kills outside battlegrounds give XP
+Write-Host "Patch: World PvP kills give XP"
+& {
+# Lives beside the Battleground Spoils (same file, so no new script loader is needed).
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$include = "#include `"AscensionSpecialization.h`"`n"
+$register = "    new battleground_spoils_reward();`n}`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($include, $register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Battleground Spoils part missing or core changed: AscensionAdventurerCache.cpp no longer has: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: XP for honourable world PvP kills (anywhere outside battlegrounds, arenas and dungeons), so world PvP
+// levels a character too. The killer and group members nearby each get WorldPvP.KillXPPercentOfLevel percent of
+// their current level (before the realm's XP boosts), if the victim is not grey to them. The same victim gives
+// nothing again to the same player for WorldPvP.KillXPSameVictimSeconds, so friends cannot farm each other.
+class world_pvp_kill_xp : public PlayerScript
+{
+public:
+    world_pvp_kill_xp() : PlayerScript("world_pvp_kill_xp", {PLAYERHOOK_ON_PVP_KILL}) { }
+
+    void OnPlayerPVPKill(Player* killer, Player* killed) override
+    {
+        float const percent = sConfigMgr->GetOption<float>("WorldPvP.KillXPPercentOfLevel", 0.0f);
+        if (percent <= 0.0f || !killer || !killed || killer == killed || !killer->GetMap() ||
+            killer->InBattleground() || killer->InArena() || killer->GetMap()->IsDungeon())
+            return;
+
+        std::vector<Player*> receivers{ killer };
+        if (Group* group = killer->GetGroup())
+            for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+                if (Player* member = ref->GetSource())
+                    if (member != killer && member->IsAlive() && member->IsAtGroupRewardDistance(killed))
+                        receivers.push_back(member);
+
+        uint32 const sameVictim = sConfigMgr->GetOption<uint32>("WorldPvP.KillXPSameVictimSeconds", 300);
+        int64 const now = int64(GameTime::GetGameTime().count());
+        for (Player* player : receivers)
+        {
+            if (!player->GetSession() || player->GetSession()->IsBot() ||
+                killed->GetLevel() <= Acore::XP::GetGrayLevel(player->GetLevel()))
+                continue;
+            {
+                std::lock_guard<std::mutex> guard(_lock);
+                if (_lastKill.size() > 20000)
+                    std::erase_if(_lastKill, [now, sameVictim](auto const& kill) { return now - kill.second >= int64(sameVictim); });
+                auto [itr, fresh] = _lastKill.try_emplace({ player->GetGUID(), killed->GetGUID() }, now);
+                if (!fresh)
+                {
+                    if (now - itr->second < int64(sameVictim))
+                        continue;
+                    itr->second = now;
+                }
+            }
+            uint32 const xp = uint32(float(player->GetUInt32Value(PLAYER_NEXT_LEVEL_XP)) * percent / 100.0f);
+            if (xp)
+                player->GiveXP(xp, killed, 1.0f, false, XPSOURCE_BATTLEGROUND);
+        }
+    }
+
+private:
+    std::mutex _lock;
+    std::map<std::pair<ObjectGuid, ObjectGuid>, int64> _lastKill;
+};
+
+'@
+$text = $text.Replace($include, $include + "#include `"Formulas.h`"`n#include `"GameTime.h`"`n#include `"Group.h`"`n#include `"PlayerScript.h`"`n#include <map>`n#include <mutex>`n")
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, "    new battleground_spoils_reward();`n    new world_pvp_kill_xp();`n}`n")
+Set-Content $file $text -NoNewline
+}
