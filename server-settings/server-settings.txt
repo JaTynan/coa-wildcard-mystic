@@ -70,19 +70,20 @@ worldserver.conf | MaxPlayerLevel = 60
 worldserver.conf | Rate.XP.Global = 2.7885
 # Prestige multiplies on top of that: 167% of 3x = 5x while a prestige cycle is active (was 150% of 2x = 3x)
 modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 167
-# Exploring: 20x normal exploration XP (9 Nov): 6.6667 x the master rate 2.7885 = 18.59 = 20 x the stock 0.9295.
-worldserver.conf | Rate.XP.Explore = 6.6667
-# Gathering pays more XP (12 Nov), so it levels about half as fast as Manastorm (2 levels an hour): double the
-# stock rate for Mining, Herbalism and Skinning. With the 3x master rate, one ore node is about 5% of a level,
-# a herb about 3%, a skin about 1% (plus the kill). Crafting and Fishing stay stock: they already pay well. Change these live
-# in game with .reload config.
-worldserver.conf | Rate.XP.Profession.Mining = 4.22
-worldserver.conf | Rate.XP.Profession.Herbalism = 2.88
+# Exploring: 40x normal exploration XP (12 Nov, was 20x): 13.3333 x the master rate 2.7885 = 37.18 = 40 x the stock
+# 0.9295. Rewards hunting players or nodes in new areas.
+worldserver.conf | Rate.XP.Explore = 13.3333
+# Gathering pays more XP (12 Nov), so it keeps up with Manastorm (2 levels an hour). With the 3x master rate (each
+# 1.0 of a rate is about 1.1% of a level): ore node 6% of a level, herb 4%, skin about 1% (plus the kill), fish
+# about 0.7% a catch (double stock). Crafting stays stock: it already pays well. Change these live with .reload config.
+worldserver.conf | Rate.XP.Profession.Mining = 5.38
+worldserver.conf | Rate.XP.Profession.Herbalism = 3.59
+worldserver.conf | Rate.XP.Profession.Fishing = 0.66
 worldserver.conf | Rate.XP.Profession.Skinning = 1.1
-# World PvP kills give XP (12 Nov; needs the build with the patch): 1.5% of a level per honourable kill before
-# the boosts, about 4% with the 3x master rate, so around 25 kills a level. Group members nearby get it too.
+# World PvP kills give XP (12 Nov; needs the build with the patch): 2.15% of a level per honourable kill before
+# the boosts, 6% with the 3x master rate, so about 17 kills a level. Group members nearby get it too.
 # The same victim gives nothing again for 5 minutes. Not in battlegrounds, arenas or dungeons. 0 turns it off.
-worldserver.conf | WorldPvP.KillXPPercentOfLevel = 1.5
+worldserver.conf | WorldPvP.KillXPPercentOfLevel = 2.15
 worldserver.conf | WorldPvP.KillXPSameVictimSeconds = 300
 # Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
