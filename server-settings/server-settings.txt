@@ -74,7 +74,7 @@ modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 167
 worldserver.conf | Rate.XP.Explore = 6.6667
 # Gathering pays more XP (12 Nov), so it levels about half as fast as Manastorm (2 levels an hour): double the
 # stock rate for Mining, Herbalism and Skinning. With the 3x master rate, one ore node is about 5% of a level,
-# a herb about 3%, a skin about 2%. Crafting and Fishing stay stock: they already pay well. Change these live
+# a herb about 3%, a skin about 1% (plus the kill). Crafting and Fishing stay stock: they already pay well. Change these live
 # in game with .reload config.
 worldserver.conf | Rate.XP.Profession.Mining = 4.22
 worldserver.conf | Rate.XP.Profession.Herbalism = 2.88
