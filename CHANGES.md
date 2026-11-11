@@ -34,6 +34,7 @@ for good by deleting its part from the script.
 | | A full free-pack bar gives one of each sealed card pack, not one at random | `Wildcard.FreePackBarGivesAllPacks` |
 | | A Case of Fortune is used up once opened (was left behind empty) | `Wildcard.CasesOfFortuneConsumed` |
 | `40-battlegrounds.ps1` | Spirit guides raise every ghost beside them at each wave | always on |
+| | Battleground Spoils at the end of each battleground (3 for a win, 1 for a loss), opened like the rare Adventurer's Cache | `Battleground.SpoilsEnabled`, `Battleground.SpoilsForWin`, `Battleground.SpoilsForLoss` |
 | `50-manastorm.ps1` | Dead bots are raised at the end of a Manastorm floor | always on |
 | | Every resurrection in a run (item, player spell or bot) uses one of the run's 5 shared charges | always on |
 | | Opening a Manastorm cache puts its contents straight in the bags (mail if full) and removes that one cache, so stacks never get stuck | `Manastorm.CachesOpenIntoBags` |
@@ -51,6 +52,7 @@ load, waking, zones), PvP rewards, AI chat, MySQL and world server performance, 
 by that next spell). `090-mysql-tuning.sql`: MySQL settings that survive the manager.
 `100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
 `110-manastorm-caches-unstack.sql`: Manastorm caches no longer stack, so each one opens and disappears when emptied.
+`120-battleground-spoils.sql`: Battleground Spoils can be opened (used by the Battleground Spoils patch).
 
 ## How changes are made
 

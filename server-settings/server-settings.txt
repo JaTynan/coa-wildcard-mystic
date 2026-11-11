@@ -50,6 +50,12 @@ modules\wildcard.conf | Wildcard.FreePackBarGivesAllPacks = 1
 # window, the empty cache is removed, stacked caches stay usable, a full bag sends the rest to the mailbox, and the
 # Scrolls of Fortune inside count straight away (ScrollsStraightToCurrency above).
 worldserver.conf | Manastorm.CachesOpenIntoBags = 1
+# Battleground Spoils at the end of every battleground (12 Nov; needs the build with the patch): 3 for a win, 1 for
+# a loss, for the player's level bracket. Each opens like the rare Adventurer's Cache: one piece of gear for your
+# level and spec, plus supplies. Bags full: they go to the mailbox. Not for arenas.
+worldserver.conf | Battleground.SpoilsEnabled = 1
+worldserver.conf | Battleground.SpoilsForWin = 3
+worldserver.conf | Battleground.SpoilsForLoss = 1
 # A Case of Fortune (any kind) is used up once opened instead of staying in the bag empty (10 Nov; needs the build
 # with the patch).
 modules\wildcard.conf | Wildcard.CasesOfFortuneConsumed = 1
