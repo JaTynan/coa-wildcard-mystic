@@ -23,6 +23,8 @@
   .setting .value { color: var(--gold); font-weight: 700; }
   .setting .why { color: var(--muted); font-size: 14px; }
   @media (max-width: 720px) { .settings { grid-template-columns: 1fr; } }
+  .weekend h3 { margin: 0 0 6px; color: var(--gold); font-size: 20px; }
+  .weekend ul { margin: 0 0 10px; }
 </style>
 </head>
 <body>
@@ -78,6 +80,12 @@
       </details>
     </section>
 
+    <section class="panel wide weekend" aria-labelledby="weekend-title" id="weekend-panel" hidden>
+      <h2 id="weekend-title">This week's event</h2>
+      <div id="weekend"></div>
+      <p class="note" id="weekend-next"></p>
+    </section>
+
     <section class="panel wide" aria-labelledby="changes-title">
       <h2 id="changes-title">Recent changes</h2>
       <div id="changes"><p class="note">Loading...</p></div>
@@ -119,6 +127,7 @@ async function loadStatus() {
     text("version", v.release ? `CoA ${v.release}, Wildcard build ${v.build}` : (v.tag || "-"));
     text("restart", s.restart || "");
     showSettings(s.settings || []);
+    showWeekend(s.weekend);
   } catch (error) {
     for (const id of ["login", "world"]) {
       $(id).className = "";
@@ -128,6 +137,26 @@ async function loadStatus() {
       $("settings").innerHTML = '<p class="note">Settings unavailable right now; try again in a minute.</p>';
     }
   }
+}
+
+function showWeekend(w) {
+  const panel = $("weekend-panel");
+  if (!w || !w.current) { panel.hidden = true; return; }
+  panel.hidden = false;
+  const box = $("weekend");
+  box.textContent = "";
+  const heading = document.createElement("h3");
+  heading.textContent = (w.active ? "" : `Coming up, from ${w.current.friday}: `) + w.current.title;
+  box.append(heading);
+  const list = document.createElement("ul");
+  for (const boost of w.current.boosts) {
+    const li = document.createElement("li");
+    li.textContent = boost;
+    list.append(li);
+  }
+  box.append(list);
+  const when = w.current.allWeek ? "Each event runs Friday to Thursday" : "Each event runs Friday to Sunday";
+  text("weekend-next", w.next ? `Next: ${w.next.title} (from ${w.next.friday}). ${when}, on top of the usual rates.` : "");
 }
 
 function showSettings(groups) {
