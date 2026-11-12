@@ -13,7 +13,7 @@ import socket
 import subprocess
 import threading
 import time
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 CACHE_SECONDS = 30
@@ -148,8 +148,14 @@ def _weekend(world, today=None):
             if rate and rate != 1:
                 boosts.append(f"{_times(rate)} {label}")
         title = world.get(f"WeekendBonus.{name}.Title", "").strip() or WEEKEND_TITLES.get(name, name)
+        # Server time (the VM's clock, as the core uses): a week starts at midnight on its Friday. Times go out as
+        # epoch milliseconds so the site's live timeline counts down in each visitor's own time zone.
+        begins = datetime(friday.year, friday.month, friday.day).astimezone()
+        last = friday + timedelta(days=7 if len(days) == 7 else 3)
+        ends = datetime(last.year, last.month, last.day).astimezone()
         return {"theme": name, "title": title, "boosts": boosts, "allWeek": len(days) == 7,
-                "friday": friday.strftime("%a %d %b").replace(" 0", " ")}
+                "friday": friday.strftime("%a %d %b").replace(" 0", " "),
+                "startsAt": int(begins.timestamp() * 1000), "endsAt": int(ends.timestamp() * 1000)}
 
     friday = today - timedelta(days=(today.weekday() - 4) % 7)  # the Friday that started this week
     active = (today.isoweekday() % 7) in days
@@ -157,7 +163,10 @@ def _weekend(world, today=None):
         friday, active = start, False
     elif not active:
         friday += timedelta(days=7)
-    return {"active": active, "current": describe(friday), "next": describe(friday + timedelta(days=7))}
+    # The timeline shows a full turn of the rotation: this week and the ones after it.
+    ahead = 1 if forced else max(len(rotation), 2)
+    weeks = [describe(friday + timedelta(days=7 * n)) for n in range(ahead)]
+    return {"active": active, "current": weeks[0], "next": describe(friday + timedelta(days=7)), "weeks": weeks}
 
 
 def _settings(configs, patch_night):

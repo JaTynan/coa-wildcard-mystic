@@ -33,6 +33,20 @@
   @media (max-width: 720px) { .settings { grid-template-columns: 1fr; } }
   .weekend h3 { margin: 0 0 6px; color: var(--gold); font-size: 20px; }
   .weekend ul { margin: 0 0 10px; }
+  .countdown { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin: 0 0 14px; }
+  .countdown strong { color: var(--gold); font-size: 26px; font-variant-numeric: tabular-nums; letter-spacing: .5px; }
+  .countdown span { color: var(--muted); font-size: 15px; }
+  .timeline { display: flex; gap: 4px; margin: 4px 0 18px; }
+  .week { flex: 1 1 0; min-width: 0; }
+  .week .bar { position: relative; height: 10px; border-radius: 5px; background: var(--line); overflow: visible; }
+  .week .fill { position: absolute; inset: 0 auto 0 0; border-radius: 5px; background: var(--gold); opacity: .35; }
+  .week.now .bar { background: #3b3424; }
+  .week .pin { position: absolute; top: -5px; width: 4px; height: 20px; margin-left: -2px; border-radius: 2px;
+               background: var(--gold); box-shadow: 0 0 0 3px var(--panel); }
+  .week b { display: block; margin-top: 8px; font-size: 15px; line-height: 1.3; }
+  .week.now b { color: var(--gold); }
+  .week small { display: block; color: var(--muted); font-size: 13px; line-height: 1.3; }
+  @media (max-width: 520px) { .timeline { flex-wrap: wrap; row-gap: 14px; } .week { flex: 1 1 calc(50% - 4px); } }
 </style>
 </head>
 <body>
@@ -156,24 +170,92 @@ async function loadStatus() {
   }
 }
 
+// The week's event as a live timeline: this week's progress with a countdown, then the weeks after it. The status
+// refreshes every minute; the countdown ticks every second between refreshes, in the visitor's own time zone.
+let weekendData = null;
+let weekendTimer = null;
+
+function untilText(ms) {
+  const minutes = Math.max(0, Math.floor(ms / 60000));
+  const d = Math.floor(minutes / 1440), h = Math.floor(minutes / 60) % 24, m = minutes % 60;
+  const s = Math.max(0, Math.floor(ms / 1000)) % 60;
+  if (d) return `${d}d ${h}h ${m}m`;
+  if (h) return `${h}h ${m}m ${String(s).padStart(2, "0")}s`;
+  return `${m}m ${String(s).padStart(2, "0")}s`;
+}
+
+function whenText(ms) {
+  return new Date(ms).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short",
+    hour: "numeric", minute: "2-digit" });
+}
+
 function showWeekend(w) {
   const panel = $("weekend-panel");
-  if (!w || !w.current) { panel.hidden = true; return; }
+  if (!w || !w.current) { panel.hidden = true; weekendData = null; return; }
   panel.hidden = false;
+  weekendData = w;
   const box = $("weekend");
   box.textContent = "";
   const heading = document.createElement("h3");
-  heading.textContent = (w.active ? "" : `Coming up, from ${w.current.friday}: `) + w.current.title;
-  box.append(heading);
+  heading.textContent = (w.active ? "" : "Coming up: ") + w.current.title;
+  const count = document.createElement("div");
+  count.className = "countdown";
+  count.innerHTML = "<strong></strong><span></span>";
   const list = document.createElement("ul");
   for (const boost of w.current.boosts) {
     const li = document.createElement("li");
     li.textContent = boost;
     list.append(li);
   }
-  box.append(list);
+  const line = document.createElement("div");
+  line.className = "timeline";
+  line.setAttribute("role", "list");
+  const weeks = w.weeks && w.weeks.length ? w.weeks : [w.current, w.next].filter(Boolean);
+  weeks.forEach((week, n) => {
+    const cell = document.createElement("div");
+    cell.className = "week" + (n === 0 ? " now" : "");
+    cell.setAttribute("role", "listitem");
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    if (n === 0) bar.innerHTML = '<div class="fill"></div><div class="pin"></div>';
+    const name = document.createElement("b");
+    name.textContent = week.title;
+    const date = document.createElement("small");
+    date.textContent = n === 0 && w.active ? "Now" : week.friday;
+    cell.append(bar, name, date);
+    line.append(cell);
+  });
+  box.append(heading, count, line, list);
   const when = w.current.allWeek ? "Each event runs Friday to Thursday" : "Each event runs Friday to Sunday";
-  text("weekend-next", w.next ? `Next: ${w.next.title} (from ${w.next.friday}). ${when}, on top of the usual rates.` : "");
+  text("weekend-next", `${when}, on top of the usual rates. Times are in your time zone.`);
+  tickWeekend();
+  if (!weekendTimer) weekendTimer = setInterval(tickWeekend, 1000);
+}
+
+function tickWeekend() {
+  const w = weekendData;
+  if (!w || !w.current || !w.current.endsAt) return;
+  const now = Date.now();
+  const start = w.current.startsAt, end = w.current.endsAt;
+  const big = document.querySelector("#weekend .countdown strong");
+  const small = document.querySelector("#weekend .countdown span");
+  if (!big) return;
+  if (now < start) {
+    big.textContent = "Starts in " + untilText(start - now);
+    small.textContent = whenText(start);
+  } else if (now < end) {
+    big.textContent = untilText(end - now) + " left";
+    small.textContent = w.next ? `then ${w.next.title} from ${whenText(w.next.startsAt || end)}` : `ends ${whenText(end)}`;
+  } else {
+    big.textContent = "Changing over...";
+    small.textContent = "";
+    if (now - end > 5000 && now - end < 7000) loadStatus();
+  }
+  const done = Math.min(100, Math.max(0, (now - start) / (end - start) * 100));
+  const fill = document.querySelector("#weekend .week.now .fill");
+  const pin = document.querySelector("#weekend .week.now .pin");
+  if (fill) fill.style.width = done + "%";
+  if (pin) { pin.style.left = done + "%"; pin.hidden = now < start; }
 }
 
 function showSettings(groups) {
