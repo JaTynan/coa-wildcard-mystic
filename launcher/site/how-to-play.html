@@ -118,7 +118,8 @@
           <li>Steam (Proton), the easiest: close Steam, then run <code>python3 WildcardLauncher.py --add-to-steam</code>.
             It adds <strong>Project Descension</strong> to your Steam library with its own artwork, sets it to Proton
             Experimental with the fix for the endless loading screen, and makes <code>--play</code> start it through
-            Steam. It also puts a <strong>Project Descension</strong> shortcut in your app menu and on your desktop:
+            Steam. Pressing <strong>Play</strong> in Steam then updates the game first (a small "Updating the game"
+            window shows if you have zenity), so you never need the terminal or to close Steam again. It also puts a <strong>Project Descension</strong> shortcut in your app menu and on your desktop:
             click it and the game updates, then opens through Steam. Your Steam settings are backed up first
             (<code>*.wildcard-backup</code>). Added it with an older launcher? Run it again and it replaces the old
             entry.</li>
@@ -127,7 +128,8 @@
             --command=bottles-cli com.usebottles.bottles run -b CoA -e {exe}"</code></li>
         </ul>
       </li>
-      <li>From then on, <code>python3 WildcardLauncher.py --play</code> updates the game and starts it.
+      <li>From then on, press Play in Steam (if you added it to Steam), or run
+        <code>python3 WildcardLauncher.py --play</code>: either updates the game and starts it.
         <figure>
           <img src="images/linux-6-steam-play.png" width="1470" height="489" loading="lazy"
                alt="The terminal after --add-to-steam: Added the game to Steam, Proton set to Proton Experimental. Then --play: Up to date, Game server online, Starting the game through Steam">

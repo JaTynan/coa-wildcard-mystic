@@ -14,8 +14,9 @@ The same job as the Windows launcher (WildcardLauncher.ps1), from a terminal, wi
 Usage:
   python3 WildcardLauncher.py                 update, then exit
   python3 WildcardLauncher.py --play          update, then start the game
-  python3 WildcardLauncher.py --add-to-steam  add the game to Steam with Proton (close Steam first); --play then
-                                              starts it through Steam (also makes the shortcut below)
+  python3 WildcardLauncher.py --add-to-steam  add the game to Steam with Proton (close Steam first, once). Playing it
+                                              from Steam then updates the game first, every time; --play also starts it
+                                              through Steam (also makes the shortcut below)
   python3 WildcardLauncher.py --add-shortcut  add a Wildcard shortcut to the app menu and desktop that updates the
                                               game and starts it in one click
   python3 WildcardLauncher.py --set-play "flatpak run --command=bottles-cli com.usebottles.bottles run -b CoA -e {exe}"
@@ -43,7 +44,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-LAUNCHER_VERSION = 4
+LAUNCHER_VERSION = 5
 
 HERE = Path(__file__).resolve().parent
 CLIENT = HERE / "CoAClient"
@@ -371,7 +372,14 @@ STEAM_NAME = "Project Descension"
 OLD_STEAM_NAMES = ("Wildcard",)  # earlier launchers' name for the same shortcut: replaced, not duplicated
 STEAM_PROTON = "proton_experimental"
 # The client's DivxTac.dll hangs the loading screen under Proton (endless load, then a disconnect): switch it off.
-STEAM_LAUNCH_OPTIONS = 'WINEDLLOVERRIDES="divxtac=d" %command%'
+# The launcher runs first (--steam-update), so pressing Play in Steam updates the game, then starts it.
+STEAM_DLL_OVERRIDES = 'WINEDLLOVERRIDES="divxtac=d"'
+UPDATE_FRESH_SECONDS = 120  # an update this recent (e.g. the desktop shortcut's) is not repeated when Steam starts
+
+
+def steam_launch_options():
+    me = Path(__file__).resolve()
+    return f'{STEAM_DLL_OVERRIDES} "{sys.executable}" "{me}" --steam-update %command%'
 ART_FOLDER = HERE / "steam-art"
 ART_FILES = ("portrait.png", "header.png", "hero.png", "logo.png", "icon.png")
 
@@ -590,7 +598,7 @@ def add_to_steam():
         entry = next((item[1] for item in shortcuts if isinstance(item[1], list) and any(
             k.lower() == "appname" and v == STEAM_NAME for k, v in item[1])), None)
         fields = [["appid", signed], ["AppName", STEAM_NAME], ["Exe", exe_field], ["StartDir", start_field],
-                  ["icon", icon], ["ShortcutPath", ""], ["LaunchOptions", STEAM_LAUNCH_OPTIONS], ["IsHidden", 0],
+                  ["icon", icon], ["ShortcutPath", ""], ["LaunchOptions", steam_launch_options()], ["IsHidden", 0],
                   ["AllowDesktopConfig", 1], ["AllowOverlay", 1], ["OpenVR", 0], ["Devkit", 0],
                   ["DevkitGameID", ""], ["DevkitOverrideAppID", 0], ["LastPlayTime", 0], ["FlatpakAppID", ""],
                   ["tags", []]]
@@ -627,7 +635,8 @@ def add_to_steam():
     SETTINGS_FILE.write_text(json.dumps(saved, indent=2), encoding="utf-8")
     say(f"Added {STEAM_NAME} to Steam ({'Flatpak' if flatpak else 'native'}), Proton {proton_note}"
         + (", with its library artwork." if art else "."))
-    say(f"--play now updates the game and starts it through Steam. Backups: *.wildcard-backup next to Steam's files.")
+    say("Pressing Play in Steam now updates the game first, then starts it (Steam can stay open from now on).")
+    say(f"--play also updates and starts it through Steam. Backups: *.wildcard-backup next to Steam's files.")
     return 0
 
 
@@ -699,7 +708,12 @@ def main():
     parser.add_argument("--add-shortcut", action="store_true",
                         help="add a Wildcard shortcut to the app menu and desktop (update, then play)")
     parser.add_argument("--from-shortcut", action="store_true", help=argparse.SUPPRESS)
+    # Steam's launch options: update, then run the rest (Steam's own command for the game).
+    parser.add_argument("--steam-update", nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
     options = parser.parse_args()
+
+    if options.steam_update is not None:
+        return steam_update(options.steam_update)
 
     if options.add_shortcut:
         return add_shortcut()
@@ -717,6 +731,60 @@ def main():
             pass
         return status
     return run(options)
+
+
+class Window:
+    """A small "Updating..." window while Steam waits (zenity, if installed; otherwise nothing shows)."""
+
+    def __init__(self):
+        self.process = None
+        if shutil.which("zenity") and (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
+            try:
+                self.process = subprocess.Popen(
+                    ["zenity", "--progress", "--pulsate", "--no-cancel", "--auto-close", "--title", STEAM_NAME,
+                     "--text", "Updating the game..."], stdin=subprocess.PIPE, text=True,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except OSError:
+                self.process = None
+
+    def close(self):
+        if self.process:
+            try:
+                self.process.stdin.write("100\n")
+                self.process.stdin.close()
+                self.process.wait(timeout=5)
+            except (OSError, subprocess.SubprocessError):
+                self.process.kill()
+
+    @staticmethod
+    def play_anyway(text):
+        if not shutil.which("zenity"):
+            return True
+        answer = subprocess.run(["zenity", "--question", "--title", STEAM_NAME, "--ok-label", "Play anyway",
+                                 "--cancel-label", "Cancel", "--text", text], capture_output=True)
+        return answer.returncode == 0
+
+
+def steam_update(command):
+    """Steam's Play button: update the game (unless that just happened), then become Steam's game command."""
+    if not command:
+        say("--steam-update expects Steam's %command% after it.")
+        return 1
+    marker = HERE / "launcher-last-update"
+    fresh = marker.exists() and time.time() - marker.stat().st_mtime < UPDATE_FRESH_SECONDS
+    if not fresh:
+        window = Window()
+        try:
+            status = run(argparse.Namespace(add_to_steam=False, set_play=None, play=False))
+        finally:
+            window.close()
+        if status and not Window.play_anyway(
+                "The game could not be updated (details in launcher.log next to the launcher).\n\n"
+                "Play with the files you have?"):
+            return status
+    log("Starting the game from Steam: " + " ".join(shlex.quote(part) for part in command))
+    os.chdir(str(CLIENT))
+    os.execvp(command[0], command)
 
 
 def run(options):
@@ -748,6 +816,7 @@ def run(options):
         install_client(info)
         changed = sync_client()
         say(f"Up to date ({changed} file(s) updated). Have fun!" if changed else "Up to date. Have fun!")
+        (HERE / "launcher-last-update").touch()
     except RuntimeError as error:
         print()
         say(f"Could not finish updating: {error}")
