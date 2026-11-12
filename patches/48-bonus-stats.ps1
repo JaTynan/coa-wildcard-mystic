@@ -124,7 +124,8 @@ namespace WcmeBonusStats
         return id;
     }
 
-    void Roll(Player* player, Item* item, bool crafted)
+    // source: 0 looted or a quest reward, 1 crafted, 2 from a cache.
+    void Roll(Player* player, Item* item, uint8 source)
     {
         if (!sConfigMgr->GetOption<bool>("BonusStats.Enabled", false) || !player || !item || !player->GetSession() ||
             player->GetSession()->IsBot())
@@ -134,8 +135,9 @@ namespace WcmeBonusStats
             proto->InventoryType == INVTYPE_NON_EQUIP || proto->InventoryType == INVTYPE_BODY ||
             proto->InventoryType == INVTYPE_TABARD || proto->GetMaxStackSize() > 1)
             return;
-        uint32 const minQuality = sConfigMgr->GetOption<uint32>(crafted ? "BonusStats.CraftedMinQuality" : "BonusStats.MinQuality",
-            crafted ? 2 : 3);
+        uint32 const minQuality = source == 1 ? sConfigMgr->GetOption<uint32>("BonusStats.CraftedMinQuality", 2) :
+            source == 2 ? sConfigMgr->GetOption<uint32>("BonusStats.CacheMinQuality", 2) :
+            sConfigMgr->GetOption<uint32>("BonusStats.MinQuality", 3);
         if (proto->Quality < minQuality)
             return;
 
@@ -209,22 +211,22 @@ public:
 
     void OnPlayerLootItem(Player* player, Item* item, uint32 /*count*/, ObjectGuid /*lootguid*/) override
     {
-        WcmeBonusStats::Roll(player, item, false);
+        WcmeBonusStats::Roll(player, item, 0);
     }
 
     void OnPlayerGroupRollRewardItem(Player* player, Item* item, uint32 /*count*/, RollVote /*voteType*/, Roll* /*roll*/) override
     {
-        WcmeBonusStats::Roll(player, item, false);
+        WcmeBonusStats::Roll(player, item, 0);
     }
 
     void OnPlayerQuestRewardItem(Player* player, Item* item, uint32 /*count*/) override
     {
-        WcmeBonusStats::Roll(player, item, false);
+        WcmeBonusStats::Roll(player, item, 0);
     }
 
     void OnPlayerCreateItem(Player* player, Item* item, uint32 /*count*/) override
     {
-        WcmeBonusStats::Roll(player, item, true);
+        WcmeBonusStats::Roll(player, item, 1);
     }
 };
 
@@ -233,4 +235,27 @@ $text = $text.Replace($include, $include + "#include `"AscensionNativeItemScalin
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_bonus_stats();`n")
 Set-Content $file $text -NoNewline
+}
+
+# Gear from caches (Adventurer's caches, Battleground Spoils, Manastorm caches: everything AscensionCacheRewards::Deliver
+# puts in the bags) rolls too, from BonusStats.CacheMinQuality (2, green), so players meet the rolls while levelling.
+# Gear that goes to the mailbox because the bags are full does not roll.
+& {
+$file = 'core/src/server/coa/AscensionCacheRewards.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$include = "#include `"Player.h`"`n"
+$old = @'
+    for (std::unique_ptr<Item>& item : mailItems)
+        player->SendItemRetrievalMail(item.release());
+'@
+$old = $old.Replace("`r`n", "`n")
+if (([regex]::Matches($text, [regex]::Escape($include))).Count -ne 1) { throw 'Core changed: AscensionCacheRewards.cpp has no single Player.h include' }
+if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'Core changed: the mail step in AscensionCacheRewards::Deliver was not found' }
+$text = $text.Replace($include, $include + "`nnamespace WcmeBonusStats { void Roll(Player* player, Item* item, uint8 source); } // patches/48-bonus-stats.ps1`n")
+$new = @'
+    for (auto const& given : stored)
+        WcmeBonusStats::Roll(player, given.first, 2);
+
+'@
+Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n") + $old) -NoNewline
 }

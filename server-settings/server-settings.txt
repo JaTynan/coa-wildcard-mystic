@@ -155,7 +155,7 @@ worldserver.conf | Rate.XP.Profession.Skinning = 1.1
 worldserver.conf | WorldPvP.KillXPPercentOfLevel = 2.15
 worldserver.conf | WorldPvP.KillXPSameVictimSeconds = 300
 # Bonus rolls: weapons and armour (rings, necklaces and trinkets too) looted (blue and up), given by quests (blue and
-# up) or crafted (green and up) have a 1 in 4 chance of a bonus, and 1 in 4 of those get a second. Each bonus is a gem
+# up), crafted or from caches (green and up) have a 1 in 4 chance of a bonus, and 1 in 4 of those get a second. Each bonus is a gem
 # socket 1 time in 3 (an extra prismatic socket, one at most, so Jewelcrafting gems have a use), otherwise an extra stat
 # that suits the item (caster, physical or tank). Stat size follows item level (0.25 points per level: a level-63 blue
 # rolls about 16 crit rating). Shown on the item and announced to the player. Needs the build with the patch.
@@ -166,6 +166,7 @@ worldserver.conf | BonusStats.SocketSharePercent = 33
 worldserver.conf | BonusStats.PointsPerItemLevel = 0.25
 worldserver.conf | BonusStats.MinQuality = 3
 worldserver.conf | BonusStats.CraftedMinQuality = 2
+worldserver.conf | BonusStats.CacheMinQuality = 2
 # Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
 modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
