@@ -61,6 +61,12 @@ worldserver.conf | Battleground.SpoilsForLoss = 1
 worldserver.conf | Battleground.SpoilsCasePercent = 100
 worldserver.conf | Battleground.SpoilsPackPercent = 100
 worldserver.conf | Battleground.SpoilsGoldenPackPercent = 25
+# Supplies (food, potions, trade goods) in Adventurer's Caches, quest caches and Battleground Spoils come as a
+# stack of 20 (or the most the item stacks to) instead of 1 to 3. Gear is unchanged. Needs the build with the patch.
+worldserver.conf | AdventurerCache.SupplyStack = 20
+# Gear caches (random dungeon cache, Adventurer's Cache, Battleground Spoils) give their gear and supplies twice:
+# 2 pieces of gear and twice the supply stacks. 1 = as CoA. Needs the build with the patch.
+worldserver.conf | AdventurerCache.RewardRounds = 2
 # Quest-reward caches (Adventurer's Satchel and Caches, also the random dungeon reward) can hold a Case of
 # Fortune and a sealed card pack, mostly golden packs, so questing progresses a Wildcard too (12 Nov; needs the
 # build). Percent chance per cache; GoldenPackPercent is the share of packs that are golden. Live: .reload config.
