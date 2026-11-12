@@ -107,8 +107,8 @@ def _build(core):
             "build": int(release.group(2)) if release else None}
 
 
-WEEKEND_TITLES = {"PvP": "PvP Extravaganza", "Professions": "Profession Weekend", "Quests": "Quest Weekend",
-                  "Dungeons": "Dungeon & Raid Weekend"}
+WEEKEND_TITLES = {"PvP": "Honourpalooza", "Professions": "The Grindstone Games", "Quests": "The Questathlon",
+                  "Dungeons": "Pull-a-palooza"}  # used when WeekendBonus.<theme>.Title is not set
 WEEKEND_RATES = [  # the order players read them in
     ("XPRate", "all XP"), ("HonorRate", "honour"), ("PvPXPRate", "XP from world PvP kills"),
     ("BattlegroundSpoilsRate", "Battleground Spoils"), ("ProfessionXPRate", "profession XP"),
@@ -147,12 +147,15 @@ def _weekend(world, today=None):
             rate = _number(world, f"WeekendBonus.{name}.{key}")
             if rate and rate != 1:
                 boosts.append(f"{_times(rate)} {label}")
-        return {"theme": name, "title": WEEKEND_TITLES.get(name, f"{name} Weekend"), "boosts": boosts,
+        title = world.get(f"WeekendBonus.{name}.Title", "").strip() or WEEKEND_TITLES.get(name, name)
+        return {"theme": name, "title": title, "boosts": boosts, "allWeek": len(days) == 7,
                 "friday": friday.strftime("%a %d %b").replace(" 0", " ")}
 
     friday = today - timedelta(days=(today.weekday() - 4) % 7)  # the Friday that started this week
     active = (today.isoweekday() % 7) in days
-    if not active:
+    if not forced and friday < start:  # the rotation has not started yet
+        friday, active = start, False
+    elif not active:
         friday += timedelta(days=7)
     return {"active": active, "current": describe(friday), "next": describe(friday + timedelta(days=7))}
 

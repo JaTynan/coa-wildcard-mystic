@@ -59,7 +59,9 @@ inline std::string WeekendBonusTheme()
     std::tm const now = Acore::Time::TimeBreakdown();
     int64 const days = WeekendBonusDayNumber(now.tm_year + 1900, now.tm_mon + 1, now.tm_mday) -
         WeekendBonusDayNumber(year, month, day);
-    int64 const week = days >= 0 ? days / 7 : -((-days + 6) / 7);
+    if (days < 0)
+        return ""; // the rotation has not started yet
+    int64 const week = days / 7;
     int64 const count = int64(themes.size());
     return themes[std::size_t(((week % count) + count) % count)];
 }
@@ -77,7 +79,10 @@ inline float WeekendBonusRate(std::string const& name)
 {
     if (!WeekendBonusToday())
         return 1.0f;
-    float const rate = sConfigMgr->GetOption<float>("WeekendBonus." + WeekendBonusTheme() + "." + name, 1.0f, false);
+    std::string const theme = WeekendBonusTheme();
+    if (theme.empty())
+        return 1.0f;
+    float const rate = sConfigMgr->GetOption<float>("WeekendBonus." + theme + "." + name, 1.0f, false);
     return rate > 0.0f ? rate : 1.0f;
 }
 
@@ -198,9 +203,11 @@ public:
         if (!WeekendBonusToday() || !player->GetSession() || player->GetSession()->IsBot())
             return;
         std::string const theme = WeekendBonusTheme();
-        if (!theme.empty())
-            ChatHandler(player->GetSession()).SendSysMessage(
-                "|cff00ff00It's a " + theme + " weekend!|r See wildcard.jtlab.cc for this weekend's bonuses.");
+        if (theme.empty())
+            return;
+        std::string const title = sConfigMgr->GetOption<std::string>("WeekendBonus." + theme + ".Title", theme, false);
+        ChatHandler(player->GetSession()).SendSysMessage(
+            "|cff00ff00It's " + title + "!|r See wildcard.jtlab.cc for this event's bonuses.");
     }
 
     static bool InDungeon(Player* player)

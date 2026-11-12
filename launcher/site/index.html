@@ -81,7 +81,7 @@
     </section>
 
     <section class="panel wide weekend" aria-labelledby="weekend-title" id="weekend-panel" hidden>
-      <h2 id="weekend-title">Weekend bonus</h2>
+      <h2 id="weekend-title">This week's event</h2>
       <div id="weekend"></div>
       <p class="note" id="weekend-next"></p>
     </section>
@@ -146,7 +146,7 @@ function showWeekend(w) {
   const box = $("weekend");
   box.textContent = "";
   const heading = document.createElement("h3");
-  heading.textContent = (w.active ? "This weekend: " : `Coming up, from ${w.current.friday}: `) + w.current.title;
+  heading.textContent = (w.active ? "" : `Coming up, from ${w.current.friday}: `) + w.current.title;
   box.append(heading);
   const list = document.createElement("ul");
   for (const boost of w.current.boosts) {
@@ -155,7 +155,8 @@ function showWeekend(w) {
     list.append(li);
   }
   box.append(list);
-  text("weekend-next", w.next ? `Next: ${w.next.title} (from ${w.next.friday}). Friday to Sunday, on top of the usual rates.` : "");
+  const when = w.current.allWeek ? "Each event runs Friday to Thursday" : "Each event runs Friday to Sunday";
+  text("weekend-next", w.next ? `Next: ${w.next.title} (from ${w.next.friday}). ${when}, on top of the usual rates.` : "");
 }
 
 function showSettings(groups) {
