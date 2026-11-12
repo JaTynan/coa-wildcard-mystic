@@ -171,6 +171,8 @@ worldserver.conf | BonusStats.PointsPerItemLevel = 0.25
 worldserver.conf | BonusStats.MinQuality = 3
 worldserver.conf | BonusStats.CraftedMinQuality = 2
 worldserver.conf | BonusStats.CacheMinQuality = 2
+# Manastorm caches never roll (0): the perfect copy comes from bosses, quests, crafting and other caches.
+worldserver.conf | BonusStats.ManastormCaches = 0
 # Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
 modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0
