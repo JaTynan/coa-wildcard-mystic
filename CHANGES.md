@@ -42,6 +42,7 @@ for good by deleting its part from the script.
 | | Gear caches (random dungeon cache, Adventurer's Cache, Battleground Spoils) give 2 pieces of gear and twice the supplies | `AdventurerCache.RewardRounds` |
 | `45-weekend-bonus.ps1` | Rotating weekly event, all week Friday to Thursday (Shanks-giving, Craftageddon, The Questathlon, Pull-a-palooza): PvP (honour, PvP XP, spoils), Professions (profession XP, gathering yield, skill-ups) Quests (quest XP, gold, caches, reputation) or Dungeons (kill XP, reputation, random dungeon cache in dungeons and raids), shown on the website | `WeekendBonus.*` |
 | `46-play-time-rewards.ps1` | Every hour of play gives a sealed card pack (1 in 4 golden) and sometimes a Case of Fortune | `PlayTimeRewards.*` |
+| `48-bonus-stats.ps1` | Looted, quest and crafted gear can roll 1 or 2 bonus stats that suit the item (1 in 4, then 1 in 4 for a second) | `BonusStats.*` |
 | `50-manastorm.ps1` | Dead bots are raised at the end of a Manastorm floor | always on |
 | | Every resurrection in a run (item, player spell or bot) uses one of the run's 5 shared charges | always on |
 | | Opening a Manastorm cache puts its contents straight in the bags (mail if full) and removes that one cache, so stacks never get stuck | `Manastorm.CachesOpenIntoBags` |
