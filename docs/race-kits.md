@@ -30,7 +30,7 @@ Leatherworking, Inscription.
 | --- | --- | --- | --- |
 | Active | Stoneform | +10% armor; removes and grants immunity to bleed, poison and disease for 8 sec. | existing, reworked |
 | Active | Grudge | Mark an enemy for 15 sec: they deal 10% more damage to you, and you deal 10% more damage to them. | new |
-| Passive | Treasure Hunter | Find treasure on the minimap. | existing (Find Treasure) |
+| Passive | Sure-Footed | Knockbacks and pulls move you half as far, fall damage is halved, and dazes last half as long. | hook. Signature, locked 13 Nov |
 | Passive | Deep Miner | +10 Mining. Indoors or underground, Treasure Hunter also shows ore veins, and those veins yield an extra ore or gem. | hooks for the tracking and the extra yield |
 
 **Night Elf**
@@ -39,7 +39,7 @@ Leatherworking, Inscription.
 | --- | --- | --- | --- |
 | Active | Shadowmeld | As is. 2 min cooldown. | existing |
 | Active | Meditate | Put an out-of-combat ally into a trance (sleep) that restores 30% health and mana over 3 sec. 5 min cooldown. | new. The long cooldown keeps the Shadowmeld-then-Meditate trick occasional |
-| Passive | Wisp Spirit | +75% speed while dead; revive with more health. | existing + hook for the revive health |
+| Passive | Ambush | Entering stealth (Shadowmeld or a class stealth) readies your next ability: 10% cheaper and 50% more damage or healing. At most once every 20 sec. | hook. Signature, locked 13 Nov |
 | Passive | Moonweaver | +10 Tailoring; extra cloth from humanoids; shorter Mooncloth cooldown. | hooks for the cloth and the cooldown |
 
 **Gnome**
@@ -58,7 +58,7 @@ Leatherworking, Inscription.
 | Active | Gift of the Naaru | As is, but cannot be interrupted. | existing, reworked |
 | Active | Naaru's Ward | Target takes 10% less magic damage and receives 10% more healing for 8 sec. | new |
 | Passive | Gemcutter's Eye | +10 Jewelcrafting; chance of an extra gem from Jewelcrafting. | hook for the extra gem |
-| Passive | Heroic Presence | +1% hit for your party. | existing |
+| Passive | Radiant Presence | Your auras and totems reach 50% further. Allies within 30 yards take 1% less damage per enemy within 30 yards, up to 5%. | hook. Signature, locked 13 Nov |
 
 ## Horde
 
@@ -110,9 +110,9 @@ Leatherworking, Inscription.
 ## Signature passives (13 November)
 
 Each race gets one passive as noticeable as Plainsrunning, and each owns its niche: Tauren movement, Trolls healing
-in combat, Gnomes and Blood Elves resources, Orcs kills and haste, Undead death. Locked: Tauren Plainsrunning (drains
+in combat, Gnomes and Blood Elves resources, Orcs kills and haste, Undead death. Locked: Dwarf Sure-Footed, Night Elf Ambush, Draenei Radiant Presence, Tauren Plainsrunning (drains
 over 6 sec), Troll Voodoo Regeneration, Orc Warsong, Undead Unliving (15 min), Gnome as above (Expansive Mind's 5%
-resources, Escape Artist's speed boost), Blood Elf Arcane Hunger. Still open: Human, Dwarf, Night Elf, Draenei.
+resources, Escape Artist's speed boost), Blood Elf Arcane Hunger. Still open: Human (proposed: Jack of All Schools, 5% more from an ability of a different school than your last).
 
 ## For the balancing pass
 
