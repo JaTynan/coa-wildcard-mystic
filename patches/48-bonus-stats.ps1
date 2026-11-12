@@ -1,4 +1,4 @@
-# Bonus stats: gear from loot, quests and crafting has a chance to roll extra secondary stats.
+# Bonus stats: gear (rings, necks and trinkets too) from loot, quests and crafting can roll extra stats and a gem socket.
 # Run by the build (step "Apply our patch scripts") from the workspace root, after 40-battlegrounds.ps1, whose
 # world PvP part this builds on (same file and script loader). Throws if an anchor is gone. Listed in CHANGES.md.
 $ErrorActionPreference = 'Stop'
@@ -15,7 +15,8 @@ foreach ($anchor in @($include, $register, $loader)) {
 }
 # When a weapon or armour piece is looted (also won on a group roll), given by a quest, or crafted, it has
 # BonusStats.ChancePercent (25) to roll bonus stats; a roll gives one stat and, at BonusStats.SecondStatPercent (25),
-# a second. Stats suit the item: caster gear rolls caster stats, physical gear physical stats, tank gear tank stats.
+# a second; separately, BonusStats.SocketPercent (15) adds a prismatic gem socket (as the Eternal Belt Buckle does)
+# if it has fewer than three sockets. Rings, necklaces, trinkets and relics count as armour. Stats suit the item: caster gear rolls caster stats, physical gear physical stats, tank gear tank stats.
 # Each is a single-stat enchantment that already exists in the game data (so the client shows it, in green), put
 # in a free random-property enchantment slot, so it is saved with the item and works like any item stat. The
 # size follows the item level (BonusStats.PointsPerItemLevel, 0.25: a level-63 blue rolls about 16 crit rating,
@@ -107,6 +108,21 @@ namespace WcmeBonusStats
         return best;
     }
 
+    // An enchantment that opens a prismatic gem socket (as the Eternal Belt Buckle does), from the game data.
+    uint32 SocketEnchant()
+    {
+        static uint32 const id = []
+        {
+            for (uint32 row = 1; row < sSpellItemEnchantmentStore.GetNumRows(); ++row)
+                if (SpellItemEnchantmentEntry const* entry = sSpellItemEnchantmentStore.LookupEntry(row))
+                    if (entry->type[0] == ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET && !entry->requiredLevel &&
+                        !entry->requiredSkill && !entry->EnchantmentCondition)
+                        return row;
+            return 0u;
+        }();
+        return id;
+    }
+
     void Roll(Player* player, Item* item, bool crafted)
     {
         if (!sConfigMgr->GetOption<bool>("BonusStats.Enabled", false) || !player || !item || !player->GetSession() ||
@@ -119,15 +135,30 @@ namespace WcmeBonusStats
             return;
         uint32 const minQuality = sConfigMgr->GetOption<uint32>(crafted ? "BonusStats.CraftedMinQuality" : "BonusStats.MinQuality",
             crafted ? 2 : 3);
-        if (proto->Quality < minQuality || urand(1, 100) > sConfigMgr->GetOption<uint32>("BonusStats.ChancePercent", 25))
+        if (proto->Quality < minQuality)
             return;
 
+        // A gem socket is its own roll: an extra prismatic socket, if the item has fewer than three and none yet.
+        bool socketed = false;
+        uint8 sockets = 0;
+        for (uint8 i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
+            if (proto->Socket[i].Color)
+                ++sockets;
+        if (sockets < MAX_ITEM_PROTO_SOCKETS && !item->GetEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT) && SocketEnchant() &&
+            urand(1, 100) <= sConfigMgr->GetOption<uint32>("BonusStats.SocketPercent", 15))
+        {
+            item->SetEnchantment(PRISMATIC_ENCHANTMENT_SLOT, SocketEnchant(), 0, 0);
+            socketed = true;
+        }
+
+        std::string rolled;
         std::vector<EnchantmentSlot> slots;
-        for (uint32 slot = PROP_ENCHANTMENT_SLOT_0; slot < MAX_ENCHANTMENT_SLOT; ++slot)
-            if (!item->GetEnchantmentId(EnchantmentSlot(slot)))
-                slots.push_back(EnchantmentSlot(slot));
-        if (slots.empty())
-            return;
+        if (urand(1, 100) <= sConfigMgr->GetOption<uint32>("BonusStats.ChancePercent", 25))
+        {
+            for (uint32 slot = PROP_ENCHANTMENT_SLOT_0; slot < MAX_ENCHANTMENT_SLOT; ++slot)
+                if (!item->GetEnchantmentId(EnchantmentSlot(slot)))
+                    slots.push_back(EnchantmentSlot(slot));
+        }
 
         uint32 const level = std::max<uint32>(proto->ItemLevel, NativeItemScaling::InstanceLevel(item) + 5u);
         float const budget = float(level) * sConfigMgr->GetOption<float>("BonusStats.PointsPerItemLevel", 0.25f);
@@ -135,7 +166,6 @@ namespace WcmeBonusStats
         std::vector<uint32> pool = Pool(proto);
         Acore::Containers::RandomShuffle(pool);
 
-        std::string rolled;
         for (uint32 stat : pool)
         {
             if (!count || slots.empty())
@@ -149,6 +179,8 @@ namespace WcmeBonusStats
             --count;
             rolled += (rolled.empty() ? "" : " and ") + std::string(entry->description[0] ? entry->description[0] : "");
         }
+        if (socketed)
+            rolled += (rolled.empty() ? "" : " and ") + std::string("a gem socket");
         if (rolled.empty())
             return;
         item->SetState(ITEM_CHANGED, player);
