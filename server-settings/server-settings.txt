@@ -119,6 +119,10 @@ worldserver.conf | Wildcard.QuestCacheGoldenPackPercent = 75
 # A Case of Fortune (any kind) is used up once opened instead of staying in the bag empty (10 Nov; needs the build
 # with the patch).
 modules\wildcard.conf | Wildcard.CasesOfFortuneConsumed = 1
+# The Prestigious Cache's "One Legendary Enchant for the class of your choice" (CoA never made it): opening one opens a
+# menu to pick a class, then one of its Legendary Mystic Enchants; its scroll goes to the bags (mailbox if full).
+# Closed the menu? Type .legendary. Needs the build with the patch.
+worldserver.conf | Wildcard.PrestigeLegendaryChoice = 1
 
 # ---------------------------------------------------------------- Experience
 # Level cap 60 (10 Nov). The .95 update put MaxPlayerLevel back to the core default of 80, and prestige follows the
