@@ -183,6 +183,8 @@ worldserver.conf | Mastery.FirstLevelPoints = 10
 worldserver.conf | Mastery.Growth = 0.1
 worldserver.conf | Mastery.GatherYieldMax = 3
 worldserver.conf | Mastery.CraftRollMax = 2
+# Manastorm caches never roll (0): the perfect copy comes from bosses, quests, crafting and other caches.
+worldserver.conf | BonusStats.ManastormCaches = 0
 # Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
 modules\dynamicxp.conf | Dynamic.XP.Preset = 1
 modules\dynamicxp.conf | Dynamic.XP.Preset.PlayerChoice = 0

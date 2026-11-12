@@ -56,7 +56,7 @@ void AddAscensionMysticEnchantScripts()
 #    right away: pick a class, then one of its Legendary enchants; its scroll goes to the bags (or the mailbox).
 #    Closed the menu? ".legendary" opens it again, and players are reminded at login while a choice is owed.
 $file = 'core/src/server/coa/AscensionPrestigiousCache.cpp'
-Edit-Anchored $file "#include `"AscensionCacheRewards.h`"`n" "#include `"AscensionCacheRewards.h`"`n#include `"AscensionMysticEnchant.h`"`n#include `"CommandScript.h`"`n#include `"DBCStores.h`"`n#include `"ScriptedGossip.h`"`n#include `"SpellInfo.h`"`n#include `"SpellMgr.h`"`n#include `"WorldScript.h`"`n#include <string>`n" 'the AscensionCacheRewards.h include'
+Edit-Anchored $file "#include `"AscensionCacheRewards.h`"`n" "#include `"AscensionCacheRewards.h`"`n#include `"AscensionMysticEnchant.h`"`n#include `"ChatCommand.h`"`n#include `"CommandScript.h`"`n#include `"DBCStores.h`"`n#include `"ScriptedGossip.h`"`n#include `"SpellInfo.h`"`n#include `"SpellMgr.h`"`n#include `"WorldScript.h`"`n#include <string>`n" 'the AscensionCacheRewards.h include'
 Edit-Anchored $file @'
 bool OpenPrestigiousCache(Player* player, Item* item)
 {
@@ -261,9 +261,10 @@ class wcme_prestige_legendary_command : public CommandScript
 public:
     wcme_prestige_legendary_command() : CommandScript("wcme_prestige_legendary_command") { }
 
-    ChatCommandTable GetCommands() const override
+    Acore::ChatCommands::ChatCommandTable GetCommands() const override
     {
-        static ChatCommandTable commands = { { "legendary", HandleLegendary, SEC_PLAYER, Console::No } };
+        static Acore::ChatCommands::ChatCommandTable commands =
+            { { "legendary", HandleLegendary, SEC_PLAYER, Acore::ChatCommands::Console::No } };
         return commands;
     }
 
