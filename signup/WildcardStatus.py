@@ -13,6 +13,7 @@ import socket
 import subprocess
 import threading
 import time
+from datetime import date, timedelta
 from pathlib import Path
 
 CACHE_SECONDS = 30
@@ -106,6 +107,59 @@ def _build(core):
             "build": int(release.group(2)) if release else None}
 
 
+WEEKEND_TITLES = {"PvP": "Shanks-giving", "Professions": "Craftageddon", "Quests": "The Questathlon",
+                  "Dungeons": "Pull-a-palooza"}  # used when WeekendBonus.<theme>.Title is not set
+WEEKEND_RATES = [  # the order players read them in
+    ("XPRate", "all XP"), ("HonorRate", "honour"), ("PvPXPRate", "XP from world PvP kills"),
+    ("BattlegroundSpoilsRate", "Battleground Spoils"), ("ProfessionXPRate", "profession XP"),
+    ("GatherYieldRate", "herbs, ore, skins and fish from each node or catch"),
+    ("ProfessionSkillRate", "profession skill-ups"), ("QuestXPRate", "quest XP"), ("QuestMoneyRate", "quest gold"),
+    ("QuestCacheRate", "Adventurer's caches from quests"), ("ReputationRate", "reputation"),
+    ("DungeonXPRate", "XP from kills in dungeons and raids"),
+    ("DungeonReputationRate", "reputation in dungeons and raids"),
+    ("DungeonCacheRate", "random dungeon caches"),
+]
+
+
+def _weekend(world, today=None):
+    """The rotating weekend bonus, worked out exactly as the server does (patches/45-weekend-bonus.ps1): weeks run
+    Friday to Thursday from WeekendBonus.RotationStart, each taking the next theme in WeekendBonus.Rotation."""
+    if world.get("WeekendBonus.Enabled") != "1":
+        return None
+    rotation = [t.strip() for t in world.get("WeekendBonus.Rotation", "PvP,Professions,Quests,Dungeons").split(",") if t.strip()]
+    forced = world.get("WeekendBonus.Theme", "").strip()
+    if not rotation and not forced:
+        return None
+    try:
+        start = date.fromisoformat(world.get("WeekendBonus.RotationStart", "2026-11-13"))
+    except ValueError:
+        start = date(2026, 11, 13)
+    days = {int(c) for c in world.get("WeekendBonus.Days", "5,6,0") if c.isdigit()}
+    today = today or date.today()
+
+    def theme(friday):
+        return forced or rotation[((friday - start).days // 7) % len(rotation)]
+
+    def describe(friday):
+        name = theme(friday)
+        boosts = []
+        for key, label in WEEKEND_RATES:
+            rate = _number(world, f"WeekendBonus.{name}.{key}")
+            if rate and rate != 1:
+                boosts.append(f"{_times(rate)} {label}")
+        title = world.get(f"WeekendBonus.{name}.Title", "").strip() or WEEKEND_TITLES.get(name, name)
+        return {"theme": name, "title": title, "boosts": boosts, "allWeek": len(days) == 7,
+                "friday": friday.strftime("%a %d %b").replace(" 0", " ")}
+
+    friday = today - timedelta(days=(today.weekday() - 4) % 7)  # the Friday that started this week
+    active = (today.isoweekday() % 7) in days
+    if not forced and friday < start:  # the rotation has not started yet
+        friday, active = start, False
+    elif not active:
+        friday += timedelta(days=7)
+    return {"active": active, "current": describe(friday), "next": describe(friday + timedelta(days=7))}
+
+
 def _settings(configs, patch_night):
     world = _read_conf(configs / "worldserver.conf")
     modules = configs / "modules"
@@ -192,6 +246,7 @@ def status(options):
             "server": _build(core),
             "restart": "Every night at 4:00 am (Sydney time), back within 10 minutes. Warnings start at 3:30.",
             "settings": _settings(configs, Path(options.bridge).parent),
+            "weekend": _weekend(_read_conf(configs / "worldserver.conf")),
         }
         _cache["at"], _cache["value"] = now, value
         return value
