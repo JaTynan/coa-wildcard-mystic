@@ -19,6 +19,13 @@ $sweep = @'
         for (auto const& [ghostGuid, ghostEntry] : GetPlayers())
         {
             Player* ghost = ObjectAccessor::FindPlayer(ghostGuid);
+            // Wildcard: someone already alive (bots revive themselves, then talk to the guide again) keeps "Waiting to
+            // Resurrect" forever, since the wave only clears the queue; take it off them at the next wave.
+            if (ghost && ghost->IsAlive() && ghost->HasAura(SPELL_WAITING_FOR_RESURRECT))
+            {
+                RemovePlayerFromResurrectQueue(ghost);
+                ghost->RemoveAurasDueToSpell(SPELL_WAITING_FOR_RESURRECT);
+            }
             if (!ghost || ghost->IsAlive() || !ghost->HasPlayerFlag(PLAYER_FLAGS_GHOST) || !ghost->IsInWorld())
                 continue;
             bool queued = false;
