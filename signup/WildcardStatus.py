@@ -269,6 +269,12 @@ def _leaderboards(server, configs):
     prefix = _read_conf(configs / "modules" / "playerbots.conf").get("AiPlayerbot.RandomBotAccountPrefix", "rndbot")
     prefix = re.sub(r"[^A-Za-z0-9_]", "", prefix).upper() or "RNDBOT"
     real = f"c.account NOT IN (SELECT id FROM `{auth}`.account WHERE username LIKE '{prefix}%')"
+    # Characters kept off the boards and the firsts by name (Leaderboards.HiddenCharacters, comma separated): the
+    # Auctioneer is the auction house bot's character, not a player, and test characters go here too.
+    hidden = [n for n in (re.sub(r"[^A-Za-z]", "", n) for n in
+              world.get("Leaderboards.HiddenCharacters", "Auctioneer").split(",")) if n]
+    if hidden:
+        real += " AND c.name NOT IN (" + ", ".join(f"'{n}'" for n in hidden) + ")"
     live = f"c.deleteDate IS NULL AND {real}"
 
     def board(title, unit, query):
@@ -296,14 +302,14 @@ def _leaderboards(server, configs):
     ids = ", ".join(str(i) for i in LEVEL_ACHIEVEMENTS)
     seen = set()
     for row in _sql(server, f"SELECT a.achievement, c.name, a.date FROM `{chars}`.character_achievement a "
-                            f"JOIN `{chars}`.characters c ON c.guid = a.guid WHERE a.achievement IN ({ids}) AND {real} "
+                            f"JOIN `{chars}`.characters c ON c.guid = a.guid WHERE a.achievement IN ({ids}) AND {live} "
                             "ORDER BY a.date, a.guid") or []:
         if len(row) >= 3 and row[0] not in seen:
             seen.add(row[0])
             level = LEVEL_ACHIEVEMENTS.get(int(row[0]))
             firsts.append({"at": int(row[2]), "text": f"{row[1]} was the first to reach level {level}."})
     for row in _sql(server, f"SELECT text, at FROM `{chars}`.wcme_server_firsts") or []:
-        if len(row) >= 2:
+        if len(row) >= 2 and not any(re.search(rf"\b{n}\b", row[0], re.I) for n in hidden):
             firsts.append({"at": int(row[1]), "text": row[0]})
     firsts.sort(key=lambda f: f["at"], reverse=True)
     for first in firsts:
