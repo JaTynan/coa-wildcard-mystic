@@ -209,8 +209,18 @@ public:
     wcme_bonus_stats() : PlayerScript("wcme_bonus_stats", {PLAYERHOOK_ON_LOOT_ITEM, PLAYERHOOK_ON_GROUP_ROLL_REWARD_ITEM,
         PLAYERHOOK_ON_QUEST_REWARD_ITEM, PLAYERHOOK_ON_CREATE_ITEM}) { }
 
-    void OnPlayerLootItem(Player* player, Item* item, uint32 /*count*/, ObjectGuid /*lootguid*/) override
+    void OnPlayerLootItem(Player* player, Item* item, uint32 /*count*/, ObjectGuid lootguid) override
     {
+        // Looted out of a Manastorm cache's own loot window (when caches don't open into the bags): no roll.
+        if (lootguid.IsItem() && !sConfigMgr->GetOption<bool>("BonusStats.ManastormCaches", false))
+            if (Item const* container = player->GetItemByGuid(lootguid))
+            {
+                uint32 const entry = container->GetEntry();
+                if ((entry >= 97877 && entry <= 97884) || (entry >= 1278050 && entry <= 1278084) ||
+                    (entry >= 1288050 && entry <= 1288074) || (entry >= 1289056 && entry <= 1289074) ||
+                    entry == 1478051 || entry == 1478052)
+                    return;
+            }
         WcmeBonusStats::Roll(player, item, 0);
     }
 
@@ -239,7 +249,8 @@ Set-Content $file $text -NoNewline
 
 # Gear from caches (Adventurer's caches, Battleground Spoils, Manastorm caches: everything AscensionCacheRewards::Deliver
 # puts in the bags) rolls too, from BonusStats.CacheMinQuality (2, green), so players meet the rolls while levelling.
-# Gear that goes to the mailbox because the bags are full does not roll.
+# Gear that goes to the mailbox because the bags are full does not roll. Manastorm caches roll only with
+# BonusStats.ManastormCaches (off): the chase for a perfect copy belongs to bosses, quests and crafting.
 & {
 $file = 'core/src/server/coa/AscensionCacheRewards.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
@@ -251,10 +262,16 @@ $old = @'
 $old = $old.Replace("`r`n", "`n")
 if (([regex]::Matches($text, [regex]::Escape($include))).Count -ne 1) { throw 'Core changed: AscensionCacheRewards.cpp has no single Player.h include' }
 if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'Core changed: the mail step in AscensionCacheRewards::Deliver was not found' }
-$text = $text.Replace($include, $include + "`nnamespace WcmeBonusStats { void Roll(Player* player, Item* item, uint8 source); } // patches/48-bonus-stats.ps1`n")
+$text = $text.Replace($include, $include + "#include `"Config.h`"`n`nnamespace WcmeBonusStats { void Roll(Player* player, Item* item, uint8 source); } // patches/48-bonus-stats.ps1`n")
 $new = @'
-    for (auto const& given : stored)
-        WcmeBonusStats::Roll(player, given.first, 2);
+    // Manastorm caches: the same entries as IsManastormCache in patches/50-manastorm.ps1.
+    uint32 const cacheEntry = cache ? cache->GetEntry() : 0;
+    bool const manastorm = (cacheEntry >= 97877 && cacheEntry <= 97884) || (cacheEntry >= 1278050 && cacheEntry <= 1278084)
+        || (cacheEntry >= 1288050 && cacheEntry <= 1288074) || (cacheEntry >= 1289056 && cacheEntry <= 1289074)
+        || cacheEntry == 1478051 || cacheEntry == 1478052;
+    if (!manastorm || sConfigMgr->GetOption<bool>("BonusStats.ManastormCaches", false))
+        for (auto const& given : stored)
+            WcmeBonusStats::Roll(player, given.first, 2);
 
 '@
 Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n") + $old) -NoNewline
