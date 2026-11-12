@@ -176,48 +176,37 @@ Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
 # ---- A Case of Fortune is used up once opened (Wildcard.CasesOfFortuneConsumed, off when unset)
 Write-Host "Patch: A Case of Fortune is used up once opened (Wildcard.CasesOfFortuneConsumed)"
 & {
-$file = 'core/src/server/coa/AscensionWildcard.cpp'
+$file = 'core/src/server/game/Handlers/LootHandler.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$include = "#include `"LootItemStorage.h`"`n"
 $old = @'
-    void OnSpellCast(Spell*, Unit* caster, SpellInfo const* spellInfo, bool) override
-    {
-        Player* player = caster ? caster->ToPlayer() : nullptr;
-        if (!player)
-            return;
+        else if (pItem->loot.isLooted() || !proto->HasFlag(ITEM_FLAG_HAS_LOOT))
+        {
 '@
 $old = $old.Replace("`r`n", "`n")
-if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'CoA changed: OnSpellCast in AscensionWildcardItemSpells was not found' }
-# Opening a Case of Fortune (normal, Talents, Leveling, Legacy) gave its scrolls but left the case behind, so empty
-# cases piled up and had to be deleted by hand. A moment after the case's spell is cast, if the stack it came from
-# still holds as many cases as before, one is removed. When the core does use one up, the count has already dropped
-# (or the case is gone) and nothing more happens, so a case is never taken twice.
+if (-not $text.Contains($include)) { throw 'Core changed: LootHandler.cpp no longer includes LootItemStorage.h' }
+if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'Core changed: the opened-container clean-up in DoLootRelease was not found' }
+# A Case of Fortune is a loot container: the core only removes it once every scroll has been taken from the
+# window, and otherwise keeps the case with the rest of its loot saved, so used cases piled up in the stack.
+# Now, when the loot window of a case closes, one case is always removed; any scroll not taken is mailed.
 $new = @'
-    void OnSpellCast(Spell* spell, Unit* caster, SpellInfo const* spellInfo, bool) override
-    {
-        Player* player = caster ? caster->ToPlayer() : nullptr;
-        if (!player)
-            return;
-
-        if (Item* used = spell ? spell->m_CastItem : nullptr)
+        else if ((pItem->GetEntry() == 1278048 || pItem->GetEntry() == 1278049 || pItem->GetEntry() == 98453 ||
+            pItem->GetEntry() == 98454 || pItem->GetEntry() == 98465 || pItem->GetEntry() == 98466) &&
+            proto->HasFlag(ITEM_FLAG_HAS_LOOT) && sConfigMgr->GetOption<bool>("Wildcard.CasesOfFortuneConsumed", false))
         {
-            static constexpr std::array<uint32, 6> CasesOfFortune = { 1278048, 1278049, 98453, 98454, 98465, 98466 };
-            if (std::find(CasesOfFortune.begin(), CasesOfFortune.end(), used->GetEntry()) != CasesOfFortune.end()
-                && sConfigMgr->GetOption<bool>("Wildcard.CasesOfFortuneConsumed", false))
-            {
-                ObjectGuid const caseGuid = used->GetGUID();
-                uint32 const countAtCast = used->GetCount();
-                player->m_Events.AddEventAtOffset([player, caseGuid, countAtCast]()
-                {
-                    if (Item* left = player->GetItemByGuid(caseGuid); left && left->GetCount() == countAtCast)
-                    {
-                        uint32 one = 1;
-                        player->DestroyItemCount(left, one, true);
-                    }
-                }, Milliseconds(1));
-            }
+            for (LootItem const& left : pItem->loot.items)
+                if (!left.is_looted && left.itemid && left.count)
+                    player->SendItemRetrievalMail(left.itemid, left.count);
+            sLootItemStorage->RemoveStoredLoot(pItem->GetGUID());
+            pItem->m_lootGenerated = false;
+            pItem->loot.clear();
+            uint32 one = 1;
+            player->DestroyItemCount(pItem, one, true);
+            return;
         }
 '@
-Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n")) -NoNewline
+$text = $text.Replace($include, $include + "#include `"Config.h`"`n")
+Set-Content $file $text.Replace($old, $new.Replace("`r`n", "`n") + $old) -NoNewline
 }
 
 # ---- A full free-pack bar gives one of each sealed card pack (Wildcard.FreePackBarGivesAllPacks, off when unset)

@@ -32,11 +32,13 @@ for good by deleting its part from the script.
 | | The free-pack bar updates when a duplicate card is revealed (was only at login) | always on |
 | | Every duplicate card fills the free-pack bar, not only rank 1 duplicates | `Wildcard.AllDuplicatesFillPackBar` |
 | | A full free-pack bar gives one of each sealed card pack, not one at random | `Wildcard.FreePackBarGivesAllPacks` |
-| | A Case of Fortune is used up once opened (was left behind empty) | `Wildcard.CasesOfFortuneConsumed` |
+| | A Case of Fortune is used up once opened: one case goes when its loot window closes, and any scroll not taken is mailed (cases used to pile up) | `Wildcard.CasesOfFortuneConsumed` |
 | `40-battlegrounds.ps1` (battlegrounds and PvP) | Spirit guides raise every ghost beside them at each wave | always on |
 | | Battleground Spoils at the end of each battleground (3 for a win, 1 for a loss), opened like the rare Adventurer's Cache | `Battleground.SpoilsEnabled`, `Battleground.SpoilsForWin`, `Battleground.SpoilsForLoss` |
 | | Honourable world PvP kills give XP (killer and group nearby; same victim once per 5 minutes) | `WorldPvP.KillXPPercentOfLevel`, `WorldPvP.KillXPSameVictimSeconds` |
 | | Battleground Spoils and quest-reward caches can hold a Case of Fortune and a sealed card pack (quest caches mostly golden packs) | `Battleground.Spoils*Percent`, `Wildcard.QuestCache*Percent` |
+| | Supplies in Adventurer's Caches, quest caches and Battleground Spoils come as a stack of 20, not 1 to 3 | `AdventurerCache.SupplyStack` |
+| | Gear caches (random dungeon cache, Adventurer's Cache, Battleground Spoils) give 2 pieces of gear and twice the supplies | `AdventurerCache.RewardRounds` |
 | `45-weekend-bonus.ps1` | Rotating weekly event, all week Friday to Thursday (Shanks-giving, Craftageddon, The Questathlon, Pull-a-palooza): PvP (honour, PvP XP, spoils), Professions (profession XP, gathering yield, skill-ups) Quests (quest XP, gold, caches, reputation) or Dungeons (kill XP, reputation, random dungeon cache in dungeons and raids), shown on the website | `WeekendBonus.*` |
 | `50-manastorm.ps1` | Dead bots are raised at the end of a Manastorm floor | always on |
 | | Every resurrection in a run (item, player spell or bot) uses one of the run's 5 shared charges | always on |
