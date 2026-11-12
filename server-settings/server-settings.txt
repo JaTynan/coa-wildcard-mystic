@@ -61,6 +61,13 @@ worldserver.conf | Battleground.SpoilsForLoss = 1
 worldserver.conf | Battleground.SpoilsCasePercent = 100
 worldserver.conf | Battleground.SpoilsPackPercent = 100
 worldserver.conf | Battleground.SpoilsGoldenPackPercent = 25
+# Play-time rewards: every hour of a character's played time gives a sealed card pack (1 in 4 golden) and, 1 time in 4,
+# a Case of Fortune. Part of an hour carries over between sessions; nothing while AFK. Needs the build with the patch.
+worldserver.conf | PlayTimeRewards.Enabled = 1
+worldserver.conf | PlayTimeRewards.IntervalMinutes = 60
+worldserver.conf | PlayTimeRewards.PackPercent = 100
+worldserver.conf | PlayTimeRewards.GoldenPackPercent = 25
+worldserver.conf | PlayTimeRewards.CasePercent = 25
 # Rotating weekly event (the WeekendBonus settings). It runs all week, Friday to Thursday (server time), so people
 # who work weekends get it too; Days lists the days it is on (0 = Sunday ... 6 = Saturday; "5,6,0" = weekends only).
 # Each week takes the next theme in Rotation, counting from RotationStart (a Friday); set Theme to force one. Rates
