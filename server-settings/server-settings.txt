@@ -61,6 +61,11 @@ worldserver.conf | Battleground.SpoilsForLoss = 1
 worldserver.conf | Battleground.SpoilsCasePercent = 100
 worldserver.conf | Battleground.SpoilsPackPercent = 100
 worldserver.conf | Battleground.SpoilsGoldenPackPercent = 25
+# Leaderboards on the website: the server counts world PvP kills (the same victim once per 5 minutes) and records
+# server firsts (first group to beat each dungeon or raid boss, first to each Prestige level), announced in game.
+# Needs the build with the patch; the level, Prestige, Manastorm and honour boards work without it.
+worldserver.conf | Leaderboards.Enabled = 1
+worldserver.conf | Leaderboards.SameVictimSeconds = 300
 # Play-time rewards: every hour of a character's played time gives a sealed card pack (1 in 4 golden) and, 1 time in 4,
 # a Case of Fortune. Part of an hour carries over between sessions; nothing while AFK. Needs the build with the patch.
 worldserver.conf | PlayTimeRewards.Enabled = 1

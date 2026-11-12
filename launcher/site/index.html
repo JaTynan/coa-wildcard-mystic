@@ -22,6 +22,14 @@
   .setting b { display: block; font-weight: 600; }
   .setting .value { color: var(--gold); font-weight: 700; }
   .setting .why { color: var(--muted); font-size: 14px; }
+  .boards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
+  .boards ol { margin: 0; padding-left: 22px; }
+  .boards li { margin: 0 0 3px; }
+  .boards li span { color: var(--gold); font-weight: 700; float: right; }
+  .firsts { list-style: none; margin: 0; padding: 0; }
+  .firsts li { padding: 6px 0; border-top: 1px solid var(--line); }
+  .firsts li:first-child { border-top: 0; }
+  .firsts time { color: var(--muted); font-size: 14px; display: inline-block; min-width: 100px; }
   @media (max-width: 720px) { .settings { grid-template-columns: 1fr; } }
   .weekend h3 { margin: 0 0 6px; color: var(--gold); font-size: 20px; }
   .weekend ul { margin: 0 0 10px; }
@@ -92,6 +100,14 @@
       <p class="note">Changes go live at the nightly restart (4:00 am), sometimes sooner.</p>
     </section>
 
+    <section class="panel wide" aria-labelledby="boards-title">
+      <h2 id="boards-title">Leaderboards</h2>
+      <div class="boards" id="boards"><p class="note">Loading...</p></div>
+      <h3 class="label" style="margin-top:22px">Server firsts</h3>
+      <ul class="firsts" id="firsts"></ul>
+      <p class="note">Real players only; bots don't count. Updated every five minutes.</p>
+    </section>
+
     <section class="panel wide" aria-labelledby="settings-title">
       <h2 id="settings-title">Realm settings</h2>
       <div class="settings" id="settings"><p class="note">Loading...</p></div>
@@ -126,6 +142,7 @@ async function loadStatus() {
     const v = s.server || {};
     text("version", v.release ? `CoA ${v.release}, Wildcard build ${v.build}` : (v.tag || "-"));
     text("restart", s.restart || "");
+    showBoards(s.leaderboards);
     showSettings(s.settings || []);
     showWeekend(s.weekend);
   } catch (error) {
@@ -187,6 +204,51 @@ function showSettings(groups) {
       column.append(row);
     }
     box.append(column);
+  }
+}
+
+function showBoards(data) {
+  const box = $("boards");
+  const firsts = $("firsts");
+  if (!data) return;
+  box.textContent = "";
+  for (const board of data.boards || []) {
+    const column = document.createElement("div");
+    const title = document.createElement("p");
+    title.className = "label";
+    title.textContent = board.title;
+    column.append(title);
+    if (!board.rows.length) {
+      const none = document.createElement("p");
+      none.className = "note";
+      none.textContent = "Nobody yet.";
+      column.append(none);
+    } else {
+      const list = document.createElement("ol");
+      for (const row of board.rows) {
+        const li = document.createElement("li");
+        li.textContent = row.name;
+        const value = document.createElement("span");
+        value.textContent = row.value.toLocaleString();
+        li.append(value);
+        list.append(li);
+      }
+      column.append(list);
+    }
+    box.append(column);
+  }
+  firsts.textContent = "";
+  if (!(data.firsts || []).length) {
+    const li = document.createElement("li");
+    li.textContent = "No server firsts yet. Be the first!";
+    firsts.append(li);
+  }
+  for (const first of data.firsts || []) {
+    const li = document.createElement("li");
+    const when = document.createElement("time");
+    when.textContent = first.date;
+    li.append(when, " " + first.text);
+    firsts.append(li);
   }
 }
 

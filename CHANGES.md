@@ -37,6 +37,7 @@ for good by deleting its part from the script.
 | | Battleground Spoils at the end of each battleground (3 for a win, 1 for a loss), opened like the rare Adventurer's Cache | `Battleground.SpoilsEnabled`, `Battleground.SpoilsForWin`, `Battleground.SpoilsForLoss` |
 | | Honourable world PvP kills give XP (killer and group nearby; same victim once per 5 minutes) | `WorldPvP.KillXPPercentOfLevel`, `WorldPvP.KillXPSameVictimSeconds` |
 | | Battleground Spoils and quest-reward caches can hold a Case of Fortune and a sealed card pack (quest caches mostly golden packs) | `Battleground.Spoils*Percent`, `Wildcard.QuestCache*Percent` |
+| `47-leaderboards.ps1` | Counts world PvP kills and records server firsts (boss kills, Prestige levels) for the website's leaderboards | `Leaderboards.*` |
 | | Supplies in Adventurer's Caches, quest caches and Battleground Spoils come as a stack of 20, not 1 to 3 | `AdventurerCache.SupplyStack` |
 | | Gear caches (random dungeon cache, Adventurer's Cache, Battleground Spoils) give 2 pieces of gear and twice the supplies | `AdventurerCache.RewardRounds` |
 | `45-weekend-bonus.ps1` | Rotating weekly event, all week Friday to Thursday (Shanks-giving, Craftageddon, The Questathlon, Pull-a-palooza): PvP (honour, PvP XP, spoils), Professions (profession XP, gathering yield, skill-ups) Quests (quest XP, gold, caches, reputation) or Dungeons (kill XP, reputation, random dungeon cache in dungeons and raids), shown on the website | `WeekendBonus.*` |
