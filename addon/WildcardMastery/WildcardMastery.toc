@@ -1,0 +1,5 @@
+## Interface: 30300
+## Title: Wildcard Profession Mastery
+## Notes: Shows Profession Mastery (earned past skill 300) in the Skills tab and profession windows. Needs the Wildcard server.
+## Version: 1.0
+WildcardMastery.lua

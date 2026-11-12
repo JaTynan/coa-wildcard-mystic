@@ -157,12 +157,14 @@ function FetchRepo {
             Copy-Item (Join-Path $fresh '*') $settingsDir -Force
             Log 'Downloaded the current server-settings from GitHub.'
         }
-        # The newest WildcardEnchants addon into the VM's client folder, so coa-sync takes it to every player.
-        $addon = Join-Path $repoRoot 'addon\WildcardEnchants'
+        # The newest Wildcard addons (WildcardEnchants, WildcardMastery, ...) into the VM's client folder, so the
+        # launcher takes them to every player.
         $addons = Join-Path $Client 'Interface\AddOns'
-        if ((Test-Path $addon) -and (Test-Path $addons)) {
-            Copy-Item $addon $addons -Recurse -Force
-            Log "Updated the WildcardEnchants addon in $addons."
+        if (Test-Path $addons) {
+            foreach ($addon in Get-ChildItem (Join-Path $repoRoot 'addon') -Directory -ErrorAction SilentlyContinue) {
+                Copy-Item $addon.FullName $addons -Recurse -Force
+                Log "Updated the $($addon.Name) addon in $addons."
+            }
         }
         # Mystic Enchant fixes (SQL), applied to the world database before every start.
         $fixes = Join-Path $repoRoot 'sql\enchants'

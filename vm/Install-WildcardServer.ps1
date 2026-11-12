@@ -103,13 +103,15 @@ try {
         Write-Host "No coa.conf at $conf; add CoA.MysticEnchants.AllowWildcard = 1 by hand." -ForegroundColor Yellow
     }
 
-    # The client addon, so every synced client gets it.
+    # The client addons (WildcardEnchants, WildcardMastery, ...), so every synced client gets them.
     $addons = Join-Path $Client 'Interface\AddOns'
     if (Test-Path $addons) {
-        Copy-Item (Join-Path $here 'addon\WildcardEnchants') $addons -Recurse -Force
-        Write-Host "Copied the WildcardEnchants addon to $addons"
+        foreach ($addon in Get-ChildItem (Join-Path $here 'addon') -Directory) {
+            Copy-Item $addon.FullName $addons -Recurse -Force
+            Write-Host "Copied the $($addon.Name) addon to $addons"
+        }
     } else {
-        Write-Host "No client found at $Client; copy addon\WildcardEnchants into Interface\AddOns by hand." -ForegroundColor Yellow
+        Write-Host "No client found at $Client; copy the folders in addon into Interface\AddOns by hand." -ForegroundColor Yellow
     }
 } finally {
     Pop-Location

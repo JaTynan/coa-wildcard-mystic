@@ -28,7 +28,8 @@ foreach ($anchor in @($include, $register, $loader, $chance)) {
 #   Crafting (Blacksmithing, Leatherworking, Tailoring, Engineering): the bonus-roll chances on crafted gear (both the
 #     first and the second bonus) rise in step to Mastery.CraftRollMax (2x) at max level, from the crafter's best of
 #     those four professions.
-# Level-ups are announced to the player; .mastery lists every Mastery. Bots never earn it.
+# Level-ups are announced to the player; .mastery lists every Mastery; the WildcardMastery addon shows it in the Skills
+# tab and profession windows (sent as addon whispers). Bots never earn it.
 $class = @'
 namespace WcmeMastery
 {
@@ -80,6 +81,21 @@ namespace WcmeMastery
         return uint32(std::ceil(needed - float(points)));
     }
 
+    // (points into the current level, points the current level needs); (0, 0) at the max level.
+    std::pair<uint32, uint32> Progress(uint32 points)
+    {
+        float const first = std::max(1.0f, sConfigMgr->GetOption<float>("Mastery.FirstLevelPoints", 10.0f));
+        float const growth = std::max(0.0f, sConfigMgr->GetOption<float>("Mastery.Growth", 0.1f));
+        uint32 const level = LevelFor(points);
+        if (level >= MaxLevel())
+            return {0, 0};
+        float start = 0.0f;
+        for (uint32 l = 0; l < level; ++l)
+            start += first * (1.0f + float(l) * growth);
+        float const span = first * (1.0f + float(level) * growth);
+        return {uint32(std::max(0.0f, float(points) - start)), uint32(std::ceil(span))};
+    }
+
     uint32 Level(Player* player, uint32 skill)
     {
         std::lock_guard<std::mutex> guard(Lock);
@@ -126,6 +142,41 @@ namespace WcmeMastery
         return Acore::StringFormat("x{:.2f} materials", Scale(level, sConfigMgr->GetOption<float>("Mastery.GatherYieldMax", 3.0f)));
     }
 
+    // The WildcardMastery addon (addon/WildcardMastery) gets every Mastery as an addon whisper from the player to
+    // themselves: "WCMM", "M:<skill>,<level>,<max>,<into level>,<level needs>,<bonus x100>,<G|C>;..." (one entry per
+    // profession the character has that earns Mastery). It asks again with "WCMM", "REQ" after loading.
+    void Send(Player* player)
+    {
+        if (!Enabled() || !player || !player->GetSession() || player->GetSession()->IsBot())
+            return;
+        std::map<uint32, uint32> mine;
+        {
+            std::lock_guard<std::mutex> guard(Lock);
+            auto const found = Points.find(player->GetGUID().GetCounter());
+            if (found != Points.end())
+                mine = found->second;
+        }
+        std::string message = "WCMM\tM:";
+        bool first = true;
+        for (uint32 skill : {SKILL_MINING, SKILL_HERBALISM, SKILL_SKINNING, SKILL_FISHING, SKILL_JEWELCRAFTING,
+            SKILL_INSCRIPTION, SKILL_BLACKSMITHING, SKILL_LEATHERWORKING, SKILL_TAILORING, SKILL_ENGINEERING})
+        {
+            if (!player->HasSkill(skill))
+                continue;
+            uint32 const points = mine.count(skill) ? mine[skill] : 0;
+            uint32 const level = LevelFor(points);
+            auto const [into, span] = Progress(points);
+            float const bonus = Crafting(skill) ? Scale(level, sConfigMgr->GetOption<float>("Mastery.CraftRollMax", 2.0f)) :
+                Scale(level, sConfigMgr->GetOption<float>("Mastery.GatherYieldMax", 3.0f));
+            message += Acore::StringFormat("{}{},{},{},{},{},{},{}", first ? "" : ";", skill, level, MaxLevel(), into, span,
+                uint32(bonus * 100.0f + 0.5f), Crafting(skill) ? "C" : "G");
+            first = false;
+        }
+        WorldPacket data;
+        ChatHandler::BuildChatPacket(data, CHAT_MSG_WHISPER, LANG_ADDON, player, player, message);
+        player->SendDirectMessage(&data);
+    }
+
     void Earn(Player* player, uint32 skill)
     {
         if (!Enabled() || !player || !player->GetSession() || player->GetSession()->IsBot() ||
@@ -149,6 +200,7 @@ namespace WcmeMastery
         if (level > LevelFor(before))
             ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormat(
                 "|cffffd000{} Mastery {}!|r Now {}.", SkillName(skill), level, Describe(skill, level)));
+        Send(player);
     }
 
     // The profession a gathering loot belongs to, from where it came and what it holds (0 = none).
@@ -221,7 +273,19 @@ class wcme_mastery_player : public PlayerScript
 {
 public:
     wcme_mastery_player() : PlayerScript("wcme_mastery_player",
-        {PLAYERHOOK_ON_LOGIN, PLAYERHOOK_ON_LOGOUT, PLAYERHOOK_ON_UPDATE_CRAFTING_SKILL}) { }
+        {PLAYERHOOK_ON_LOGIN, PLAYERHOOK_ON_LOGOUT, PLAYERHOOK_ON_UPDATE_CRAFTING_SKILL,
+        PLAYERHOOK_CAN_PLAYER_USE_PRIVATE_CHAT}) { }
+
+    using PlayerScript::OnPlayerCanUseChat;
+
+    // The WildcardMastery addon asks for its data after it loads (it can miss the login send).
+    bool OnPlayerCanUseChat(Player* player, uint32 type, uint32 language, std::string& msg, Player* receiver) override
+    {
+        if (language != LANG_ADDON || type != CHAT_MSG_WHISPER || receiver != player || msg.rfind("WCMM\tREQ", 0) != 0)
+            return true;
+        WcmeMastery::Send(player);
+        return false;
+    }
 
     void OnPlayerLogin(Player* player) override
     {
@@ -235,8 +299,11 @@ public:
                 Field* fields = result->Fetch();
                 loaded[fields[0].Get<uint32>()] = fields[1].Get<uint32>();
             } while (result->NextRow());
-        std::lock_guard<std::mutex> guard(WcmeMastery::Lock);
-        WcmeMastery::Points[player->GetGUID().GetCounter()] = std::move(loaded);
+        {
+            std::lock_guard<std::mutex> guard(WcmeMastery::Lock);
+            WcmeMastery::Points[player->GetGUID().GetCounter()] = std::move(loaded);
+        }
+        WcmeMastery::Send(player);
     }
 
     void OnPlayerLogout(Player* player) override
@@ -314,7 +381,7 @@ public:
 };
 
 '@
-$text = $text.Replace($include, $include + "#include `"ChatCommand.h`"`n#include `"CommandScript.h`"`n#include `"DBCStores.h`"`n#include `"MiscScript.h`"`n#include `"WorldScript.h`"`n#include <cmath>`n#include <string>`n#include <unordered_map>`n`nnamespace WcmeMastery { float CraftBoost(Player* player); } // defined below`n")
+$text = $text.Replace($include, $include + "#include `"ChatCommand.h`"`n#include `"CommandScript.h`"`n#include `"DBCStores.h`"`n#include `"MiscScript.h`"`n#include `"WorldPacket.h`"`n#include `"WorldScript.h`"`n#include <utility>`n#include <cmath>`n#include <string>`n#include <unordered_map>`n`nnamespace WcmeMastery { float CraftBoost(Player* player); } // defined below`n")
 $text = $text.Replace($chance, @'
         // Crafted gear: Profession Mastery (patches/51-profession-mastery.ps1) raises both chances.
         float const boost = source == 1 ? WcmeMastery::CraftBoost(player) : 1.0f;
