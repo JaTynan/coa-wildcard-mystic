@@ -33,7 +33,7 @@ for good by deleting its part from the script.
 | | Every duplicate card fills the free-pack bar, not only rank 1 duplicates | `Wildcard.AllDuplicatesFillPackBar` |
 | | A full free-pack bar gives one of each sealed card pack, not one at random | `Wildcard.FreePackBarGivesAllPacks` |
 | | A Case of Fortune is used up once opened: one case goes when its loot window closes, and any scroll not taken is mailed (cases used to pile up) | `Wildcard.CasesOfFortuneConsumed` |
-| `40-battlegrounds.ps1` (battlegrounds and PvP) | Spirit guides raise every ghost beside them at each wave | always on |
+| `40-battlegrounds.ps1` (battlegrounds and PvP) | Spirit guides raise every ghost beside them at each wave, and take a stuck "Waiting to Resurrect" off anyone already alive | always on |
 | | Battleground Spoils at the end of each battleground (3 for a win, 1 for a loss), opened like the rare Adventurer's Cache | `Battleground.SpoilsEnabled`, `Battleground.SpoilsForWin`, `Battleground.SpoilsForLoss` |
 | | Honourable world PvP kills give XP (killer and group nearby; same victim once per 5 minutes) | `WorldPvP.KillXPPercentOfLevel`, `WorldPvP.KillXPSameVictimSeconds` |
 | | Battleground Spoils and quest-reward caches can hold a Case of Fortune and a sealed card pack (quest caches mostly golden packs) | `Battleground.Spoils*Percent`, `Wildcard.QuestCache*Percent` |
