@@ -154,15 +154,15 @@ worldserver.conf | Rate.XP.Profession.Skinning = 1.1
 # The same victim gives nothing again for 5 minutes. Not in battlegrounds, arenas or dungeons. 0 turns it off.
 worldserver.conf | WorldPvP.KillXPPercentOfLevel = 2.15
 worldserver.conf | WorldPvP.KillXPSameVictimSeconds = 300
-# Bonus stats: weapons and armour (rings, necklaces and trinkets too) looted (blue and up), given by quests (blue and up) or crafted (green and up) have
-# a 1 in 4 chance to roll an extra stat that suits the item (caster, physical or tank), and 1 in 4 of those roll a
-# second. Size follows item level (0.25 points per level: a level-63 blue rolls about 16 crit rating). Shown in
-# green on the item and announced to the player. Separately, 15% get an extra prismatic gem socket (if the item has
-# fewer than three), so Jewelcrafting gems have somewhere to go. Needs the build with the patch.
+# Bonus rolls: weapons and armour (rings, necklaces and trinkets too) looted (blue and up), given by quests (blue and
+# up) or crafted (green and up) have a 1 in 4 chance of a bonus, and 1 in 4 of those get a second. Each bonus is a gem
+# socket 1 time in 3 (an extra prismatic socket, one at most, so Jewelcrafting gems have a use), otherwise an extra stat
+# that suits the item (caster, physical or tank). Stat size follows item level (0.25 points per level: a level-63 blue
+# rolls about 16 crit rating). Shown on the item and announced to the player. Needs the build with the patch.
 worldserver.conf | BonusStats.Enabled = 1
 worldserver.conf | BonusStats.ChancePercent = 25
 worldserver.conf | BonusStats.SecondStatPercent = 25
-worldserver.conf | BonusStats.SocketPercent = 15
+worldserver.conf | BonusStats.SocketSharePercent = 33
 worldserver.conf | BonusStats.PointsPerItemLevel = 0.25
 worldserver.conf | BonusStats.MinQuality = 3
 worldserver.conf | BonusStats.CraftedMinQuality = 2

@@ -14,9 +14,10 @@ foreach ($anchor in @($include, $register, $loader)) {
     if (-not $text.Contains($anchor)) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
 }
 # When a weapon or armour piece is looted (also won on a group roll), given by a quest, or crafted, it has
-# BonusStats.ChancePercent (25) to roll bonus stats; a roll gives one stat and, at BonusStats.SecondStatPercent (25),
-# a second; separately, BonusStats.SocketPercent (15) adds a prismatic gem socket (as the Eternal Belt Buckle does)
-# if it has fewer than three sockets. Rings, necklaces, trinkets and relics count as armour. Stats suit the item: caster gear rolls caster stats, physical gear physical stats, tank gear tank stats.
+# BonusStats.ChancePercent (25) to roll a bonus; a roll gives one and, at BonusStats.SecondStatPercent (25),
+# a second. Each bonus is a gem socket at BonusStats.SocketSharePercent (33): an extra prismatic socket, as the
+# Eternal Belt Buckle gives, if the item has fewer than three (one at most); otherwise a stat. Rings, necklaces,
+# trinkets and relics count as armour. Stats suit the item: caster gear rolls caster stats, physical gear physical stats, tank gear tank stats.
 # Each is a single-stat enchantment that already exists in the game data (so the client shows it, in green), put
 # in a free random-property enchantment slot, so it is saved with the item and works like any item stat. The
 # size follows the item level (BonusStats.PointsPerItemLevel, 0.25: a level-63 blue rolls about 16 crit rating,
@@ -138,31 +139,42 @@ namespace WcmeBonusStats
         if (proto->Quality < minQuality)
             return;
 
-        // A gem socket is its own roll: an extra prismatic socket, if the item has fewer than three and none yet.
-        bool socketed = false;
+        // BonusStats.ChancePercent (25) gives one bonus and SecondStatPercent (25) of those a second. Each bonus is a
+        // gem socket at BonusStats.SocketSharePercent (33), otherwise a stat. Only one socket can be added (an extra
+        // prismatic socket, if the item has fewer than three), so a second socket roll becomes a stat.
+        if (urand(1, 100) > sConfigMgr->GetOption<uint32>("BonusStats.ChancePercent", 25))
+            return;
+        uint32 const bonuses = urand(1, 100) <= sConfigMgr->GetOption<uint32>("BonusStats.SecondStatPercent", 25) ? 2 : 1;
+        uint32 const socketShare = sConfigMgr->GetOption<uint32>("BonusStats.SocketSharePercent", 33);
+
         uint8 sockets = 0;
         for (uint8 i = 0; i < MAX_ITEM_PROTO_SOCKETS; ++i)
             if (proto->Socket[i].Color)
                 ++sockets;
-        if (sockets < MAX_ITEM_PROTO_SOCKETS && !item->GetEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT) && SocketEnchant() &&
-            urand(1, 100) <= sConfigMgr->GetOption<uint32>("BonusStats.SocketPercent", 15))
+        bool canSocket = sockets < MAX_ITEM_PROTO_SOCKETS && !item->GetEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT) &&
+            SocketEnchant();
+        bool socketed = false;
+        uint32 count = 0;
+        for (uint32 i = 0; i < bonuses; ++i)
         {
-            item->SetEnchantment(PRISMATIC_ENCHANTMENT_SLOT, SocketEnchant(), 0, 0);
-            socketed = true;
+            if (canSocket && urand(1, 100) <= socketShare)
+            {
+                item->SetEnchantment(PRISMATIC_ENCHANTMENT_SLOT, SocketEnchant(), 0, 0);
+                socketed = true;
+                canSocket = false;
+            }
+            else
+                ++count;
         }
 
         std::string rolled;
         std::vector<EnchantmentSlot> slots;
-        if (urand(1, 100) <= sConfigMgr->GetOption<uint32>("BonusStats.ChancePercent", 25))
-        {
-            for (uint32 slot = PROP_ENCHANTMENT_SLOT_0; slot < MAX_ENCHANTMENT_SLOT; ++slot)
-                if (!item->GetEnchantmentId(EnchantmentSlot(slot)))
-                    slots.push_back(EnchantmentSlot(slot));
-        }
+        for (uint32 slot = PROP_ENCHANTMENT_SLOT_0; slot < MAX_ENCHANTMENT_SLOT; ++slot)
+            if (!item->GetEnchantmentId(EnchantmentSlot(slot)))
+                slots.push_back(EnchantmentSlot(slot));
 
         uint32 const level = std::max<uint32>(proto->ItemLevel, NativeItemScaling::InstanceLevel(item) + 5u);
         float const budget = float(level) * sConfigMgr->GetOption<float>("BonusStats.PointsPerItemLevel", 0.25f);
-        uint32 count = urand(1, 100) <= sConfigMgr->GetOption<uint32>("BonusStats.SecondStatPercent", 25) ? 2 : 1;
         std::vector<uint32> pool = Pool(proto);
         Acore::Containers::RandomShuffle(pool);
 
