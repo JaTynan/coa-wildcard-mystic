@@ -327,7 +327,9 @@ worldserver.conf | HonorPointsAfterDuel = 10
 # faction, so contested levelling zones (Hillsbrad: Tarren Mill and Southshore) see regular skirmishes.
 modules\playerbots.conf | AiPlayerbot.CoaRulesetForBots = 1
 modules\playerbots.conf | AiPlayerbot.CoaRulesetHighRiskPct = 35
-modules\playerbots.conf | AiPlayerbot.CoaRulesetWarModePct = 55
+# Every bot flagged (13 Nov): 35% High Risk, 65% War Mode, no PvE bots (High Risk bots under level 15 stay PvE until
+# 15, as the core requires). Players choose whether to fight by their own ruleset: PvE characters are never attacked.
+modules\playerbots.conf | AiPlayerbot.CoaRulesetWarModePct = 65
 # Bots in an outdoor PvP zone spend more time at its capture points (default 10).
 modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.OutdoorPvp = 30
 # Bots in groups (13 Nov): half the random bots travel alone, 30% in pairs, 15% in groups of four and 5% in groups of
