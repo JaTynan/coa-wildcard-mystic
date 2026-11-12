@@ -330,6 +330,16 @@ modules\playerbots.conf | AiPlayerbot.CoaRulesetHighRiskPct = 35
 modules\playerbots.conf | AiPlayerbot.CoaRulesetWarModePct = 55
 # Bots in an outdoor PvP zone spend more time at its capture points (default 10).
 modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.OutdoorPvp = 30
+# Bots in groups (13 Nov): half the random bots travel alone, 30% in pairs, 15% in groups of four and 5% in groups of
+# five (shares of bots; SQUID's split was 20% solo, 60% members, 20% leaders). A leader invites member bots of its level
+# (within 2) that are close by; members follow it and fight with it. Bot leaders never invite real players. Groups of
+# bots away from real players still sleep like other bots, so this costs no extra CPU. Off: RandomBotGroupNearby = 0.
+modules\playerbots.conf | AiPlayerbot.RandomBotGroupNearby = 1
+modules\playerbots.conf | AiPlayerbot.RandomBotNonCombatStrategies = "+group"
+modules\playerbots.conf | AiPlayerbot.WildcardGroupSoloPct = 50
+modules\playerbots.conf | AiPlayerbot.WildcardGroupPairPct = 30
+modules\playerbots.conf | AiPlayerbot.WildcardGroupFourPct = 15
+modules\playerbots.conf | AiPlayerbot.WildcardGroupFivePct = 5
 # Optional, not decided yet: Alterac Valley games
 # modules\playerbots.conf | AiPlayerbot.RandomBotAutoJoinBGAVCount = 1
 
