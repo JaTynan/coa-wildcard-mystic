@@ -69,7 +69,7 @@ Leatherworking, Inscription.
 | Active | Blood Fury | +5% attack power and spell power per nearby ally (players, NPCs, pets; up to 4), counted once when cast, for 15 sec; 10% less healing taken. 2 min cooldown. | existing, reworked + hook to count allies |
 | Active | Command | Nearby allies (very short range; players, NPCs and pets) gain 5% attack power, spell power and movement speed for 8 sec. | new; pairs with Blood Fury: stand together |
 | Passive | Forge Hardened | +10 Blacksmithing; 5% chance to avoid a killing blow in combat (90 sec cooldown). | hook |
-| Passive | Spell Scarred | 5% less damage taken from curses and banes. | hook or reworked |
+| Passive | Warsong | Each killing blow gives 15% movement speed and 5% haste for 6 sec. | hook. Signature, locked 13 Nov |
 
 **Undead**
 
@@ -78,7 +78,7 @@ Leatherworking, Inscription.
 | Active | Will of the Forsaken | Removes all charm, fear and sleep effects. | existing |
 | Active | Cannibalize | 7% health and mana every 2 sec for 10 sec, from a humanoid or undead corpse within 5 yards; movement, actions or damage cancel it. | existing |
 | Passive | Forsaken Apothecary | +10 Alchemy; potions and elixirs you make have a chance to make an extra, and those you drink last longer. | hooks for the extra craft and the duration |
-| Passive | Dead Man's Hunger | Eating a corpse grants 2% damage leech for 5 min. | hook (or the enchant action handler) |
+| Passive | Unliving | When you die, rise as a ghoul for 10 sec and keep fighting; a killing blow in that time brings you back at 20% health. Once every 15 min (about once per battleground). | hook; the ghoul form reuses Raise Ally's. Signature, locked 13 Nov |
 
 **Tauren**
 
@@ -86,7 +86,7 @@ Leatherworking, Inscription.
 | --- | --- | --- | --- |
 | Active | War Stomp | Stuns up to 5 nearby enemies for 2 sec. 1.5 min cooldown. | existing |
 | Active | Bull Rush | Gain 10% health as temporary health for 5 sec, and 10 extra stacks of Plainsrunning. | new |
-| Passive | Plainsrunning | +1% movement speed per second while you keep moving, up to 60%. | hook; decide what makes it drop (stopping, damage, mounting) |
+| Passive | Plainsrunning | +1% movement speed per second while you keep moving, up to 60%. When you stop it drains 10% per second (full to nothing in 6 sec). | hook. Signature, locked 13 Nov |
 | Passive | Tauren Health | +5% health; +10 Herbalism; chance for additional herbs. | existing (Endurance) + hook for the herbs |
 
 **Troll**
@@ -95,7 +95,7 @@ Leatherworking, Inscription.
 | --- | --- | --- | --- |
 | Active | Berserking | 10% haste, plus up to 10% more based on missing health, for 15 sec. 2 min cooldown. | existing, reworked |
 | Active | Rapid Regeneration | Regenerate 50% of maximum health over 6 sec, but 50% slower movement and haste, and you cannot dodge, parry or block meanwhile. | new |
-| Passive | Regeneration | +20% health regeneration, and 20% of it continues in combat. | existing, reworked |
+| Passive | Voodoo Regeneration | Below 35% health, regenerate 3% of maximum health per second for 8 sec. Once every 2 min. | hook. Signature, locked 13 Nov |
 | Passive | Trophy Hunter | +10 Skinning; 5% more damage to enemies below 20% health, plus 1% per body skinned, stacking up to 10. | hook; stack duration to settle (Headhunter had 1 min per stack) |
 
 **Blood Elf**
@@ -106,6 +106,13 @@ Leatherworking, Inscription.
 | Active | Mana Tap | Gain a Mana Tap charge, up to 3. | existing; needs a limit on gaining charges (a cooldown, or a target with mana) |
 | Passive | Arcane Affinity | +10 Enchanting; chance of extra materials when disenchanting. | hook for the extra materials |
 | Passive | Arcane Hunger | Abilities cost 3% more per Mana Tap charge; damage and healing dealt +2% per charge. | hook |
+
+## Signature passives (13 November)
+
+Each race gets one passive as noticeable as Plainsrunning, and each owns its niche: Tauren movement, Trolls healing
+in combat, Gnomes and Blood Elves resources, Orcs kills and haste, Undead death. Locked: Tauren Plainsrunning (drains
+over 6 sec), Troll Voodoo Regeneration, Orc Warsong, Undead Unliving (15 min), Gnome as above (Expansive Mind's 5%
+resources, Escape Artist's speed boost), Blood Elf Arcane Hunger. Still open: Human, Dwarf, Night Elf, Draenei.
 
 ## For the balancing pass
 
