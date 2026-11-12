@@ -120,3 +120,79 @@ if (-not $text.Contains('static bool CoaPvpRuleset(Unit const* unit)')) { throw 
 $new = 'if (enemy && (botAI->IsOpposing(enemy) || (enemy->HasAura(9930874) && CoaPvpRuleset(bot))) && enemy->IsPvP() &&'
 Set-Content $file $text.Replace($old, $new) -NoNewline
 }
+
+# ---- Some random bots travel in groups (AiPlayerbot.WildcardGroupSoloPct and the shares after it, SQUID's split when unset)
+Write-Host "Patch: Some random bots travel in groups (AiPlayerbot.WildcardGroupSoloPct)"
+& {
+$file = 'core/modules/mod-playerbots/src/Bot/PlayerbotAI.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$include = '#include "PlayerbotAI.h"'
+$old = @'
+GrouperType PlayerbotAI::GetGrouperType()
+{
+    uint32 grouperNumber = GetFixedBotNumber(100);
+
+'@
+$old = $old.Replace("`r`n", "`n")
+foreach ($anchor in "$include`n", $old) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'SQUID changed: GetGrouperType was not found' }
+}
+# Each bot has a fixed number 0-99 that picks its part: solo, a member who joins groups, or a leader who invites
+# nearby members up to a group size. SQUID's split is 20% solo, 60% members, 20% leaders. Our shares are of bots, so
+# "30% in pairs" is 15% leaders of two and 15% members; whatever is not solo or a leader is a member.
+$new = $old + @'
+    if (int32 const wildcardSolo = sConfigMgr->GetOption<int32>("AiPlayerbot.WildcardGroupSoloPct", -1); wildcardSolo >= 0)
+    {
+        float const n = float(grouperNumber);
+        if (n < float(wildcardSolo))
+            return HasGameClientMaster() ? GrouperType::MEMBER : GrouperType::SOLO;
+        float edge = float(wildcardSolo) + sConfigMgr->GetOption<float>("AiPlayerbot.WildcardGroupPairPct", 0.0f) / 2.0f;
+        if (n < edge)
+            return GrouperType::LEADER_2;
+        edge += sConfigMgr->GetOption<float>("AiPlayerbot.WildcardGroupFourPct", 0.0f) / 4.0f;
+        if (n < edge)
+            return GrouperType::LEADER_4;
+        edge += sConfigMgr->GetOption<float>("AiPlayerbot.WildcardGroupFivePct", 0.0f) / 5.0f;
+        if (n < edge)
+            return GrouperType::LEADER_5;
+        return GrouperType::MEMBER;
+    }
+
+'@
+$text = $text.Replace("$include`n", "$include`n#include `"Config.h`"`n").Replace($old, $new.Replace("`r`n", "`n"))
+Set-Content $file $text -NoNewline
+}
+
+# ---- A bot leader invites only member bots, never a real player, a solo bot or another leader
+Write-Host "Patch: A bot leader invites only member bots, never a real player, a solo bot or another leader"
+& {
+$file = 'core/modules/mod-playerbots/src/Ai/Base/Actions/InviteToGroupAction.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$old = @'
+        if (player->GetGroup())
+            continue;
+
+        if (!PlayerbotAIConfig::instance().randomBotInvitePlayer && IsSelfBot(player))
+            continue;
+
+        Group* group = bot->GetGroup();
+'@
+$old = $old.Replace("`r`n", "`n")
+if (([regex]::Matches($text, [regex]::Escape($old))).Count -ne 1) { throw 'SQUID changed: the target checks in InviteNearbyToGroupAction were not found' }
+# "invite nearby" (AiPlayerbot.RandomBotGroupNearby, marked unfinished by SQUID) checked the inviter's part instead of
+# the target's, so it invited solo bots and other leaders, and it invited real players nearby whatever
+# RandomBotInvitePlayer said. Now the target must be a member bot that no real player controls.
+$new = $old.Replace("        Group* group = bot->GetGroup();", @'
+        if (PlayerbotAI* targetAI = GET_PLAYERBOT_AI(player))
+        {
+            if (targetAI->HasGameClientMaster() || IsRealPlayer(targetAI->GetMaster()) ||
+                targetAI->GetGrouperType() != GrouperType::MEMBER)
+                continue;
+        }
+        else if (!PlayerbotAIConfig::instance().randomBotInvitePlayer)
+            continue;
+
+        Group* group = bot->GetGroup();
+'@.Replace("`r`n", "`n"))
+Set-Content $file $text.Replace($old, $new) -NoNewline
+}

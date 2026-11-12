@@ -26,6 +26,8 @@ for good by deleting its part from the script.
 | | Bots without a resurrection raise dead group members after a fight | always on |
 | | Bots fight by faction (team), not race, so cross-faction battlegrounds work | always on |
 | | Bots in War Mode or High Risk attack Mercenaries of their own faction | always on |
+| | Some random bots travel in groups (50% solo, 30% pairs, 15% fours, 5% fives) | `AiPlayerbot.WildcardGroupSoloPct` and the shares after it; `AiPlayerbot.RandomBotGroupNearby` |
+| | Bot leaders invite only member bots, never real players | always on |
 | `30-wildcard-rewards.ps1` | Free class training at the Wildcard trainer | `Wildcard.FreeClassTraining` |
 | | Skill card drops weighted by quality | `Wildcard.CardDropQualityWeights`, `Wildcard.CardDropChancePerMille` |
 | | Scrolls of Fortune count straight away instead of filling bags | `Wildcard.ScrollsStraightToCurrency` |
