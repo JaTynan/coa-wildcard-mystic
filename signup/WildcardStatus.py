@@ -107,13 +107,17 @@ def _build(core):
             "build": int(release.group(2)) if release else None}
 
 
-WEEKEND_TITLES = {"PvP": "PvP Extravaganza", "Professions": "Profession Weekend", "Quests": "Quest Weekend"}
+WEEKEND_TITLES = {"PvP": "PvP Extravaganza", "Professions": "Profession Weekend", "Quests": "Quest Weekend",
+                  "Dungeons": "Dungeon & Raid Weekend"}
 WEEKEND_RATES = [  # the order players read them in
     ("XPRate", "all XP"), ("HonorRate", "honour"), ("PvPXPRate", "XP from world PvP kills"),
     ("BattlegroundSpoilsRate", "Battleground Spoils"), ("ProfessionXPRate", "profession XP"),
     ("GatherYieldRate", "herbs, ore, skins and fish from each node or catch"),
     ("ProfessionSkillRate", "profession skill-ups"), ("QuestXPRate", "quest XP"), ("QuestMoneyRate", "quest gold"),
     ("QuestCacheRate", "Adventurer's caches from quests"), ("ReputationRate", "reputation"),
+    ("DungeonXPRate", "XP from kills in dungeons and raids"),
+    ("DungeonReputationRate", "reputation in dungeons and raids"),
+    ("DungeonCacheRate", "random dungeon caches"),
 ]
 
 
@@ -122,7 +126,7 @@ def _weekend(world, today=None):
     Friday to Thursday from WeekendBonus.RotationStart, each taking the next theme in WeekendBonus.Rotation."""
     if world.get("WeekendBonus.Enabled") != "1":
         return None
-    rotation = [t.strip() for t in world.get("WeekendBonus.Rotation", "PvP,Professions,Quests").split(",") if t.strip()]
+    rotation = [t.strip() for t in world.get("WeekendBonus.Rotation", "PvP,Professions,Quests,Dungeons").split(",") if t.strip()]
     forced = world.get("WeekendBonus.Theme", "").strip()
     if not rotation and not forced:
         return None

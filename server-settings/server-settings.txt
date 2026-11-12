@@ -66,10 +66,11 @@ worldserver.conf | Battleground.SpoilsGoldenPackPercent = 25
 # and stack with the realm rates and prestige. The website shows this and next weekend's theme. Needs the build.
 #   PvP: double honour, XP from world PvP kills, Battleground Spoils.
 #   Professions: double profession XP, herbs/ore/skins/fish per node or catch, profession skill-ups.
-#   Quests: double quest XP, quest gold, Adventurer's caches from quests (random dungeon cache too), reputation.
+#   Quests: double quest XP, quest gold, Adventurer's caches from quests, reputation.
+#   Dungeons: double XP from kills, reputation and the random dungeon cache, inside dungeons and raids.
 worldserver.conf | WeekendBonus.Enabled = 1
 worldserver.conf | WeekendBonus.Days = "5,6,0"
-worldserver.conf | WeekendBonus.Rotation = "PvP,Professions,Quests"
+worldserver.conf | WeekendBonus.Rotation = "PvP,Professions,Quests,Dungeons"
 worldserver.conf | WeekendBonus.RotationStart = "2026-11-13"
 worldserver.conf | WeekendBonus.Theme = ""
 worldserver.conf | WeekendBonus.PvP.HonorRate = 2
@@ -82,6 +83,9 @@ worldserver.conf | WeekendBonus.Quests.QuestXPRate = 2
 worldserver.conf | WeekendBonus.Quests.QuestMoneyRate = 2
 worldserver.conf | WeekendBonus.Quests.QuestCacheRate = 2
 worldserver.conf | WeekendBonus.Quests.ReputationRate = 2
+worldserver.conf | WeekendBonus.Dungeons.DungeonXPRate = 2
+worldserver.conf | WeekendBonus.Dungeons.DungeonReputationRate = 2
+worldserver.conf | WeekendBonus.Dungeons.DungeonCacheRate = 2
 # Quest-reward caches (Adventurer's Satchel and Caches, also the random dungeon reward) can hold a Case of
 # Fortune and a sealed card pack, mostly golden packs, so questing progresses a Wildcard too (12 Nov; needs the
 # build). Percent chance per cache; GoldenPackPercent is the share of packs that are golden. Live: .reload config.

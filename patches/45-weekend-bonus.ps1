@@ -1,4 +1,4 @@
-# Weekend bonus: a rotating weekend theme (PvP, Professions, Quests) that boosts that kind of play.
+# Weekend bonus: a rotating weekend theme (PvP, Professions, Quests, Dungeons) that boosts that kind of play.
 # Run by the build (step "Apply our patch scripts") from the workspace root, after 40-battlegrounds.ps1, whose
 # Battleground Spoils and world PvP parts this builds on (same file and script loader). Throws if an anchor is gone.
 # Listed in CHANGES.md. The website (signup/WildcardStatus.py) works out the theme the same way.
@@ -47,7 +47,7 @@ inline std::string WeekendBonusTheme()
     if (!forced.empty())
         return forced;
     std::vector<std::string> themes;
-    std::stringstream list(sConfigMgr->GetOption<std::string>("WeekendBonus.Rotation", "PvP,Professions,Quests", false));
+    std::stringstream list(sConfigMgr->GetOption<std::string>("WeekendBonus.Rotation", "PvP,Professions,Quests,Dungeons", false));
     for (std::string theme; std::getline(list, theme, ',');)
         if (!theme.empty())
             themes.push_back(theme);
@@ -132,7 +132,7 @@ public:
         PLAYERHOOK_ON_UPDATE_GATHERING_SKILL, PLAYERHOOK_ON_UPDATE_CRAFTING_SKILL, PLAYERHOOK_ON_QUEST_REWARD_ITEM,
         PLAYERHOOK_ON_LOGIN}) { }
 
-    void OnPlayerGiveXP(Player* /*player*/, uint32& amount, Unit* /*victim*/, uint8 xpSource) override
+    void OnPlayerGiveXP(Player* player, uint32& amount, Unit* /*victim*/, uint8 xpSource) override
     {
         if (!amount || !WeekendBonusToday())
             return;
@@ -143,13 +143,18 @@ public:
             rate *= WeekendBonusRate("PvPXPRate");
         else if (xpSource == XPSOURCE_PROFESSION || xpSource == XPSOURCE_PROFESSION_SKILL)
             rate *= WeekendBonusRate("ProfessionXPRate");
+        else if (xpSource == XPSOURCE_KILL && InDungeon(player))
+            rate *= WeekendBonusRate("DungeonXPRate");
         amount = uint32(float(amount) * rate);
     }
 
-    void OnPlayerGiveReputation(Player* /*player*/, int32 /*factionID*/, float& amount, ReputationSource /*repSource*/) override
+    void OnPlayerGiveReputation(Player* player, int32 /*factionID*/, float& amount, ReputationSource /*repSource*/) override
     {
-        if (amount > 0.0f)
-            amount *= WeekendBonusRate("ReputationRate");
+        if (amount <= 0.0f || !WeekendBonusToday())
+            return;
+        amount *= WeekendBonusRate("ReputationRate");
+        if (InDungeon(player))
+            amount *= WeekendBonusRate("DungeonReputationRate");
     }
 
     void OnPlayerUpdateGatheringSkill(Player* /*player*/, uint32 /*skill*/, uint32 /*current*/, uint32 /*gray*/,
@@ -165,12 +170,13 @@ public:
     }
 
     // Quest weekends: an Adventurer's Satchel or Cache handed out as a quest reward (the random dungeon cache too)
-    // comes with extra copies, QuestCacheRate times as many in all.
+    // comes with extra copies, QuestCacheRate times as many in all. Dungeon weekends: DungeonCacheRate instead for one
+    // handed out inside a dungeon or raid (the random dungeon cache).
     void OnPlayerQuestRewardItem(Player* player, Item* item, uint32 count) override
     {
         if (!item || !count || !IsAdventurerReward(item->GetEntry()) || IsBattlegroundSpoils(item->GetEntry()))
             return;
-        uint32 const total = ScaleByChance(count, WeekendBonusRate("QuestCacheRate"));
+        uint32 const total = ScaleByChance(count, WeekendBonusRate(InDungeon(player) ? "DungeonCacheRate" : "QuestCacheRate"));
         if (total <= count)
             return;
         uint32 const entry = item->GetEntry();
@@ -195,6 +201,11 @@ public:
         if (!theme.empty())
             ChatHandler(player->GetSession()).SendSysMessage(
                 "|cff00ff00It's a " + theme + " weekend!|r See wildcard.jtlab.cc for this weekend's bonuses.");
+    }
+
+    static bool InDungeon(Player* player)
+    {
+        return player && player->FindMap() && player->FindMap()->IsDungeon();
     }
 
     static uint32 ScaleByChance(uint32 value, float rate)
@@ -241,7 +252,7 @@ public:
 
 '@
 # PvP weekends: BattlegroundSpoilsRate times the Battleground Spoils (defined here, before the spoils class uses it).
-$helpers = "#include `"MiscScript.h`"`n#include `"WeekendBonus.h`"`n#include <string>`n`nstatic uint32 weekend_bonus_spoils(uint32 count)`n{`n    return uint32(float(count) * WeekendBonusRate(`"BattlegroundSpoilsRate`") + 0.5f);`n}`n`n"
+$helpers = "#include `"Map.h`"`n#include `"MiscScript.h`"`n#include `"WeekendBonus.h`"`n#include <string>`n`nstatic uint32 weekend_bonus_spoils(uint32 count)`n{`n    return uint32(float(count) * WeekendBonusRate(`"BattlegroundSpoilsRate`") + 0.5f);`n}`n`n"
 $text = $text.Replace($include, $include + $helpers)
 $text = $text.Replace($spoils, @'
         uint32 const count = weekend_bonus_spoils(sConfigMgr->GetOption<uint32>(won ? "Battleground.SpoilsForWin" : "Battleground.SpoilsForLoss",
