@@ -56,9 +56,9 @@ worldserver.conf | Manastorm.CachesOpenIntoBags = 1
 worldserver.conf | Battleground.SpoilsEnabled = 1
 worldserver.conf | Battleground.SpoilsForWin = 3
 worldserver.conf | Battleground.SpoilsForLoss = 1
-# Gold on a player's body (Insignia, battlegrounds and world PvP): about 10 silver each (5-15), 20 in PvP weeks. Stock
-# it scaled with level and was about 1 silver at level 30. 0 = stock.
-worldserver.conf | Battleground.InsigniaGold = 1000
+# Gold on a player's body (Insignia, battlegrounds and world PvP): about 1 silver per level of the dead player (60 at
+# level 60, each body 50-150%), doubled in PvP weeks. Stock was about 1 silver at level 30. 0 = stock.
+worldserver.conf | Battleground.InsigniaGoldPerLevel = 100
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100
