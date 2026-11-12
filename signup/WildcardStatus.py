@@ -107,7 +107,7 @@ def _build(core):
             "build": int(release.group(2)) if release else None}
 
 
-WEEKEND_TITLES = {"PvP": "Honourpalooza", "Professions": "The Grindstone Games", "Quests": "The Questathlon",
+WEEKEND_TITLES = {"PvP": "Shanks-giving", "Professions": "Craftageddon", "Quests": "The Questathlon",
                   "Dungeons": "Pull-a-palooza"}  # used when WeekendBonus.<theme>.Title is not set
 WEEKEND_RATES = [  # the order players read them in
     ("XPRate", "all XP"), ("HonorRate", "honour"), ("PvPXPRate", "XP from world PvP kills"),
