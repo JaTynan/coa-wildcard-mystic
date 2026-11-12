@@ -171,6 +171,18 @@ worldserver.conf | BonusStats.PointsPerItemLevel = 0.25
 worldserver.conf | BonusStats.MinQuality = 3
 worldserver.conf | BonusStats.CraftedMinQuality = 2
 worldserver.conf | BonusStats.CacheMinQuality = 2
+# Profession Mastery: once a profession reaches skill 300, every gather or craft (even grey) earns Mastery, up to
+# level 50 (about 1,700 gathers or crafts). Gathering Mastery (Mining, Herbalism, Skinning, Fishing; Jewelcrafting for
+# prospecting, Inscription for milling) raises materials per node or catch up to 3x at level 50. Crafting Mastery
+# (Blacksmithing, Leatherworking, Tailoring, Engineering) raises crafted gear's bonus-roll chances up to 2x (1 in 4
+# becomes 1 in 2). .mastery shows your levels. Needs the build with the patch.
+worldserver.conf | Mastery.Enabled = 1
+worldserver.conf | Mastery.StartSkill = 300
+worldserver.conf | Mastery.MaxLevel = 50
+worldserver.conf | Mastery.FirstLevelPoints = 10
+worldserver.conf | Mastery.Growth = 0.1
+worldserver.conf | Mastery.GatherYieldMax = 3
+worldserver.conf | Mastery.CraftRollMax = 2
 # Manastorm caches never roll (0): the perfect copy comes from bosses, quests, crafting and other caches.
 worldserver.conf | BonusStats.ManastormCaches = 0
 # Same rate for everyone: Dynamic XP adds nothing and players cannot pick their own (.xp)
