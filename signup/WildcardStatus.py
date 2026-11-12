@@ -167,6 +167,90 @@ def _settings(configs, patch_night):
     return groups
 
 
+LEADERBOARD_SECONDS = 300
+LEVEL_ACHIEVEMENTS = {6: 10, 7: 20, 8: 30, 9: 40, 10: 50, 11: 60, 12: 70, 13: 80}
+_boards = {"at": 0.0, "value": None}
+
+
+def _database(world, key, default):
+    parts = world.get(key, "").split(";")
+    name = parts[4] if len(parts) >= 5 else default
+    return name if re.fullmatch(r"[A-Za-z0-9_]+", name) else default
+
+
+def _sql(server, query):
+    """Rows (lists of strings) from the server's own MySQL client and admin login, or None if it fails."""
+    client = server / "mysql" / "bin" / "mysql.exe"
+    ini = server / "mysql" / "admin-client.ini"
+    try:
+        result = subprocess.run([str(client), f"--defaults-file={ini}", "--batch", "--skip-column-names", "-e", query],
+                                capture_output=True, text=True, timeout=20,
+                                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if result.returncode:
+        return None
+    return [line.split("\t") for line in result.stdout.splitlines() if line.strip()]
+
+
+def _leaderboards(server, configs):
+    """Top-10 boards and the server-firsts log, real players only (random bot accounts left out). Each board is its
+    own query, so a table that does not exist yet (before the build with patches/47-leaderboards.ps1) only blanks
+    that board. Cached for five minutes."""
+    now = time.time()
+    if _boards["value"] is not None and now - _boards["at"] < LEADERBOARD_SECONDS:
+        return _boards["value"]
+    world = _read_conf(configs / "worldserver.conf")
+    chars = _database(world, "CharacterDatabaseInfo", "acore_characters")
+    auth = _database(world, "LoginDatabaseInfo", "acore_auth")
+    prefix = _read_conf(configs / "modules" / "playerbots.conf").get("AiPlayerbot.RandomBotAccountPrefix", "rndbot")
+    prefix = re.sub(r"[^A-Za-z0-9_]", "", prefix).upper() or "RNDBOT"
+    real = f"c.account NOT IN (SELECT id FROM `{auth}`.account WHERE username LIKE '{prefix}%')"
+    live = f"c.deleteDate IS NULL AND {real}"
+
+    def board(title, unit, query):
+        rows = _sql(server, query) or []
+        return {"title": title, "unit": unit,
+                "rows": [{"name": r[0], "value": int(float(r[1]))} for r in rows if len(r) >= 2]}
+
+    boards = [
+        board("Highest level", "level", f"SELECT c.name, c.level FROM `{chars}`.characters c WHERE {live} "
+              "ORDER BY c.level DESC, c.xp DESC LIMIT 10"),
+        board("Most Prestige", "prestige", f"SELECT c.name, CAST(SUBSTRING_INDEX(TRIM(s.data), ' ', 1) AS UNSIGNED) p "
+              f"FROM `{chars}`.character_settings s JOIN `{chars}`.characters c ON c.guid = s.guid "
+              f"WHERE s.source = 'core.coa_prestige' AND {live} HAVING p > 0 ORDER BY p DESC LIMIT 10"),
+        board("Deepest Manastorm floor", "floor", f"SELECT c.name, MAX(m.best_completed_depth) d "
+              f"FROM `{chars}`.character_manastorm_progress m JOIN `{chars}`.characters c ON c.guid = m.guid "
+              f"WHERE {live} GROUP BY c.guid, c.name HAVING d > 0 ORDER BY d DESC LIMIT 10"),
+        board("Most honourable kills", "kills", f"SELECT c.name, c.totalKills FROM `{chars}`.characters c "
+              f"WHERE {live} AND c.totalKills > 0 ORDER BY c.totalKills DESC LIMIT 10"),
+        board("Most world PvP kills", "kills", f"SELECT c.name, k.kills FROM `{chars}`.wcme_world_pvp_kills k "
+              f"JOIN `{chars}`.characters c ON c.guid = k.guid WHERE {live} AND k.kills > 0 "
+              "ORDER BY k.kills DESC LIMIT 10"),
+    ]
+
+    firsts = []
+    ids = ", ".join(str(i) for i in LEVEL_ACHIEVEMENTS)
+    seen = set()
+    for row in _sql(server, f"SELECT a.achievement, c.name, a.date FROM `{chars}`.character_achievement a "
+                            f"JOIN `{chars}`.characters c ON c.guid = a.guid WHERE a.achievement IN ({ids}) AND {real} "
+                            "ORDER BY a.date, a.guid") or []:
+        if len(row) >= 3 and row[0] not in seen:
+            seen.add(row[0])
+            level = LEVEL_ACHIEVEMENTS.get(int(row[0]))
+            firsts.append({"at": int(row[2]), "text": f"{row[1]} was the first to reach level {level}."})
+    for row in _sql(server, f"SELECT text, at FROM `{chars}`.wcme_server_firsts") or []:
+        if len(row) >= 2:
+            firsts.append({"at": int(row[1]), "text": row[0]})
+    firsts.sort(key=lambda f: f["at"], reverse=True)
+    for first in firsts:
+        first["date"] = time.strftime("%d %b %Y", time.localtime(first["at"])).lstrip("0")
+
+    value = {"boards": boards, "firsts": firsts[:40]}
+    _boards["at"], _boards["value"] = now, value
+    return value
+
+
 def status(options):
     with _lock:
         now = time.time()
@@ -191,6 +275,7 @@ def status(options):
             "uptime": console.get("uptime"),
             "server": _build(core),
             "restart": "Every night at 4:00 am (Sydney time), back within 10 minutes. Warnings start at 3:30.",
+            "leaderboards": _leaderboards(server, configs),
             "settings": _settings(configs, Path(options.bridge).parent),
         }
         _cache["at"], _cache["value"] = now, value

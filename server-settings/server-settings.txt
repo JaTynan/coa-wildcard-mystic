@@ -61,6 +61,11 @@ worldserver.conf | Battleground.SpoilsForLoss = 1
 worldserver.conf | Battleground.SpoilsCasePercent = 100
 worldserver.conf | Battleground.SpoilsPackPercent = 100
 worldserver.conf | Battleground.SpoilsGoldenPackPercent = 25
+# Leaderboards on the website: the server counts world PvP kills (the same victim once per 5 minutes) and records
+# server firsts (first group to beat each dungeon or raid boss, first to each Prestige level), announced in game.
+# Needs the build with the patch; the level, Prestige, Manastorm and honour boards work without it.
+worldserver.conf | Leaderboards.Enabled = 1
+worldserver.conf | Leaderboards.SameVictimSeconds = 300
 # Quest-reward caches (Adventurer's Satchel and Caches, also the random dungeon reward) can hold a Case of
 # Fortune and a sealed card pack, mostly golden packs, so questing progresses a Wildcard too (12 Nov; needs the
 # build). Percent chance per cache; GoldenPackPercent is the share of packs that are golden. Live: .reload config.
