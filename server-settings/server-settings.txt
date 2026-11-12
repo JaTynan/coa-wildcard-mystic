@@ -61,16 +61,27 @@ worldserver.conf | Battleground.SpoilsForLoss = 1
 worldserver.conf | Battleground.SpoilsCasePercent = 100
 worldserver.conf | Battleground.SpoilsPackPercent = 100
 worldserver.conf | Battleground.SpoilsGoldenPackPercent = 25
-# Weekend bonus, Friday to Sunday (server time; days are 0 = Sunday ... 6 = Saturday): double reputation, honour,
-# profession skill-ups and quest gold. XP is left at 1 (off); set XPRate above 1 to add it. Stacks with the realm
-# rates and prestige. Players are told at login. Needs the build with the patch.
+# Rotating weekend bonus, Friday to Sunday (server time). Each week takes the next theme in Rotation, counting from
+# RotationStart (a Friday); set Theme to force one. Rates are per theme (WeekendBonus.<theme>.<rate>, 1 = no change)
+# and stack with the realm rates and prestige. The website shows this and next weekend's theme. Needs the build.
+#   PvP: double honour, XP from world PvP kills, Battleground Spoils.
+#   Professions: double profession XP, herbs/ore/skins/fish per node or catch, profession skill-ups.
+#   Quests: double quest XP, quest gold, Adventurer's caches from quests (random dungeon cache too), reputation.
 worldserver.conf | WeekendBonus.Enabled = 1
 worldserver.conf | WeekendBonus.Days = "5,6,0"
-worldserver.conf | WeekendBonus.XPRate = 1
-worldserver.conf | WeekendBonus.ReputationRate = 2
-worldserver.conf | WeekendBonus.HonorRate = 2
-worldserver.conf | WeekendBonus.ProfessionSkillRate = 2
-worldserver.conf | WeekendBonus.QuestMoneyRate = 2
+worldserver.conf | WeekendBonus.Rotation = "PvP,Professions,Quests"
+worldserver.conf | WeekendBonus.RotationStart = "2026-11-13"
+worldserver.conf | WeekendBonus.Theme = ""
+worldserver.conf | WeekendBonus.PvP.HonorRate = 2
+worldserver.conf | WeekendBonus.PvP.PvPXPRate = 2
+worldserver.conf | WeekendBonus.PvP.BattlegroundSpoilsRate = 2
+worldserver.conf | WeekendBonus.Professions.ProfessionXPRate = 2
+worldserver.conf | WeekendBonus.Professions.GatherYieldRate = 2
+worldserver.conf | WeekendBonus.Professions.ProfessionSkillRate = 2
+worldserver.conf | WeekendBonus.Quests.QuestXPRate = 2
+worldserver.conf | WeekendBonus.Quests.QuestMoneyRate = 2
+worldserver.conf | WeekendBonus.Quests.QuestCacheRate = 2
+worldserver.conf | WeekendBonus.Quests.ReputationRate = 2
 # Quest-reward caches (Adventurer's Satchel and Caches, also the random dungeon reward) can hold a Case of
 # Fortune and a sealed card pack, mostly golden packs, so questing progresses a Wildcard too (12 Nov; needs the
 # build). Percent chance per cache; GoldenPackPercent is the share of packs that are golden. Live: .reload config.
