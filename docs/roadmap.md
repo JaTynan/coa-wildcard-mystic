@@ -8,7 +8,7 @@ One character you stick with and keep investing in. The end state:
 - **Level cap 70.** Wildcard keeps rolling abilities and talents up to 70. Outland's content is standard Wrath
   data; the CoA systems tuned for 60 (custom items and vendors, level scaling, PvP power) need checking.
 - **Death Knight filled out** with enchants for real builds ([dk-enchant-proposal.md](dk-enchant-proposal.md)).
-- **Race kits:** racials reworked so race choice changes how you play, optional per realm.
+- **Race kits:** stock racials plus one signature passive per race (Tauren Plainsrunning and so on), optional per realm.
 - **Meaningful profession bonuses:** every profession gives a lasting personal benefit worth levelling it for,
   a slow source of power for a character you keep.
 
