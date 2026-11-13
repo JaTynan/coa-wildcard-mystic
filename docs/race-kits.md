@@ -86,7 +86,7 @@ Leatherworking, Inscription.
 | --- | --- | --- | --- |
 | Active | War Stomp | Stuns up to 5 nearby enemies for 2 sec. 1.5 min cooldown. | existing |
 | Active | Bull Rush | Gain 10% health as temporary health for 5 sec, and 10 extra stacks of Plainsrunning. | new |
-| Passive | Plainsrunning | +1% movement speed per second while you keep moving, up to 60%. When you stop it drains 10% per second (full to nothing in 6 sec). | hook. Signature, locked 13 Nov |
+| Passive | Plainsrunning | While you keep moving on foot, speed builds to a cap over 60 sec of running. The cap is your level + 40% (41% at level 1, 100% at level 60). When you stop it drains, full to nothing in 6 sec. Stacks with other speed effects (Sprint, talents), so they multiply; not while mounted, and paused while carrying a battleground flag. | hook. Signature, locked 13 Nov |
 | Passive | Tauren Health | +5% health; +10 Herbalism; chance for additional herbs. | existing (Endurance) + hook for the herbs |
 
 **Troll**
@@ -119,5 +119,5 @@ resources, Escape Artist's speed boost), Blood Elf Arcane Hunger. All ten are lo
 - Humans are likely the strongest in PvP defence; timing levers (Will to Survive's cooldown, Regroup's 30 sec) first.
 - Regroup grants Battle Ready, which Spellsword replaced: Regroup needs a new effect.
 - Spellsword is strong on purpose; its 30% and 10% are the first levers.
-- Plainsrunning's 60% cap matters most in battlegrounds.
+- Plainsrunning's cap (100% at 60, multiplying Sprint and similar) matters most in battlegrounds.
 - Mana Tap's charge limit, Trophy Hunter's stack duration and Tinker's choice are still open.
