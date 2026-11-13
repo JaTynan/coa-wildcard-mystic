@@ -15,6 +15,7 @@ import sys
 
 from dbc import Dbc, write_dbc
 from mpqwrite import write_mpq
+from racials import off_gcd
 
 wildcard, area52 = Dbc(sys.argv[1]), Dbc(sys.argv[2])
 enchants = {int(row['spell']) for row in csv.DictReader(open(sys.argv[3]))}
@@ -28,7 +29,7 @@ def client_row(spell):
     row = list(source[spell].rows[spell])
     if spell in added_set:
         row[208] = row[209] = row[210] = row[211] = 0
-    return tuple(row)
+    return off_gcd(tuple(row))  # racials off the global cooldown (racials.py)
 
 
 rows = [client_row(spell) for spell in sorted(source)]
