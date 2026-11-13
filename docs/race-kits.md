@@ -10,7 +10,7 @@ ability damage for little investment, so signature passives of this size sit fin
 rework isn't needed. On a plain Wrath server these numbers would be too high.
 
 Each race owns a niche, so no two signatures overlap: Tauren movement, Trolls healing in combat, Gnomes and Blood
-Elves resources, Orcs kills and haste, Undead death, Humans hybrid builds, Dwarves standing firm, Night Elves
+Elves resources, Orcs kills and haste, Undead death, Humans hybrid builds, Dwarves exploring and gathering, Night Elves
 stealth, Draenei leading a group.
 
 Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
@@ -20,7 +20,7 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
 | Race | Signature passive | What it does | Notes |
 | --- | --- | --- | --- |
 | Human | Spellsword | The best race for physical and spell hybrids. **Stat bridge:** whichever of attack power and spell power is lower gains 30% of the higher; a conversion you already have (Sheath of Light, Mental Quickness) doesn't stack, you get the bigger. **Spells into attacks:** +10% melee and ranged attack speed for 3 sec per second of cast or channel time (instants give nothing), up to 12 sec. **Attacks into spells:** each melee or ranged ability (not auto-attacks) adds 3 sec of +10% cast speed, up to 9 sec. | hooks. Designed hybrids already convert, so the bridge lifts the weird Wildcard ones |
-| Dwarf | Sure-Footed | Knockbacks and pulls move you half as far, fall damage is halved, and dazes last half as long. | hook |
+| Dwarf | Prospector's Spirit | Each kind of gathering gives its own buff, stacking up to 3 times and lasting 2 hours (refreshed by gathering more). **Mining** a vein: +2% Stamina per stack. **Herbalism**: +2% Intellect and Spirit. **Skinning**: +2% Strength and Agility. **Treasure** (opening a chest; Find Treasure shows them): +2% damage and healing. **Fishing** a catch: +3% movement and swim speed, and at 3 stacks water breathing. Natural explorers: mixing gathering, chests and fishing between dungeons gives everything; repeating one only gives its 3 stacks. | hooks (gathering, loot and fishing) |
 | Night Elf | Ambush | Entering stealth (Shadowmeld or a class stealth) readies your next ability: 10% cheaper and 50% more damage or healing. At most once every 20 sec. | hook |
 | Gnome | Overclock | +5% maximum mana, energy or rage. While the burst below is ready, a trickle continues in combat: 10% of normal mana regeneration, energy 5% faster, or 1 rage every 3 sec. Below 30% of your resource, restore 3% of your maximum per second for 8 sec, once every 2 min; the trickle pauses while that is on cooldown. The resource mirror of Troll Voodoo Regeneration. Escape Artist also gives +30% movement speed for 3 sec. | hook (reworks the stock Expansive Mind, which gives intellect); Escape Artist gains a speed effect |
 | Draenei | Radiant Presence | Your auras and totems reach 50% further. Allies within 30 yards take 1% less damage per enemy within 30 yards, up to 5%. Doesn't stack with a second Draenei. | hook |
