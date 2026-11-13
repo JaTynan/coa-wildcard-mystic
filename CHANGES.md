@@ -51,6 +51,7 @@ for good by deleting its part from the script.
 | | Every resurrection in a run (item, player spell or bot) uses one of the run's 5 shared charges | always on |
 | | Opening a Manastorm cache puts its contents straight in the bags (mail if full) and removes that one cache, so stacks never get stuck | `Manastorm.CachesOpenIntoBags` |
 | `51-profession-mastery.ps1` | Profession Mastery past skill 300: gathering yields rise to 3x, crafted gear's bonus-roll chances to 2x; `.mastery`, and the WildcardMastery addon shows it in the Skills tab and profession windows | `Mastery.*` |
+| `52-racials.ps1` | Every active racial is off the global cooldown (Will of the Forsaken, Cannibalize, Gift of the Naaru); the client patch carries the same change (`client-patch/racials.py`) | always on |
 
 ## Settings (summary)
 
