@@ -52,6 +52,26 @@ $text = $text.Replace($loop, "                GuidVector const waveGhosts = itr-
 Set-Content $file $text -NoNewline
 }
 
+# ---- Battleground spirit guides never raise (and fully heal) someone who is already alive
+Write-Host "Patch: Battleground spirit guides skip anyone already alive"
+& {
+$file = 'core/src/server/game/Battlegrounds/Battleground.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+# Bots revive themselves and can still be in the guide's queue (or walk back to the guide alive and queue again),
+# so the next wave "raised" them: full health and mana while already up. Skip the living at the wave, at the raise
+# half a second later, and when someone is added to the queue.
+$wave = "                for (ObjectGuid const& guid : waveGhosts)`n                {`n                    Player* player = ObjectAccessor::FindPlayer(guid);`n                    if (!player)`n                        continue;`n"
+$raise = "            if (!player)`n                continue;`n            player->ResurrectPlayer(1.0f);`n"
+$queue = "void Battleground::AddPlayerToResurrectQueue(ObjectGuid npc_guid, ObjectGuid player_guid)`n{`n"
+foreach ($anchor in @($wave, $raise, $queue)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed: Battleground.cpp no longer has: $($anchor.Split("`n")[0].Trim())" }
+}
+$text = $text.Replace($wave, $wave.Replace("if (!player)", "if (!player || player->IsAlive())"))
+$text = $text.Replace($raise, $raise.Replace("if (!player)", "if (!player || player->IsAlive())"))
+$text = $text.Replace($queue, $queue + "    if (Player* living = ObjectAccessor::FindPlayer(player_guid); living && living->IsAlive())`n        return;`n`n")
+Set-Content $file $text -NoNewline
+}
+
 # ---- Battleground Spoils: 3 for a win, 1 for a loss, opened like an Adventurer's Cache
 Write-Host "Patch: Battleground Spoils for battleground wins and losses"
 & {
