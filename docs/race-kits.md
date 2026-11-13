@@ -27,8 +27,8 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
 | Orc | Warsong | Each killing blow gives 15% movement speed and 5% haste for 6 sec. | hook |
 | Undead | Unliving | When you die, rise as a ghoul for 10 sec and keep fighting; a killing blow in that time brings you back at 20% health. Once every 15 min (about once per battleground). | hook; the ghoul form reuses Raise Ally's |
 | Tauren | Plainsrunning | While you keep moving on foot, speed builds to a cap over 60 sec of running. The cap is your level + 40% (41% at level 1, 100% at level 60). When you stop it drains, full to nothing in 6 sec. Adds on top of other speed effects (at full, Sprint's +70% and Plainsrunning's +100% make +170%). Not while mounted; paused while carrying a battleground flag. | hook |
-| Troll | Voodoo Regeneration | Below 35% health, regenerate 3% of maximum health per second for 8 sec. Once every 2 min. Replaces the stock Regeneration passive. | hook |
-| Blood Elf | Arcane Hunger | Abilities cost 3% more and deal or heal 2% more per charge, up to 3 charges. **Open:** the charges came from Mana Tap in the first design, which Wrath doesn't have; they need a new source. | hook |
+| Troll | Voodoo Regeneration | Below 35% health, regenerate 3% of maximum health per second for 8 sec. Once every 2 min. The stock Regeneration passive stays (10% of normal health regeneration continues in combat), but pauses while Voodoo Regeneration is on cooldown: the burst uses up the troll's regeneration, and a long fight at high health still keeps a trickle. | hook |
+| Blood Elf | Arcane Hunger | Each ability you use adds a charge, up to 3; they fade after 10 sec without using one. Per charge, abilities cost 3% more and deal or heal 2% more. | hook |
 
 ## Already done
 
