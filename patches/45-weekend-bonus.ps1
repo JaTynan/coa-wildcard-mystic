@@ -99,6 +99,18 @@ Edit-Anchored 'core/src/server/game/Entities/Player/Player.cpp' @'
     honor_f *= WeekendBonusRate("HonorRate");
 '@ 'the honour rate in RewardHonor'
 
+# Insignia gold: the money on a player's body (battlegrounds and world PvP). Stock it is about 1 silver at level 30;
+# Battleground.InsigniaGoldPerLevel sets copper per level of the dead player instead (each body 50-150% of it), and
+# PvP weeks multiply it by InsigniaGoldRate.
+Edit-Anchored 'core/src/server/game/Entities/Player/Player.cpp' @'
+            bones->loot.gold = uint32(urand(50, 150) * 0.016f * pow(float(pLevel) / 5.76f, 2.5f) * sWorld->getRate(RATE_DROP_MONEY));
+'@ @'
+            bones->loot.gold = uint32(urand(50, 150) * 0.016f * pow(float(pLevel) / 5.76f, 2.5f) * sWorld->getRate(RATE_DROP_MONEY));
+            if (uint32 const perLevel = sConfigMgr->GetOption<uint32>("Battleground.InsigniaGoldPerLevel", 0))
+                bones->loot.gold = uint32(float(perLevel * std::max<uint32>(pLevel, 1)) * urand(50, 150) / 100.0f *
+                                          WeekendBonusRate("InsigniaGoldRate"));
+'@ 'the insignia gold in SendLoot'
+
 # Quest gold.
 Edit-Anchored 'core/src/server/game/Entities/Player/PlayerQuest.cpp' "#include `"WorldSession.h`"`n" "#include `"WorldSession.h`"`n#include `"WeekendBonus.h`"`n" 'the WorldSession.h include'
 Edit-Anchored 'core/src/server/game/Entities/Player/PlayerQuest.cpp' @'
