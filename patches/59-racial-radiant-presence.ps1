@@ -66,7 +66,7 @@ public:
         player->WcmeRadiantReach = sConfigMgr->GetOption<bool>("Racials.RadiantPresence", true);
         if (!player->WcmeRadiantReach || !player->IsAlive())
         {
-            // Nothing more is shared; the buffs this player gave run out within 3 sec.
+            // Nothing more is shared; the buffs this player gave run out on their own timers.
             player->WcmeRadiantStacks = 0;
             player->WcmeRadiantStackTimer = player->WcmeRadiantFade = player->WcmeRadiantPulse = 0;
             return;
@@ -116,14 +116,17 @@ public:
         Cell::VisitObjects(player, searcher, Range);
         allies.remove(player);
         allies.push_back(player);
+        // The timer shows how long the Light lasts if nothing renews it: a full 10 sec in combat, then counting down
+        // to the fade once combat ends.
+        int32 const left = player->IsInCombat() ? 10000 : int32(10000 - player->WcmeRadiantFade);
         for (Unit* ally : allies)
-            Shine(ally, player->WcmeRadiantStacks);
+            Shine(ally, player->WcmeRadiantStacks, left);
     }
 
 private:
-    // One Light buff per unit, cast on itself, so two Draenei never add up: the higher count stays. It lasts 3 sec
-    // (the timer is hidden) and every Draenei in range renews it each second, so it goes soon after they leave.
-    static void Shine(Unit* ally, uint8 stacks)
+    // One Light buff per unit, cast on itself, so two Draenei never add up: the higher count stays. Every Draenei in
+    // range renews it each second; an ally who leaves range keeps it until its timer runs out.
+    static void Shine(Unit* ally, uint8 stacks, int32 left)
     {
         Aura* aura = ally->GetAura(Light);
         if (aura && aura->GetStackAmount() > stacks)
@@ -134,8 +137,10 @@ private:
             return;
         if (aura->GetStackAmount() != stacks)
             aura->SetStackAmount(stacks);
-        aura->SetMaxDuration(3000);
-        aura->SetDuration(3000);
+        else if (aura->GetDuration() >= left)
+            return; // already as long (another Draenei still in combat, or the countdown running on its own)
+        aura->SetMaxDuration(10000);
+        aura->SetDuration(left);
     }
 };
 
