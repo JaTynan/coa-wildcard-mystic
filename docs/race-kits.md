@@ -56,7 +56,7 @@ a SpellIcon row for it (check the client's own SpellIcon.dbc matches the server'
 | Draenei | Radiant Presence | inv_misc_tournaments_banner_draenei | add |
 | Gnome | Overclock: bigger pools | inv_misc_enggizmos_23 | add |
 | Gnome | Overclock: learning the enemy (steps) | achievement_bg_tophealer_wsg | add |
-| Gnome | Escape Artist speed (+60%, 3 sec) | Ability_Rogue_Trip (Escape Artist's own) | 517 |
+| Gnome | Escape Artist speed (+60%, 3 sec), and Escape Artist's own spell icon (client patch) | inv_gizmo_rocketboot_destroyed_02 | add |
 | Undead | Grave Defiance (below 35%) | achievement_boss_devourerofsouls | 4153 |
 | Undead | Ghoul on death | achievement_dungeon_coablackdragonflight | 3254 |
 | Undead | Grave Defiance on cooldown | inv_helmet_168 | 13716 |
