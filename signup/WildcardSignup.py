@@ -29,6 +29,7 @@ import subprocess
 import sys
 import threading
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -465,6 +466,87 @@ def handler_for(options):
     return Handler
 
 
+# In-game bug reports (the Report Bug window). The world server (CoABugReport.Enable) saves each report the player
+# ticked Public as a file in the spool folder; this thread turns each file into an issue on our GitHub repository and
+# moves it into "sent". It needs githubToken in signup-settings.json: a fine-grained token for the repository with
+# Issues read and write. Without one, reports wait in the folder. Account numbers never leave the VM.
+REPORT_FILE = re.compile(r"[1-9][0-9]{0,9}-[0-9a-f]{16}")
+
+
+def raw_settings():
+    try:
+        data = json.loads(settings_file.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def report_issue(path):
+    text = path.read_bytes()[:16000].decode("utf-8", "replace").replace("\r\n", "\n")
+    if not text.startswith("COABUG1\n"):
+        return None
+    title, _, body = text[8:].partition("\n")
+    title, body = title.strip(), body.strip()
+    if not title or not body:
+        return None
+    # No @mentions or #links from player text: it would notify people or link unrelated issues.
+    quiet = lambda value: value.replace("@", "@\u200b").replace("#", "#\u200b")
+    sent = time.strftime("%Y-%m-%d %H:%M", time.localtime(path.stat().st_mtime))
+    report, _, context = body.partition("### Server context")
+    report = quiet(report)
+    issue = (f"Sent from the in-game **Report Bug** window on {sent} (server time).\n\n"
+             + "\n".join("> " + line for line in report.strip().splitlines())
+             + ("\n\n### Server context" + context if context else "")
+             + f"\n\n<!-- wildcard-report:{path.stem} -->\n")
+    return {"title": "[Player report] " + quiet(title)[:200], "body": issue, "labels": ["player report"]}
+
+
+def relay_reports(spool):
+    token = str(raw_settings().get("githubToken", "")).strip()
+    if not token:
+        return
+    repo = str(raw_settings().get("githubRepo", "")).strip() or "JaTynan/coa-wildcard-mystic"
+    done = spool / "sent"
+    done.mkdir(exist_ok=True)
+    for path in sorted(spool.glob("*.report")):
+        if not REPORT_FILE.fullmatch(path.stem):
+            continue
+        issue = report_issue(path)
+        if issue is None:
+            path.replace(done / (path.stem + ".invalid"))
+            log(f"Bug report {path.stem}: unreadable, moved to sent")
+            continue
+        request = urllib.request.Request(
+            f"https://api.github.com/repos/{repo}/issues", data=json.dumps(issue).encode("utf-8"), method="POST",
+            headers={"Authorization": "Bearer " + token, "Accept": "application/vnd.github+json",
+                     "X-GitHub-Api-Version": "2022-11-28", "User-Agent": "Wildcard-BugReport"})
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                number = json.loads(response.read(65536)).get("number")
+        except urllib.error.HTTPError as error:
+            log(f"Bug report {path.stem}: GitHub refused it ({error.code}); check githubToken. Will retry.")
+            return
+        except (OSError, ValueError) as error:
+            log(f"Bug report {path.stem}: could not reach GitHub ({error}). Will retry.")
+            return
+        path.replace(done / path.name)
+        log(f"Bug report {path.stem}: GitHub issue #{number}")
+
+
+def bug_report_relay(spool):
+    try:
+        spool.mkdir(parents=True, exist_ok=True)
+    except OSError as error:
+        log(f"Bug reports: cannot use {spool} ({error})")
+        return
+    while True:
+        try:
+            relay_reports(spool)
+        except Exception as error:  # keep the sign-up page alive whatever happens here
+            log(f"Bug reports: {type(error).__name__}: {error}")
+        time.sleep(30)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Wildcard sign-up page")
     parser.add_argument("--server", default=r"C:\Games\CoA Server")
@@ -474,6 +556,7 @@ def main():
     options.python = str(options.server / "Runtime" / "python" / "python.exe")
     options.manage = options.server / "Scripts" / "manage.py"
     options.bridge = patch_night / "launcher_bridge.py"
+    threading.Thread(target=bug_report_relay, args=(options.server / "BugReports",), daemon=True).start()
     log(f"Sign-up page listening on port {options.port}" + ("" if settings() else " (not open: fill in signup-settings.json)"))
     ThreadingHTTPServer(("0.0.0.0", options.port), handler_for(options)).serve_forever()
 

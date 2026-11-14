@@ -468,6 +468,8 @@ function StartAndCheck([string] $expected) {
     # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
     $db = Launcher 'start-mysql' '' 10
     if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems; RepriceAuctionsWhenPricesChange; EnsureCharacterSpellIndexes; AllowCrossFactionFriends }
+    # The Report Bug window's spool folder (CoABugReport.SpoolDirectory); the world server only uses it if it exists.
+    New-Item -ItemType Directory -Force -Path (Join-Path $Server 'BugReports') | Out-Null
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
@@ -534,6 +536,8 @@ if ($RebuildWildcardBots) {
     $text = [IO.File]::ReadAllText($botsConf) -replace '(?m)^(\s*AiPlayerbot\.Enabled\s*=\s*)1', '${1}0'
     [IO.File]::WriteAllText($botsConf, $text)
     Log 'Starting the server with the bots switched off...'
+    # The Report Bug window's spool folder (CoABugReport.SpoolDirectory); the world server only uses it if it exists.
+    New-Item -ItemType Directory -Force -Path (Join-Path $Server 'BugReports') | Out-Null
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Finish "The server did not start: $($result.Text)" 1 }
     $deadline = (Get-Date).AddMinutes(20)
