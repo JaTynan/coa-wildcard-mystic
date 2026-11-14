@@ -58,6 +58,7 @@ for good by deleting its part from the script.
 | `56-racial-bloodrush.ps1` | Orc Bloodrush: +2% damage and haste per enemy in combat with you, up to 5; +30% movement speed for 6 sec after a killing blow; buff icons from the client patch | `Racials.Bloodrush` |
 | `57-racial-ambush.ps1` | Night Elf Ambush: entering stealth readies the next ability that deals damage or heals: 10% cheaper, 50% more damage or healing; once every 20 sec; buff icon from the client patch | `Racials.Ambush` |
 | `58-racial-voodoo-regeneration.ps1` | Troll Voodoo Regeneration, replacing the stock Regeneration passive: +50% health regeneration out of combat, 0.3% of maximum health per second in combat (half on cooldown), 3% per second for 8 sec below 35% health once every 2 min; buff icons from the client patch | `Racials.VoodooRegeneration` |
+| `59-racial-radiant-presence.ps1` | Draenei Radiant Presence: in combat a stack of Light every 6 sec, up to 5; each gives you and allies within 30 yards (group, pets, guardians) +1% damage and healing and 1% less damage taken; fades 10 sec after combat; doesn't add up with a second Draenei; auras and totems reach 50% further; buff and its icon from the client patch | `Racials.RadiantPresence` |
 
 ## Settings (summary)
 
@@ -73,7 +74,7 @@ by that next spell). `090-mysql-tuning.sql`: MySQL settings that survive the man
 `100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
 `110-manastorm-caches-unstack.sql`: Manastorm caches no longer stack, so each one opens and disappears when emptied.
 `120-battleground-spoils.sql`: Battleground Spoils can be opened (used by the Battleground Spoils patch).
-`150-custom-spells.sql`: our own spells for buff icons (Plainsrunning, Bloodrush, Ambush, Voodoo Regeneration) and Ambush's spell_proc row, written by `client-patch/custom_spells.py`.
+`150-custom-spells.sql`: our own spells for buff icons (Plainsrunning, Bloodrush, Ambush, Voodoo Regeneration, Radiant Presence) and Ambush's spell_proc row, written by `client-patch/custom_spells.py`.
 `130-battleground-dampening.sql`: everyone in a battleground does 20% less healing and gets 20% smaller absorb shields
 (Ascension's "PvP - Battleground - Dampening", which CoA has but never applied).
 `140-talent-fixes.sql`: the proc rows and script names for `55-talent-fixes.ps1`.
