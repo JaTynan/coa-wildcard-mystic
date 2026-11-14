@@ -52,6 +52,7 @@ for good by deleting its part from the script.
 | | Opening a Manastorm cache puts its contents straight in the bags (mail if full) and removes that one cache, so stacks never get stuck | `Manastorm.CachesOpenIntoBags` |
 | `51-profession-mastery.ps1` | Profession Mastery past skill 300: gathering yields rise to 3x, crafted gear's bonus-roll chances to 2x; `.mastery`, and the WildcardMastery addon shows it in the Skills tab and profession windows | `Mastery.*` |
 | `52-racials.ps1` | Every active racial is off the global cooldown (Will of the Forsaken, Cannibalize, Gift of the Naaru); the client patch carries the same change (`client-patch/racials.py`) | always on |
+| `55-talent-fixes.ps1` | Talents that do less than their Ascension tooltip. Backdraft (#152): procs from Conflagrate, Shadowburn, Shadowfury and Mind Blast, and from Immolate with Immolating Backdraft | always on (with `sql/enchants/140-talent-fixes.sql`) |
 | `53-wildcard-card-messages.ps1` | Setting an ability or talent card before the four starting abilities are rolled (straight after a prestige) explains why on screen and in chat, instead of only the raw SET_SKILL_CARD_UNKNOWN code | always on |
 
 ## Settings (summary)
@@ -70,6 +71,7 @@ by that next spell). `090-mysql-tuning.sql`: MySQL settings that survive the man
 `120-battleground-spoils.sql`: Battleground Spoils can be opened (used by the Battleground Spoils patch).
 `130-battleground-dampening.sql`: everyone in a battleground does 20% less healing and gets 20% smaller absorb shields
 (Ascension's "PvP - Battleground - Dampening", which CoA has but never applied).
+`140-talent-fixes.sql`: the proc rows and script names for `55-talent-fixes.ps1`.
 
 ## How changes are made
 
