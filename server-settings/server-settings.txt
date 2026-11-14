@@ -76,6 +76,11 @@ worldserver.conf | Racials.VoodooRegeneration = 1
 # within 30 yards (group, pets, guardians) +1% damage and healing and 1% less damage taken; fades 10 sec after combat;
 # a second Draenei adds nothing (the highest count counts). Your auras and totems reach 50% further. 0 = off.
 worldserver.conf | Racials.RadiantPresence = 1
+# Mana-forged Barrier, the full Ascension tank stance (the core only gave the form): absorbs up to 90% of damage with
+# mana (less as mana runs low, half against magic), +160% threat, immune to interrupts, dodge/parry/block while
+# casting, Power Surge mana return; 30% less damage, 40% less healing, double damage from players; leaving it leaves
+# 10 sec of Mana-forged Mindset. 0 = off (the stance is just its form again).
+worldserver.conf | Wildcard.ManaforgedBarrier = 1
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100

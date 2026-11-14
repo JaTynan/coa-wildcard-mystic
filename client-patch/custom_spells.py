@@ -16,13 +16,19 @@ VOODOO = 9990005
 VOODOO_BURST = 9990006
 VOODOO_COOLDOWN = 9990007
 RADIANT = 9990008
+BARRIER_SHIELD = 9990009
+BARRIER_PENALTY = 9990010
+BARRIER_MINDSET = 9990011
+POWER_SURGE = 9990012
 
+MOD_THREAT, PERIODIC_ENERGIZE, EFFECT_IMMUNITY, MANA_SHIELD, MOD_ATTACKER_MELEE_CRIT_CHANCE = 10, 24, 37, 97, 187
 DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
     MOD_HEALTH_REGEN_PERCENT, MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 87, 88, 136, 193  # aura types
 PASSIVE = 0x80000040  # can't be cancelled, and passive: never shown on the buff bar
 # The next ability: any spell hit (melee, ranged, magic or none damage class; harmful or helpful), not auto attacks
 NEXT_ABILITY = 0x10 | 0x100 | 0x400 | 0x1000 | 0x4000 | 0x10000
 ALL_SCHOOLS = 127
+ONE = struct.unpack('<I', struct.pack('<f', 1.0))[0]  # 1.0 as a float column
 HIDE_DURATION = 0x400  # AttributesEx5 (column 9): the client shows no timer
 
 # Our own rows in the client's SpellIcon.dbc: pictures that are in the game (items use them) but not in its spell-icon
@@ -80,6 +86,33 @@ SPELLS = {
               ICON_BANNER_DRAENEI, 5, [(MOD_DAMAGE_PERCENT_DONE, 1, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 1, 0),
                                        (MOD_DAMAGE_PERCENT_TAKEN, -1, ALL_SCHOOLS)],
               {9: HIDE_DURATION}),  # renewed every second while a Draenei is near
+    # Mana-forged Barrier (patches/60-manaforged-barrier.ps1); icons from the stance (_D3energyarmor) and Power Surge
+    BARRIER_SHIELD: ('Mana-forged Barrier',
+                     'Absorbs up to 90% of damage taken, less as your mana runs low (half as much against magic), '
+                     'draining 1 mana per point absorbed. Threat increased by 160%. Immune to interrupts.',
+                     'Absorbing damage with mana. Threat increased. Immune to interrupts.',
+                     27330, 0, [(MANA_SHIELD, -1, ALL_SCHOOLS), (MOD_THREAT, 160, ALL_SCHOOLS), (EFFECT_IMMUNITY, 0, 68)],
+                     {4: PASSIVE, 101: ONE}),  # infinite amount: the script sets each absorb; 1 mana per point
+    BARRIER_PENALTY: ('Mana-forged Barrier',
+                      'Damage done reduced by 30% and healing done by 40%. 6% less chance to be critically hit by '
+                      'melee attacks.',
+                      'Damage done reduced by 30% and healing done by 40%.',
+                      27330, 0, [(MOD_DAMAGE_PERCENT_DONE, -30, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, -40, 0),
+                                 (MOD_ATTACKER_MELEE_CRIT_CHANCE, -6, 0)], {4: PASSIVE}),
+    BARRIER_MINDSET: ('Mana-forged Mindset',
+                      'You are no longer in Mana-forged Barrier, but your damage and healing haven\'t returned to '
+                      'normal yet.',
+                      'Damage done reduced by 20% and healing done by 10%.',
+                      27330, 0, [(MOD_HEALING_DONE_PERCENT, -10, 0), (MOD_DAMAGE_PERCENT_DONE, -20, ALL_SCHOOLS)]),
+    POWER_SURGE: ('Power Surge',
+                  'Restoring 30% of your missing mana over 4 sec.',
+                  'Restoring mana.',
+                  5356, 0, [(PERIODIC_ENERGIZE, 0, 0)], {98: 1000}),  # every 1 sec; the script sets the amount
+}
+
+# spell_script_names rows: id -> script (in the server patch named next to the spell)
+SCRIPTS = {
+    BARRIER_SHIELD: 'spell_wcme_manaforged_barrier',  # patches/60-manaforged-barrier.ps1
 }
 
 # spell_proc rows (charges used up by the next ability): id -> (ProcFlags, SpellTypeMask, SpellPhaseMask, Charges)
@@ -93,7 +126,6 @@ FLOAT_COLS = {47, 77, 78, 79, 101, 102, 103, 119, 120, 121, 216, 217, 218, 229, 
 UNSIGNED = set(range(1, 13)) | {14} | set(range(16, 41)) - {41} | set(range(42, 47)) | set(range(48, 52)) | {71, 72, 73} | \
     set(range(83, 101)) | set(range(104, 110)) | {116, 117, 118} | set(range(122, 136)) | {152, 169, 186, 203} | \
     set(range(204, 216)) | set(range(219, 224)) | {225, 226, 227, 232, 233}
-ONE = struct.unpack('<I', struct.pack('<f', 1.0))[0]
 
 
 def row(spell, fields=234, string_flags=0xFE0000FE):
@@ -150,6 +182,11 @@ def sql(fields=234):
                "`DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES")
     out.append(",\n".join(f"({i}, 0, 0, 0, 0, 0, {f}, {s}, {ph}, 0, 0, 0, 0, 100, 0, {c})"
                           for i, (f, s, ph, c) in ((i, PROCS[i]) for i in procs)) + ";")
+    scripts = sorted(SCRIPTS)
+    out.append("DELETE FROM `spell_script_names` WHERE `ScriptName` IN (" +
+               ", ".join(f"'{SCRIPTS[i]}'" for i in scripts) + ");")
+    out.append("INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES " +
+               ", ".join(f"({i}, '{SCRIPTS[i]}')" for i in scripts) + ";")
     return "\n".join(out) + "\n"
 
 
