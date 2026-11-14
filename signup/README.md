@@ -24,3 +24,20 @@ human check (Turnstile). The account is created through the server manager's own
 
 Patch night keeps the page's code current and restarts it. To change the invite code, edit `inviteCodes` in the
 settings file; old codes stop working as soon as you save.
+
+## In-game bug reports
+
+The game's **Report Bug** window sends reports to the world server (`CoABugReport.Enable` in server-settings), which
+saves each one the player ticked **Public** in `C:\Games\CoA Server\BugReports`. This service turns every file into an
+issue on `JaTynan/coa-wildcard-mystic`, labelled `player report`, and moves the file into `BugReports\sent`. The
+issue shows the player's title and text plus the server context (class, level, map, position, build), never the
+account or character. `signup.log` records each issue number.
+
+To switch it on, add a GitHub token to `signup-settings.json`:
+
+1. GitHub, Settings, Developer settings, Fine-grained tokens, Generate new token. Repository access: only
+   `JaTynan/coa-wildcard-mystic`. Permissions: Issues, Read and write. Pick a long expiry.
+2. Add `"githubToken": "github_pat_..."` to `signup-settings.json` and save. It is picked up within 30 seconds.
+
+Without a token, reports wait in the folder and go out once it is added. A player can send one report every 2 minutes.
+

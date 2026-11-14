@@ -473,3 +473,8 @@ modules\mod_ollama_chat.conf | OllamaChat.RateLimit.GlobalPerMinute = 100
 # raids (groups over 5) the usual pacing and per-channel caps apply, so raids and battlegrounds stay readable.
 modules\mod_ollama_chat.conf | OllamaChat.GestureChance = 20
 modules\mod_ollama_chat.conf | OllamaChat.EmoteReplyChance = 90
+# In-game Report Bug window: reports ticked Public are saved to this folder, and the sign-up service turns each one into
+# an issue on our GitHub repository (needs githubToken in signup-settings.json; see signup/README.md). 0 = off.
+worldserver.conf | CoABugReport.Enable = 1
+worldserver.conf | CoABugReport.SpoolDirectory = "C:\Games\CoA Server\BugReports"
+worldserver.conf | CoABugReport.CooldownSeconds = 120
