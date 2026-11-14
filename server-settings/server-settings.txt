@@ -65,6 +65,13 @@ worldserver.conf | Racials.Plainsrunning = 1
 # Orc Bloodrush (race kits): +2% damage and haste per enemy in combat with you (up to 5); +30% speed for 6 sec on a
 # killing blow. 0 = off.
 worldserver.conf | Racials.Bloodrush = 1
+# Night Elf Ambush (race kits): entering stealth readies your next ability, 10% cheaper and 50% more damage or
+# healing; at most once every 20 sec. 0 = off.
+worldserver.conf | Racials.Ambush = 1
+# Troll Voodoo Regeneration (race kits, replaces the stock Regeneration passive): +50% health regeneration out of
+# combat; 0.3% of maximum health per second in combat (half while the burst is on cooldown); below 35% health, 3% per
+# second for 8 sec, once every 2 min. 0 = off (the stock passive comes back).
+worldserver.conf | Racials.VoodooRegeneration = 1
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100
