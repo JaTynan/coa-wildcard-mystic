@@ -22,14 +22,14 @@ class Dbc:
 STRING_COLS = set(range(136, 204)) - {152, 169, 186, 203}
 
 
-def write_dbc(path, rows, fields, string_of):
-    """rows: list of tuples of uint32; string_of(row, col) -> str for string columns."""
+def write_dbc(path, rows, fields, string_of, string_cols=None):
+    """rows: list of tuples of uint32; string_of(row, col) -> str for string columns (Spell.dbc's unless given)."""
     table = bytearray(b'\0')
     index = {'': 0}
     out = []
     for rec in rows:
         rec = list(rec)
-        for c in STRING_COLS:
+        for c in (STRING_COLS if string_cols is None else string_cols):
             s = string_of(rec, c)
             if s not in index:
                 index[s] = len(table)

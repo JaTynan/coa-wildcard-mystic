@@ -42,12 +42,15 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
   next ability that deals damage or heals (buffs like Sprint don't use it).
 - Troll Voodoo Regeneration: `patches/58-racial-voodoo-regeneration.ps1` (`Racials.VoodooRegeneration`). Hidden passive
   9990005 (out-of-combat regeneration), burst 9990006 and its cooldown 9990007.
+- Draenei Radiant Presence: `patches/59-racial-radiant-presence.ps1` (`Racials.RadiantPresence`). Buff 9990008 on
+  the Draenei and allies in range (stacks = Light); the client patch adds its banner icon (SpellIcon 9990001).
 
 ## Buff icons (James's picks, 14 November)
 
 Each signature shows as a buff (our own spells, `client-patch/custom_spells.py`). Numbers are SpellIcon.dbc IDs;
 "add" means the picture is in the game (items use it) but not in the spell-icon list, so the client patch must add
-a SpellIcon row for it (check the client's own SpellIcon.dbc matches the server's copy first).
+a SpellIcon row for it (`ICONS` in `client-patch/custom_spells.py`; our rows are 9990001 and up). The client's own
+SpellIcon.dbc (sent 14 November) matches every number above.
 
 | Race | Buff | Icon | SpellIcon |
 | --- | --- | --- | --- |
@@ -57,7 +60,7 @@ a SpellIcon row for it (check the client's own SpellIcon.dbc matches the server'
 | Human | Spellsword | inv_sword_144 | add |
 | Human | Spellsword: no effect (build already converts) | inv_axe_39 | add |
 | Night Elf | Ambush | achievement_profession_fishing_findfish | 3701 |
-| Draenei | Radiant Presence | inv_misc_tournaments_banner_draenei | add |
+| Draenei | Radiant Presence | inv_misc_tournaments_banner_draenei | 9990001 (added, done) |
 | Gnome | Overclock: bigger pools | inv_misc_enggizmos_23 | add |
 | Gnome | Overclock: learning the enemy (steps) | achievement_bg_tophealer_wsg | add |
 | Gnome | Escape Artist speed (+60%, 3 sec), and Escape Artist's own spell icon (client patch) | inv_gizmo_rocketboot_destroyed_02 | add |

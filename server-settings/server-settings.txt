@@ -72,6 +72,10 @@ worldserver.conf | Racials.Ambush = 1
 # combat; 0.3% of maximum health per second in combat (half while the burst is on cooldown); below 35% health, 3% per
 # second for 8 sec, once every 2 min. 0 = off (the stock passive comes back).
 worldserver.conf | Racials.VoodooRegeneration = 1
+# Draenei Radiant Presence (race kits): in combat, a stack of Light every 6 sec, up to 5; each gives you and allies
+# within 30 yards (group, pets, guardians) +1% damage and healing and 1% less damage taken; fades 10 sec after combat;
+# a second Draenei adds nothing (the highest count counts). Your auras and totems reach 50% further. 0 = off.
+worldserver.conf | Racials.RadiantPresence = 1
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100

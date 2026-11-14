@@ -15,13 +15,22 @@ AMBUSH = 9990004
 VOODOO = 9990005
 VOODOO_BURST = 9990006
 VOODOO_COOLDOWN = 9990007
+RADIANT = 9990008
 
-DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_HEALTH_REGEN_PERCENT, \
-    MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 88, 136, 193  # aura types
+DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
+    MOD_HEALTH_REGEN_PERCENT, MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 87, 88, 136, 193  # aura types
 PASSIVE = 0x80000040  # can't be cancelled, and passive: never shown on the buff bar
 # The next ability: any spell hit (melee, ranged, magic or none damage class; harmful or helpful), not auto attacks
 NEXT_ABILITY = 0x10 | 0x100 | 0x400 | 0x1000 | 0x4000 | 0x10000
 ALL_SCHOOLS = 127
+HIDE_DURATION = 0x400  # AttributesEx5 (column 9): the client shows no timer
+
+# Our own rows in the client's SpellIcon.dbc: pictures that are in the game (items use them) but not in its spell-icon
+# list. IDs 9990001 and up are free there (the client's highest is 954750). Only the client needs them.
+ICON_BANNER_DRAENEI = 9990001
+ICONS = {
+    ICON_BANNER_DRAENEI: 'Interface\\Icons\\inv_misc_tournaments_banner_draenei',
+}
 
 # id -> name, description, aura text, icon id (SpellIcon.dbc), max stack, effects [(aura, amount per stack, misc)],
 # and optionally {column: value} for anything else. Every one lasts until the server removes it (it sets a timer where
@@ -63,6 +72,14 @@ SPELLS = {
                       'The burst can\'t happen again until this ends, and in-combat regeneration is halved.',
                       'The burst is on cooldown; in-combat regeneration halved.',
                       3234, 0, [(DUMMY, 0, 0)]),  # achievement_dungeon_drak'tharon_heroic
+    RADIANT: ('Radiant Presence',
+              'In combat, the Draenei gains a stack of Light every 6 sec, up to 5. Each stack gives them and allies '
+              'within 30 yards +1% damage and healing and 1% less damage taken. Fades 10 sec after combat. A second '
+              'Draenei doesn\'t add more. Their auras and totems reach 50% further.',
+              'Damage and healing done increased by $s1% and damage taken reduced by $s1% per stack of Light.',
+              ICON_BANNER_DRAENEI, 5, [(MOD_DAMAGE_PERCENT_DONE, 1, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 1, 0),
+                                       (MOD_DAMAGE_PERCENT_TAKEN, -1, ALL_SCHOOLS)],
+              {9: HIDE_DURATION}),  # renewed every second while a Draenei is near
 }
 
 # spell_proc rows (charges used up by the next ability): id -> (ProcFlags, SpellTypeMask, SpellPhaseMask, Charges)
@@ -134,6 +151,12 @@ def sql(fields=234):
     out.append(",\n".join(f"({i}, 0, 0, 0, 0, 0, {f}, {s}, {ph}, 0, 0, 0, 0, 100, 0, {c})"
                           for i, (f, s, ph, c) in ((i, PROCS[i]) for i in procs)) + ";")
     return "\n".join(out) + "\n"
+
+
+def icon_dbc(spell_icons):
+    """The client's SpellIcon.dbc (a Dbc) with our ICONS rows added, as (rows, string_of) for dbc.write_dbc."""
+    rows = [rec for i, rec in sorted(spell_icons.rows.items()) if i not in ICONS] + [(i, 0) for i in sorted(ICONS)]
+    return rows, lambda rec, col: ICONS[rec[0]] if rec[0] in ICONS else spell_icons.string(spell_icons.rows[rec[0]][col])
 
 
 if __name__ == '__main__':
