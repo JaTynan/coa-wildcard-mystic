@@ -15,6 +15,7 @@ import sys
 
 from dbc import Dbc, write_dbc
 from mpqwrite import write_mpq
+import custom_spells
 from racials import off_gcd
 
 wildcard, area52 = Dbc(sys.argv[1]), Dbc(sys.argv[2])
@@ -32,7 +33,9 @@ def client_row(spell):
     return off_gcd(tuple(row))  # racials off the global cooldown (racials.py)
 
 
-rows = [client_row(spell) for spell in sorted(source)]
-write_dbc('Spell.dbc', rows, wildcard.fields, lambda rec, col: source[rec[0]].string(source[rec[0]].rows[rec[0]][col]))
+rows = [client_row(spell) for spell in sorted(source) if spell not in custom_spells.SPELLS]
+rows += [custom_spells.row(spell, wildcard.fields) for spell in sorted(custom_spells.SPELLS)]  # our buff icons
+write_dbc('Spell.dbc', rows, wildcard.fields, lambda rec, col: custom_spells.string_of(rec[0], col)
+          if rec[0] in custom_spells.SPELLS else source[rec[0]].string(source[rec[0]].rows[rec[0]][col]))
 write_mpq(sys.argv[4] if len(sys.argv) > 4 else 'patch-ZZW.MPQ', [('DBFilesClient\\Spell.dbc', open('Spell.dbc', 'rb').read())])
 print(f'Added {len(added)} enchant spells; {len(rows)} spells in all.')
