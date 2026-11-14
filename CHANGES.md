@@ -56,6 +56,7 @@ for good by deleting its part from the script.
 | `53-wildcard-card-messages.ps1` | Setting an ability or talent card before the four starting abilities are rolled (straight after a prestige) explains why on screen and in chat, instead of only the raw SET_SKILL_CARD_UNKNOWN code | always on |
 | `54-racial-plainsrunning.ps1` | Tauren Plainsrunning: running on foot builds speed over 60 sec up to level + 40% (100% at 60), on top of other speed effects; drains in 6 sec when you stop; not while mounted, held while carrying a flag | `Racials.Plainsrunning` |
 | `56-racial-bloodrush.ps1` | Orc Bloodrush: +2% damage and haste per enemy in combat with you, up to 5; +30% movement speed for 6 sec after a killing blow; buff icons from the client patch | `Racials.Bloodrush` |
+| `57-bot-group-xp.ps1` | Bots in a player's group take no share of that player's kill XP, so dungeons with bots level as fast as solo kills (real players still share with each other; not in battlegrounds or raids) | `Wildcard.BotsTakeNoGroupXP` |
 
 ## Settings (summary)
 

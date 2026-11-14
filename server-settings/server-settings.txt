@@ -65,6 +65,9 @@ worldserver.conf | Racials.Plainsrunning = 1
 # Orc Bloodrush (race kits): +2% damage and haste per enemy in combat with you (up to 5); +30% speed for 6 sec on a
 # killing blow. 0 = off.
 worldserver.conf | Racials.Bloodrush = 1
+# Bots in your group take no share of your kill XP (14 Nov; needs the build with the patch). Alone with four bots
+# you get the solo amount instead of about 28% of it; real players still share with each other. 0 = off.
+worldserver.conf | Wildcard.BotsTakeNoGroupXP = 1
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100
