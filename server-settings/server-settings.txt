@@ -62,6 +62,9 @@ worldserver.conf | Battleground.InsigniaGoldPerLevel = 100
 # Tauren Plainsrunning (race kits): running on foot builds up to level + 40% speed over 60 sec, on top of other speed
 # effects; drains in 6 sec when you stop. Not mounted; held while carrying a flag. 0 = off.
 worldserver.conf | Racials.Plainsrunning = 1
+# Orc Bloodrush (race kits): +2% damage and haste per enemy in combat with you (up to 5); +15% speed for 6 sec on a
+# killing blow. 0 = off.
+worldserver.conf | Racials.Bloodrush = 1
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100

@@ -36,6 +36,8 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
   `patches/52-racials.ps1` and the client patch.
 - Tauren Plainsrunning: `patches/54-racial-plainsrunning.ps1` (`Racials.Plainsrunning`). Buff icon (Arathi Highlands
   achievement icon) whose stack count is the bonus in percent: our spell 9990001 (`client-patch/custom_spells.py`).
+- Orc Bloodrush: `patches/56-racial-bloodrush.ps1` (`Racials.Bloodrush`). Buffs 9990002 (stacks = enemies) and 9990003
+  (speed after a killing blow).
 
 ## Balance notes
 

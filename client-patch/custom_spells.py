@@ -9,15 +9,30 @@ import struct
 import sys
 
 PLAINSRUNNING = 9990001
+BLOODRUSH = 9990002
+BLOODRUSH_SPEED = 9990003
 
-# id -> (name, description, aura text, icon id from SpellIcon.dbc, max stack)
+DUMMY, MOD_INCREASE_SPEED, MOD_DAMAGE_PERCENT_DONE, HASTE_ALL = 4, 31, 79, 193  # aura types
+ALL_SCHOOLS = 127
+
+# id -> name, description, aura text, icon id (SpellIcon.dbc), max stack, effects [(aura, amount per stack, misc)].
+# Every one lasts until the server removes it (it sets a timer where one is needed).
 SPELLS = {
     PLAINSRUNNING: ('Plainsrunning',
                     'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                     '(100% at level 60), on top of other speed effects. When you stop it drains in 6 sec. Not while '
                     'mounted; held while carrying a flag.',
                     'Running faster. The number is your bonus running speed in percent.',
-                    3542, 100),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
+                    3542, 100, [(DUMMY, 0, 0)]),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
+    BLOODRUSH: ('Bloodrush',
+                'For each enemy in combat with you, +2% damage and +2% haste, up to 5 enemies. Each killing blow '
+                'gives +15% movement speed for 6 sec. Gone out of combat.',
+                'Damage and haste increased by $s1%. One stack per enemy in combat with you.',
+                86, 5, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS), (HASTE_ALL, 2, 0)]),  # Ability_Racial_BloodRage
+    BLOODRUSH_SPEED: ('Bloodrush',
+                      'Movement speed increased by 15% after a killing blow.',
+                      'Movement speed increased by $s1%.',
+                      516, 0, [(MOD_INCREASE_SPEED, 15, 0)]),  # Ability_Rogue_Sprint
 }
 
 STRINGS = {136: 0, 170: 1, 187: 2}  # enUS name, description, aura text (index into the tuple above)
@@ -30,19 +45,25 @@ ONE = struct.unpack('<I', struct.pack('<f', 1.0))[0]
 
 
 def row(spell, fields=234, string_flags=0xFE0000FE):
-    _, _, _, icon, stack = SPELLS[spell]
+    *_, icon, stack, effects = SPELLS[spell]
     r = [0] * fields
     r[0] = spell
     r[4] = 0x80000000          # can't be cancelled by right-click
     r[28] = 1                  # instant
     r[40] = 21                 # lasts until the server removes it
     r[46] = 1                  # self
-    r[49] = stack              # stack count = bonus in percent
+    r[49] = stack              # stacks (each stack multiplies the amounts)
     r[68] = 0xFFFFFFFF         # no item requirement
-    r[71], r[74], r[80], r[86], r[95] = 6, 1, 0xFFFFFFFF, 1, 4  # apply aura: dummy, amount 0, on self
+    for i, (aura, amount, misc) in enumerate(effects):
+        r[71 + i] = 6          # apply aura
+        r[74 + i] = 1          # die sides: amount = base points + 1
+        r[80 + i] = (amount - 1) & 0xFFFFFFFF
+        r[86 + i] = 1          # on self
+        r[95 + i] = aura
+        r[110 + i] = misc
+        r[216 + i] = ONE
     r[133] = icon
     r[213], r[225] = 1, 1
-    r[216] = r[217] = r[218] = ONE
     for flags in (152, 169, 186, 203):
         r[flags] = string_flags
     return tuple(r)
