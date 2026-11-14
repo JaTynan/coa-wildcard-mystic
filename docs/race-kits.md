@@ -34,6 +34,8 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
 
 - Every active racial is off the global cooldown (Will of the Forsaken, Cannibalize and Gift of the Naaru were not):
   `patches/52-racials.ps1` and the client patch.
+- Tauren Plainsrunning: `patches/54-racial-plainsrunning.ps1` (`Racials.Plainsrunning`). No buff icon yet: the
+  speed is felt, not shown.
 
 ## Balance notes
 

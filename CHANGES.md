@@ -53,6 +53,7 @@ for good by deleting its part from the script.
 | `51-profession-mastery.ps1` | Profession Mastery past skill 300: gathering yields rise to 3x, crafted gear's bonus-roll chances to 2x; `.mastery`, and the WildcardMastery addon shows it in the Skills tab and profession windows | `Mastery.*` |
 | `52-racials.ps1` | Every active racial is off the global cooldown (Will of the Forsaken, Cannibalize, Gift of the Naaru); the client patch carries the same change (`client-patch/racials.py`) | always on |
 | `53-wildcard-card-messages.ps1` | Setting an ability or talent card before the four starting abilities are rolled (straight after a prestige) explains why on screen and in chat, instead of only the raw SET_SKILL_CARD_UNKNOWN code | always on |
+| `54-racial-plainsrunning.ps1` | Tauren Plainsrunning: running on foot builds speed over 60 sec up to level + 40% (100% at 60), on top of other speed effects; drains in 6 sec when you stop; not while mounted, held while carrying a flag | `Racials.Plainsrunning` |
 
 ## Settings (summary)
 
