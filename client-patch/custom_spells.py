@@ -11,12 +11,21 @@ import sys
 PLAINSRUNNING = 9990001
 BLOODRUSH = 9990002
 BLOODRUSH_SPEED = 9990003
+AMBUSH = 9990004
+VOODOO = 9990005
+VOODOO_BURST = 9990006
+VOODOO_COOLDOWN = 9990007
 
-DUMMY, MOD_INCREASE_SPEED, MOD_DAMAGE_PERCENT_DONE, HASTE_ALL = 4, 31, 79, 193  # aura types
+DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_HEALTH_REGEN_PERCENT, \
+    MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 88, 136, 193  # aura types
+PASSIVE = 0x80000040  # can't be cancelled, and passive: never shown on the buff bar
+# The next ability: any spell hit (melee, ranged, magic or none damage class; harmful or helpful), not auto attacks
+NEXT_ABILITY = 0x10 | 0x100 | 0x400 | 0x1000 | 0x4000 | 0x10000
 ALL_SCHOOLS = 127
 
-# id -> name, description, aura text, icon id (SpellIcon.dbc), max stack, effects [(aura, amount per stack, misc)].
-# Every one lasts until the server removes it (it sets a timer where one is needed).
+# id -> name, description, aura text, icon id (SpellIcon.dbc), max stack, effects [(aura, amount per stack, misc)],
+# and optionally {column: value} for anything else. Every one lasts until the server removes it (it sets a timer where
+# one is needed).
 SPELLS = {
     PLAINSRUNNING: ('Plainsrunning',
                     'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
@@ -33,6 +42,32 @@ SPELLS = {
                       'Movement speed increased by 30% for 6 sec after a killing blow.',
                       'Movement speed increased by $s1%.',
                       516, 0, [(MOD_INCREASE_SPEED, 30, 0)]),  # Ability_Rogue_Sprint
+    AMBUSH: ('Ambush',
+             'Entering stealth readies your next ability: it costs 10% less and deals or heals 50% more. At most once '
+             'every 20 sec.',
+             'Your next ability costs 10% less and deals or heals 50% more.',
+             3701, 0, [(MOD_DAMAGE_PERCENT_DONE, 50, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 50, 0),
+                       (MOD_POWER_COST_PCT, -10, ALL_SCHOOLS)],
+             {34: NEXT_ABILITY, 35: 100, 36: 1}),  # achievement_profession_fishing_findfish; one charge
+    VOODOO: ('Voodoo Regeneration',
+             'Health regenerates 50% faster out of combat. In combat, regenerate 0.3% of maximum health per second '
+             '(half while the burst is on cooldown). Below 35% health, regenerate 3% of maximum health per second '
+             'for 8 sec, once every 2 min.',
+             'Health regeneration increased by $s1% out of combat.',
+             19697, 0, [(MOD_HEALTH_REGEN_PERCENT, 50, 0)], {4: PASSIVE}),
+    VOODOO_BURST: ('Voodoo Regeneration',
+                   'Regenerating 3% of maximum health per second for 8 sec.',
+                   'Regenerating 3% of maximum health per second.',
+                   19697, 0, [(DUMMY, 0, 0)]),  # inv_offhand_zulaman_d_01
+    VOODOO_COOLDOWN: ('Voodoo Regeneration (cooldown)',
+                      'The burst can\'t happen again until this ends, and in-combat regeneration is halved.',
+                      'The burst is on cooldown; in-combat regeneration halved.',
+                      3234, 0, [(DUMMY, 0, 0)]),  # achievement_dungeon_drak'tharon_heroic
+}
+
+# spell_proc rows (charges used up by the next ability): id -> (ProcFlags, SpellTypeMask, SpellPhaseMask, Charges)
+PROCS = {
+    AMBUSH: (NEXT_ABILITY, 3, 2, 1),  # used by the next ability that deals damage or heals (not buffs); on hit
 }
 
 STRINGS = {136: 0, 170: 1, 187: 2}  # enUS name, description, aura text (index into the tuple above)
@@ -45,7 +80,7 @@ ONE = struct.unpack('<I', struct.pack('<f', 1.0))[0]
 
 
 def row(spell, fields=234, string_flags=0xFE0000FE):
-    *_, icon, stack, effects = SPELLS[spell]
+    _, _, _, icon, stack, effects, *extra = SPELLS[spell]
     r = [0] * fields
     r[0] = spell
     r[4] = 0x80000000          # can't be cancelled by right-click
@@ -64,6 +99,8 @@ def row(spell, fields=234, string_flags=0xFE0000FE):
         r[216 + i] = ONE
     r[133] = icon
     r[213], r[225] = 1, 1
+    for col, v in (extra[0] if extra else {}).items():
+        r[col] = v & 0xFFFFFFFF
     for flags in (152, 169, 186, 203):
         r[flags] = string_flags
     return tuple(r)
@@ -88,6 +125,14 @@ def sql(fields=234):
     out.append("DELETE FROM `spell_dbc` WHERE `ID` IN (" + ", ".join(map(str, ids)) + ");")
     out.append("INSERT INTO `spell_dbc` VALUES")
     out.append(",\n".join("(" + ", ".join(value(c, v, i) for c, v in enumerate(row(i, fields))) + ")" for i in ids) + ";")
+    procs = sorted(PROCS)
+    out.append("INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES " + ", ".join(f"('spell_proc', {i})" for i in procs) + ";")
+    out.append("DELETE FROM `spell_proc` WHERE `SpellId` IN (" + ", ".join(map(str, procs)) + ");")
+    out.append("INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, "
+               "`SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, "
+               "`DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES")
+    out.append(",\n".join(f"({i}, 0, 0, 0, 0, 0, {f}, {s}, {ph}, 0, 0, 0, 0, 100, 0, {c})"
+                          for i, (f, s, ph, c) in ((i, PROCS[i]) for i in procs)) + ";")
     return "\n".join(out) + "\n"
 
 

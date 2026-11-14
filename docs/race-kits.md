@@ -38,6 +38,10 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
   achievement icon) whose stack count is the bonus in percent: our spell 9990001 (`client-patch/custom_spells.py`).
 - Orc Bloodrush: `patches/56-racial-bloodrush.ps1` (`Racials.Bloodrush`). Buffs 9990002 (stacks = enemies) and 9990003
   (speed after a killing blow).
+- Night Elf Ambush: `patches/57-racial-ambush.ps1` (`Racials.Ambush`). Buff 9990004 with one charge, used up by the
+  next ability that deals damage or heals (buffs like Sprint don't use it).
+- Troll Voodoo Regeneration: `patches/58-racial-voodoo-regeneration.ps1` (`Racials.VoodooRegeneration`). Hidden passive
+  9990005 (out-of-combat regeneration), burst 9990006 and its cooldown 9990007.
 
 ## Buff icons (James's picks, 14 November)
 
