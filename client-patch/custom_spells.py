@@ -20,6 +20,13 @@ BARRIER_SHIELD = 9990009
 BARRIER_PENALTY = 9990010
 BARRIER_MINDSET = 9990011
 POWER_SURGE = 9990012
+# Spellbook entries for the signature racials (patches/62-racial-spellbook.ps1 teaches them): passive, they do nothing
+# themselves; hovering one explains the racial.
+BOOK_PLAINSRUNNING = 9990013
+BOOK_BLOODRUSH = 9990014
+BOOK_AMBUSH = 9990015
+BOOK_VOODOO = 9990016
+BOOK_RADIANT = 9990017
 
 MOD_THREAT, PERIODIC_ENERGIZE, EFFECT_IMMUNITY, MANA_SHIELD, MOD_ATTACKER_MELEE_CRIT_CHANCE = 10, 24, 37, 97, 187
 DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
@@ -30,6 +37,7 @@ NEXT_ABILITY = 0x10 | 0x100 | 0x400 | 0x1000 | 0x4000 | 0x10000
 ALL_SCHOOLS = 127
 ONE = struct.unpack('<I', struct.pack('<f', 1.0))[0]  # 1.0 as a float column
 HIDE_DURATION = 0x400  # AttributesEx5 (column 9): the client shows no timer
+BOOK_PASSIVE = 0x80000050  # a spellbook passive like the stock racials (ability, passive, can't be cancelled)
 
 # Our own rows in the client's SpellIcon.dbc: pictures that are in the game (items use them) but not in its spell-icon
 # list. IDs 9990001 and up are free there (the client's highest is 954750). Only the client needs them.
@@ -82,10 +90,10 @@ SPELLS = {
               'In combat, the Draenei gains a stack of Light every 6 sec, up to 5. Each stack gives them and allies '
               'within 30 yards +1% damage and healing and 1% less damage taken. Fades 10 sec after combat. A second '
               'Draenei doesn\'t add more. Their auras and totems reach 50% further.',
-              'Damage and healing done increased by $s1% and damage taken reduced by $s1% per stack of Light.',
+              'Damage and healing done increased by $s1% and damage taken reduced by $s1%. Each stack of Light '
+              'adds 1%.',
               ICON_BANNER_DRAENEI, 5, [(MOD_DAMAGE_PERCENT_DONE, 1, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 1, 0),
-                                       (MOD_DAMAGE_PERCENT_TAKEN, -1, ALL_SCHOOLS)],
-              {9: HIDE_DURATION}),  # renewed every second while a Draenei is near
+                                       (MOD_DAMAGE_PERCENT_TAKEN, -1, ALL_SCHOOLS)]),  # the server sets the timer
     # Mana-forged Barrier (patches/60-manaforged-barrier.ps1); icons from the stance (_D3energyarmor) and Power Surge
     BARRIER_SHIELD: ('Mana-forged Barrier',
                      'Absorbs up to 90% of damage taken, less as your mana runs low (half as much against magic), '
@@ -108,7 +116,33 @@ SPELLS = {
                   'Restoring 30% of your missing mana over 4 sec.',
                   'Restoring mana.',
                   5356, 0, [(PERIODIC_ENERGIZE, 0, 0)], {98: 1000}),  # every 1 sec; the script sets the amount
+    # Spellbook entries ("Racial Passive", RANKS below)
+    BOOK_PLAINSRUNNING: ('Plainsrunning',
+                         'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
+                         '(100% at level 60), on top of other speed effects. When you stop, it drains in 6 sec. Not '
+                         'while mounted; paused while carrying a battleground flag.',
+                         '', 3542, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    BOOK_BLOODRUSH: ('Bloodrush',
+                     'For each enemy in combat with you, +2% damage and +2% haste, up to 5 enemies. Gone when combat '
+                     'ends. Each killing blow also gives +30% movement speed for 6 sec.',
+                     '', 6200, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    BOOK_AMBUSH: ('Ambush',
+                  'Entering stealth (Shadowmeld or a class stealth) readies your next ability: it costs 10% less and '
+                  'deals or heals 50% more. At most once every 20 sec.',
+                  '', 3701, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    BOOK_VOODOO: ('Voodoo Regeneration',
+                  'Health regenerates 50% faster out of combat. In combat, regenerate 0.3% of maximum health per '
+                  'second (half while the burst is on cooldown). Below 35% health, regenerate 3% of maximum health '
+                  'per second for 8 sec, once every 2 min.',
+                  '', 19697, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    BOOK_RADIANT: ('Radiant Presence',
+                   'In combat, gain a stack of Light every 6 sec, up to 5. Each stack gives you and every ally within '
+                   '30 yards (pets and guardians too) +1% damage and healing and 1% less damage taken. The Light '
+                   'fades 10 sec after combat. A second Draenei doesn\'t add more. Your auras and totems reach 50% '
+                   'further.',
+                   '', ICON_BANNER_DRAENEI, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
 }
+RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT)}
 
 # spell_script_names rows: id -> script (in the server patch named next to the spell)
 SCRIPTS = {
@@ -121,6 +155,7 @@ PROCS = {
 }
 
 STRINGS = {136: 0, 170: 1, 187: 2}  # enUS name, description, aura text (index into the tuple above)
+RANK_COL = 153  # enUS rank text (the line under the name in the spellbook)
 FLOAT_COLS = {47, 77, 78, 79, 101, 102, 103, 119, 120, 121, 216, 217, 218, 229, 230, 231}
 # spell_dbc columns declared unsigned (AzerothCore's schema); the rest are signed.
 UNSIGNED = set(range(1, 13)) | {14} | set(range(16, 41)) - {41} | set(range(42, 47)) | set(range(48, 52)) | {71, 72, 73} | \
@@ -157,6 +192,8 @@ def row(spell, fields=234, string_flags=0xFE0000FE):
 
 def string_of(spell, col):
     texts = SPELLS[spell]
+    if col == RANK_COL:
+        return RANKS.get(spell, '')
     return texts[STRINGS[col]] if col in STRINGS else ''
 
 

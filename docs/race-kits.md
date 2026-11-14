@@ -44,6 +44,8 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
   9990005 (out-of-combat regeneration), burst 9990006 and its cooldown 9990007.
 - Draenei Radiant Presence: `patches/59-racial-radiant-presence.ps1` (`Racials.RadiantPresence`). Buff 9990008 on
   the Draenei and allies in range (stacks = Light); the client patch adds its banner icon (SpellIcon 9990001).
+- Spellbook entries: `patches/62-racial-spellbook.ps1` teaches each race its "Racial Passive" entry (spells
+  9990013-9990017, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
 
 ## Buff icons (James's picks, 14 November)
 
