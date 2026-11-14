@@ -69,6 +69,7 @@ by that next spell). `090-mysql-tuning.sql`: MySQL settings that survive the man
 `100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
 `110-manastorm-caches-unstack.sql`: Manastorm caches no longer stack, so each one opens and disappears when emptied.
 `120-battleground-spoils.sql`: Battleground Spoils can be opened (used by the Battleground Spoils patch).
+`150-custom-spells.sql`: our own spells for buff icons (Plainsrunning), written by `client-patch/custom_spells.py`.
 `130-battleground-dampening.sql`: everyone in a battleground does 20% less healing and gets 20% smaller absorb shields
 (Ascension's "PvP - Battleground - Dampening", which CoA has but never applied).
 

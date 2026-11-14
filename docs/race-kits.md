@@ -34,8 +34,8 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
 
 - Every active racial is off the global cooldown (Will of the Forsaken, Cannibalize and Gift of the Naaru were not):
   `patches/52-racials.ps1` and the client patch.
-- Tauren Plainsrunning: `patches/54-racial-plainsrunning.ps1` (`Racials.Plainsrunning`). No buff icon yet: the
-  speed is felt, not shown.
+- Tauren Plainsrunning: `patches/54-racial-plainsrunning.ps1` (`Racials.Plainsrunning`). Buff icon (Arathi Highlands
+  achievement icon) whose stack count is the bonus in percent: our spell 9990001 (`client-patch/custom_spells.py`).
 
 ## Balance notes
 

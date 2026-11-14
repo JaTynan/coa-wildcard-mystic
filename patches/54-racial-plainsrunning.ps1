@@ -1,6 +1,7 @@
 # Tauren signature racial: Plainsrunning (docs/race-kits.md). Running on foot builds speed over 60 sec up to level + 40%
 # (100% at level 60); it drains in 6 sec when you stop; it adds on top of other speed effects (Sprint's +70% and a full
-# +100% make +170%). Nothing while mounted; held, but not applied, while carrying a battleground flag.
+# +100% make +170%). Nothing while mounted; held, but not applied, while carrying a battleground flag. The buff icon is our
+# spell 9990001 (sql/enchants/150-custom-spells.sql and the client patch, client-patch/custom_spells.py).
 # Run by the build (step "Apply our patch scripts") from the workspace root, after 40-battlegrounds.ps1, whose script
 # loader this registers in. Each part throws if its anchor is gone. Listed in CHANGES.md. Racials.Plainsrunning = 0 turns it off.
 $ErrorActionPreference = 'Stop'
@@ -77,12 +78,19 @@ public:
         {
             player->WcmePlainsrunningBonus = bonus;
             player->UpdateSpeed(MOVE_RUN, true);
+            // The buff (our spell 9990001, client patch): its stack count is the bonus in percent.
+            constexpr uint32 buff = 9990001;
+            uint8 const percent = uint8(std::min(100.0f, bonus * 100.0f + 0.5f));
+            if (!percent)
+                player->RemoveAurasDueToSpell(buff);
+            else if (Aura* aura = player->HasAura(buff) ? player->GetAura(buff) : player->AddAura(buff, player))
+                aura->SetStackAmount(percent);
         }
     }
 };
 
 '@
-$text = $text.Replace($include, $include + "#include `"MoveSpline.h`"`n#include <cmath>`n")
+$text = $text.Replace($include, $include + "#include `"MoveSpline.h`"`n#include `"SpellAuras.h`"`n#include <cmath>`n")
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_plainsrunning();`n")
 Set-Content $file $text -NoNewline
