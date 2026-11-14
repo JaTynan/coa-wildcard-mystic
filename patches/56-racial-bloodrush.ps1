@@ -1,5 +1,5 @@
 # Orc signature racial: Bloodrush (docs/race-kits.md). For each enemy in combat with you, +2% damage and +2% haste, up to
-# 5 enemies; each killing blow gives +15% movement speed for 6 sec; gone out of combat. The buffs are our spells 9990002
+# 5 enemies, gone out of combat; each killing blow gives +30% movement speed for 6 sec, in or out of combat. The buffs are our spells 9990002
 # (stacks = enemies) and 9990003 (speed): sql/enchants/150-custom-spells.sql and the client patch
 # (client-patch/custom_spells.py). Run by the build from the workspace root, after 40-battlegrounds.ps1, whose script
 # loader this registers in. Throws if an anchor is gone. Listed in CHANGES.md. Racials.Bloodrush = 0 turns it off.

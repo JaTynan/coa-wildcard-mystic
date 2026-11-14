@@ -26,13 +26,13 @@ SPELLS = {
                     3542, 100, [(DUMMY, 0, 0)]),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
     BLOODRUSH: ('Bloodrush',
                 'For each enemy in combat with you, +2% damage and +2% haste, up to 5 enemies. Each killing blow '
-                'gives +15% movement speed for 6 sec. Gone out of combat.',
+                'gives +30% movement speed for 6 sec. The stacks go out of combat.',
                 'Damage and haste increased by $s1%. One stack per enemy in combat with you.',
-                86, 5, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS), (HASTE_ALL, 2, 0)]),  # Ability_Racial_BloodRage
+                6200, 5, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS), (HASTE_ALL, 2, 0)]),  # achievement_bg_interruptx_flagcapture_attempts_1game
     BLOODRUSH_SPEED: ('Bloodrush',
-                      'Movement speed increased by 15% after a killing blow.',
+                      'Movement speed increased by 30% for 6 sec after a killing blow.',
                       'Movement speed increased by $s1%.',
-                      516, 0, [(MOD_INCREASE_SPEED, 15, 0)]),  # Ability_Rogue_Sprint
+                      516, 0, [(MOD_INCREASE_SPEED, 30, 0)]),  # Ability_Rogue_Sprint
 }
 
 STRINGS = {136: 0, 170: 1, 187: 2}  # enUS name, description, aura text (index into the tuple above)

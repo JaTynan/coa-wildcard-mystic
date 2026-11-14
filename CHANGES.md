@@ -54,7 +54,7 @@ for good by deleting its part from the script.
 | `52-racials.ps1` | Every active racial is off the global cooldown (Will of the Forsaken, Cannibalize, Gift of the Naaru); the client patch carries the same change (`client-patch/racials.py`) | always on |
 | `53-wildcard-card-messages.ps1` | Setting an ability or talent card before the four starting abilities are rolled (straight after a prestige) explains why on screen and in chat, instead of only the raw SET_SKILL_CARD_UNKNOWN code | always on |
 | `54-racial-plainsrunning.ps1` | Tauren Plainsrunning: running on foot builds speed over 60 sec up to level + 40% (100% at 60), on top of other speed effects; drains in 6 sec when you stop; not while mounted, held while carrying a flag | `Racials.Plainsrunning` |
-| `56-racial-bloodrush.ps1` | Orc Bloodrush: +2% damage and haste per enemy in combat with you, up to 5; +15% movement speed for 6 sec after a killing blow; buff icons from the client patch | `Racials.Bloodrush` |
+| `56-racial-bloodrush.ps1` | Orc Bloodrush: +2% damage and haste per enemy in combat with you, up to 5; +30% movement speed for 6 sec after a killing blow; buff icons from the client patch | `Racials.Bloodrush` |
 
 ## Settings (summary)
 
