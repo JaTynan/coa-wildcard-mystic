@@ -145,6 +145,10 @@ worldserver.conf | MaxPlayerLevel = 60
 # Triple XP everywhere (9 Nov, was 2x; CoA's stock master rate is 0.9295 and 3 x 0.9295 = 2.7885, which keeps its
 # per-source balance)
 worldserver.conf | Rate.XP.Global = 2.7885
+# Kill XP 15% lower (14 Nov): 1.0909 -> 0.9273. Levelling 20-40 took about three hours on a first prestige with a
+# weak build. Only mob kills change; quests, exploring, gathering and battlegrounds stay as they are. The .TBC and
+# .WotLK kill rates only apply to level 61+ mobs, so they are left at stock.
+worldserver.conf | Rate.XP.Kill = 0.9273
 # Prestige multiplies on top of that: 167% of 3x = 5x while a prestige cycle is active (was 150% of 2x = 3x)
 modules\mod-coa-prestige.conf | CoAPrestige.ExperienceBonusPercent = 167
 # Exploring: 40x normal exploration XP (12 Nov, was 20x): 13.3333 x the master rate 2.7885 = 37.18 = 40 x the stock
