@@ -72,8 +72,9 @@ load, waking, zones), PvP rewards, AI chat, MySQL and world server performance, 
 
 ## Database
 
-`sql/enchants/000-014`: Mystic Enchant data fixes (`014`: "your next X" buffs such as Empowered Light are used up
-by that next spell). `090-mysql-tuning.sql`: MySQL settings that survive the manager.
+`sql/enchants/000-015`: Mystic Enchant data fixes (`014`: "your next X" buffs such as Empowered Light are used up
+by that next spell; `015`: 29 Legendary enchants that fired on every hit now fire only from the abilities their
+tooltip names, or no more often than its stated cooldown). `090-mysql-tuning.sql`: MySQL settings that survive the manager.
 `100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
 `110-manastorm-caches-unstack.sql`: Manastorm caches no longer stack, so each one opens and disappears when emptied.
 `120-battleground-spoils.sql`: Battleground Spoils can be opened (used by the Battleground Spoils patch).

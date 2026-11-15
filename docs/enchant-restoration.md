@@ -50,6 +50,10 @@ tracker. Quick types first: `twin` and `teach` take seconds each (`.aura`, then 
 - 113 "broken" enchants also carry a real effect (for example the threat reducers), so they already do part of
   their job and stay in the rolls. The tracker marks them `partly working`.
 
+- Ascension keeps each enchant's proc rules (which ability sets it off, the chance, the internal cooldown) in its own
+  server database; the spell data has them blanked. A proc aura with proc flags but no `spell_proc` row therefore fires
+  on every qualifying hit, with no ability filter and no cooldown (file 015 fixes 29 Legendaries), and one with no proc
+  flags never fires at all.
 - A twin can look working and never fire: a proc aura with no proc flags and no `spell_proc` row does nothing.
   The twin search now skips these.
 - When both spells carry the same real effect, remove ours first, or the player gets the bonus twice.
