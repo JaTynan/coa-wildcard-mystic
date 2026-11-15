@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..ba39b52
+index 0000000..1914302
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,3542 @@
+@@ -0,0 +1,3623 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -3474,6 +3474,85 @@ index 0000000..ba39b52
 +    }
 +};
 +
++// Touch of the Magi (1587677, taught by the 1591076 enchant): while it is on an enemy it stores 50% of the Arcane damage
++// its caster deals to it; when it runs out it explodes for the stored amount on the enemy and enemies within 10 yards,
++// and restores mana to the caster (1587679).
++class spell_wcme_touch_of_the_magi : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_touch_of_the_magi);
++
++    static constexpr uint32 EXPLOSION = 1587678;
++    static constexpr uint32 MANA = 1587679;
++    int64 _stored = 0;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && eventInfo.GetActor() && eventInfo.GetActor()->GetGUID() == GetCasterGUID() &&
++            (spell->GetSchoolMask() & SPELL_SCHOOL_MASK_ARCANE) && spell->Id != EXPLOSION && WcmeDealtDamage(eventInfo);
++    }
++
++    void Store(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        _stored += (damage->GetDamage() + damage->GetAbsorb()) / 2;
++    }
++
++    void Explode(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* caster = GetCaster();
++        SpellInfo const* explosion = sSpellMgr->GetSpellInfo(EXPLOSION);
++        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE || !caster || !explosion)
++            return;
++        if (_stored > 0)
++            for (Unit* enemy : WcmeEnemiesNear(caster, GetTarget(), 10.0f, 20))
++                WcmeExtraDamage(caster, enemy, explosion, _stored);
++        caster->CastSpell(caster, MANA, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_touch_of_the_magi::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_touch_of_the_magi::Store);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_touch_of_the_magi::Explode, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Bane of Havoc (1180020, taught by the 1180019 enchant): while its marker (1180021) is on you, your Shadow Bolt,
++// Incinerate, Soul Fire and Chaos Bolt also strike every other enemy within 40 yards marked with your bane for 50% of the
++// damage dealt (1180022's -50%).
++class spell_wcme_bane_of_havoc : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_bane_of_havoc);
++
++    static constexpr uint32 BANE = 1180020;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return eventInfo.GetActionTarget() && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeDealtDamage(eventInfo) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Shadow Bolt", "Incinerate", "Soul Fire", "Chaos Bolt" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        int64 const share = (damage->GetDamage() + damage->GetAbsorb()) / 2;
++        for (Unit* enemy : WcmeEnemiesNear(owner, owner, 40.0f, 40))
++            if (enemy != target && enemy->HasAura(BANE, owner->GetGUID()))
++                WcmeExtraDamage(owner, enemy, eventInfo.GetSpellInfo(), share);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_bane_of_havoc::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_bane_of_havoc::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -3545,4 +3624,6 @@ index 0000000..ba39b52
 +    RegisterSpellScript(spell_wcme_mending_tide);
 +    RegisterSpellScript(spell_wcme_mending_tide_pulse);
 +    RegisterSpellScript(spell_wcme_temporal_shift);
++    RegisterSpellScript(spell_wcme_touch_of_the_magi);
++    RegisterSpellScript(spell_wcme_bane_of_havoc);
 +}
