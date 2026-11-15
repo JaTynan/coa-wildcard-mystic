@@ -81,6 +81,8 @@ by that next spell). `090-mysql-tuning.sql`: MySQL settings that survive the man
 `130-battleground-dampening.sql`: everyone in a battleground does 20% less healing and gets 20% smaller absorb shields
 (Ascension's "PvP - Battleground - Dampening", which CoA has but never applied).
 `140-talent-fixes.sql`: the proc rows and script names for `55-talent-fixes.ps1`.
+`016-dead-triggers.sql`: 22 Legendary enchants whose trigger never fired now fire from the abilities their tooltip
+names (through the enchant action table).
 
 ## How changes are made
 
