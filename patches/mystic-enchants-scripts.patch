@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..d8fbd44
+index 0000000..af8a25c
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,1067 @@
+@@ -0,0 +1,1174 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -64,6 +64,25 @@ index 0000000..d8fbd44
 +{
 +    DamageInfo const* damage = eventInfo.GetDamageInfo();
 +    return damage && damage->GetDamage() + damage->GetAbsorb() > 0;
++}
++
++bool WcmeHasAnyAuraFrom(Unit const* unit, Unit const* caster, std::initializer_list<uint32> auras)
++{
++    for (uint32 aura : auras)
++        if (unit->HasAura(aura, caster->GetGUID()))
++            return true;
++    return false;
++}
++
++// Extra damage of the triggering spell's school, shown in the combat log as that spell (absorbs and resists apply).
++void WcmeExtraDamage(Unit* attacker, Unit* victim, SpellInfo const* spell, int64 amount)
++{
++    if (amount <= 0 || !victim->IsAlive())
++        return;
++    SpellNonMeleeDamage log(attacker, victim, spell, spell->GetSchoolMask());
++    attacker->CalculateSpellDamageTaken(&log, int32(std::min<int64>(amount, INT32_MAX)), spell);
++    attacker->SendSpellNonMeleeDamageLog(&log);
++    attacker->DealSpellDamage(&log, false);
 +}
 +
 +bool WcmeCostsPower(SpellInfo const* spell)
@@ -162,8 +181,11 @@ index 0000000..d8fbd44
 +    }
 +};
 +
-+// Curse of Arugal (982806): Cat finishing moves have a 20% chance per combo point to grant Goldrinn's Guile;
-+// while Goldrinn's Fury is up, Cat ability damage applies a stack of Arugal's Gift.
++// Curse of Arugal (982806): Cat finishing moves have a 20% chance per combo point to grant Goldrinn's Guile; while
++// Goldrinn's Fury is up, Cat ability damage applies a stack of Arugal's Gift. Darkness (no Ascension data survives;
++// James's design): bleed or Shadow periodic damage, and combo point generators in Cat Form, build Darkness, at most one
++// stack every 2.5 sec, up to 5, lasting 15 sec after the last gain. Mind Blast spends it all for 8% more damage per
++// stack (40% at 5, on par with Goldrinn's Guile's 40%), as extra Shadow damage.
 +class spell_wcme_curse_of_arugal : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_curse_of_arugal);
@@ -171,10 +193,36 @@ index 0000000..d8fbd44
 +    static constexpr uint32 GOLDRINNS_GUILE = 982816;
 +    static constexpr uint32 GOLDRINNS_FURY = 982811;
 +    static constexpr uint32 ARUGALS_GIFT = 982812;
++    static constexpr uint32 DARKNESS = 982815;
++    static constexpr Milliseconds DARKNESS_EVERY{2500};
++    static constexpr int32 DARKNESS_LASTS_MS = 15000;
++    static constexpr uint8 DARKNESS_MAX = 5;
++    static constexpr int32 DARKNESS_BONUS_PCT = 8;
++    TimePoint _darknessReady{};
++
++    void GainDarkness(Unit* owner)
++    {
++        TimePoint const now = GameTime::Now();
++        if (now < _darknessReady)
++            return;
++        _darknessReady = now + DARKNESS_EVERY;
++        Aura* darkness = owner->GetAura(DARKNESS);
++        if (!darkness)
++        {
++            owner->CastSpell(owner, DARKNESS, true);
++            if (!(darkness = owner->GetAura(DARKNESS)))
++                return;
++            darkness->SetStackAmount(1);
++        }
++        else if (darkness->GetStackAmount() < DARKNESS_MAX)
++            darkness->SetStackAmount(darkness->GetStackAmount() + 1);
++        darkness->SetMaxDuration(DARKNESS_LASTS_MS);
++        darkness->SetDuration(DARKNESS_LASTS_MS);
++    }
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
-+        return eventInfo.GetSpellInfo() && GetTarget()->GetShapeshiftForm() == FORM_CAT;
++        return eventInfo.GetSpellInfo() != nullptr;
 +    }
 +
 +    void HandleProc(ProcEventInfo& eventInfo)
@@ -182,25 +230,69 @@ index 0000000..d8fbd44
 +        PreventDefaultAction();
 +        Unit* owner = GetTarget();
 +        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const cat = owner->GetShapeshiftForm() == FORM_CAT;
++
++        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
++        {
++            if (WcmeDealtDamage(eventInfo) && ((spell->GetAllEffectsMechanicMask() & (1 << MECHANIC_BLEED)) ||
++                    (eventInfo.GetDamageInfo()->GetSchoolMask() & SPELL_SCHOOL_MASK_SHADOW)))
++                GainDarkness(owner);
++            return;
++        }
++
 +        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
 +        {
-+            // combo points are still on the caster during the cast phase; they are spent in the finish phase
-+            if (spell->NeedsComboPoints())
++            if (cat && spell->NeedsComboPoints())
++            {
++                // combo points are still on the caster during the cast phase; they are spent in the finish phase
 +                if (uint8 const points = owner->GetComboPoints())
 +                    if (roll_chance_i(20 * points))
 +                        owner->CastSpell(owner, GOLDRINNS_GUILE, true);
++            }
++            else if (cat && spell->HasEffect(SPELL_EFFECT_ADD_COMBO_POINTS))
++                GainDarkness(owner);
 +            return;
 +        }
-+        if (owner->HasAura(GOLDRINNS_FURY) && WcmeDealtDamage(eventInfo))
-+            if (Unit* target = eventInfo.GetActionTarget())
-+                if (target != owner)
-+                    owner->CastSpell(target, ARUGALS_GIFT, true);
++
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target || target == owner || !WcmeDealtDamage(eventInfo))
++            return;
++        if (WcmeNamed(spell, "Mind Blast"))
++        {
++            if (Aura const* darkness = owner->GetAura(DARKNESS))
++            {
++                int64 const stacks = std::max<uint8>(1, darkness->GetStackAmount());
++                owner->RemoveAurasDueToSpell(DARKNESS);
++                DamageInfo const* damage = eventInfo.GetDamageInfo();
++                WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * DARKNESS_BONUS_PCT * stacks / 100);
++            }
++            return;
++        }
++        if (cat && owner->HasAura(GOLDRINNS_FURY))
++            owner->CastSpell(target, ARUGALS_GIFT, true);
 +    }
 +
 +    void Register() override
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_curse_of_arugal::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_curse_of_arugal::HandleProc);
++    }
++};
++
++// Darkness (982815), used by Curse of Arugal as a visible stack counter: its own proc (combo points for Mind Blast in
++// Ascension's version) never fires.
++class spell_wcme_darkness_counter : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_darkness_counter);
++
++    bool CheckProc(ProcEventInfo& /*eventInfo*/)
++    {
++        return false;
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_darkness_counter::CheckProc);
 +    }
 +};
 +
@@ -432,7 +524,8 @@ index 0000000..d8fbd44
 +};
 +
 +// Controlled Burn (81407): Chaos Bolt refreshes Immolate; Chaos Bolt, Incinerate, Searing Pain and Scorch grant
-+// Controlled Burn, which keeps Immolate on the target through the next Conflagrate; Conflagrate applies Heating Up!.
++// Controlled Burn, which keeps Immolate on the target through the next Conflagrate; Conflagrate applies Heating Up!;
++// Scorch deals 20% more to targets with your Conflagrate on them.
 +class spell_wcme_controlled_burn : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_controlled_burn);
@@ -440,6 +533,7 @@ index 0000000..d8fbd44
 +    static constexpr uint32 IMMOLATE_REFRESH = 981407;
 +    static constexpr uint32 CONTROLLED_BURN = 954675;
 +    static constexpr uint32 HEATING_UP = 954715;
++    static constexpr int32 SCORCH_BONUS_PCT = 20;   // no number survives; James chose 20%
 +    ObjectGuid _keptOn;
 +    uint32 _keptSpell = 0;
 +    int32 _keptDuration = 0;
@@ -480,6 +574,11 @@ index 0000000..d8fbd44
 +            return;
 +        if (WcmeNamed(spell, "Chaos Bolt"))
 +            owner->CastSpell(target, IMMOLATE_REFRESH, true);
++        else if (WcmeNamed(spell, "Scorch") && WcmeHasAnyAuraFrom(target, owner, { 17962, 17964, 254085, 1117962, 1117964, 1217962 }))
++        {
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * SCORCH_BONUS_PCT / 100);
++        }
 +        else if (WcmeNamed(spell, "Conflagrate"))
 +        {
 +            owner->CastSpell(target, HEATING_UP, true);
@@ -649,13 +748,14 @@ index 0000000..d8fbd44
 +};
 +
 +// Consecrated Strikes (965295): Crusader Strike, Divine Storm and Hammer of the Righteous have a chance to create
-+// Consecrated Ground. No proc chance survives in any record; 20% is assumed.
++// Consecrated Ground. No proc chance survives in any record; 35% is assumed (James: near-constant uptime with slow
++// weapons, no extra clutter with fast ones).
 +class spell_wcme_consecrated_strikes : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_consecrated_strikes);
 +
 +    static constexpr uint32 CONSECRATED_GROUND = 965321;
-+    static constexpr int32 CHANCE = 20;
++    static constexpr int32 CHANCE = 35;
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
@@ -677,14 +777,14 @@ index 0000000..d8fbd44
 +};
 +
 +// Consecrated Weapon (977848, taught by Consecrated Strikes): melee abilities have a chance to deal a Consecrated
-+// Strike, which also triggers Consecrated Strikes' Seal of Command. 20% is assumed (no record of the chance).
++// Strike, which also triggers Consecrated Strikes' Seal of Command. 35% is assumed (no record of the chance).
 +class spell_wcme_consecrated_weapon : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_consecrated_weapon);
 +
 +    static constexpr uint32 CONSECRATED_STRIKE = 977827;
 +    static constexpr uint32 SEAL_OF_COMMAND = 278746;
-+    static constexpr int32 CHANCE = 20;
++    static constexpr int32 CHANCE = 35;
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
@@ -968,16 +1068,19 @@ index 0000000..d8fbd44
 +};
 +
 +// Unbounded Spell Slinger (1568060): spending Clearcasting (a spell that costs mana, cast while it is up) triggers
-+// Unbounded Arcane Burst on the target.
++// Unbounded Arcane Burst on the target, at most once every 4 sec.
 +class spell_wcme_unbounded_spell_slinger : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_unbounded_spell_slinger);
 +
 +    static constexpr uint32 BURST = 1568040;
++    static constexpr Seconds COOLDOWN{4};   // James: 4 sec, like Spell Slinger (Ascension's own value is unrecorded)
++    TimePoint _ready{};
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
-+        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) && WcmeCostsPower(eventInfo.GetSpellInfo()) &&
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) && GameTime::Now() >= _ready &&
++            WcmeCostsPower(eventInfo.GetSpellInfo()) &&
 +            WcmeHasAnyAura(GetTarget(), { 12536, 1112536, 1212536, 16870, 1116870, 1216870, 67210, 1167210, 16246, 1116246,
 +                1216246, 1586519 });
 +    }
@@ -988,7 +1091,10 @@ index 0000000..d8fbd44
 +        if (Spell const* cast = eventInfo.GetProcSpell())
 +            if (Unit* target = cast->m_targets.GetUnitTarget())
 +                if (target != GetTarget())
++                {
++                    _ready = GameTime::Now() + COOLDOWN;
 +                    GetTarget()->CastSpell(target, BURST, true);
++                }
 +    }
 +
 +    void Register() override
@@ -1049,6 +1155,7 @@ index 0000000..d8fbd44
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
 +    RegisterSpellScript(spell_wcme_unique_physical_stacks);
 +    RegisterSpellScript(spell_wcme_curse_of_arugal);
++    RegisterSpellScript(spell_wcme_darkness_counter);
 +    RegisterSpellScript(spell_wcme_primordial_fury);
 +    RegisterSpellScript(spell_wcme_ice_lash);
 +    RegisterSpellScript(spell_wcme_words_of_healing);

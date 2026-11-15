@@ -30,13 +30,13 @@ INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 1568060),
 ('spell_proc', 953308);
 DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (1587050, 84752, 84750, 982806, 977717, 977764, 81470, 977771, 965283, 81407, 81116, 274921, 977824, 965295, 977848, 954067, 272353, 986003, 997055, 997056, 965421, 81251, 1568060, 953308, 965292);
-DELETE FROM `spell_script_names` WHERE `spell_id` IN (1587050, 84752, 84750, 982806, 977717, 977764, 81470, 977771, 965283, 81407, 81116, 274921, 977824, 965295, 977848, 954067, 272353, 986003, 997055, 997056, 965421, 81251, 1568060, 953308, 965292, 59887, 59888, 59889, 59890, 59891, 276407, 1159887, 1159888, 1159889, 1159890, 1159891, 1259887, 1259888, 1259889, 1259890, 1259891, 1576968) AND `ScriptName` LIKE 'spell\_wcme\_%';
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (1587050, 84752, 84750, 982806, 977717, 977764, 81470, 977771, 965283, 81407, 81116, 274921, 977824, 965295, 977848, 954067, 272353, 986003, 997055, 997056, 965421, 81251, 1568060, 953308, 965292, 59887, 59888, 59889, 59890, 59891, 276407, 1159887, 1159888, 1159889, 1159890, 1159891, 1259887, 1259888, 1259889, 1259890, 1259891, 1576968, 982815) AND `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE FROM `spell_proc` WHERE `SpellId` IN (1587050, 84752, 84750, 982806, 977717, 977764, 81470, 977771, 965283, 81407, 81116, 274921, 977824, 965295, 977848, 954067, 272353, 986003, 997055, 997056, 965421, 81251, 1568060, 953308, 965292);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
 (1587050, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 0, 0, 0),
 (84752, 0, 0, 0, 0, 0, 332048, 1, 2, 0, 2, 0, 0, 0, 0, 0),
 (84750, 0, 0, 0, 0, 0, 332048, 1, 2, 0, 2, 0, 0, 0, 0, 0),
-(982806, 0, 0, 0, 0, 0, 87312, 0, 3, 0, 0, 0, 0, 0, 0, 0),
+(982806, 0, 0, 0, 0, 0, 349456, 0, 3, 0, 0, 0, 0, 0, 0, 0),
 (977717, 0, 0, 0, 0, 0, 69904, 1, 2, 2, 0, 0, 0, 0, 0, 0),
 (977764, 0, 0, 0, 0, 0, 87312, 0, 3, 0, 0, 0, 0, 0, 0, 0),
 (81470, 0, 0, 0, 0, 0, 17408, 2, 2, 0, 0, 0, 0, 0, 0, 0),
@@ -57,7 +57,8 @@ INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFami
 (81251, 0, 0, 0, 0, 0, 87312, 3, 2, 0, 0, 0, 0, 0, 0, 0),
 (1568060, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 0, 0, 0),
 (953308, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 0, 0, 0);
--- Borrowed Time (the buff) is kept, not used up, while Words of Healing is active.
+-- Borrowed Time (the buff) is kept, not used up, while Words of Healing is active. Darkness (982815) is Curse of Arugal's
+-- stack counter; its own proc is switched off.
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1587050, 'spell_wcme_rush_of_blood'),
 (84752, 'spell_wcme_unique_physical_stacks'),
@@ -99,4 +100,5 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1259889, 'spell_wcme_borrowed_time_kept'),
 (1259890, 'spell_wcme_borrowed_time_kept'),
 (1259891, 'spell_wcme_borrowed_time_kept'),
-(1576968, 'spell_wcme_borrowed_time_kept');
+(1576968, 'spell_wcme_borrowed_time_kept'),
+(982815, 'spell_wcme_darkness_counter');
