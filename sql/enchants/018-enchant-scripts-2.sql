@@ -1,8 +1,10 @@
 -- Next batch of coded Mystic Enchants (needs the build with this version of mystic-enchants-scripts.patch): the random
 -- class spell enchants (Crazy Cultist, Deranged Druid, Eccentric Elementalist, Wacky Wizardry, Zany Zealot), Blessing of
 -- the Divines, and the stack builders (Felborne, Abiding Fel Energy, Fel Strike, Overloaded Froststorm, Astral Tempest,
--- Blademaster, both Shadow Visions, Unrelenting Wrath). Fel Meteor and Unrelenting Wrath are taught while their enchant
--- is active and need their stacks or charge to cast.
+-- Blademaster, both Shadow Visions, Unrelenting Wrath), checked against the archived Ascension builder tooltips. Fel
+-- Meteor and Fel Strike (taught by their enchant's script at the rank for your level) and Unrelenting Wrath (taught by
+-- wcme_enchant_teach) need the buff or charge their enchant grants. The Shadow Visions buff (965900) gets a script that
+-- stops its own melee-ability proc from spending it.
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 84529),
 ('spell_proc', 1568195),
@@ -25,7 +27,7 @@ INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 1570700),
 ('spell_proc', 965288);
 DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (84529, 1568195, 84531, 1568216, 84533, 1568237, 965442, 1571306, 84527, 1568174, 965476, 101086, 84805, 84806, 81122, 81479, 965862, 965299, 1570700, 965288);
-DELETE FROM `spell_script_names` WHERE `spell_id` IN (84529, 1568195, 84531, 1568216, 84533, 1568237, 965442, 1571306, 84527, 1568174, 965476, 101086, 84805, 84806, 81122, 81479, 965862, 965299, 1570700, 965288, 101087, 965289) AND `ScriptName` LIKE 'spell\_wcme\_%';
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (84529, 1568195, 84531, 1568216, 84533, 1568237, 965442, 1571306, 84527, 1568174, 965476, 101086, 84805, 84806, 81122, 81479, 965862, 965299, 1570700, 965288, 19574, 34471, 101087, 101426, 101427, 101428, 101429, 101430, 101431, 101432, 101433, 965289, 965900, 983898, 984641, 984642, 984643, 984644, 984645, 984646, 984647, 984648) AND `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE FROM `spell_proc` WHERE `SpellId` IN (84529, 1568195, 84531, 1568216, 84533, 1568237, 965442, 1571306, 84527, 1568174, 965476, 101086, 84805, 84806, 81122, 81479, 965862, 965299, 1570700, 965288);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
 (84529, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 0, 0, 0),
@@ -45,8 +47,8 @@ INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFami
 (81122, 0, 0, 0, 0, 0, 69904, 1, 2, 0, 0, 0, 0, 0, 0, 0),
 (81479, 0, 0, 0, 0, 0, 69904, 1, 2, 0, 0, 0, 0, 0, 0, 0),
 (965862, 0, 0, 0, 0, 0, 56, 0, 2, 0, 0, 0, 0, 0, 0, 0),
-(965299, 0, 0, 0, 0, 0, 327680, 1, 2, 0, 0, 0, 0, 0, 0, 0),
-(1570700, 0, 0, 0, 0, 0, 327680, 1, 2, 0, 0, 0, 0, 0, 0, 0),
+(965299, 0, 0, 0, 0, 0, 327680, 0, 2, 0, 0, 0, 0, 0, 0, 0),
+(1570700, 0, 0, 0, 0, 0, 327680, 0, 2, 0, 0, 0, 0, 0, 0, 0),
 (965288, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 0, 0, 0);
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (84529, 'spell_wcme_random_class_spell'),
@@ -70,7 +72,44 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1570700, 'spell_wcme_shadow_visions'),
 (965288, 'spell_wcme_unrelenting_wrath'),
 (101087, 'spell_wcme_reactive_spell'),
-(965289, 'spell_wcme_reactive_spell');
+(101426, 'spell_wcme_reactive_spell'),
+(101427, 'spell_wcme_reactive_spell'),
+(101428, 'spell_wcme_reactive_spell'),
+(101429, 'spell_wcme_reactive_spell'),
+(101430, 'spell_wcme_reactive_spell'),
+(101431, 'spell_wcme_reactive_spell'),
+(101432, 'spell_wcme_reactive_spell'),
+(101433, 'spell_wcme_reactive_spell'),
+(983898, 'spell_wcme_reactive_spell'),
+(984641, 'spell_wcme_reactive_spell'),
+(984642, 'spell_wcme_reactive_spell'),
+(984643, 'spell_wcme_reactive_spell'),
+(984644, 'spell_wcme_reactive_spell'),
+(984645, 'spell_wcme_reactive_spell'),
+(984646, 'spell_wcme_reactive_spell'),
+(984647, 'spell_wcme_reactive_spell'),
+(984648, 'spell_wcme_reactive_spell'),
+(965289, 'spell_wcme_reactive_spell'),
+(101087, 'spell_wcme_fel_damage'),
+(101426, 'spell_wcme_fel_damage'),
+(101427, 'spell_wcme_fel_damage'),
+(101428, 'spell_wcme_fel_damage'),
+(101429, 'spell_wcme_fel_damage'),
+(101430, 'spell_wcme_fel_damage'),
+(101431, 'spell_wcme_fel_damage'),
+(101432, 'spell_wcme_fel_damage'),
+(101433, 'spell_wcme_fel_damage'),
+(983898, 'spell_wcme_fel_damage'),
+(984641, 'spell_wcme_fel_damage'),
+(984642, 'spell_wcme_fel_damage'),
+(984643, 'spell_wcme_fel_damage'),
+(984644, 'spell_wcme_fel_damage'),
+(984645, 'spell_wcme_fel_damage'),
+(984646, 'spell_wcme_fel_damage'),
+(984647, 'spell_wcme_fel_damage'),
+(984648, 'spell_wcme_fel_damage'),
+(19574, 'spell_wcme_unrelenting_beast_within'),
+(34471, 'spell_wcme_unrelenting_beast_within'),
+(965900, 'spell_wcme_no_proc');
 INSERT INTO `wcme_enchant_teach` (`enchant_spell`, `taught_spell`, `comment`) VALUES
-(101086, 101087, 'Felborne: teaches Fel Meteor, castable at 5 stacks of Meteoric Impact'),
 (965288, 965289, 'Unrelenting Wrath: teaches Unrelenting Wrath, castable with a charge');
