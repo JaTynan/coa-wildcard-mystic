@@ -4,6 +4,7 @@
 # (buff 9990006), once every 2 min (cooldown marker 9990007). The spells are in sql/enchants/150-custom-spells.sql and
 # the client patch (client-patch/custom_spells.py). Run by the build from the workspace root, after
 # 40-battlegrounds.ps1 and 54-racial-plainsrunning.ps1. Throws if an anchor is gone. Listed in CHANGES.md.
+# The in-combat regen and the burst take percentage healing reductions and increases, like a heal.
 # Racials.VoodooRegeneration = 0 turns it off (and gives back the stock passive).
 $ErrorActionPreference = 'Stop'
 
@@ -22,9 +23,10 @@ Write-Host "Patch: Voodoo Regeneration for Trolls (Racials.VoodooRegeneration)"
 & {
 $file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$include = "#include `"PlayerScript.h`"`n"
 $register = "    new world_pvp_kill_xp();`n"
 $loader = "void AddSC_AscensionAdventurerCache()`n{`n"
-foreach ($anchor in @($register, $loader)) {
+foreach ($anchor in @($include, $register, $loader)) {
     if (-not $text.Contains($anchor)) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
 }
 $class = @'
@@ -80,7 +82,7 @@ public:
                 player->WcmeVoodooCarry = 0.0f;
                 continue;
             }
-            player->WcmeVoodooCarry += float(player->GetMaxHealth()) * percent / 100.0f;
+            player->WcmeVoodooCarry += float(player->GetMaxHealth()) * percent / 100.0f * HealingTaken(player);
             int32 const whole = int32(player->WcmeVoodooCarry);
             if (whole > 0)
             {
@@ -91,6 +93,25 @@ public:
     }
 
 private:
+    // The percentage changes to healing received (Mortal Strike and the like, and healing-received buffs), as a heal
+    // would take them; no flat bonus healing or spell power, so it never scales with gear.
+    static float HealingTaken(Player* player)
+    {
+        float factor = 1.0f;
+        if (int32 const reduced = player->GetMaxNegativeAuraModifier(SPELL_AURA_MOD_HEALING_PCT))
+            AddPct(factor, reduced);
+        int32 const raised = player->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_HEALING_PCT,
+            [](AuraEffect const* effect)
+            {
+                // Nature's Call rank two raises only healing from others (as in Unit::SpellHealingBonusTaken).
+                return effect->GetId() != 707807 || effect->GetSpellInfo()->SpellFamilyName != 37;
+            });
+        if (raised)
+            AddPct(factor, raised);
+        factor *= player->GetTotalAuraMultiplier(SPELL_AURA_ASCENSION_MOD_HEALING_RECEIVED_PCT);
+        return std::max(0.0f, factor);
+    }
+
     static void Lasting(Player* player, uint32 spell, int32 duration)
     {
         if (Aura* aura = player->AddAura(spell, player))
@@ -102,6 +123,7 @@ private:
 };
 
 '@
+$text = $text.Replace($include, $include + "#include `"SpellAuraEffects.h`"`n#include `"SpellInfo.h`"`n")
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_voodoo_regeneration();`n")
 Set-Content $file $text -NoNewline
