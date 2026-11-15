@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..3eec256
+index 0000000..abb4786
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,2291 @@
+@@ -0,0 +1,2448 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2247,6 +2247,160 @@ index 0000000..3eec256
 +    }
 +};
 +
++namespace
++{
++void WcmeCutCooldownByName(Unit* unit, char const* name, int32 ms)
++{
++    Player* player = unit->ToPlayer();
++    if (!player)
++        return;
++    for (auto const& [spellId, known] : player->GetSpellMap())
++        if (known->State != PLAYERSPELL_REMOVED && player->HasSpellCooldown(spellId))
++            if (WcmeNamed(sSpellMgr->GetSpellInfo(spellId), name))
++                player->ModifySpellCooldown(spellId, -ms);
++}
++}
++
++// Elemental Assassin (978229): Backstab grants Elemental Assassin (978642, up to 2 stacks; its bonus is a dummy in the
++// data). A stack makes your next Flame Shock or Earth Shock deal 110% more direct damage, or Ice Shock 70% more (the
++// builder tooltip's numbers), and spending it takes 5 sec off Stormstrike's cooldown. (The Elemental Blades the
++// tooltip also lists have no usable spells in our client, so they are left out.)
++class spell_wcme_elemental_assassin : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_elemental_assassin);
++
++    static constexpr uint32 ASSASSIN = 978642;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (WcmeNamed(spell, "Backstab"))
++            return eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_HIT) && WcmeDealtDamage(eventInfo) && GetTarget()->HasAura(ASSASSIN) &&
++            WcmeNamedAny(spell, { "Flame Shock", "Earth Shock", "Ice Shock" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (WcmeNamed(spell, "Backstab"))
++        {
++            owner->CastSpell(owner, ASSASSIN, true);
++            if (Aura* stacks = owner->GetAura(ASSASSIN); stacks && stacks->GetStackAmount() > 2)
++                stacks->SetStackAmount(2);
++            return;
++        }
++        if (Aura* stacks = owner->GetAura(ASSASSIN))
++        {
++            if (stacks->GetStackAmount() > 1)
++                stacks->SetStackAmount(stacks->GetStackAmount() - 1);
++            else
++                stacks->Remove();
++        }
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        int32 const pct = WcmeNamed(spell, "Ice Shock") ? 70 : 110;
++        if (Unit* target = eventInfo.GetActionTarget())
++            WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * pct / 100);
++        WcmeCutCooldownByName(owner, "Stormstrike", 5000);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_elemental_assassin::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_elemental_assassin::HandleProc);
++    }
++};
++
++// Stormborn (977991): while Elemental Mastery or Shamanistic Rage is active, Stormstrike also sends a cone of Nature
++// damage (977992) ahead of you. Lightning Shield damage takes 10 sec off Elemental Mastery's cooldown, and Lightning
++// Bolt or Chain Lightning cast with 3 or more Maelstrom Weapon stacks takes 6 more off. (Stormstrike's cooldown cut and
++// Lightning Shield's damage bonus are already in the spell data.)
++class spell_wcme_stormborn : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_stormborn);
++
++    static constexpr uint32 CONE = 977992;
++
++    static bool Empowered(Unit const* unit)
++    {
++        return WcmeHasAnyAura(unit, { 16166, 64701, 1116166, 1164701, 1216166, 1264701, 30823, 1130823, 1230823 });
++    }
++
++    static uint8 Maelstrom(Unit const* unit)
++    {
++        uint8 best = 0;
++        for (uint32 id : { 53817u, 853817u, 853818u })
++            if (Aura const* aura = unit->GetAura(id))
++                best = std::max(best, aura->GetStackAmount());
++        return best;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && spell->Id != CONE &&
++            WcmeNamedAny(spell, { "Stormstrike", "Lightning Shield", "Lightning Bolt", "Chain Lightning" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const cast = eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        if (WcmeNamed(spell, "Stormstrike"))
++        {
++            Spell const* procSpell = eventInfo.GetProcSpell();
++            if (cast && Empowered(owner) && procSpell && !procSpell->IsTriggered())
++                owner->CastSpell(owner, CONE, true);
++            return;
++        }
++        if (WcmeNamed(spell, "Lightning Shield"))
++        {
++            if (!cast && WcmeDealtDamage(eventInfo))
++                WcmeCutCooldownByName(owner, "Elemental Mastery", 10000);
++            return;
++        }
++        if (cast && Maelstrom(owner) >= 3 && eventInfo.GetProcSpell() && !eventInfo.GetProcSpell()->IsTriggered())
++            WcmeCutCooldownByName(owner, "Elemental Mastery", 6000);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_stormborn::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_stormborn::HandleProc);
++    }
++};
++
++// Compound Power (979740): successful Steady Shots and Arcane Shots award 2 combo points (the data's own trigger gave 1).
++class spell_wcme_compound_power : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_compound_power);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        return target && target != GetTarget() && WcmeDealtDamage(eventInfo) && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Steady Shot", "Arcane Shot" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        GetTarget()->AddComboPoints(eventInfo.GetActionTarget(), 2);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_compound_power::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_compound_power::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -2294,4 +2448,7 @@ index 0000000..3eec256
 +    RegisterSpellScript(spell_wcme_prophet_of_wrath);
 +    RegisterSpellScript(spell_wcme_pet_mastery);
 +    RegisterSpellScript(spell_wcme_doused);
++    RegisterSpellScript(spell_wcme_elemental_assassin);
++    RegisterSpellScript(spell_wcme_stormborn);
++    RegisterSpellScript(spell_wcme_compound_power);
 +}

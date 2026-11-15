@@ -65,3 +65,19 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1134961, 'spell_wcme_pet_mastery'),
 (1134965, 'spell_wcme_pet_mastery'),
 (1569697, 'spell_wcme_doused');
+-- Part 4: Elemental Assassin, Stormborn and Compound Power.
+INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
+('spell_proc', 978229),
+('spell_proc', 977991),
+('spell_proc', 979740);
+DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (978229, 977991, 979740);
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (978229, 977991, 979740) AND `ScriptName` LIKE 'spell\_wcme\_%';
+DELETE FROM `spell_proc` WHERE `SpellId` IN (978229, 977991, 979740);
+INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
+(978229, 0, 0, 0, 0, 0, 65552, 0, 3, 0, 0, 0, 0, 100, 0, 0),
+(977991, 0, 0, 0, 0, 0, 65552, 0, 3, 0, 2, 0, 0, 100, 0, 0),
+(979740, 0, 0, 0, 0, 0, 65792, 1, 2, 0, 0, 0, 0, 100, 0, 0);
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(978229, 'spell_wcme_elemental_assassin'),
+(977991, 'spell_wcme_stormborn'),
+(979740, 'spell_wcme_compound_power');
