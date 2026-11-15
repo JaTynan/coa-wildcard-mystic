@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..abb4786
+index 0000000..1123248
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,2448 @@
+@@ -0,0 +1,2641 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2401,6 +2401,195 @@ index 0000000..abb4786
 +    }
 +};
 +
++// Crimson Defense (1572131): blocking an attack adds a stack of Crimson Defender (1572103, up to 6). Shield of
++// Righteousness or Avenger's Shield with 3 or more stacks spends 3: Shield of Righteousness also slams nearby enemies for
++// Holy damage (Champion's Wrath, 1572107), Avenger's Shield gives Champion's Courage (1572109: +15% block value and
++// threat). The +10% block chance is in the spell data.
++class spell_wcme_crimson_defense : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_crimson_defense);
++
++    static constexpr uint32 DEFENDER = 1572103;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* owner = GetTarget();
++        if (eventInfo.GetActionTarget() == owner)
++            return eventInfo.GetHitMask() & (PROC_HIT_BLOCK | PROC_HIT_FULL_BLOCK);
++        Aura const* stacks = owner->GetAura(DEFENDER);
++        return stacks && stacks->GetStackAmount() >= 3 && (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Shield of Righteousness", "Avenger's Shield" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetActionTarget() == owner)
++        {
++            owner->CastSpell(owner, DEFENDER, true);
++            if (Aura* stacks = owner->GetAura(DEFENDER); stacks && stacks->GetStackAmount() > 6)
++                stacks->SetStackAmount(6);
++            return;
++        }
++        if (Aura* stacks = owner->GetAura(DEFENDER))
++        {
++            if (stacks->GetStackAmount() > 3)
++                stacks->SetStackAmount(stacks->GetStackAmount() - 3);
++            else
++                stacks->Remove();
++        }
++        if (WcmeNamed(eventInfo.GetSpellInfo(), "Shield of Righteousness"))
++            owner->CastSpell(owner, 1572107, true);
++        else
++            owner->CastSpell(owner, 1572109, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_crimson_defense::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_crimson_defense::HandleProc);
++    }
++};
++
++// Heavyweight (977700): every Warrior attack that deals weapon damage adds a stack of Heavyweight (977701: +4% Physical
++// damage, slower swings, up to 5); a plain auto attack clears them, so Heroic Strike keeps them going. At 5 stacks you
++// are Ready to Strike (977706): your next melee swing also Crushes enemies in front of you (977703, 630% unnormalized
++// weapon damage).
++class spell_wcme_heavyweight : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_heavyweight);
++
++    static constexpr uint32 HEAVYWEIGHT = 977701;
++    static constexpr uint32 READY = 977706;
++    static constexpr uint32 CRUSH = 977703;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target || target == GetTarget() || !WcmeDealtDamage(eventInfo))
++            return false;
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell)
++            return eventInfo.GetTypeMask() & PROC_FLAG_DONE_MELEE_AUTO_ATTACK;
++        return spell->Id != CRUSH && spell->SpellFamilyName == SPELLFAMILY_WARRIOR && WcmeDealsAnyDamage(spell) &&
++            spell->DmgClass == SPELL_DAMAGE_CLASS_MELEE;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (owner->HasAura(READY))
++        {
++            owner->RemoveAurasDueToSpell(READY);
++            owner->CastSpell(target, CRUSH, true);
++        }
++        if (!eventInfo.GetSpellInfo())
++        {
++            owner->RemoveAurasDueToSpell(HEAVYWEIGHT);
++            return;
++        }
++        WcmeAddStacks(owner, HEAVYWEIGHT, 1, 0);
++        if (Aura* stacks = owner->GetAura(HEAVYWEIGHT); stacks && stacks->GetStackAmount() >= 5)
++        {
++            stacks->SetStackAmount(5);
++            owner->CastSpell(owner, READY, true);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_heavyweight::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_heavyweight::HandleProc);
++    }
++};
++
++// Low Tide (81404): a critical Healing Wave on an ally spreads your Riptide (the highest rank you know) to another hurt
++// party or raid member within 20 yards who doesn't have it. The +20% crit on Riptide targets and Riptide's periodic
++// crits are in the spell data.
++class spell_wcme_low_tide : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_low_tide);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        return heal && heal->GetHeal() > 0 && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && eventInfo.GetActionTarget() &&
++            WcmeNamed(eventInfo.GetSpellInfo(), "Healing Wave");
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Player* player = GetTarget()->ToPlayer();
++        Unit* healed = eventInfo.GetActionTarget();
++        if (!player)
++            return;
++        uint32 riptide = 0;
++        for (auto const& [spellId, known] : player->GetSpellMap())
++            if (known->State != PLAYERSPELL_REMOVED && known->Active)
++                if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId); WcmeNamed(info, "Riptide") && !info->IsPassive())
++                    if (!riptide || info->SpellLevel > sSpellMgr->GetSpellInfo(riptide)->SpellLevel)
++                        riptide = spellId;
++        if (!riptide)
++            return;
++        std::list<Unit*> party;
++        player->GetPartyMembers(party);
++        Unit* best = nullptr;
++        for (Unit* ally : party)
++            if (ally != healed && ally->IsAlive() && ally->IsWithinDistInMap(healed, 20.0f) && !ally->HasAura(riptide, player->GetGUID()) &&
++                (!best || ally->GetHealthPct() < best->GetHealthPct()))
++                best = ally;
++        if (best)
++            player->CastSpell(best, riptide, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_low_tide::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_low_tide::HandleProc);
++    }
++};
++
++// Templar of Flame (954424): while Seal of Fervor is active, direct Holy or Fire damage has a 30% chance (the chance
++// its sister enchant Fiery Fervor uses) to grant Fiery Fervor (954431: 8% less damage taken, 10 sec). Judgements open
++// the 6 sec window (272095) in which Flamestrike damage cuts Blast Wave and Dragon's Breath's cooldowns (016 coded that
++// window). The seal transform and the Flamestrike threat bonus are data.
++class spell_wcme_templar_of_flame : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_templar_of_flame);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return std::strncmp(spell->SpellName[0], "Judgement", 9) == 0;
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        return WcmeDealtDamage(eventInfo) && (damage->GetSchoolMask() & (SPELL_SCHOOL_MASK_HOLY | SPELL_SCHOOL_MASK_FIRE)) &&
++            WcmeHasAnyAura(GetTarget(), { 954425, 954427, 272085, 272087, 852211, 1569826, 1571674, 1590916 });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            owner->CastSpell(owner, 272095, true);
++        else if (roll_chance_i(30))
++            owner->CastSpell(owner, 954431, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_templar_of_flame::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_templar_of_flame::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -2451,4 +2640,8 @@ index 0000000..abb4786
 +    RegisterSpellScript(spell_wcme_elemental_assassin);
 +    RegisterSpellScript(spell_wcme_stormborn);
 +    RegisterSpellScript(spell_wcme_compound_power);
++    RegisterSpellScript(spell_wcme_crimson_defense);
++    RegisterSpellScript(spell_wcme_heavyweight);
++    RegisterSpellScript(spell_wcme_low_tide);
++    RegisterSpellScript(spell_wcme_templar_of_flame);
 +}
