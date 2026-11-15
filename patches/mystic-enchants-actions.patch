@@ -33,7 +33,7 @@ index 000000000..d3e25688c
 +// wcme_enchant_action rows say what an enchant does when its aura procs. The enchant spell is bound to
 +// spell_wcme_enchant_action in spell_script_names, and a spell_proc row on it says which events can fire
 +// (cast, hit, crit, ...). Each row then narrows the event and names one action:
-+//   spells        trigger spell ids (space separated); empty = any spell
++//   spells        trigger spell ids (space separated); empty = any spell; 0 = an auto attack
 +//   school_mask   the trigger spell's school; 0 = any
 +//   target_aura   aura ids, at least one of them from the player on the target; empty = no condition
 +//   requires_aura aura ids, the player has at least one of them; empty = no condition
@@ -170,7 +170,7 @@ index 000000000..d3e25688c
 +    if (rule.Spells.empty())
 +        return true;
 +    if (!spell)
-+        return false;
++        return rule.Spells.contains(0); // 0 in the list: an auto attack (no spell)
 +    if (rule.Spells.contains(spell->Id))
 +        return true;
 +    SpellInfo const* first = spell->GetFirstRankSpell();
