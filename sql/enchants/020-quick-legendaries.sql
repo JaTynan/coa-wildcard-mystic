@@ -81,3 +81,8 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (978229, 'spell_wcme_elemental_assassin'),
 (977991, 'spell_wcme_stormborn'),
 (979740, 'spell_wcme_compound_power');
+-- Part 5: One With The Light's builder copy (979748) carries its working twin (1575034: Crusader Strike, Divine Storm
+-- and Hammer of the Righteous add a Holy strike); its own halved Physical damage stays as data.
+DELETE FROM `spell_linked_spell` WHERE `spell_trigger` = 979748 AND `comment` LIKE 'WCME:%';
+INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
+(979748, 1575034, 2, 'WCME: One With The Light (builder copy) carries its working twin 1575034');
