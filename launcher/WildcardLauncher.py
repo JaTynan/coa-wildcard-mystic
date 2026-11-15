@@ -44,7 +44,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-LAUNCHER_VERSION = 5
+LAUNCHER_VERSION = 6
 
 HERE = Path(__file__).resolve().parent
 CLIENT = HERE / "CoAClient"
@@ -699,6 +699,11 @@ def add_shortcut():
 
 
 def main():
+    # Steam's launch options: update, then run the rest (Steam's own command for the game). Taken before argparse,
+    # which stops at the "--" inside Steam's command and rejects everything after it.
+    if "--steam-update" in sys.argv[1:]:
+        return steam_update(sys.argv[sys.argv.index("--steam-update", 1) + 1:])
+
     parser = argparse.ArgumentParser(description="Wildcard launcher for Linux")
     parser.add_argument("--play", action="store_true", help="start the game after updating")
     parser.add_argument("--add-to-steam", action="store_true",
@@ -708,12 +713,7 @@ def main():
     parser.add_argument("--add-shortcut", action="store_true",
                         help="add a Wildcard shortcut to the app menu and desktop (update, then play)")
     parser.add_argument("--from-shortcut", action="store_true", help=argparse.SUPPRESS)
-    # Steam's launch options: update, then run the rest (Steam's own command for the game).
-    parser.add_argument("--steam-update", nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
     options = parser.parse_args()
-
-    if options.steam_update is not None:
-        return steam_update(options.steam_update)
 
     if options.add_shortcut:
         return add_shortcut()
