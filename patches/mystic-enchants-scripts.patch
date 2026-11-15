@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..77f477d
+index 0000000..d8fbd44
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,716 @@
+@@ -0,0 +1,1067 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -64,6 +64,11 @@ index 0000000..77f477d
 +{
 +    DamageInfo const* damage = eventInfo.GetDamageInfo();
 +    return damage && damage->GetDamage() + damage->GetAbsorb() > 0;
++}
++
++bool WcmeCostsPower(SpellInfo const* spell)
++{
++    return spell && (spell->ManaCost || spell->ManaCostPercentage || spell->ManaCostPerlevel);
 +}
 +}
 +
@@ -529,7 +534,10 @@ index 0000000..77f477d
 +            return;
 +        if (owner->HasAura(KNIGHT))
 +        {
-+            owner->CastSpell(owner, MANA, true);
++            // 983712 restores a share of missing mana; its effect type would use maximum mana, so do it here
++            if (SpellInfo const* mana = sSpellMgr->GetSpellInfo(MANA))
++                if (uint32 const missing = owner->GetMaxPower(POWER_MANA) - owner->GetPower(POWER_MANA))
++                    owner->ModifyPower(POWER_MANA, int32(missing * uint32(std::max(0, mana->Effects[EFFECT_0].CalcValue())) / 100));
 +            owner->CastSpell(owner, ANOMALY, true);
 +            if (Aura const* anomaly = owner->GetAura(ANOMALY))
 +            {
@@ -702,6 +710,340 @@ index 0000000..77f477d
 +    }
 +};
 +
++// Titanic Mutilate (954067): dealing damage with Whirlwind triggers Bloodrage if you know it, once per Whirlwind;
++// that Enrage does not grant a rage charge (Raging Blow).
++class spell_wcme_titanic_mutilate : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_titanic_mutilate);
++
++    static constexpr uint32 BLOODRAGE = 2687;
++    static constexpr uint32 RAGE_CHARGE = 954881;
++    Spell const* _lastWhirlwind = nullptr;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Player* player = GetTarget()->ToPlayer();
++        if (!player || !WcmeNamed(eventInfo.GetSpellInfo(), "Whirlwind") || !WcmeDealtDamage(eventInfo))
++            return false;
++        if (!player->HasSpell(2687) && !player->HasSpell(1102687) && !player->HasSpell(1569252) && !player->HasSpell(1569254))
++            return false;
++        return eventInfo.GetProcSpell() != _lastWhirlwind;   // one Bloodrage per Whirlwind, not per target hit
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        _lastWhirlwind = eventInfo.GetProcSpell();
++        Unit* owner = GetTarget();
++        Aura* charges = owner->GetAura(RAGE_CHARGE);
++        uint8 const before = charges ? charges->GetStackAmount() : 0;
++        owner->CastSpell(owner, BLOODRAGE, true);
++        if (Aura* after = owner->GetAura(RAGE_CHARGE))
++            if (after->GetStackAmount() > before)
++            {
++                if (before)
++                    after->SetStackAmount(before);
++                else
++                    owner->RemoveAura(after);
++            }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_titanic_mutilate::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_titanic_mutilate::HandleProc);
++    }
++};
++
++// Deadly Bite (272353): Mongoose Bite, Counterattack or Savage Blade damage puts 40% of that hit into a bleed over
++// its duration; a new hit adds to what is left of the bleed and refreshes it.
++class spell_wcme_deadly_bite : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_deadly_bite);
++
++    static constexpr uint32 BLEED = 272355;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        return target && target != GetTarget() && WcmeDealtDamage(eventInfo) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Mongoose Bite", "Counterattack", "Savage Blade" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* bleed = sSpellMgr->GetSpellInfo(BLEED);
++        AuraEffect const* share = GetEffect(EFFECT_0);
++        if (!bleed || !share || !bleed->Effects[EFFECT_1].Amplitude)
++            return;
++        int32 const ticks = std::max<int32>(1, bleed->GetMaxDuration() / bleed->Effects[EFFECT_1].Amplitude);
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        int64 total = int64(damage->GetDamage() + damage->GetAbsorb()) * share->GetAmount() / 100;
++        if (AuraEffect const* running = target->GetAuraEffect(BLEED, EFFECT_1, owner->GetGUID()))
++            total += int64(running->GetAmount()) * std::max<int32>(0, running->GetTotalTicks() - running->GetTickNumber());
++        int32 const perTick = int32(std::max<int64>(1, total / ticks));
++        target->RemoveAurasDueToSpell(BLEED, owner->GetGUID());
++        owner->CastCustomSpell(BLEED, SPELLVALUE_BASE_POINT1, perTick, target, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_deadly_bite::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_deadly_bite::HandleProc);
++    }
++};
++
++// Hand of the Adorned (986003): Holy Shock at 3 stacks spends them and spreads Adorned to 2 nearby allies.
++class spell_wcme_hand_of_the_adorned : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_hand_of_the_adorned);
++
++    static constexpr uint32 SPREAD = 991033;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeNamed(eventInfo.GetSpellInfo(), "Holy Shock") && GetStackAmount() >= 3;
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        GetTarget()->CastSpell(GetTarget(), SPREAD, true);
++    }
++
++    void SpendStacks(ProcEventInfo& /*eventInfo*/)
++    {
++        Remove();
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_hand_of_the_adorned::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_hand_of_the_adorned::HandleProc);
++        AfterProc += AuraProcFn(spell_wcme_hand_of_the_adorned::SpendStacks);
++    }
++};
++
++// Arcane Thunder Seer (997055): Arcane Missiles damage grants Arcane Thunder, one extra stack per Thunder Seer stack;
++// Missile Barrage cannot activate while it is equipped.
++class spell_wcme_arcane_thunder_seer : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_arcane_thunder_seer);
++
++    static constexpr uint32 ARCANE_THUNDER = 997056;
++    static constexpr uint32 THUNDER_SEER = 997057;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return eventInfo.GetSpellInfo() != nullptr;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        for (uint32 barrage : { 44401u, 1144401u, 1244401u, 274595u, 983720u, 1573780u })
++            owner->RemoveAurasDueToSpell(barrage);
++        if (!WcmeNamed(eventInfo.GetSpellInfo(), "Arcane Missiles") || !WcmeDealtDamage(eventInfo))
++            return;
++        Aura const* seer = owner->GetAura(THUNDER_SEER);
++        uint8 const grants = 1 + (seer ? seer->GetStackAmount() : 0);
++        for (uint8 i = 0; i < grants; ++i)
++            owner->CastSpell(owner, ARCANE_THUNDER, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_arcane_thunder_seer::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_arcane_thunder_seer::HandleProc);
++    }
++};
++
++// Arcane Thunder (997056, the buff): when Lightning Bolt uses it, you gain Thunder Seer. The buff itself is used up
++// by its own spell modifier, so this proc takes no charge.
++class spell_wcme_arcane_thunder : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_arcane_thunder);
++
++    static constexpr uint32 THUNDER_SEER = 997057;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeNamed(eventInfo.GetSpellInfo(), "Lightning Bolt") && (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST);
++    }
++
++    void KeepCharge(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        GetTarget()->CastSpell(GetTarget(), THUNDER_SEER, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_arcane_thunder::CheckProc);
++        DoPrepareProc += AuraProcFn(spell_wcme_arcane_thunder::KeepCharge);
++        OnProc += AuraProcFn(spell_wcme_arcane_thunder::HandleProc);
++    }
++};
++
++// Divine Purpose (965421): Penance damage grants Divine Purpose, Penance healing grants Divine Judgement.
++class spell_wcme_divine_purpose : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_divine_purpose);
++
++    static constexpr uint32 PURPOSE = 965423;
++    static constexpr uint32 JUDGEMENT = 965424;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeNamed(eventInfo.GetSpellInfo(), "Penance");
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (WcmeDealtDamage(eventInfo))
++            owner->CastSpell(owner, PURPOSE, true);
++        else if (HealInfo const* heal = eventInfo.GetHealInfo(); heal && heal->GetHeal() > 0)
++            owner->CastSpell(owner, JUDGEMENT, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_divine_purpose::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_divine_purpose::HandleProc);
++    }
++};
++
++// Benevolent Crusader (81251): direct heals grant a stack of Benevolent Crusader; Smite, Holy Fire, Penance or
++// Exorcism damage triggers a Holy Nova at the target, at most once every 3 sec.
++class spell_wcme_benevolent_crusader : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_benevolent_crusader);
++
++    static constexpr uint32 STACK = 81252;
++    static constexpr uint32 HOLY_NOVA = 944810;
++    static constexpr Seconds NOVA_COOLDOWN{3};
++    TimePoint _novaReady{};
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return eventInfo.GetSpellInfo() && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (WcmeDealtDamage(eventInfo))
++        {
++            TimePoint const now = GameTime::Now();
++            if (target && target != owner && now >= _novaReady &&
++                WcmeNamedAny(eventInfo.GetSpellInfo(), { "Smite", "Holy Fire", "Penance", "Exorcism" }))
++            {
++                _novaReady = now + NOVA_COOLDOWN;
++                owner->CastSpell(target, HOLY_NOVA, true);
++            }
++            return;
++        }
++        if (HealInfo const* heal = eventInfo.GetHealInfo(); heal && heal->GetHeal() > 0 && target && target != owner)
++            owner->CastSpell(owner, STACK, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_benevolent_crusader::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_benevolent_crusader::HandleProc);
++    }
++};
++
++// Unbounded Spell Slinger (1568060): spending Clearcasting (a spell that costs mana, cast while it is up) triggers
++// Unbounded Arcane Burst on the target.
++class spell_wcme_unbounded_spell_slinger : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_unbounded_spell_slinger);
++
++    static constexpr uint32 BURST = 1568040;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) && WcmeCostsPower(eventInfo.GetSpellInfo()) &&
++            WcmeHasAnyAura(GetTarget(), { 12536, 1112536, 1212536, 16870, 1116870, 1216870, 67210, 1167210, 16246, 1116246,
++                1216246, 1586519 });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        if (Spell const* cast = eventInfo.GetProcSpell())
++            if (Unit* target = cast->m_targets.GetUnitTarget())
++                if (target != GetTarget())
++                    GetTarget()->CastSpell(target, BURST, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_unbounded_spell_slinger::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_unbounded_spell_slinger::HandleProc);
++    }
++};
++
++// Evoker (953308): casting Arcane Missiles with Missile Barrage up (spending it) grants Arcane Evoked (better Brain
++// Freeze chance); casting Fireball with Brain Freeze up grants Fire Evoked (better Missile Barrage chance); either
++// grants Frost Evoked (faster Frostbolt, which then grants Evoker).
++class spell_wcme_evoker : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_evoker);
++
++    static constexpr uint32 ARCANE_EVOKED = 953309;
++    static constexpr uint32 FIRE_EVOKED = 953311;
++    static constexpr uint32 FROST_EVOKED = 953313;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) && eventInfo.GetSpellInfo();
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        // Arcane Evoked is used up once Brain Freeze triggers, Fire Evoked once Missile Barrage triggers
++        if (WcmeHasAnyAura(owner, { 57761, 1157761, 1257761, 1579137, 1579163, 301119 }))
++            owner->RemoveAurasDueToSpell(ARCANE_EVOKED);
++        if (WcmeHasAnyAura(owner, { 44401, 1144401, 1244401, 274595, 983720, 1573780 }))
++            owner->RemoveAurasDueToSpell(FIRE_EVOKED);
++        if (WcmeNamed(spell, "Arcane Missiles") &&
++            WcmeHasAnyAura(owner, { 44401, 1144401, 1244401, 274595, 983720, 1573780 }))
++        {
++            owner->CastSpell(owner, ARCANE_EVOKED, true);
++            owner->CastSpell(owner, FROST_EVOKED, true);
++        }
++        else if (WcmeNamed(spell, "Fireball") && WcmeHasAnyAura(owner, { 57761, 1157761, 1257761, 1579137, 1579163, 301119 }))
++        {
++            owner->CastSpell(owner, FIRE_EVOKED, true);
++            owner->CastSpell(owner, FROST_EVOKED, true);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_evoker::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_evoker::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -719,4 +1061,13 @@ index 0000000..77f477d
 +    RegisterSpellScript(spell_wcme_twilight_paragon);
 +    RegisterSpellScript(spell_wcme_consecrated_strikes);
 +    RegisterSpellScript(spell_wcme_consecrated_weapon);
++    RegisterSpellScript(spell_wcme_titanic_mutilate);
++    RegisterSpellScript(spell_wcme_deadly_bite);
++    RegisterSpellScript(spell_wcme_hand_of_the_adorned);
++    RegisterSpellScript(spell_wcme_arcane_thunder_seer);
++    RegisterSpellScript(spell_wcme_arcane_thunder);
++    RegisterSpellScript(spell_wcme_divine_purpose);
++    RegisterSpellScript(spell_wcme_benevolent_crusader);
++    RegisterSpellScript(spell_wcme_unbounded_spell_slinger);
++    RegisterSpellScript(spell_wcme_evoker);
 +}
