@@ -1,0 +1,438 @@
+diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
+new file mode 100644
+index 0000000..70e2364
+--- /dev/null
++++ b/src/server/coa/WcmeEnchantScripts.cpp
+@@ -0,0 +1,432 @@
++/*
++ * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
++ */
++
++// Mystic Enchants whose behaviour needs memory or checks that the wcme_enchant_action table cannot express
++// (coa-wildcard-mystic). Each script is bound to the enchant's spell in spell_script_names, and a spell_proc row
++// on that spell says which events reach it (sql/enchants/017-enchant-scripts.sql). Every handler prevents the
++// enchant's own (blanked) trigger effects and does exactly what the tooltip says instead.
++
++#include "DBCStores.h"
++#include "GameTime.h"
++#include "Item.h"
++#include "Player.h"
++#include "Random.h"
++#include "ScriptMgr.h"
++#include "SpellAuras.h"
++#include "SpellInfo.h"
++#include "SpellMgr.h"
++#include "SpellScript.h"
++#include "Unit.h"
++#include <algorithm>
++#include <cstring>
++#include <initializer_list>
++#include <unordered_set>
++
++namespace
++{
++bool WcmeNamed(SpellInfo const* spell, char const* name)
++{
++    return spell && spell->SpellName[0] && std::strcmp(spell->SpellName[0], name) == 0;
++}
++
++bool WcmeNamedAny(SpellInfo const* spell, std::initializer_list<char const*> names)
++{
++    for (char const* name : names)
++        if (WcmeNamed(spell, name))
++            return true;
++    return false;
++}
++
++bool WcmeHasAnyAura(Unit const* unit, std::initializer_list<uint32> auras)
++{
++    for (uint32 aura : auras)
++        if (unit->HasAura(aura))
++            return true;
++    return false;
++}
++
++uint32 WcmeFirstRank(SpellInfo const* spell)
++{
++    SpellInfo const* first = spell->GetFirstRankSpell();
++    return first ? first->Id : spell->Id;
++}
++
++bool WcmeDealtDamage(ProcEventInfo& eventInfo)
++{
++    DamageInfo const* damage = eventInfo.GetDamageInfo();
++    return damage && damage->GetDamage() + damage->GetAbsorb() > 0;
++}
++}
++
++// Rush of Blood (1587050): Hemorrhage twice in a row makes the next Ambush usable outside Stealth; a third
++// Hemorrhage restores energy. Any other ability starts the count again.
++class spell_wcme_rush_of_blood : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_rush_of_blood);
++
++    static constexpr uint32 AMBUSH_ANYWHERE = 1587051;
++    static constexpr uint32 ENERGY = 1587057;
++    uint8 _hemorrhages = 0;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && !spell->IsPassive();
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (!WcmeNamed(eventInfo.GetSpellInfo(), "Hemorrhage"))
++        {
++            _hemorrhages = 0;
++            return;
++        }
++        if (++_hemorrhages == 2)
++            owner->CastSpell(owner, AMBUSH_ANYWHERE, true);
++        else if (_hemorrhages >= 3)
++        {
++            owner->CastSpell(owner, ENERGY, true);
++            _hemorrhages = 0;
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_rush_of_blood::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_rush_of_blood::HandleProc);
++    }
++};
++
++// Martial Crescendo (84752) and Tools of War (84750): each different direct-damage Physical ability adds a stack
++// (not "on next swing" abilities); no refresh at full stacks; any non-Physical damage removes all stacks.
++class spell_wcme_unique_physical_stacks : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_unique_physical_stacks);
++
++    std::unordered_set<uint32> _used;
++
++    uint32 Buff() const { return GetId() == 84752 ? 84753 : 84751; }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        uint32 const buff = Buff();
++        if (!owner->HasAura(buff))
++            _used.clear();
++
++        if (eventInfo.GetDamageInfo()->GetSchoolMask() != SPELL_SCHOOL_MASK_NORMAL)
++        {
++            owner->RemoveAurasDueToSpell(buff);
++            _used.clear();
++            return;
++        }
++
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) ||
++            spell->HasAttribute(SPELL_ATTR0_ON_NEXT_SWING) || spell->HasAttribute(SPELL_ATTR0_ON_NEXT_SWING_NO_DAMAGE))
++            return;
++        if (!_used.insert(WcmeFirstRank(spell)).second)
++            return;
++        if (Aura const* stacks = owner->GetAura(buff))
++            if (stacks->GetSpellInfo()->StackAmount && stacks->GetStackAmount() >= stacks->GetSpellInfo()->StackAmount)
++                return;
++        owner->CastSpell(owner, buff, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_unique_physical_stacks::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_unique_physical_stacks::HandleProc);
++    }
++};
++
++// Curse of Arugal (982806): Cat finishing moves have a 20% chance per combo point to grant Goldrinn's Guile;
++// while Goldrinn's Fury is up, Cat ability damage applies a stack of Arugal's Gift.
++class spell_wcme_curse_of_arugal : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_curse_of_arugal);
++
++    static constexpr uint32 GOLDRINNS_GUILE = 982816;
++    static constexpr uint32 GOLDRINNS_FURY = 982811;
++    static constexpr uint32 ARUGALS_GIFT = 982812;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return eventInfo.GetSpellInfo() && GetTarget()->GetShapeshiftForm() == FORM_CAT;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            // combo points are still on the caster during the cast phase; they are spent in the finish phase
++            if (spell->NeedsComboPoints())
++                if (uint8 const points = owner->GetComboPoints())
++                    if (roll_chance_i(20 * points))
++                        owner->CastSpell(owner, GOLDRINNS_GUILE, true);
++            return;
++        }
++        if (owner->HasAura(GOLDRINNS_FURY) && WcmeDealtDamage(eventInfo))
++            if (Unit* target = eventInfo.GetActionTarget())
++                if (target != owner)
++                    owner->CastSpell(target, ARUGALS_GIFT, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_curse_of_arugal::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_curse_of_arugal::HandleProc);
++    }
++};
++
++// Primordial Fury (977717): during Shamanistic Rage, non-periodic spell and ability critical hits spend 50 rage
++// to deal Elemental damage and grant a stack of Elemental Rage. Nothing happens without the rage.
++class spell_wcme_primordial_fury : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_primordial_fury);
++
++    static constexpr uint32 ELEMENTAL_DAMAGE = 977718;
++    static constexpr uint32 ELEMENTAL_RAGE = 985349;
++    static constexpr int32 RAGE_COST = 500;   // 50 rage, stored as tenths
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* owner = GetTarget();
++        return eventInfo.GetSpellInfo() && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) &&
++            !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeHasAnyAura(owner, { 30823, 1130823, 1230823 }) && int32(owner->GetPower(POWER_RAGE)) >= RAGE_COST;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        owner->ModifyPower(POWER_RAGE, -RAGE_COST);
++        if (Unit* target = eventInfo.GetActionTarget())
++            if (target != owner)
++                owner->CastSpell(target, ELEMENTAL_DAMAGE, true);
++        owner->CastSpell(owner, ELEMENTAL_RAGE, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_primordial_fury::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_primordial_fury::HandleProc);
++    }
++};
++
++// Ice Lash (977764): Ice Lash grants Solid Ice when the off-hand weapon carries Frostbrand; consuming Fingers of
++// Frost has a 33% chance to trigger Ice Crash (Ice Lash's cooldown reset, more damage and targets).
++class spell_wcme_ice_lash : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_ice_lash);
++
++    static constexpr uint32 SOLID_ICE = 977765;
++    static constexpr uint32 ICE_CRASH = 860105;
++    static constexpr int32 ICE_CRASH_CHANCE = 33;
++
++    static bool OffhandFrostbrand(Player* player)
++    {
++        Item* offhand = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
++        if (!offhand)
++            return false;
++        uint32 const enchant = offhand->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT);
++        SpellItemEnchantmentEntry const* entry = enchant ? sSpellItemEnchantmentStore.LookupEntry(enchant) : nullptr;
++        return entry && entry->description[0] && std::strstr(entry->description[0], "Frostbrand");
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return eventInfo.GetSpellInfo() != nullptr;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            // Fingers of Frost is spent by the spell being cast now
++            if (!WcmeNamed(spell, "Ice Lash") && WcmeHasAnyAura(owner, { 74396, 1174396, 271943, 997633 }) &&
++                roll_chance_i(ICE_CRASH_CHANCE))
++                owner->CastSpell(owner, ICE_CRASH, true);
++            return;
++        }
++        if (WcmeNamed(spell, "Ice Lash") && WcmeDealtDamage(eventInfo))
++            if (Player* player = owner->ToPlayer())
++                if (OffhandFrostbrand(player))
++                    owner->CastSpell(owner, SOLID_ICE, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_ice_lash::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_ice_lash::HandleProc);
++    }
++};
++
++// Words of Healing (81470): effective direct heals add a stack of Premonition; at full stacks it becomes
++// Clairvoyant. (Its heal crit bonus while Borrowed Time is up is an aura link, sql/enchants/016.)
++class spell_wcme_words_of_healing : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_words_of_healing);
++
++    static constexpr uint32 PREMONITION = 985341;
++    static constexpr uint32 CLAIRVOYANT = 985342;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        return heal && heal->GetEffectiveHeal() > 0 && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        owner->CastSpell(owner, PREMONITION, true);
++        if (Aura const* premonition = owner->GetAura(PREMONITION))
++        {
++            uint32 const full = premonition->GetSpellInfo()->StackAmount;
++            if (full && premonition->GetStackAmount() >= full)
++            {
++                owner->RemoveAurasDueToSpell(PREMONITION);
++                owner->CastSpell(owner, CLAIRVOYANT, true);
++            }
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_words_of_healing::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_words_of_healing::HandleProc);
++    }
++};
++
++// Borrowed Time (the buff): with Words of Healing active, casting spells no longer uses it up; it lasts its
++// full duration instead.
++class spell_wcme_borrowed_time_kept : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_borrowed_time_kept);
++
++    static constexpr uint32 WORDS_OF_HEALING = 81470;
++
++    void PrepareProc(ProcEventInfo& /*eventInfo*/)
++    {
++        if (Unit* owner = GetUnitOwner())
++            if (owner->HasAura(WORDS_OF_HEALING))
++                PreventDefaultAction();   // the charge is not taken
++    }
++
++    void Register() override
++    {
++        DoPrepareProc += AuraProcFn(spell_wcme_borrowed_time_kept::PrepareProc);
++    }
++};
++
++// Ambidextrous (977771): with Single-Minded Fury, off-hand auto attacks trigger Dominant Strike (main hand);
++// Bloodthirst, Execute and Rend trigger Southpaw Strike (off hand). Each has its own 16 sec cooldown.
++class spell_wcme_ambidextrous : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_ambidextrous);
++
++    static constexpr uint32 DOMINANT_STRIKE = 977774;
++    static constexpr uint32 SOUTHPAW_STRIKE = 977775;
++    static constexpr Seconds COOLDOWN{16};
++    TimePoint _mainReady{};
++    TimePoint _offReady{};
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        return target && target != GetTarget() && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        TimePoint const now = GameTime::Now();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell)
++        {
++            if (eventInfo.GetDamageInfo()->GetAttackType() == OFF_ATTACK && WcmeHasAnyAura(owner, { 988256, 1988256 }) &&
++                now >= _mainReady)
++            {
++                _mainReady = now + COOLDOWN;
++                owner->CastSpell(target, DOMINANT_STRIKE, true);
++            }
++            return;
++        }
++        if (WcmeNamedAny(spell, { "Bloodthirst", "Execute", "Rend" }) && now >= _offReady)
++        {
++            _offReady = now + COOLDOWN;
++            owner->CastSpell(target, SOUTHPAW_STRIKE, true);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_ambidextrous::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_ambidextrous::HandleProc);
++    }
++};
++
++// Nature's Fervor (965283): fully stacking Lacerate on a target empowers the next Feral ability.
++class spell_wcme_natures_fervor : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_natures_fervor);
++
++    static constexpr uint32 EMPOWERED = 965284;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeNamed(eventInfo.GetSpellInfo(), "Lacerate") && eventInfo.GetActionTarget();
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (Aura const* lacerate = eventInfo.GetActionTarget()->GetAura(spell->Id, owner->GetGUID()))
++        {
++            uint32 const full = std::max<uint32>(1, lacerate->GetSpellInfo()->StackAmount);
++            if (lacerate->GetStackAmount() >= full)
++                owner->CastSpell(owner, EMPOWERED, true);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_natures_fervor::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_natures_fervor::HandleProc);
++    }
++};
++
++void AddSC_WcmeEnchantScripts()
++{
++    RegisterSpellScript(spell_wcme_rush_of_blood);
++    RegisterSpellScript(spell_wcme_unique_physical_stacks);
++    RegisterSpellScript(spell_wcme_curse_of_arugal);
++    RegisterSpellScript(spell_wcme_primordial_fury);
++    RegisterSpellScript(spell_wcme_ice_lash);
++    RegisterSpellScript(spell_wcme_words_of_healing);
++    RegisterSpellScript(spell_wcme_borrowed_time_kept);
++    RegisterSpellScript(spell_wcme_ambidextrous);
++    RegisterSpellScript(spell_wcme_natures_fervor);
++}

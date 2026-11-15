@@ -62,6 +62,7 @@ for good by deleting its part from the script.
 | `60-manaforged-barrier.ps1` | Mana-forged Barrier, the full Ascension tank stance (the core only gave the form): absorbs up to 90% of damage with mana, scaled by how full your mana is (half against magic), 1 mana per point; +160% threat; immune to interrupts; dodge, parry and block while casting; 6% less chance to be crit in melee; Power Surge (50% chance on a melee hit while casting, 30% of missing mana over 4 sec, once every 2 sec); 30% less damage, 40% less healing, double damage from players; 10 sec of Mana-forged Mindset (20% less damage, 10% less healing) after leaving it | `Wildcard.ManaforgedBarrier` |
 | `61-bg-bot-whispers.ps1` | Bots in a battleground no longer whisper "I have a master already" to players (or their addons) who whisper them; they refuse quietly | — |
 | `62-racial-spellbook.ps1` | Each signature racial (Plainsrunning, Bloodrush, Ambush, Voodoo Regeneration, Radiant Presence) gets a "Racial Passive" spellbook entry that explains it when hovered; learned at login while its setting is on, unlearned when it is off. Radiant Presence's buff now shows a timer: 10 sec in combat, counting down to the fade after | — |
+| `64-enchant-scripts-loader.ps1` + `mystic-enchants-scripts.patch` | Mystic Enchants with their own code, exactly as their tooltips say: Rush of Blood (Hemorrhage sequence), Martial Crescendo and Tools of War (each different Physical ability, reset by non-Physical damage), Curse of Arugal (20% per combo point), Primordial Fury (spends 50 rage), Ice Lash (Frostbrand check, Ice Crash on Fingers of Frost), Words of Healing (Premonition, Borrowed Time kept), Ambidextrous (off-hand swings, separate 16 sec cooldowns), Nature's Fervor (full Lacerate stacks) | — |
 
 ## Settings (summary)
 
@@ -81,6 +82,8 @@ by that next spell). `090-mysql-tuning.sql`: MySQL settings that survive the man
 `130-battleground-dampening.sql`: everyone in a battleground does 20% less healing and gets 20% smaller absorb shields
 (Ascension's "PvP - Battleground - Dampening", which CoA has but never applied).
 `140-talent-fixes.sql`: the proc rows and script names for `55-talent-fixes.ps1`.
+`017-enchant-scripts.sql`: proc rows and script names for the enchants coded in `mystic-enchants-scripts.patch`
+(replaces earlier rough rules for them).
 
 ## How changes are made
 
