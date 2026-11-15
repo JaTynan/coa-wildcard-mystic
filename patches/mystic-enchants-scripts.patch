@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..b266c8a
+index 0000000..16615c2
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,2807 @@
+@@ -0,0 +1,2934 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2753,6 +2753,131 @@ index 0000000..b266c8a
 +    }
 +};
 +
++// Gurubashi Berserker (983135): Raging Blow, Slam and Execute critical strikes add a stack of Gurubashi Berserker
++// (983141: shorter global cooldown, higher rage costs; 983151: its PvP part; up to 10). Raging Blow has a 25% chance
++// on hit, 50% on a critical, to take 10 sec off Siegebreaker and 4 sec off Gurubashi Rage. Siegebreaker extends Gurubashi
++// Rage (983136) by 4 sec, or activates it for 4 sec. Colossus Smash makes your next 3 Executes deal 25% more damage.
++// Not done: Siegebreaker's Raging Blow charge, the 10% charge refund, and Executes ignoring the target's health (no
++// spell in our client gives that for Execute).
++class spell_wcme_gurubashi_berserker : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_gurubashi_berserker);
++
++    static constexpr uint32 RAGE = 983136;
++    uint8 _empoweredExecutes = 0;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(spell, { "Raging Blow", "Slam", "Execute", "Siegebreaker", "Colossus Smash" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const cast = eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        bool const crit = eventInfo.GetHitMask() & PROC_HIT_CRITICAL;
++        if (cast)
++        {
++            if (WcmeNamed(spell, "Colossus Smash"))
++                _empoweredExecutes = 3;
++            else if (WcmeNamed(spell, "Siegebreaker"))
++            {
++                if (Aura* rage = owner->GetAura(RAGE))
++                {
++                    rage->SetMaxDuration(rage->GetMaxDuration() + 4000);
++                    rage->SetDuration(rage->GetDuration() + 4000);
++                }
++                else
++                {
++                    owner->CastSpell(owner, RAGE, true);
++                    if (Aura* fresh = owner->GetAura(RAGE))
++                    {
++                        fresh->SetMaxDuration(4000);
++                        fresh->SetDuration(4000);
++                    }
++                }
++            }
++            return;
++        }
++        if (!WcmeDealtDamage(eventInfo))
++            return;
++        Unit* target = eventInfo.GetActionTarget();
++        if (WcmeNamed(spell, "Execute") && _empoweredExecutes && target)
++        {
++            --_empoweredExecutes;
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * 25 / 100);
++        }
++        if (crit && WcmeNamedAny(spell, { "Raging Blow", "Slam", "Execute" }))
++        {
++            for (uint32 stacks : { 983141u, 983151u })
++            {
++                WcmeAddStacks(owner, stacks, 1, 0);
++                if (Aura* aura = owner->GetAura(stacks); aura && aura->GetStackAmount() > 10)
++                    aura->SetStackAmount(10);
++            }
++        }
++        if (WcmeNamed(spell, "Raging Blow") && roll_chance_i(crit ? 50 : 25))
++        {
++            WcmeCutCooldownByName(owner, "Siegebreaker", 10000);
++            WcmeCutCooldownByName(owner, "Gurubashi Rage", 4000);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_gurubashi_berserker::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_gurubashi_berserker::HandleProc);
++    }
++};
++
++// Demonic Persistence (990130): casting Incinerate or Mind Blast sacrifices your Wild Imp with the least health: it
++// explodes for Fire damage around itself (990141) and empowers your summoned demon (990138: +20% damage against
++// creatures, up to 4 stacks, 20 sec). The Wild Imps' own crits cutting Hand of Gul'dan's cooldown need a hook on the
++// imps and are not done.
++class spell_wcme_demonic_persistence : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_demonic_persistence);
++
++    Unit* WeakestImp() const
++    {
++        Unit* best = nullptr;
++        for (Unit* minion : GetTarget()->m_Controlled)
++            if (minion && minion->IsAlive() && minion->GetTypeId() == TYPEID_UNIT && minion->GetName() == "Wild Imp" &&
++                (!best || minion->GetHealth() < best->GetHealth()))
++                best = minion;
++        return best;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) && WcmeNamedAny(eventInfo.GetSpellInfo(), { "Incinerate", "Mind Blast" }) &&
++            WeakestImp();
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* imp = WeakestImp();
++        if (!imp)
++            return;
++        owner->CastSpell(imp->GetPositionX(), imp->GetPositionY(), imp->GetPositionZ(), 990141, true);
++        owner->CastSpell(owner, 990138, true);
++        Unit::Kill(owner, imp);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_demonic_persistence::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_demonic_persistence::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -2810,4 +2935,6 @@ index 0000000..b266c8a
 +    RegisterSpellScript(spell_wcme_master_of_shadows);
 +    RegisterSpellScript(spell_wcme_spell_shredder);
 +    RegisterSpellScript(spell_wcme_beast_and_blade);
++    RegisterSpellScript(spell_wcme_gurubashi_berserker);
++    RegisterSpellScript(spell_wcme_demonic_persistence);
 +}
