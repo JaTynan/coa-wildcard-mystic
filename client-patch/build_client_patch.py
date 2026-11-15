@@ -30,7 +30,7 @@ def client_row(spell):
     row = list(source[spell].rows[spell])
     if spell in added_set:
         row[208] = row[209] = row[210] = row[211] = 0
-    return off_gcd(tuple(row))  # racials off the global cooldown (racials.py)
+    return custom_spells.with_icon(off_gcd(tuple(row)))  # racials off the global cooldown (racials.py), our icons
 
 
 rows = [client_row(spell) for spell in sorted(source) if spell not in custom_spells.SPELLS]

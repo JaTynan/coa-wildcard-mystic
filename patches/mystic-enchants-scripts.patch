@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..0a49d64
+index 0000000..e4e3334
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,3085 @@
+@@ -0,0 +1,3141 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2643,13 +2643,20 @@ index 0000000..0a49d64
 +
 +// Spell Shredder (978233): Frostbolt, Fireball and Lightning Bolt each grant their own Elemental Shredder (978800 Frost,
 +// 978801 Fire, 978802 Nature); all three can be up at once. Mortal Strike also strikes once more as each active
-+// element (978827/978828/978829). Rend with the Frost Shredder up also applies Elemental Rend (984702: a Frost bleed,
-+// +12% Frost damage taken from you); our client has no Fire or Nature Elemental Rend, so those two are left out.
++// element (978827/978828/978829). Rend applies Elemental Rend for each active element (978693 Frost, 978694 Fire,
++// 978695 Nature: a bleed of that school, +12% damage of that school taken from you); all three can be on one target.
 +class spell_wcme_spell_shredder : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_spell_shredder);
 +
-+    static constexpr std::array<std::pair<uint32, uint32>, 3> SHREDDERS = { { { 978800, 978827 }, { 978801, 978828 }, { 978802, 978829 } } };
++    struct Shredder
++    {
++        uint32 buff;
++        uint32 strike;
++        uint32 rend;
++    };
++    static constexpr std::array<Shredder, 3> SHREDDERS = { { { 978800, 978827, 978693 }, { 978801, 978828, 978694 },
++        { 978802, 978829, 978695 } } };
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
@@ -2675,16 +2682,18 @@ index 0000000..0a49d64
 +                owner->CastSpell(owner, 978801, true);
 +            else if (WcmeNamed(spell, "Lightning Bolt"))
 +                owner->CastSpell(owner, 978802, true);
-+            else if (Spell const* cast = eventInfo.GetProcSpell(); cast && owner->HasAura(978800))
++            else if (Spell const* cast = eventInfo.GetProcSpell())
 +                if (Unit* rendTarget = cast->m_targets.GetUnitTarget())
-+                    owner->CastSpell(rendTarget, 984702, true);
++                    for (Shredder const& shredder : SHREDDERS)
++                        if (owner->HasAura(shredder.buff))
++                            owner->CastSpell(rendTarget, shredder.rend, true);
 +            return;
 +        }
 +        if (!target)
 +            return;
-+        for (auto const& [buff, strike] : SHREDDERS)
-+            if (owner->HasAura(buff))
-+                owner->CastSpell(target, strike, true);
++        for (Shredder const& shredder : SHREDDERS)
++            if (owner->HasAura(shredder.buff))
++                owner->CastSpell(target, shredder.strike, true);
 +    }
 +
 +    void Register() override
@@ -2694,11 +2703,29 @@ index 0000000..0a49d64
 +    }
 +};
 +
++// Elemental Rend (978693/978694/978695, Spell Shredder): each tick deals its level-scaled base plus 10% of the caster's
++// spell power (for its school) and 10% of their attack power.
++class spell_wcme_elemental_rend : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_elemental_rend);
++
++    void CalcAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
++    {
++        if (Unit* caster = GetCaster())
++            amount += int32(0.1f * (caster->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask()) + WcmeAttackPower(caster)));
++    }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_elemental_rend::CalcAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
++    }
++};
++
 +// Beast and Blade (978237): Rogue abilities that award combo points give your tamed beast a stack of Pack Tactics
 +// (979038: +15% damage, 10% against players, and -5% damage taken per stack, up to 5, 10 sec). Single-target Rogue
 +// finishers have a 20% chance per combo point to trigger Double Team (300185 on you, which raises your pet's special
-+// attack damage by 70%, plus its marker 954625 on the pet). The "pet specials give you 10 energy" part needs a hook on
-+// the pet's own attacks and is not done.
++// attack damage by 70%, plus its marker 954625 on the pet). While Pack Tactics is up, the pet's special attacks give you
++// 10 energy (spell_wcme_pack_tactics).
 +class spell_wcme_beast_and_blade : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_beast_and_blade);
@@ -2750,6 +2777,33 @@ index 0000000..0a49d64
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_beast_and_blade::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_beast_and_blade::HandleProc);
++    }
++};
++
++// Pack Tactics (979038, on the pet, Beast and Blade): each special attack the pet lands gives its owner 10 energy (978838,
++// Blood Focus Energize, which the pet casts on its master).
++class spell_wcme_pack_tactics : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_pack_tactics);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* owner = GetTarget()->GetOwner();
++        return spell && owner && owner->IsPlayer() && spell->Id != 978838 &&
++            !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        GetTarget()->CastSpell(GetTarget(), 978838, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_pack_tactics::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_pack_tactics::HandleProc);
 +    }
 +};
 +
@@ -3082,7 +3136,9 @@ index 0000000..0a49d64
 +    RegisterSpellScript(spell_wcme_templar_of_flame);
 +    RegisterSpellScript(spell_wcme_master_of_shadows);
 +    RegisterSpellScript(spell_wcme_spell_shredder);
++    RegisterSpellScript(spell_wcme_elemental_rend);
 +    RegisterSpellScript(spell_wcme_beast_and_blade);
++    RegisterSpellScript(spell_wcme_pack_tactics);
 +    RegisterSpellScript(spell_wcme_gurubashi_berserker);
 +    RegisterSpellScript(spell_wcme_demonic_persistence);
 +    RegisterSpellScript(spell_wcme_relentless);
