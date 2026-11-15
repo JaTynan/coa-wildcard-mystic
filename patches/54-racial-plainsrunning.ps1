@@ -74,7 +74,9 @@ public:
         float const cap = float(std::min<uint32>(player->GetLevel(), 60) + 40) / 100.0f;
         float const bonus = (carrying || player->IsMounted()) ? 0.0f : cap * charge;
         float const shown = player->WcmePlainsrunningBonus;
-        if (std::fabs(bonus - shown) >= 0.01f || (bonus == 0.0f && shown != 0.0f))
+        // Small changes wait until they add up to 1%, except at empty and at full, which always land exactly (the
+        // last step to the cap is under 1%, so without this the bonus stopped just short, 49% at level 10).
+        if (std::fabs(bonus - shown) >= 0.01f || (bonus != shown && (bonus == 0.0f || charge >= 1.0f)))
         {
             player->WcmePlainsrunningBonus = bonus;
             player->UpdateSpeed(MOVE_RUN, true);

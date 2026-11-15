@@ -74,13 +74,13 @@ SPELLS = {
              {34: NEXT_ABILITY, 35: 100, 36: 1}),  # achievement_profession_fishing_findfish; one charge
     VOODOO: ('Voodoo Regeneration',
              'Health regenerates 50% faster out of combat. In combat, regenerate 0.3% of maximum health per second '
-             '(half while the burst is on cooldown). Below 35% health, regenerate 3% of maximum health per second '
-             'for 8 sec, once every 2 min.',
+             '(half while the burst is on cooldown). Below 35% health, regenerate 28% of maximum health over '
+             '5 sec, once every 2 min.',
              'Health regeneration increased by $s1% out of combat.',
              19697, 0, [(MOD_HEALTH_REGEN_PERCENT, 50, 0)], {4: PASSIVE}),
     VOODOO_BURST: ('Voodoo Regeneration',
-                   'Regenerating 3% of maximum health per second for 8 sec.',
-                   'Regenerating 3% of maximum health per second.',
+                   'Regenerating 28% of maximum health over 5 sec.',
+                   'Regenerating 28% of maximum health over 5 sec.',
                    19697, 0, [(DUMMY, 0, 0)]),  # inv_offhand_zulaman_d_01
     VOODOO_COOLDOWN: ('Voodoo Regeneration (cooldown)',
                       'The burst can\'t happen again until this ends, and in-combat regeneration is halved.',
@@ -132,8 +132,8 @@ SPELLS = {
                   '', 3701, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_VOODOO: ('Voodoo Regeneration',
                   'Health regenerates 50% faster out of combat. In combat, regenerate 0.3% of maximum health per '
-                  'second (half while the burst is on cooldown). Below 35% health, regenerate 3% of maximum health '
-                  'per second for 8 sec, once every 2 min.',
+                  'second (half while the burst is on cooldown). Below 35% health, regenerate 28% of maximum health '
+                  'over 5 sec, once every 2 min.',
                   '', 19697, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_RADIANT: ('Radiant Presence',
                    'In combat, gain a stack of Light every 6 sec, up to 5. Each stack gives you and every ally within '
@@ -151,7 +151,9 @@ SCRIPTS = {
 
 # spell_proc rows (charges used up by the next ability): id -> (ProcFlags, SpellTypeMask, SpellPhaseMask, Charges)
 PROCS = {
-    AMBUSH: (NEXT_ABILITY, 3, 2, 1),  # used by the next ability that deals damage or heals (not buffs); on hit
+    # Used by the next ability that lands, whatever it does: damage and heals, and also spells that only apply an aura
+    # (Renew, Corruption: they would otherwise keep the +50% on every cast, and buffs can't be told apart from them).
+    AMBUSH: (NEXT_ABILITY, 7, 2, 1),
 }
 
 STRINGS = {136: 0, 170: 1, 187: 2}  # enUS name, description, aura text (index into the tuple above)

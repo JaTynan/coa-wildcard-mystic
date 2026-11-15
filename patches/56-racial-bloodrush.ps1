@@ -36,7 +36,8 @@ public:
         auto count = [&](auto const& refs)
         {
             for (auto const& [guid, ref] : refs)
-                if (Unit* other = ref->GetOther(player); other && other->IsAlive() && player->IsHostileTo(other))
+                // Not friendly, rather than hostile: a neutral (yellow) mob you are fighting is still an enemy.
+                if (Unit* other = ref->GetOther(player); other && other->IsAlive() && !player->IsFriendlyTo(other))
                     ++enemies;
         };
         count(player->GetCombatManager().GetPvECombatRefs());
