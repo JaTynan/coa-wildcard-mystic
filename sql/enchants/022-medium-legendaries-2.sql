@@ -1,23 +1,33 @@
 -- Medium legendary fixes, part 2 (needs the build with this version of mystic-enchants-scripts.patch): Master of
--- Shadows, Spell Shredder, Beast and Blade, Gurubashi Berserker and Demonic Persistence.
+-- Shadows, Spell Shredder, Beast and Blade, Gurubashi Berserker, Demonic Persistence,
+-- Relentless, Blood for the Blood God and Elemental Lord.
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 980046),
 ('spell_proc', 978233),
 ('spell_proc', 978237),
 ('spell_proc', 983135),
-('spell_proc', 990130);
-DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (980046, 978233, 978237, 983135, 990130);
-DELETE FROM `spell_script_names` WHERE `spell_id` IN (980046, 978233, 978237, 983135, 990130) AND `ScriptName` LIKE 'spell\_wcme\_%';
-DELETE FROM `spell_proc` WHERE `SpellId` IN (980046, 978233, 978237, 983135, 990130);
+('spell_proc', 990130),
+('spell_proc', 986052),
+('spell_proc', 983070),
+('spell_proc', 990200);
+DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (980046, 978233, 978237, 983135, 990130, 986052, 983070, 990200);
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (980046, 978233, 978237, 983135, 990130, 986052, 983070, 990200) AND `ScriptName` LIKE 'spell\_wcme\_%';
+DELETE FROM `spell_proc` WHERE `SpellId` IN (980046, 978233, 978237, 983135, 990130, 986052, 983070, 990200);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
 (980046, 0, 0, 0, 0, 0, 16, 0, 3, 0, 0, 0, 0, 100, 0, 0),
 (978233, 0, 0, 0, 0, 0, 87312, 0, 3, 0, 0, 0, 0, 100, 0, 0),
 (978237, 0, 0, 0, 0, 0, 16, 0, 3, 0, 0, 0, 0, 100, 0, 0),
 (983135, 0, 0, 0, 0, 0, 16, 0, 3, 0, 0, 0, 0, 100, 0, 0),
-(990130, 0, 0, 0, 0, 0, 65536, 0, 1, 0, 0, 0, 0, 100, 0, 0);
+(990130, 0, 0, 0, 0, 0, 65536, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(986052, 0, 0, 0, 0, 0, 87312, 0, 3, 0, 0, 0, 0, 100, 0, 0),
+(983070, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(990200, 0, 0, 0, 0, 0, 65536, 1, 2, 2, 0, 0, 0, 100, 0, 0);
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (980046, 'spell_wcme_master_of_shadows'),
 (978233, 'spell_wcme_spell_shredder'),
 (978237, 'spell_wcme_beast_and_blade'),
 (983135, 'spell_wcme_gurubashi_berserker'),
-(990130, 'spell_wcme_demonic_persistence');
+(990130, 'spell_wcme_demonic_persistence'),
+(986052, 'spell_wcme_relentless'),
+(983070, 'spell_wcme_blood_for_the_blood_god'),
+(990200, 'spell_wcme_elemental_lord');

@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..16615c2
+index 0000000..0a49d64
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,2934 @@
+@@ -0,0 +1,3085 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2878,6 +2878,154 @@ index 0000000..16615c2
 +    }
 +};
 +
++// Relentless (986052): Shield Slam awards 2 combo points and Shield Block 5 (on your target), Eviscerate has a 20% chance
++// per combo point to take 2 sec off Shield Block's cooldown, and Hemorrhage has a 30% chance (assumed; the tooltip says
++// "a chance") to trigger Sword and Board (50227). Relentless Eviscerate: Eviscerate also strikes every nearby enemy with
++// your shield for 80% of its damage (986053). The -8% damage taken with Relentless Strikes is data.
++class spell_wcme_relentless : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_relentless);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->Id != 986053 && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(spell, { "Shield Slam", "Shield Block", "Eviscerate", "Hemorrhage" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const cast = eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        if (cast)
++        {
++            if (WcmeNamed(spell, "Eviscerate"))
++            {
++                if (uint8 const points = owner->GetComboPoints(); points && roll_chance_i(20 * points))
++                    WcmeCutCooldownByName(owner, "Shield Block", 2000);
++            }
++            else if (WcmeNamed(spell, "Shield Block"))
++            {
++                Unit* target = owner->GetVictim();
++                if (!target)
++                    if (Player* player = owner->ToPlayer())
++                        target = player->GetSelectedUnit();
++                if (target && target != owner && owner->IsValidAttackTarget(target))
++                    owner->AddComboPoints(target, 5);
++            }
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target || target == owner || !WcmeDealtDamage(eventInfo))
++            return;
++        if (WcmeNamed(spell, "Shield Slam"))
++            owner->AddComboPoints(target, 2);
++        else if (WcmeNamed(spell, "Hemorrhage"))
++        {
++            if (roll_chance_i(30))
++                owner->CastSpell(owner, 50227, true);
++        }
++        else   // Eviscerate
++        {
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            int32 const share = int32(int64(damage->GetDamage() + damage->GetAbsorb()) * 80 / 100);
++            if (share > 0)
++                owner->CastCustomSpell(986053, SPELLVALUE_BASE_POINT0, share, owner, true);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_relentless::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_relentless::HandleProc);
++    }
++};
++
++// Blood for the Blood God (983070): Eviscerate, Envenom, Dispatch and Deadly Throw have a 20% chance per combo point to
++// add a stack of Bathe in Blood (983095: bleeds and Eviscerate/Dispatch deal more damage, up to 30) for each of your
++// bleeds on the target. With Bathe in Blood up, Hunger for Blood triggers Favour of the Soulflayer (275863). Crimson
++// Tempest's longer duration and Razzashi Talon are data / taught.
++class spell_wcme_blood_for_the_blood_god : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_blood_for_the_blood_god);
++
++    static constexpr uint32 BATHE = 983095;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Eviscerate", "Envenom", "Dispatch", "Deadly Throw", "Hunger for Blood", "Hunger For Blood" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (WcmeNamedAny(spell, { "Hunger for Blood", "Hunger For Blood" }))
++        {
++            if (owner->HasAura(BATHE))
++                owner->CastSpell(owner, 275863, true);
++            return;
++        }
++        uint8 const points = owner->GetComboPoints();
++        Spell const* cast = eventInfo.GetProcSpell();
++        Unit* target = cast ? cast->m_targets.GetUnitTarget() : nullptr;
++        if (!points || !target || !roll_chance_i(20 * points))
++            return;
++        uint8 bleeds = 0;
++        for (auto const& [id, app] : target->GetAppliedAuras())
++        {
++            Aura const* aura = app->GetBase();
++            if (aura->GetCasterGUID() == owner->GetGUID() && (aura->GetSpellInfo()->GetAllEffectsMechanicMask() & (1 << MECHANIC_BLEED)))
++                ++bleeds;
++        }
++        if (!bleeds)
++            return;
++        WcmeAddStacks(owner, BATHE, bleeds, 0);
++        if (Aura* bathe = owner->GetAura(BATHE); bathe && bathe->GetStackAmount() > 30)
++            bathe->SetStackAmount(30);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_blood_for_the_blood_god::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_blood_for_the_blood_god::HandleProc);
++    }
++};
++
++// Elemental Lord (990200): critical damage from Elemental Blast or Lava Burst resets your Shock spells' cooldowns and
++// grants one of Elemental Earth, Frost or Fire at random (990201-990203: the matching Shock deals 85% more). Elemental
++// Blast's cooldown removal is data. Not done: the tethered-elemental requirement and Elemental Air from your
++// elemental's own crits (they need a hook on the elemental).
++class spell_wcme_elemental_lord : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_elemental_lord);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeDealtDamage(eventInfo) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Elemental Blast", "Lava Burst" });
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        for (char const* shock : { "Earth Shock", "Frost Shock", "Flame Shock", "Ice Shock" })
++            WcmeCutCooldownByName(owner, shock, 600000);
++        owner->CastSpell(owner, 990201 + urand(0, 2), true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_elemental_lord::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_elemental_lord::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -2937,4 +3085,7 @@ index 0000000..16615c2
 +    RegisterSpellScript(spell_wcme_beast_and_blade);
 +    RegisterSpellScript(spell_wcme_gurubashi_berserker);
 +    RegisterSpellScript(spell_wcme_demonic_persistence);
++    RegisterSpellScript(spell_wcme_relentless);
++    RegisterSpellScript(spell_wcme_blood_for_the_blood_god);
++    RegisterSpellScript(spell_wcme_elemental_lord);
 +}
