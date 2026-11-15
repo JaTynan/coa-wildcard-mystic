@@ -1,6 +1,6 @@
 # Troll signature racial: Voodoo Regeneration (docs/race-kits.md), replacing the stock Regeneration passive (20555).
 # Out of combat, health regenerates 50% faster (our passive 9990005). In combat, regenerate 0.3% of maximum health per
-# second, halved while the burst is on cooldown. Below 35% health, regenerate 3% of maximum health per second for 8 sec
+# second, halved while the burst is on cooldown. Below 35% health, regenerate 28% of maximum health over 5 sec
 # (buff 9990006), once every 2 min (cooldown marker 9990007). The spells are in sql/enchants/150-custom-spells.sql and
 # the client patch (client-patch/custom_spells.py). Run by the build from the workspace root, after
 # 40-battlegrounds.ps1 and 54-racial-plainsrunning.ps1. Throws if an anchor is gone. Listed in CHANGES.md.
@@ -64,13 +64,13 @@ public:
         }
         if (player->HealthBelowPct(35) && !player->HasAura(Cooldown))
         {
-            Lasting(player, Burst, 8000);
+            Lasting(player, Burst, 5000);
             Lasting(player, Cooldown, 120000);
         }
         player->WcmeVoodooTimer = std::min<uint32>(player->WcmeVoodooTimer + diff, 5000);
         for (; player->WcmeVoodooTimer >= 1000; player->WcmeVoodooTimer -= 1000)
         {
-            float percent = player->HasAura(Burst) ? 3.0f : 0.0f;
+            float percent = player->HasAura(Burst) ? 5.6f : 0.0f;  // 28% over the 5 sec
             if (player->IsInCombat())
                 percent += player->HasAura(Cooldown) ? 0.15f : 0.3f;
             // Fractions carry over to the next second instead of rounding up to 1, which at low level was many
