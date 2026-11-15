@@ -29,16 +29,21 @@ Write-Host "Patch: Mana-forged Barrier defends while casting"
 & {
 $file = 'core/src/server/game/Entities/Unit/Unit.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
-$channel = "bool Unit::CanDefendDuringChannel() const`n{`n"
-$cast = "bool Unit::CanDefendDuringCast() const`n{`n"
+# Cores from mid-November 2026 pass the attacker to both checks, and their block checks use them too (earlier cores
+# checked blocking separately, with no exceptions). Either core works.
+$channel = @("bool Unit::CanDefendDuringChannel() const`n{`n", "bool Unit::CanDefendDuringChannel(Unit const* attacker) const`n{`n") |
+    Where-Object { ([regex]::Matches($text, [regex]::Escape($_))).Count -eq 1 } | Select-Object -First 1
+$cast = @("bool Unit::CanDefendDuringCast() const`n{`n", "bool Unit::CanDefendDuringCast(Unit const* attacker) const`n{`n") |
+    Where-Object { ([regex]::Matches($text, [regex]::Escape($_))).Count -eq 1 } | Select-Object -First 1
+if (-not $channel) { throw 'Core changed: Unit.cpp has no Unit::CanDefendDuringChannel' }
+if (-not $cast) { throw 'Core changed: Unit.cpp has no Unit::CanDefendDuringCast' }
 $block = "victim->IsNonMeleeSpellCast(false, false, true)"
-foreach ($anchor in @($channel, $cast)) {
-    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed: Unit.cpp has no: $($anchor.Split("`n")[0])" }
-}
-if (([regex]::Matches($text, [regex]::Escape($block))).Count -ne 3) { throw 'Core changed: the three block-while-casting checks in Unit.cpp were not found' }
+$blocks = ([regex]::Matches($text, [regex]::Escape($block))).Count
+$newBlocks = ([regex]::Matches($text, [regex]::Escape("victim->CanDefendDuringCast(this)"))).Count
+if ($blocks -ne 3 -and -not ($blocks -eq 0 -and $newBlocks -ge 3)) { throw 'Core changed: the block-while-casting checks in Unit.cpp were not found' }
 $guard = "    if (HasAura(9990009)) // Wildcard: Mana-forged Barrier`n        return true;`n"
 $text = $text.Replace($channel, $channel + $guard).Replace($cast, $cast + $guard)
-$text = $text.Replace($block, "(" + $block + " && !victim->HasAura(9990009))")
+if ($blocks -eq 3) { $text = $text.Replace($block, "(" + $block + " && !victim->HasAura(9990009))") }
 Set-Content $file $text -NoNewline
 }
 
