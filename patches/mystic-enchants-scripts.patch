@@ -1,6 +1,6 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..dd04158
+index 0000000..b1b4fbe
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
 @@ -0,0 +1,1945 @@
@@ -277,8 +277,8 @@ index 0000000..dd04158
 +// 40%), awards 2 combo points and a stack of Goldrinn's Focus, and spends it. While Goldrinn's Fury is up, Cat ability
 +// damage applies a stack of Arugal's Gift. Darkness (no Ascension data survives;
 +// James's design): bleed or Shadow periodic damage, and combo point generators in Cat Form, build Darkness, at most one
-+// stack every 2.5 sec, up to 5, lasting 15 sec after the last gain. Mind Blast spends it all for 8% more damage per
-+// stack (40% at 5, on par with Goldrinn's Guile's 40%), as extra Shadow damage.
++// stack every 2.5 sec, up to 5, lasting 15 sec after the last gain. Mind Blast spends it all for 4% more damage per
++// stack (20% at 5, on par with Goldrinn's Guile's 20%; James chose it), as extra Shadow damage.
 +class spell_wcme_curse_of_arugal : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_curse_of_arugal);
@@ -292,7 +292,7 @@ index 0000000..dd04158
 +    static constexpr Milliseconds DARKNESS_EVERY{2500};
 +    static constexpr int32 DARKNESS_LASTS_MS = 15000;
 +    static constexpr uint8 DARKNESS_MAX = 5;
-+    static constexpr int32 DARKNESS_BONUS_PCT = 8;
++    static constexpr int32 DARKNESS_BONUS_PCT = 4;
 +    TimePoint _darknessReady{};
 +
 +    void GainDarkness(Unit* owner)
