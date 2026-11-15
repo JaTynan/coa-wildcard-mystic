@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..1914302
+index 0000000..950d5ab
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,3623 @@
+@@ -0,0 +1,3871 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2262,6 +2262,24 @@ index 0000000..1914302
 +            if (WcmeNamed(sSpellMgr->GetSpellInfo(spellId), name))
 +                player->ModifySpellCooldown(spellId, -ms);
 +}
++
++// Gives back one charge of the named ability; an ability without charges has its cooldown finished instead.
++void WcmeRestoreChargeByName(Unit* unit, char const* name)
++{
++    Player* player = unit->ToPlayer();
++    if (!player)
++        return;
++    for (auto const& [spellId, known] : player->GetSpellMap())
++    {
++        SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId);
++        if (known->State != PLAYERSPELL_REMOVED && known->Active && info && info->MaxCharges && WcmeNamed(info, name))
++        {
++            player->RestoreSpellCharge(spellId);
++            return;
++        }
++    }
++    WcmeCutCooldownByName(unit, name, 3600000);
++}
 +}
 +
 +// Elemental Assassin (978229): Backstab grants Elemental Assassin (978642, up to 2 stacks; its bonus is a dummy in the
@@ -2814,8 +2832,8 @@ index 0000000..1914302
 +// (983141: shorter global cooldown, higher rage costs; 983151: its PvP part; up to 10). Raging Blow has a 25% chance
 +// on hit, 50% on a critical, to take 10 sec off Siegebreaker and 4 sec off Gurubashi Rage. Siegebreaker extends Gurubashi
 +// Rage (983136) by 4 sec, or activates it for 4 sec. Colossus Smash grants Onslaught (984415: 3 charges, Execute usable
-+// at any target health, used up as Executes finish), and Executes while it is up deal 25% more damage.
-+// Not done: Siegebreaker's Raging Blow charge and the 10% charge refund.
++// at any target health, used up as Executes finish), and Executes while it is up deal 25% more damage. Siegebreaker also
++// gives back a Raging Blow charge, and Raging Blow used with 6 or more stacks has a 10% chance to refund its charge.
 +class spell_wcme_gurubashi_berserker : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_gurubashi_berserker);
@@ -2841,8 +2859,15 @@ index 0000000..1914302
 +        {
 +            if (WcmeNamed(spell, "Colossus Smash"))
 +                owner->CastSpell(owner, ONSLAUGHT, true);
++            else if (WcmeNamed(spell, "Raging Blow"))
++            {
++                Aura const* stacks = owner->GetAura(983141);
++                if (stacks && stacks->GetStackAmount() >= 6 && roll_chance_i(10))
++                    WcmeRestoreChargeByName(owner, "Raging Blow");
++            }
 +            else if (WcmeNamed(spell, "Siegebreaker"))
 +            {
++                WcmeRestoreChargeByName(owner, "Raging Blow");
 +                if (Aura* rage = owner->GetAura(RAGE))
 +                {
 +                    rage->SetMaxDuration(rage->GetMaxDuration() + 4000);
@@ -3335,7 +3360,10 @@ index 0000000..1914302
 +
 +// Mending Tide (965309): your Riptide heals put Mending Tides (944823) on that ally, one ally at a time. Every 2 sec for
 +// 6 sec it heals the ally and up to 5 allies within 8 yards (spell_wcme_mending_tide_pulse) and gives each Mending
-+// Chains (944825: +15% healing from Chain Heal for 3 sec). Not done: Riptide making the next Chain Heal not consume it.
++// Chains (944825: +15% healing from Chain Heal for 3 sec). With Improved Chain Heal (30911), each Riptide also makes your
++// next Chain Heal leave Riptide on its first target (spell_wcme_chain_heal_keep_riptide).
++std::unordered_set<ObjectGuid> WcmeKeepRiptide;
++
 +class spell_wcme_mending_tide : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_mending_tide);
@@ -3359,6 +3387,8 @@ index 0000000..1914302
 +                previous->RemoveAura(TIDES, owner->GetGUID());
 +        _tideTarget = target->GetGUID();
 +        owner->CastSpell(target, TIDES, true);
++        if (owner->HasAura(30911))
++            WcmeKeepRiptide.insert(owner->GetGUID());
 +    }
 +
 +    void Register() override
@@ -3409,7 +3439,7 @@ index 0000000..1914302
 +// Temporal Shift (977972): teaches Temporal Blast (930451). Each Temporal Blast adds a charge of Temporal Haste
 +// (954209: the next direct damage spell casts 40% faster), up to 3; reaching 3 triggers Eclipse (Lunar) (48518) if you
 +// know Eclipse, lasting a third as long. While Eclipse (Lunar) is up, Starfire, Starsurge and Moonfire hits deal 45%
-+// more (15% against players). Not done: a cancelled Temporal Blast storing its cast time (no cancel hook).
++// more (15% against players). A cancelled Temporal Blast stores its cast time (patches/66-enchant-core-hooks.ps1).
 +class spell_wcme_temporal_shift : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_temporal_shift);
@@ -3553,6 +3583,220 @@ index 0000000..1914302
 +    }
 +};
 +
++// Chain Heal (Mending Tide): when Riptide has armed it, the first target's Riptide comes back after Chain Heal uses it,
++// with the time it had left.
++class spell_wcme_chain_heal_keep_riptide : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_chain_heal_keep_riptide);
++
++    bool _first = true;
++    uint32 _riptide = 0;
++    int32 _remaining = 0;
++
++    void Remember(SpellMissInfo /*missInfo*/)
++    {
++        if (!_first || !GetHitUnit())
++            return;
++        _first = false;
++        Unit* caster = GetCaster();
++        if (!WcmeKeepRiptide.erase(caster->GetGUID()))
++            return;
++        if (AuraEffect const* riptide = GetHitUnit()->GetAuraEffect(SPELL_AURA_PERIODIC_HEAL, SPELLFAMILY_SHAMAN, 0, 0, 0x10, caster->GetGUID()))
++        {
++            _riptide = riptide->GetId();
++            _remaining = riptide->GetBase()->GetDuration();
++        }
++    }
++
++    void Restore()
++    {
++        if (!_riptide)
++            return;
++        Unit* target = GetHitUnit();
++        if (!target->HasAura(_riptide, GetCaster()->GetGUID()))
++            if (Aura* riptide = GetCaster()->AddAura(_riptide, target))
++                riptide->SetDuration(_remaining);
++        _riptide = 0;
++    }
++
++    void Register() override
++    {
++        BeforeHit += BeforeSpellHitFn(spell_wcme_chain_heal_keep_riptide::Remember);
++        AfterHit += SpellHitFn(spell_wcme_chain_heal_keep_riptide::Restore);
++    }
++};
++
++// Hot Hands (979765 / 1575104): Pyroblast counts toward Hot Streak (patches/66-enchant-core-hooks.ps1 and sql 026), and a
++// Pyroblast cast with Hot Streak up costs no mana. Your spells crit 8% more often on targets with your Living Bomb
++// (Hot Hands mark 9990019, kept as long as the bomb). Fireball or Fire Blast hits on a Living Bomb target add a stack of
++// Living Fire (979848: +8% damage and crit for your next Pyroblast, up to 5), used up by that Pyroblast. Instant
++// Pyroblasts add a stack of Superheated (984658: +3% Fire damage and haste, up to 8) without refreshing its duration.
++class spell_wcme_hot_hands : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_hot_hands);
++
++    static constexpr uint32 HOT_STREAK = 48108;
++    static constexpr uint32 MARK = 9990019;
++    static constexpr uint32 LIVING_FIRE = 979848;
++    static constexpr uint32 SUPERHEATED = 984658;
++    bool _streakAtCast = false;
++
++    static AuraEffect const* LivingBomb(Unit* target, Unit* owner)
++    {
++        return target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_MAGE, 0, 0x20000, 0, owner->GetGUID());
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(spell, { "Pyroblast", "Fireball", "Fire Blast", "Living Bomb" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Spell const* cast = eventInfo.GetProcSpell();
++        Unit* target = eventInfo.GetActionTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (!WcmeNamed(spell, "Pyroblast"))
++                return;
++            _streakAtCast = owner->HasAura(HOT_STREAK);
++            if (_streakAtCast && cast)
++                owner->ModifyPower(POWER_MANA, cast->GetPowerCost());
++            if (cast && cast->GetCastTime() <= 0)
++            {
++                Aura* superheated = owner->GetAura(SUPERHEATED);
++                int32 const left = superheated ? superheated->GetDuration() : 0;
++                owner->CastSpell(owner, SUPERHEATED, true);
++                if (superheated && (superheated = owner->GetAura(SUPERHEATED)))
++                    superheated->SetDuration(left);
++            }
++            return;
++        }
++        if (!target)
++            return;
++        if (WcmeNamed(spell, "Living Bomb"))
++        {
++            if (AuraEffect const* bomb = LivingBomb(target, owner))
++                if (Aura* mark = owner->AddAura(MARK, target))
++                {
++                    mark->SetMaxDuration(bomb->GetBase()->GetDuration());
++                    mark->SetDuration(bomb->GetBase()->GetDuration());
++                }
++            return;
++        }
++        if (WcmeNamed(spell, "Pyroblast"))
++        {
++            target->RemoveAura(LIVING_FIRE, owner->GetGUID());
++            return;
++        }
++        if (WcmeDealtDamage(eventInfo) && LivingBomb(target, owner))
++            owner->CastSpell(target, LIVING_FIRE, true);
++    }
++
++    void DropMarks(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        ObjectGuid const owner = GetTarget()->GetGUID();
++        for (Unit* enemy : WcmeEnemiesNear(GetTarget(), GetTarget(), 100.0f, 200))
++            enemy->RemoveAura(MARK, owner);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_hot_hands::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_hot_hands::HandleProc);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_hot_hands::DropMarks, EFFECT_1, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Predator's Wrath (977802): Wrath cast instantly in Cat Form (Predatory Strikes' Predator's Swiftness makes it instant;
++// the client data already allows Wrath in Cat Form) deals 70% more against monsters, restores 30 energy and grants
++// Predator's Wrath (977803, 6 sec, spell_wcme_predators_wrath_buff).
++class spell_wcme_predators_wrath : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_predators_wrath);
++
++    static constexpr uint32 BUFF = 977803;
++    bool _empowered = false;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeNamed(eventInfo.GetSpellInfo(), "Wrath");
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            Spell const* cast = eventInfo.GetProcSpell();
++            _empowered = owner->GetShapeshiftForm() == FORM_CAT && cast && cast->GetCastTime() <= 0;
++            if (_empowered)
++                owner->CastSpell(owner, BUFF, true);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        if (!_empowered || !target || target->IsPlayer() || !WcmeDealtDamage(eventInfo))
++            return;
++        _empowered = false;
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        WcmeExtraDamage(owner, target, eventInfo.GetSpellInfo(), int64(damage->GetDamage() + damage->GetAbsorb()) * 70 / 100);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_predators_wrath::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_predators_wrath::HandleProc);
++    }
++};
++
++// Predator's Wrath buff (977803): Cat Form abilities add Nature damage (977791): 20% of the hit for single-target
++// abilities, 10% for area ones (the tooltip gives no numbers). Claw, Shred and Mangle (Cat) give back 10 energy as they
++// are cast, in place of costing 10 less.
++class spell_wcme_predators_wrath_buff : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_predators_wrath_buff);
++
++    static constexpr uint32 NATURE = 977791;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->Id != NATURE && spell->SpellFamilyName == SPELLFAMILY_DRUID &&
++            GetTarget()->GetShapeshiftForm() == FORM_CAT && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (WcmeNamedAny(spell, { "Claw", "Shred", "Mangle (Cat)" }))
++                owner->ModifyPower(POWER_ENERGY, 10);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* nature = sSpellMgr->GetSpellInfo(NATURE);
++        if (!target || !nature || !WcmeDealtDamage(eventInfo))
++            return;
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        WcmeExtraDamage(owner, target, nature, int64(damage->GetDamage() + damage->GetAbsorb()) * (spell->IsAffectingArea() ? 10 : 20) / 100);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_predators_wrath_buff::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_predators_wrath_buff::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -3626,4 +3870,8 @@ index 0000000..1914302
 +    RegisterSpellScript(spell_wcme_temporal_shift);
 +    RegisterSpellScript(spell_wcme_touch_of_the_magi);
 +    RegisterSpellScript(spell_wcme_bane_of_havoc);
++    RegisterSpellScript(spell_wcme_chain_heal_keep_riptide);
++    RegisterSpellScript(spell_wcme_hot_hands);
++    RegisterSpellScript(spell_wcme_predators_wrath);
++    RegisterSpellScript(spell_wcme_predators_wrath_buff);
 +}
