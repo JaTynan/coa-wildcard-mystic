@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..e4e3334
+index 0000000..22948ea
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,3141 @@
+@@ -0,0 +1,3201 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2810,15 +2810,15 @@ index 0000000..e4e3334
 +// Gurubashi Berserker (983135): Raging Blow, Slam and Execute critical strikes add a stack of Gurubashi Berserker
 +// (983141: shorter global cooldown, higher rage costs; 983151: its PvP part; up to 10). Raging Blow has a 25% chance
 +// on hit, 50% on a critical, to take 10 sec off Siegebreaker and 4 sec off Gurubashi Rage. Siegebreaker extends Gurubashi
-+// Rage (983136) by 4 sec, or activates it for 4 sec. Colossus Smash makes your next 3 Executes deal 25% more damage.
-+// Not done: Siegebreaker's Raging Blow charge, the 10% charge refund, and Executes ignoring the target's health (no
-+// spell in our client gives that for Execute).
++// Rage (983136) by 4 sec, or activates it for 4 sec. Colossus Smash grants Onslaught (984415: 3 charges, Execute usable
++// at any target health, used up as Executes finish), and Executes while it is up deal 25% more damage.
++// Not done: Siegebreaker's Raging Blow charge and the 10% charge refund.
 +class spell_wcme_gurubashi_berserker : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_gurubashi_berserker);
 +
 +    static constexpr uint32 RAGE = 983136;
-+    uint8 _empoweredExecutes = 0;
++    static constexpr uint32 ONSLAUGHT = 984415;
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
@@ -2837,7 +2837,7 @@ index 0000000..e4e3334
 +        if (cast)
 +        {
 +            if (WcmeNamed(spell, "Colossus Smash"))
-+                _empoweredExecutes = 3;
++                owner->CastSpell(owner, ONSLAUGHT, true);
 +            else if (WcmeNamed(spell, "Siegebreaker"))
 +            {
 +                if (Aura* rage = owner->GetAura(RAGE))
@@ -2860,9 +2860,8 @@ index 0000000..e4e3334
 +        if (!WcmeDealtDamage(eventInfo))
 +            return;
 +        Unit* target = eventInfo.GetActionTarget();
-+        if (WcmeNamed(spell, "Execute") && _empoweredExecutes && target)
++        if (WcmeNamed(spell, "Execute") && target && owner->HasAura(ONSLAUGHT))
 +        {
-+            --_empoweredExecutes;
 +            DamageInfo const* damage = eventInfo.GetDamageInfo();
 +            WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * 25 / 100);
 +        }
@@ -3050,13 +3049,22 @@ index 0000000..e4e3334
 +    }
 +};
 +
-+// Elemental Lord (990200): critical damage from Elemental Blast or Lava Burst resets your Shock spells' cooldowns and
-+// grants one of Elemental Earth, Frost or Fire at random (990201-990203: the matching Shock deals 85% more). Elemental
-+// Blast's cooldown removal is data. Not done: the tethered-elemental requirement and Elemental Air from your
-+// elemental's own crits (they need a hook on the elemental).
++// Elemental Lord (990200): critical damage from Elemental Blast or Lava Burst resets your Shock spells' cooldowns and,
++// with a tethered elemental (your tamed elemental pet), grants one of Elemental Earth, Frost or Fire at random
++// (990201-990203: the matching Shock deals 85% more). Elemental Blast's cooldown removal is data. While you have the
++// enchant, your tethered elemental carries Elemental Air (990208, spell_wcme_elemental_air_watch), checked every second.
++Pet* WcmeTetheredElemental(Unit* owner)
++{
++    Player* player = owner ? owner->ToPlayer() : nullptr;
++    Pet* pet = player ? player->GetPet() : nullptr;
++    return pet && pet->IsAlive() && pet->GetCreatureType() == CREATURE_TYPE_ELEMENTAL ? pet : nullptr;
++}
++
 +class spell_wcme_elemental_lord : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_elemental_lord);
++
++    static constexpr uint32 AIR_WATCH = 990208;
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
@@ -3070,13 +3078,64 @@ index 0000000..e4e3334
 +        Unit* owner = GetTarget();
 +        for (char const* shock : { "Earth Shock", "Frost Shock", "Flame Shock", "Ice Shock" })
 +            WcmeCutCooldownByName(owner, shock, 600000);
-+        owner->CastSpell(owner, 990201 + urand(0, 2), true);
++        if (WcmeTetheredElemental(owner))
++            owner->CastSpell(owner, 990201 + urand(0, 2), true);
++    }
++
++    void WatchEverySecond(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void KeepAirWatch(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++        if (Pet* elemental = WcmeTetheredElemental(GetTarget()); elemental && !elemental->HasAura(AIR_WATCH))
++            elemental->AddAura(AIR_WATCH, elemental);
++    }
++
++    void DropAirWatch(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (Player* player = GetTarget()->ToPlayer())
++            if (Pet* pet = player->GetPet())
++                pet->RemoveAurasDueToSpell(AIR_WATCH);
 +    }
 +
 +    void Register() override
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_elemental_lord::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_elemental_lord::HandleProc);
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_elemental_lord::WatchEverySecond, EFFECT_1, SPELL_AURA_DUMMY);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_elemental_lord::KeepAirWatch, EFFECT_1, SPELL_AURA_DUMMY);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_elemental_lord::DropAirWatch, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Elemental Air watch (990208, on the tethered elemental, Elemental Lord): each critical strike the elemental deals, from
++// its melee swings or its abilities, gives its master Elemental Air (990204: Elemental Blast +15% damage and +30%
++// critical strike chance for 12 sec), only while the master has Elemental Lord.
++class spell_wcme_elemental_air_watch : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_elemental_air_watch);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* owner = GetTarget()->GetOwner();
++        return owner && owner->HasAura(990200) && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        GetTarget()->CastSpell(GetTarget(), 990204, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_elemental_air_watch::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_elemental_air_watch::HandleProc);
 +    }
 +};
 +
@@ -3144,4 +3203,5 @@ index 0000000..e4e3334
 +    RegisterSpellScript(spell_wcme_relentless);
 +    RegisterSpellScript(spell_wcme_blood_for_the_blood_god);
 +    RegisterSpellScript(spell_wcme_elemental_lord);
++    RegisterSpellScript(spell_wcme_elemental_air_watch);
 +}
