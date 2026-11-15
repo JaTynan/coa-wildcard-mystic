@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..72350af
+index 0000000..1123248
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,2603 @@
+@@ -0,0 +1,2641 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2553,6 +2553,43 @@ index 0000000..72350af
 +    }
 +};
 +
++// Templar of Flame (954424): while Seal of Fervor is active, direct Holy or Fire damage has a 30% chance (the chance
++// its sister enchant Fiery Fervor uses) to grant Fiery Fervor (954431: 8% less damage taken, 10 sec). Judgements open
++// the 6 sec window (272095) in which Flamestrike damage cuts Blast Wave and Dragon's Breath's cooldowns (016 coded that
++// window). The seal transform and the Flamestrike threat bonus are data.
++class spell_wcme_templar_of_flame : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_templar_of_flame);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return std::strncmp(spell->SpellName[0], "Judgement", 9) == 0;
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        return WcmeDealtDamage(eventInfo) && (damage->GetSchoolMask() & (SPELL_SCHOOL_MASK_HOLY | SPELL_SCHOOL_MASK_FIRE)) &&
++            WcmeHasAnyAura(GetTarget(), { 954425, 954427, 272085, 272087, 852211, 1569826, 1571674, 1590916 });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            owner->CastSpell(owner, 272095, true);
++        else if (roll_chance_i(30))
++            owner->CastSpell(owner, 954431, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_templar_of_flame::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_templar_of_flame::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -2606,4 +2643,5 @@ index 0000000..72350af
 +    RegisterSpellScript(spell_wcme_crimson_defense);
 +    RegisterSpellScript(spell_wcme_heavyweight);
 +    RegisterSpellScript(spell_wcme_low_tide);
++    RegisterSpellScript(spell_wcme_templar_of_flame);
 +}
