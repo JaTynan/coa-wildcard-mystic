@@ -93,9 +93,11 @@ Deadly Bite's own version (965292) gets its real design (teaches Savage Blade, s
 of copying its twin; 004 no longer blanks it.
 `020-quick-legendaries.sql`: quick legendary fixes from the tooltip review: Shadow Blades and Fire Watch (legendary)
 carry their working copies; Soul Erosion and Blazing Flame get their triggers; proc rows and script names for Overheating,
-Aimed Explosive Shot, Flame On!, Frozen Chaos, Whispers of the Old Gods (Madness) and Prophet of Wrath; Frost and Demonology Mastery pet bonuses, Doused (Electrocute), Thermal Void from Ice Barrier; Elemental Assassin, Stormborn and Compound Power; Crimson Defense (blocks stack, Shield of Righteousness / Avenger's Shield spend 3), Heavyweight (stacks to Ready to Strike, auto attacks reset), Low Tide (Healing Wave crits spread Riptide), Templar of Flame (Fiery Fervor 30% under Seal of Fervor, Judgement opens the Flamestrike window); One With The Light (builder copy) carries its working twin.
+Aimed Explosive Shot, Flame On!, Frozen Chaos, Whispers of the Old Gods (Madness) and Prophet of Wrath; Frost and Demonology Mastery pet bonuses, Doused (Electrocute), Thermal Void from Ice Barrier; Elemental Assassin, Stormborn and Compound Power; Crimson Defense (blocks stack, Shield of Righteousness / Avenger's Shield spend 3), Heavyweight (stacks to Ready to Strike, auto attacks reset), Low Tide (Healing Wave crits spread Riptide), Templar of Flame (Fiery Fervor 30% under Seal of Fervor, Judgement opens the Flamestrike window), Master of Shadows (extra Shadow hit, Apprentice stacks into Master of Shadows), Spell Shredder (elemental Shredders, extra Mortal Strike hits, Frost Elemental Rend); One With The Light (builder copy) carries its working twin.
 `021-medium-legendaries.sql`: proc rows and script names for the medium legendary fixes (Crimson Defense, Heavyweight,
 Low Tide, ...).
+`022-medium-legendaries-2.sql`: proc rows and script names for the second batch of medium legendary fixes (Master of
+Shadows, Spell Shredder, ...).
 `150-custom-spells.sql`: our own spells for buff icons (Plainsrunning, Bloodrush, Ambush, Voodoo Regeneration, Radiant Presence), the racials' spellbook entries, Mana-forged Barrier's spells, Ambush's spell_proc row and the barrier's spell_script_names row, written by `client-patch/custom_spells.py`.
 `130-battleground-dampening.sql`: everyone in a battleground does 20% less healing and gets 20% smaller absorb shields
 (Ascension's "PvP - Battleground - Dampening", which CoA has but never applied).

@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..1123248
+index 0000000..e760aac
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,2641 @@
+@@ -0,0 +1,2747 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2590,6 +2590,110 @@ index 0000000..1123248
 +    }
 +};
 +
++// Master of Shadows (980046): Sinister Strike, Eviscerate, Garrote, Rupture, Crimson Tempest and Gloomblade's first hit
++// also deal 49 + 11.5% SP + 11.5% AP Shadow damage (Dark Intent, 980050). Sinister Strike and Gloomblade critical
++// strikes add a stack of Apprentice of Shadows (980048, up to 3); Eviscerate or Rupture at 3 stacks spends them for
++// Master of Shadows (980049: +30% Shadow damage, and 980065: +10% Shadow crit, 10 sec).
++class spell_wcme_master_of_shadows : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_master_of_shadows);
++
++    static constexpr uint32 SHADOW_HIT = 980050;
++    static constexpr uint32 APPRENTICE = 980048;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        return spell && spell->Id != SHADOW_HIT && target && target != GetTarget() && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(spell, { "Sinister Strike", "Eviscerate", "Garrote", "Rupture", "Crimson Tempest", "Gloomblade" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (WcmeNamedAny(spell, { "Eviscerate", "Rupture" }))
++            if (Aura* apprentice = owner->GetAura(APPRENTICE); apprentice && apprentice->GetStackAmount() >= 3)
++            {
++                apprentice->Remove();
++                owner->CastSpell(owner, 980049, true);
++                owner->CastSpell(owner, 980065, true);
++            }
++        if (!WcmeDealtDamage(eventInfo))
++            return;
++        if (SpellInfo const* shadow = sSpellMgr->GetSpellInfo(SHADOW_HIT))
++            WcmeExtraDamage(owner, target, shadow, int64(49 + 0.115f * WcmeSpellPower(owner) + 0.115f * WcmeAttackPower(owner)));
++        if ((eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && WcmeNamedAny(spell, { "Sinister Strike", "Gloomblade" }))
++        {
++            WcmeAddStacks(owner, APPRENTICE, 1, 0);
++            if (Aura* apprentice = owner->GetAura(APPRENTICE); apprentice && apprentice->GetStackAmount() > 3)
++                apprentice->SetStackAmount(3);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_master_of_shadows::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_master_of_shadows::HandleProc);
++    }
++};
++
++// Spell Shredder (978233): Frostbolt, Fireball and Lightning Bolt each grant their own Elemental Shredder (978800 Frost,
++// 978801 Fire, 978802 Nature); all three can be up at once. Mortal Strike also strikes once more as each active
++// element (978827/978828/978829). Rend with the Frost Shredder up also applies Elemental Rend (984702: a Frost bleed,
++// +12% Frost damage taken from you); our client has no Fire or Nature Elemental Rend, so those two are left out.
++class spell_wcme_spell_shredder : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_spell_shredder);
++
++    static constexpr std::array<std::pair<uint32, uint32>, 3> SHREDDERS = { { { 978800, 978827 }, { 978801, 978828 }, { 978802, 978829 } } };
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return WcmeNamedAny(spell, { "Frostbolt", "Fireball", "Lightning Bolt", "Rend" });
++        return WcmeNamed(spell, "Mortal Strike") && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (WcmeNamed(spell, "Frostbolt"))
++                owner->CastSpell(owner, 978800, true);
++            else if (WcmeNamed(spell, "Fireball"))
++                owner->CastSpell(owner, 978801, true);
++            else if (WcmeNamed(spell, "Lightning Bolt"))
++                owner->CastSpell(owner, 978802, true);
++            else if (Spell const* cast = eventInfo.GetProcSpell(); cast && owner->HasAura(978800))
++                if (Unit* rendTarget = cast->m_targets.GetUnitTarget())
++                    owner->CastSpell(rendTarget, 984702, true);
++            return;
++        }
++        if (!target)
++            return;
++        for (auto const& [buff, strike] : SHREDDERS)
++            if (owner->HasAura(buff))
++                owner->CastSpell(target, strike, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_spell_shredder::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_spell_shredder::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -2644,4 +2748,6 @@ index 0000000..1123248
 +    RegisterSpellScript(spell_wcme_heavyweight);
 +    RegisterSpellScript(spell_wcme_low_tide);
 +    RegisterSpellScript(spell_wcme_templar_of_flame);
++    RegisterSpellScript(spell_wcme_master_of_shadows);
++    RegisterSpellScript(spell_wcme_spell_shredder);
 +}
