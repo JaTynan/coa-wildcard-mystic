@@ -27,7 +27,11 @@ BOOK_BLOODRUSH = 9990014
 BOOK_AMBUSH = 9990015
 BOOK_VOODOO = 9990016
 BOOK_RADIANT = 9990017
+# Mystic Enchant helpers (sql/enchants/150 carries the server rows; scripts in mystic-enchants-scripts.patch)
+TEMPORAL_STORE = 9990018    # Temporal Shift: a cancelled Temporal Blast's cast time, taken off the next one
+HOT_HANDS_MARK = 9990019    # Hot Hands: +8% spell crit for the Mage whose Living Bomb is on the target
 
+ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 MOD_THREAT, PERIODIC_ENERGIZE, EFFECT_IMMUNITY, MANA_SHIELD, MOD_ATTACKER_MELEE_CRIT_CHANCE = 10, 24, 37, 97, 187
 DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
     MOD_HEALTH_REGEN_PERCENT, MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 87, 88, 136, 193  # aura types
@@ -163,6 +167,16 @@ SPELLS = {
                    'fades 10 sec after combat. A second Draenei doesn\'t add more. Your auras and totems reach 50% '
                    'further.',
                    '', ICON_BANNER_DRAENEI, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    TEMPORAL_STORE: ('Stored Time',
+                     'Time stored from a cancelled Temporal Blast.',
+                     'Your next Temporal Blast casts faster by the time you had already spent on the cancelled one.',
+                     4828, 0, [(ADD_FLAT_MODIFIER, 0, SPELLMOD_CASTING_TIME)],
+                     {122: 0x20000000, 208: 3, 36: 1}),  # Temporal Blast's class mask; one charge; the server sets the amount
+    HOT_HANDS_MARK: ('Hot Hands',
+                     'Spell critical strike chance against this target increased by 8% for the Mage whose Living Bomb is '
+                     'on it.',
+                     'Your Living Bomb\'s Mage has 8% more spell critical strike chance against you.',
+                     3000, 0, [(MOD_CRIT_CHANCE_AGAINST_TARGET, 8, ALL_SCHOOLS)], {86: 6}),  # on the enemy; lasts as long as Living Bomb
 }
 RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT)}
 
