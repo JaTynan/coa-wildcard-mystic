@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..e760aac
+index 0000000..b266c8a
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,2747 @@
+@@ -0,0 +1,2807 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2694,6 +2694,65 @@ index 0000000..e760aac
 +    }
 +};
 +
++// Beast and Blade (978237): Rogue abilities that award combo points give your tamed beast a stack of Pack Tactics
++// (979038: +15% damage, 10% against players, and -5% damage taken per stack, up to 5, 10 sec). Single-target Rogue
++// finishers have a 20% chance per combo point to trigger Double Team (300185 on you, which raises your pet's special
++// attack damage by 70%, plus its marker 954625 on the pet). The "pet specials give you 10 energy" part needs a hook on
++// the pet's own attacks and is not done.
++class spell_wcme_beast_and_blade : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_beast_and_blade);
++
++    static bool AwardsComboPoints(SpellInfo const* spell)
++    {
++        for (SpellEffectInfo const& effect : spell->GetEffects())
++            if (effect.Effect == SPELL_EFFECT_ADD_COMBO_POINTS)
++                return true;
++        return false;
++    }
++
++    Unit* Pet() const
++    {
++        Player* player = GetTarget()->ToPlayer();
++        Unit* pet = player ? player->GetGuardianPet() : nullptr;
++        return pet && pet->IsAlive() ? pet : nullptr;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || spell->SpellFamilyName != SPELLFAMILY_ROGUE || !Pet() || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return spell->NeedsComboPoints() && !spell->IsAffectingArea();
++        return AwardsComboPoints(spell) && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* pet = Pet();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            // combo points are still on the caster during the cast phase
++            if (uint8 const points = owner->GetComboPoints(); points && roll_chance_i(20 * points))
++            {
++                owner->CastSpell(owner, 300185, true);
++                pet->AddAura(954625, pet);
++            }
++            return;
++        }
++        owner->CastSpell(owner, 979038, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_beast_and_blade::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_beast_and_blade::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -2750,4 +2809,5 @@ index 0000000..e760aac
 +    RegisterSpellScript(spell_wcme_templar_of_flame);
 +    RegisterSpellScript(spell_wcme_master_of_shadows);
 +    RegisterSpellScript(spell_wcme_spell_shredder);
++    RegisterSpellScript(spell_wcme_beast_and_blade);
 +}
