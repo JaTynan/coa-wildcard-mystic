@@ -23,6 +23,6 @@ INSERT INTO `spell_dbc` VALUES
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_proc', 9990004);
 DELETE FROM `spell_proc` WHERE `SpellId` IN (9990004);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
-(9990004, 0, 0, 0, 0, 0, 87312, 3, 2, 0, 0, 0, 0, 100, 0, 1);
+(9990004, 0, 0, 0, 0, 0, 87312, 7, 2, 0, 0, 0, 0, 100, 0, 1);
 DELETE FROM `spell_script_names` WHERE `ScriptName` IN ('spell_wcme_manaforged_barrier');
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES (9990009, 'spell_wcme_manaforged_barrier');

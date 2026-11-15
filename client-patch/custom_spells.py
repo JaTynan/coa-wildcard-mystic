@@ -151,7 +151,9 @@ SCRIPTS = {
 
 # spell_proc rows (charges used up by the next ability): id -> (ProcFlags, SpellTypeMask, SpellPhaseMask, Charges)
 PROCS = {
-    AMBUSH: (NEXT_ABILITY, 3, 2, 1),  # used by the next ability that deals damage or heals (not buffs); on hit
+    # Used by the next ability that lands, whatever it does: damage and heals, and also spells that only apply an aura
+    # (Renew, Corruption: they would otherwise keep the +50% on every cast, and buffs can't be told apart from them).
+    AMBUSH: (NEXT_ABILITY, 7, 2, 1),
 }
 
 STRINGS = {136: 0, 170: 1, 187: 2}  # enUS name, description, aura text (index into the tuple above)
