@@ -136,3 +136,10 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1583831, 'spell_wcme_enchant_action'),
 (1568060, 'spell_wcme_enchant_action'),
 (965280, 'spell_wcme_enchant_action');
+-- Part 4 (needs the build with patch 63): these drain or strike the target, so their cooldown is per target, plus
+-- 0.1 sec shared (one proc per attack). Until that build, the shared spell_proc cooldown in part 1 applies.
+INSERT INTO `wcme_proc_target_cooldown` (`spell_id`, `target_cooldown_ms`, `shared_cooldown_ms`, `comment`) VALUES
+(965501, 3000, 100, 'Deathbringer: 3 sec per target, one proc per attack'),
+(84506, 4000, 100, 'Unbounded Deathbringer: 4 sec per target, one proc per attack'),
+(965505, 4000, 100, 'Harbinger of Flame: 4 sec per target, one proc per attack'),
+(965502, 3000, 100, 'Righteous Zealot: 3 sec per target, one proc per attack');

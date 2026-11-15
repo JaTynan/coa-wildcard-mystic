@@ -62,6 +62,7 @@ for good by deleting its part from the script.
 | `60-manaforged-barrier.ps1` | Mana-forged Barrier, the full Ascension tank stance (the core only gave the form): absorbs up to 90% of damage with mana, scaled by how full your mana is (half against magic), 1 mana per point; +160% threat; immune to interrupts; dodge, parry and block while casting; 6% less chance to be crit in melee; Power Surge (50% chance on a melee hit while casting, 30% of missing mana over 4 sec, once every 2 sec); 30% less damage, 40% less healing, double damage from players; 10 sec of Mana-forged Mindset (20% less damage, 10% less healing) after leaving it | `Wildcard.ManaforgedBarrier` |
 | `61-bg-bot-whispers.ps1` | Bots in a battleground no longer whisper "I have a master already" to players (or their addons) who whisper them; they refuse quietly | — |
 | `62-racial-spellbook.ps1` | Each signature racial (Plainsrunning, Bloodrush, Ambush, Voodoo Regeneration, Radiant Presence) gets a "Racial Passive" spellbook entry that explains it when hovered; learned at login while its setting is on, unlearned when it is off. Radiant Presence's buff now shows a timer: 10 sec in combat, counting down to the fade after | — |
+| `63-enchant-target-cooldowns.ps1` | Mystic Enchant procs listed in `wcme_proc_target_cooldown` get a cooldown per target plus a 0.1 sec shared one (one proc per attack), instead of one shared cooldown: Deathbringer, Unbounded Deathbringer, Harbinger of Flame, Righteous Zealot | — |
 
 ## Settings (summary)
 

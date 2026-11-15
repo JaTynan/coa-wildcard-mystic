@@ -15,6 +15,11 @@ CREATE TABLE IF NOT EXISTS `wcme_enchant_override` (`enchant_spell` INT UNSIGNED
     `comment` VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`enchant_spell`));
 DELETE FROM `wcme_enchant_teach`;
 DELETE FROM `wcme_enchant_override`;
+-- Read by the patched world server (patch 63-enchant-target-cooldowns): spells whose procs have a cooldown per target
+-- plus a short shared one, instead of their spell_proc cooldown. Servers without the patch ignore it.
+CREATE TABLE IF NOT EXISTS `wcme_proc_target_cooldown` (`spell_id` INT UNSIGNED NOT NULL, `target_cooldown_ms` INT UNSIGNED NOT NULL,
+    `shared_cooldown_ms` INT UNSIGNED NOT NULL DEFAULT 100, `comment` VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`spell_id`));
+DELETE FROM `wcme_proc_target_cooldown`;
 -- Read by the patched world server's spell_wcme_enchant_action (patch mystic-enchants-actions).
 CREATE TABLE IF NOT EXISTS `wcme_enchant_action` (`enchant_spell` INT UNSIGNED NOT NULL, `rule` TINYINT UNSIGNED NOT NULL,
     `spells` TEXT NOT NULL, `school_mask` INT UNSIGNED NOT NULL DEFAULT 0, `target_aura` TEXT NOT NULL, `requires_aura` TEXT NOT NULL,
