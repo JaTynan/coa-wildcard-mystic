@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..1123248
+index 0000000..22948ea
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,2641 @@
+@@ -0,0 +1,3201 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2590,6 +2590,555 @@ index 0000000..1123248
 +    }
 +};
 +
++// Master of Shadows (980046): Sinister Strike, Eviscerate, Garrote, Rupture, Crimson Tempest and Gloomblade's first hit
++// also deal 49 + 11.5% SP + 11.5% AP Shadow damage (Dark Intent, 980050). Sinister Strike and Gloomblade critical
++// strikes add a stack of Apprentice of Shadows (980048, up to 3); Eviscerate or Rupture at 3 stacks spends them for
++// Master of Shadows (980049: +30% Shadow damage, and 980065: +10% Shadow crit, 10 sec).
++class spell_wcme_master_of_shadows : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_master_of_shadows);
++
++    static constexpr uint32 SHADOW_HIT = 980050;
++    static constexpr uint32 APPRENTICE = 980048;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        return spell && spell->Id != SHADOW_HIT && target && target != GetTarget() && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(spell, { "Sinister Strike", "Eviscerate", "Garrote", "Rupture", "Crimson Tempest", "Gloomblade" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (WcmeNamedAny(spell, { "Eviscerate", "Rupture" }))
++            if (Aura* apprentice = owner->GetAura(APPRENTICE); apprentice && apprentice->GetStackAmount() >= 3)
++            {
++                apprentice->Remove();
++                owner->CastSpell(owner, 980049, true);
++                owner->CastSpell(owner, 980065, true);
++            }
++        if (!WcmeDealtDamage(eventInfo))
++            return;
++        if (SpellInfo const* shadow = sSpellMgr->GetSpellInfo(SHADOW_HIT))
++            WcmeExtraDamage(owner, target, shadow, int64(49 + 0.115f * WcmeSpellPower(owner) + 0.115f * WcmeAttackPower(owner)));
++        if ((eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && WcmeNamedAny(spell, { "Sinister Strike", "Gloomblade" }))
++        {
++            WcmeAddStacks(owner, APPRENTICE, 1, 0);
++            if (Aura* apprentice = owner->GetAura(APPRENTICE); apprentice && apprentice->GetStackAmount() > 3)
++                apprentice->SetStackAmount(3);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_master_of_shadows::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_master_of_shadows::HandleProc);
++    }
++};
++
++// Spell Shredder (978233): Frostbolt, Fireball and Lightning Bolt each grant their own Elemental Shredder (978800 Frost,
++// 978801 Fire, 978802 Nature); all three can be up at once. Mortal Strike also strikes once more as each active
++// element (978827/978828/978829). Rend applies Elemental Rend for each active element (978693 Frost, 978694 Fire,
++// 978695 Nature: a bleed of that school, +12% damage of that school taken from you); all three can be on one target.
++class spell_wcme_spell_shredder : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_spell_shredder);
++
++    struct Shredder
++    {
++        uint32 buff;
++        uint32 strike;
++        uint32 rend;
++    };
++    static constexpr std::array<Shredder, 3> SHREDDERS = { { { 978800, 978827, 978693 }, { 978801, 978828, 978694 },
++        { 978802, 978829, 978695 } } };
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return WcmeNamedAny(spell, { "Frostbolt", "Fireball", "Lightning Bolt", "Rend" });
++        return WcmeNamed(spell, "Mortal Strike") && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (WcmeNamed(spell, "Frostbolt"))
++                owner->CastSpell(owner, 978800, true);
++            else if (WcmeNamed(spell, "Fireball"))
++                owner->CastSpell(owner, 978801, true);
++            else if (WcmeNamed(spell, "Lightning Bolt"))
++                owner->CastSpell(owner, 978802, true);
++            else if (Spell const* cast = eventInfo.GetProcSpell())
++                if (Unit* rendTarget = cast->m_targets.GetUnitTarget())
++                    for (Shredder const& shredder : SHREDDERS)
++                        if (owner->HasAura(shredder.buff))
++                            owner->CastSpell(rendTarget, shredder.rend, true);
++            return;
++        }
++        if (!target)
++            return;
++        for (Shredder const& shredder : SHREDDERS)
++            if (owner->HasAura(shredder.buff))
++                owner->CastSpell(target, shredder.strike, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_spell_shredder::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_spell_shredder::HandleProc);
++    }
++};
++
++// Elemental Rend (978693/978694/978695, Spell Shredder): each tick deals its level-scaled base plus 10% of the caster's
++// spell power (for its school) and 10% of their attack power.
++class spell_wcme_elemental_rend : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_elemental_rend);
++
++    void CalcAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
++    {
++        if (Unit* caster = GetCaster())
++            amount += int32(0.1f * (caster->SpellBaseDamageBonusDone(GetSpellInfo()->GetSchoolMask()) + WcmeAttackPower(caster)));
++    }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_elemental_rend::CalcAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
++    }
++};
++
++// Beast and Blade (978237): Rogue abilities that award combo points give your tamed beast a stack of Pack Tactics
++// (979038: +15% damage, 10% against players, and -5% damage taken per stack, up to 5, 10 sec). Single-target Rogue
++// finishers have a 20% chance per combo point to trigger Double Team (300185 on you, which raises your pet's special
++// attack damage by 70%, plus its marker 954625 on the pet). While Pack Tactics is up, the pet's special attacks give you
++// 10 energy (spell_wcme_pack_tactics).
++class spell_wcme_beast_and_blade : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_beast_and_blade);
++
++    static bool AwardsComboPoints(SpellInfo const* spell)
++    {
++        for (SpellEffectInfo const& effect : spell->GetEffects())
++            if (effect.Effect == SPELL_EFFECT_ADD_COMBO_POINTS)
++                return true;
++        return false;
++    }
++
++    Unit* Pet() const
++    {
++        Player* player = GetTarget()->ToPlayer();
++        Unit* pet = player ? player->GetGuardianPet() : nullptr;
++        return pet && pet->IsAlive() ? pet : nullptr;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || spell->SpellFamilyName != SPELLFAMILY_ROGUE || !Pet() || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return spell->NeedsComboPoints() && !spell->IsAffectingArea();
++        return AwardsComboPoints(spell) && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* pet = Pet();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            // combo points are still on the caster during the cast phase
++            if (uint8 const points = owner->GetComboPoints(); points && roll_chance_i(20 * points))
++            {
++                owner->CastSpell(owner, 300185, true);
++                pet->AddAura(954625, pet);
++            }
++            return;
++        }
++        owner->CastSpell(owner, 979038, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_beast_and_blade::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_beast_and_blade::HandleProc);
++    }
++};
++
++// Pack Tactics (979038, on the pet, Beast and Blade): each special attack the pet lands gives its owner 10 energy (978838,
++// Blood Focus Energize, which the pet casts on its master).
++class spell_wcme_pack_tactics : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_pack_tactics);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* owner = GetTarget()->GetOwner();
++        return spell && owner && owner->IsPlayer() && spell->Id != 978838 &&
++            !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        GetTarget()->CastSpell(GetTarget(), 978838, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_pack_tactics::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_pack_tactics::HandleProc);
++    }
++};
++
++// Gurubashi Berserker (983135): Raging Blow, Slam and Execute critical strikes add a stack of Gurubashi Berserker
++// (983141: shorter global cooldown, higher rage costs; 983151: its PvP part; up to 10). Raging Blow has a 25% chance
++// on hit, 50% on a critical, to take 10 sec off Siegebreaker and 4 sec off Gurubashi Rage. Siegebreaker extends Gurubashi
++// Rage (983136) by 4 sec, or activates it for 4 sec. Colossus Smash grants Onslaught (984415: 3 charges, Execute usable
++// at any target health, used up as Executes finish), and Executes while it is up deal 25% more damage.
++// Not done: Siegebreaker's Raging Blow charge and the 10% charge refund.
++class spell_wcme_gurubashi_berserker : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_gurubashi_berserker);
++
++    static constexpr uint32 RAGE = 983136;
++    static constexpr uint32 ONSLAUGHT = 984415;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(spell, { "Raging Blow", "Slam", "Execute", "Siegebreaker", "Colossus Smash" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const cast = eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        bool const crit = eventInfo.GetHitMask() & PROC_HIT_CRITICAL;
++        if (cast)
++        {
++            if (WcmeNamed(spell, "Colossus Smash"))
++                owner->CastSpell(owner, ONSLAUGHT, true);
++            else if (WcmeNamed(spell, "Siegebreaker"))
++            {
++                if (Aura* rage = owner->GetAura(RAGE))
++                {
++                    rage->SetMaxDuration(rage->GetMaxDuration() + 4000);
++                    rage->SetDuration(rage->GetDuration() + 4000);
++                }
++                else
++                {
++                    owner->CastSpell(owner, RAGE, true);
++                    if (Aura* fresh = owner->GetAura(RAGE))
++                    {
++                        fresh->SetMaxDuration(4000);
++                        fresh->SetDuration(4000);
++                    }
++                }
++            }
++            return;
++        }
++        if (!WcmeDealtDamage(eventInfo))
++            return;
++        Unit* target = eventInfo.GetActionTarget();
++        if (WcmeNamed(spell, "Execute") && target && owner->HasAura(ONSLAUGHT))
++        {
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * 25 / 100);
++        }
++        if (crit && WcmeNamedAny(spell, { "Raging Blow", "Slam", "Execute" }))
++        {
++            for (uint32 stacks : { 983141u, 983151u })
++            {
++                WcmeAddStacks(owner, stacks, 1, 0);
++                if (Aura* aura = owner->GetAura(stacks); aura && aura->GetStackAmount() > 10)
++                    aura->SetStackAmount(10);
++            }
++        }
++        if (WcmeNamed(spell, "Raging Blow") && roll_chance_i(crit ? 50 : 25))
++        {
++            WcmeCutCooldownByName(owner, "Siegebreaker", 10000);
++            WcmeCutCooldownByName(owner, "Gurubashi Rage", 4000);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_gurubashi_berserker::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_gurubashi_berserker::HandleProc);
++    }
++};
++
++// Demonic Persistence (990130): casting Incinerate or Mind Blast sacrifices your Wild Imp with the least health: it
++// explodes for Fire damage around itself (990141) and empowers your summoned demon (990138: +20% damage against
++// creatures, up to 4 stacks, 20 sec). The Wild Imps' own crits cutting Hand of Gul'dan's cooldown need a hook on the
++// imps and are not done.
++class spell_wcme_demonic_persistence : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_demonic_persistence);
++
++    Unit* WeakestImp() const
++    {
++        Unit* best = nullptr;
++        for (Unit* minion : GetTarget()->m_Controlled)
++            if (minion && minion->IsAlive() && minion->GetTypeId() == TYPEID_UNIT && minion->GetName() == "Wild Imp" &&
++                (!best || minion->GetHealth() < best->GetHealth()))
++                best = minion;
++        return best;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) && WcmeNamedAny(eventInfo.GetSpellInfo(), { "Incinerate", "Mind Blast" }) &&
++            WeakestImp();
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* imp = WeakestImp();
++        if (!imp)
++            return;
++        owner->CastSpell(imp->GetPositionX(), imp->GetPositionY(), imp->GetPositionZ(), 990141, true);
++        owner->CastSpell(owner, 990138, true);
++        Unit::Kill(owner, imp);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_demonic_persistence::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_demonic_persistence::HandleProc);
++    }
++};
++
++// Relentless (986052): Shield Slam awards 2 combo points and Shield Block 5 (on your target), Eviscerate has a 20% chance
++// per combo point to take 2 sec off Shield Block's cooldown, and Hemorrhage has a 30% chance (assumed; the tooltip says
++// "a chance") to trigger Sword and Board (50227). Relentless Eviscerate: Eviscerate also strikes every nearby enemy with
++// your shield for 80% of its damage (986053). The -8% damage taken with Relentless Strikes is data.
++class spell_wcme_relentless : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_relentless);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->Id != 986053 && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(spell, { "Shield Slam", "Shield Block", "Eviscerate", "Hemorrhage" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const cast = eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        if (cast)
++        {
++            if (WcmeNamed(spell, "Eviscerate"))
++            {
++                if (uint8 const points = owner->GetComboPoints(); points && roll_chance_i(20 * points))
++                    WcmeCutCooldownByName(owner, "Shield Block", 2000);
++            }
++            else if (WcmeNamed(spell, "Shield Block"))
++            {
++                Unit* target = owner->GetVictim();
++                if (!target)
++                    if (Player* player = owner->ToPlayer())
++                        target = player->GetSelectedUnit();
++                if (target && target != owner && owner->IsValidAttackTarget(target))
++                    owner->AddComboPoints(target, 5);
++            }
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target || target == owner || !WcmeDealtDamage(eventInfo))
++            return;
++        if (WcmeNamed(spell, "Shield Slam"))
++            owner->AddComboPoints(target, 2);
++        else if (WcmeNamed(spell, "Hemorrhage"))
++        {
++            if (roll_chance_i(30))
++                owner->CastSpell(owner, 50227, true);
++        }
++        else   // Eviscerate
++        {
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            int32 const share = int32(int64(damage->GetDamage() + damage->GetAbsorb()) * 80 / 100);
++            if (share > 0)
++                owner->CastCustomSpell(986053, SPELLVALUE_BASE_POINT0, share, owner, true);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_relentless::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_relentless::HandleProc);
++    }
++};
++
++// Blood for the Blood God (983070): Eviscerate, Envenom, Dispatch and Deadly Throw have a 20% chance per combo point to
++// add a stack of Bathe in Blood (983095: bleeds and Eviscerate/Dispatch deal more damage, up to 30) for each of your
++// bleeds on the target. With Bathe in Blood up, Hunger for Blood triggers Favour of the Soulflayer (275863). Crimson
++// Tempest's longer duration and Razzashi Talon are data / taught.
++class spell_wcme_blood_for_the_blood_god : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_blood_for_the_blood_god);
++
++    static constexpr uint32 BATHE = 983095;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Eviscerate", "Envenom", "Dispatch", "Deadly Throw", "Hunger for Blood", "Hunger For Blood" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (WcmeNamedAny(spell, { "Hunger for Blood", "Hunger For Blood" }))
++        {
++            if (owner->HasAura(BATHE))
++                owner->CastSpell(owner, 275863, true);
++            return;
++        }
++        uint8 const points = owner->GetComboPoints();
++        Spell const* cast = eventInfo.GetProcSpell();
++        Unit* target = cast ? cast->m_targets.GetUnitTarget() : nullptr;
++        if (!points || !target || !roll_chance_i(20 * points))
++            return;
++        uint8 bleeds = 0;
++        for (auto const& [id, app] : target->GetAppliedAuras())
++        {
++            Aura const* aura = app->GetBase();
++            if (aura->GetCasterGUID() == owner->GetGUID() && (aura->GetSpellInfo()->GetAllEffectsMechanicMask() & (1 << MECHANIC_BLEED)))
++                ++bleeds;
++        }
++        if (!bleeds)
++            return;
++        WcmeAddStacks(owner, BATHE, bleeds, 0);
++        if (Aura* bathe = owner->GetAura(BATHE); bathe && bathe->GetStackAmount() > 30)
++            bathe->SetStackAmount(30);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_blood_for_the_blood_god::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_blood_for_the_blood_god::HandleProc);
++    }
++};
++
++// Elemental Lord (990200): critical damage from Elemental Blast or Lava Burst resets your Shock spells' cooldowns and,
++// with a tethered elemental (your tamed elemental pet), grants one of Elemental Earth, Frost or Fire at random
++// (990201-990203: the matching Shock deals 85% more). Elemental Blast's cooldown removal is data. While you have the
++// enchant, your tethered elemental carries Elemental Air (990208, spell_wcme_elemental_air_watch), checked every second.
++Pet* WcmeTetheredElemental(Unit* owner)
++{
++    Player* player = owner ? owner->ToPlayer() : nullptr;
++    Pet* pet = player ? player->GetPet() : nullptr;
++    return pet && pet->IsAlive() && pet->GetCreatureType() == CREATURE_TYPE_ELEMENTAL ? pet : nullptr;
++}
++
++class spell_wcme_elemental_lord : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_elemental_lord);
++
++    static constexpr uint32 AIR_WATCH = 990208;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeDealtDamage(eventInfo) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Elemental Blast", "Lava Burst" });
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        for (char const* shock : { "Earth Shock", "Frost Shock", "Flame Shock", "Ice Shock" })
++            WcmeCutCooldownByName(owner, shock, 600000);
++        if (WcmeTetheredElemental(owner))
++            owner->CastSpell(owner, 990201 + urand(0, 2), true);
++    }
++
++    void WatchEverySecond(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void KeepAirWatch(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++        if (Pet* elemental = WcmeTetheredElemental(GetTarget()); elemental && !elemental->HasAura(AIR_WATCH))
++            elemental->AddAura(AIR_WATCH, elemental);
++    }
++
++    void DropAirWatch(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (Player* player = GetTarget()->ToPlayer())
++            if (Pet* pet = player->GetPet())
++                pet->RemoveAurasDueToSpell(AIR_WATCH);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_elemental_lord::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_elemental_lord::HandleProc);
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_elemental_lord::WatchEverySecond, EFFECT_1, SPELL_AURA_DUMMY);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_elemental_lord::KeepAirWatch, EFFECT_1, SPELL_AURA_DUMMY);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_elemental_lord::DropAirWatch, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Elemental Air watch (990208, on the tethered elemental, Elemental Lord): each critical strike the elemental deals, from
++// its melee swings or its abilities, gives its master Elemental Air (990204: Elemental Blast +15% damage and +30%
++// critical strike chance for 12 sec), only while the master has Elemental Lord.
++class spell_wcme_elemental_air_watch : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_elemental_air_watch);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* owner = GetTarget()->GetOwner();
++        return owner && owner->HasAura(990200) && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        GetTarget()->CastSpell(GetTarget(), 990204, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_elemental_air_watch::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_elemental_air_watch::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -2644,4 +3193,15 @@ index 0000000..1123248
 +    RegisterSpellScript(spell_wcme_heavyweight);
 +    RegisterSpellScript(spell_wcme_low_tide);
 +    RegisterSpellScript(spell_wcme_templar_of_flame);
++    RegisterSpellScript(spell_wcme_master_of_shadows);
++    RegisterSpellScript(spell_wcme_spell_shredder);
++    RegisterSpellScript(spell_wcme_elemental_rend);
++    RegisterSpellScript(spell_wcme_beast_and_blade);
++    RegisterSpellScript(spell_wcme_pack_tactics);
++    RegisterSpellScript(spell_wcme_gurubashi_berserker);
++    RegisterSpellScript(spell_wcme_demonic_persistence);
++    RegisterSpellScript(spell_wcme_relentless);
++    RegisterSpellScript(spell_wcme_blood_for_the_blood_god);
++    RegisterSpellScript(spell_wcme_elemental_lord);
++    RegisterSpellScript(spell_wcme_elemental_air_watch);
 +}

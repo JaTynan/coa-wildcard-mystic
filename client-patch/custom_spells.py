@@ -43,9 +43,29 @@ BOOK_PASSIVE = 0x80000050  # a spellbook passive like the stock racials (ability
 # Our own rows in the client's SpellIcon.dbc: pictures that are in the game (items use them) but not in its spell-icon
 # list. IDs 9990001 and up are free there (the client's highest is 954750). Only the client needs them.
 ICON_BANNER_DRAENEI = 9990001
+# The Elemental Rend icons (rend_icons.py makes them from the client's Rend icon; racials_off_gcd.py --icons adds them)
+ICON_REND_FROST, ICON_REND_FIRE, ICON_REND_NATURE = 9990002, 9990003, 9990004
 ICONS = {
     ICON_BANNER_DRAENEI: 'Interface\\Icons\\inv_misc_tournaments_banner_draenei',
+    ICON_REND_FROST: 'Interface\\Icons\\wcme_rend_frost',
+    ICON_REND_FIRE: 'Interface\\Icons\\wcme_rend_fire',
+    ICON_REND_NATURE: 'Interface\\Icons\\wcme_rend_nature',
 }
+# Client spells that get one of our icons in place of their own: spell -> icon (both the icon and the active icon)
+ICON_OVERRIDES = {
+    978693: ICON_REND_FROST,   # Elemental Rend (Frost), Spell Shredder
+    978694: ICON_REND_FIRE,    # Elemental Rend (Fire)
+    978695: ICON_REND_NATURE,  # Elemental Rend (Nature)
+}
+
+
+def with_icon(row):
+    """A client Spell.dbc row with its icon replaced if ICON_OVERRIDES lists it."""
+    if row[0] not in ICON_OVERRIDES:
+        return row
+    row = list(row)
+    row[133] = row[134] = ICON_OVERRIDES[row[0]]
+    return tuple(row)
 
 # id -> name, description, aura text, icon id (SpellIcon.dbc), max stack, effects [(aura, amount per stack, misc)],
 # and optionally {column: value} for anything else. Every one lasts until the server removes it (it sets a timer where
