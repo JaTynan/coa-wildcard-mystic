@@ -38,7 +38,7 @@ tracker. Quick types first: `twin` and `teach` take seconds each (`.aura`, then 
 | --- | --- | --- |
 | Twin that teaches | 95 enchants (file 006, needs the build) | Our enchant teaches the spell its twin teaches, through `wcme_enchant_teach`. |
 | Working namesake | 74 enchants (file 008, needs the build) | An enchant that teaches a broken spell, or transforms an ability, teaches a working spell of the same name instead (a transform adds the ability rather than replacing). |
-| Action table | 42 enchants (file 007 part 1, needs the build) | `spell_wcme_enchant_action` (patch `mystic-enchants-actions`): on a proc the enchant casts a helper spell, or cuts or resets a cooldown, with spell, target-aura and player-aura conditions, read from `wcme_enchant_action`. |
+| Action table | 42 enchants (file 007 part 1, needs the build) | `spell_wcme_enchant_action` (patch `mystic-enchants-actions`): on a proc the enchant casts helper spells (every listed one; an energize helper with no amount of its own restores `amount`% of attack power), or cuts or resets a cooldown, with spell, target-aura and player-aura conditions, read from `wcme_enchant_action`. |
 | Rebuilt missing spell | 1,195 enchants (files 009 and 011, held out of rolls by 010) | The enchant's spell was missing, so a new passive spell is built in `spell_dbc` from the archived Ascension description (Area-52 builder page): one aura that changes the named spell or school by the stated amount (cost, cooldown, cast time, damage, crit, hit, dispel resistance, scaling). 858 pick out their target by a spell flag that at most three other spells share (009, works now). 337 targets share their flag widely, so those spells carry no flag and name their targets in `wcme_spellaffect_dbc` (011), which patch `mystic-enchants-spellaffect-sql` loads into the server's SpellAffect data (needs the build). The client gets these spells from `patch-ZZW.MPQ` (below), so they are in the rolls. |
 | Placeholder to modifier | 1 enchant (file 012, needs the build) | A broken enchant whose tooltip is a plain modifier gets its spell copied into `spell_dbc` with the modifier where the placeholder was; name and tooltip stay, so the client shows the right text. Few fit: most such tooltips are already working, and 2 enchant IDs turned out to be reused by unrelated spells in our data (skipped). |
 | Aura link | 17 enchants (file 007 part 2, works now) | "While X is on you, you also have Y" through the core's `coa_mystic_enchant_aura_link`. |
@@ -50,6 +50,10 @@ tracker. Quick types first: `twin` and `teach` take seconds each (`.aura`, then 
 - 113 "broken" enchants also carry a real effect (for example the threat reducers), so they already do part of
   their job and stay in the rolls. The tracker marks them `partly working`.
 
+- Ascension keeps each enchant's proc rules (which ability sets it off, the chance, the internal cooldown) in its own
+  server database; the spell data has them blanked. A proc aura with proc flags but no `spell_proc` row therefore fires
+  on every qualifying hit, with no ability filter and no cooldown (file 015 fixes 33 Legendaries), and one with no proc
+  flags never fires at all.
 - A twin can look working and never fire: a proc aura with no proc flags and no `spell_proc` row does nothing.
   The twin search now skips these.
 - When both spells carry the same real effect, remove ours first, or the player gets the bonus twice.
