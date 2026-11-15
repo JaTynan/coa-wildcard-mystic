@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..27f4f25
+index 0000000..dd04158
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,1877 @@
+@@ -0,0 +1,1945 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -272,8 +272,10 @@ index 0000000..27f4f25
 +    }
 +};
 +
-+// Curse of Arugal (982806): Cat finishing moves have a 20% chance per combo point to grant Goldrinn's Guile; while
-+// Goldrinn's Fury is up, Cat ability damage applies a stack of Arugal's Gift. Darkness (no Ascension data survives;
++// Curse of Arugal (982806): Cat finishing moves have a 20% chance per combo point to grant Goldrinn's Guile: your next
++// Mind Blast or Vampiric Touch is instant and deals 20% more damage (the builder tooltip's number; the client data has
++// 40%), awards 2 combo points and a stack of Goldrinn's Focus, and spends it. While Goldrinn's Fury is up, Cat ability
++// damage applies a stack of Arugal's Gift. Darkness (no Ascension data survives;
 +// James's design): bleed or Shadow periodic damage, and combo point generators in Cat Form, build Darkness, at most one
 +// stack every 2.5 sec, up to 5, lasting 15 sec after the last gain. Mind Blast spends it all for 8% more damage per
 +// stack (40% at 5, on par with Goldrinn's Guile's 40%), as extra Shadow damage.
@@ -285,6 +287,8 @@ index 0000000..27f4f25
 +    static constexpr uint32 GOLDRINNS_FURY = 982811;
 +    static constexpr uint32 ARUGALS_GIFT = 982812;
 +    static constexpr uint32 DARKNESS = 982815;
++    static constexpr uint32 GOLDRINNS_FOCUS = 982810;
++    static constexpr int32 GUILE_BONUS_PCT = 20;
 +    static constexpr Milliseconds DARKNESS_EVERY{2500};
 +    static constexpr int32 DARKNESS_LASTS_MS = 15000;
 +    static constexpr uint8 DARKNESS_MAX = 5;
@@ -338,7 +342,7 @@ index 0000000..27f4f25
 +                // combo points are still on the caster during the cast phase; they are spent in the finish phase
 +                if (uint8 const points = owner->GetComboPoints())
 +                    if (roll_chance_i(20 * points))
-+                        owner->CastSpell(owner, GOLDRINNS_GUILE, true);
++                        owner->CastCustomSpell(owner, GOLDRINNS_GUILE, nullptr, &GUILE_BONUS_PCT, &GUILE_BONUS_PCT, true);
 +            }
 +            else if (cat && spell->HasEffect(SPELL_EFFECT_ADD_COMBO_POINTS))
 +                GainDarkness(owner);
@@ -346,7 +350,17 @@ index 0000000..27f4f25
 +        }
 +
 +        Unit* target = eventInfo.GetActionTarget();
-+        if (!target || target == owner || !WcmeDealtDamage(eventInfo))
++        if (!target || target == owner)
++            return;
++        if (WcmeNamedAny(spell, { "Mind Blast", "Vampiric Touch" }) && owner->HasAura(GOLDRINNS_GUILE))
++        {
++            owner->RemoveAurasDueToSpell(GOLDRINNS_GUILE);
++            owner->AddComboPoints(target, 2);
++            WcmeAddStacks(owner, GOLDRINNS_FOCUS, 1, 0);
++            if (Aura* focus = owner->GetAura(GOLDRINNS_FOCUS); focus && focus->GetStackAmount() > 3)
++                focus->SetStackAmount(3);
++        }
++        if (!WcmeDealtDamage(eventInfo))
 +            return;
 +        if (WcmeNamed(spell, "Mind Blast"))
 +        {
@@ -984,6 +998,59 @@ index 0000000..27f4f25
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_deadly_bite::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_deadly_bite::HandleProc);
++    }
++};
++
++// Deadly Bite (965292), Ascension's own version (the builder tooltip; our client links the same spells): teaches
++// Savage Blade, which applies Deadly Bite itself. Mongoose Bite and Counterattack damage apply Deadly Bite (965408: a
++// bleed of 66 + 3.4% SP + 3.4% ranged AP every 2 sec, +20% Raptor Strike and Savage Blade damage, up to 5 stacks, 12
++// sec). Deadly Bite's damage has a chance to trigger Sharpened Blade: 20% per tick (no chance survives; assumed), which
++// takes 4 sec off Savage Blade's cooldown and 1 sec off Glaive Toss's, and stacks up the next Savage Blade's damage.
++// (Its twin 272353 keeps the other design: a share of the hit, accumulated into one bleed.)
++class spell_wcme_deadly_bite_stacks : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_deadly_bite_stacks);
++
++    static constexpr uint32 BLEED = 965408;
++    static constexpr uint32 SHARPENED_BLADE = 983798;
++    static constexpr uint32 SAVAGE_BLADE = 983797;
++    static constexpr uint32 GLAIVE_TOSS = 954821;
++    static constexpr int32 SHARPEN_CHANCE = 20;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (!spell || !target || target == GetTarget() || !WcmeDealtDamage(eventInfo))
++            return false;
++        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
++            return spell->Id == BLEED;
++        return WcmeNamedAny(spell, { "Mongoose Bite", "Counterattack" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetSpellInfo()->Id != BLEED)
++        {
++            owner->CastSpell(eventInfo.GetActionTarget(), BLEED, true);
++            return;
++        }
++        if (!roll_chance_i(SHARPEN_CHANCE))
++            return;
++        owner->CastSpell(owner, SHARPENED_BLADE, true);
++        if (Player* player = owner->ToPlayer())
++        {
++            player->ModifySpellCooldown(SAVAGE_BLADE, -4000);
++            player->ModifySpellCooldown(GLAIVE_TOSS, -1000);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_deadly_bite_stacks::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_deadly_bite_stacks::HandleProc);
 +    }
 +};
 +
@@ -1862,6 +1929,7 @@ index 0000000..27f4f25
 +    RegisterSpellScript(spell_wcme_consecrated_weapon);
 +    RegisterSpellScript(spell_wcme_titanic_mutilate);
 +    RegisterSpellScript(spell_wcme_deadly_bite);
++    RegisterSpellScript(spell_wcme_deadly_bite_stacks);
 +    RegisterSpellScript(spell_wcme_hand_of_the_adorned);
 +    RegisterSpellScript(spell_wcme_arcane_thunder_seer);
 +    RegisterSpellScript(spell_wcme_arcane_thunder);
