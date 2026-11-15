@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..575de6f
+index 0000000..3eec256
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,2195 @@
+@@ -0,0 +1,2291 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -14,6 +14,7 @@ index 0000000..575de6f
 +// enchant's own (blanked) trigger effects and does exactly what the tooltip says instead.
 +
 +#include "Containers.h"
++#include "Creature.h"
 +#include "DBCStores.h"
 +#include "GameTime.h"
 +#include "Item.h"
@@ -33,6 +34,7 @@ index 0000000..575de6f
 +#include <cstring>
 +#include <initializer_list>
 +#include <list>
++#include <unordered_map>
 +#include <unordered_set>
 +#include <vector>
 +
@@ -2153,6 +2155,98 @@ index 0000000..575de6f
 +    }
 +};
 +
++// Frost Mastery (1134961) and Demonology Mastery (1134965): the pet half of each is a dummy in the data. While the
++// enchant is active, your Water Elemental (Frost: 1134963, +10% damage) or your summoned demon (Demonology: 1134966,
++// +10% damage and attack speed) carries the bonus; it is checked whenever you cast, so a new summon picks it up.
++class spell_wcme_pet_mastery : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_pet_mastery);
++
++    bool Frost() const { return GetId() == 1134961; }
++    uint32 Buff() const { return Frost() ? 1134963 : 1134966; }
++
++    Unit* Pet() const
++    {
++        Player* player = GetTarget()->ToPlayer();
++        if (!player)
++            return nullptr;
++        Unit* pet = player->GetGuardianPet();
++        if (!pet || !pet->IsAlive())
++            return nullptr;
++        if (Frost())
++            return pet->GetEntry() == 510 || pet->GetEntry() == 37994 ? pet : nullptr;
++        return player->GetPet() == pet && pet->ToCreature()->GetCreatureTemplate()->family != 0 ? pet : nullptr;
++    }
++
++    bool CheckProc(ProcEventInfo& /*eventInfo*/)
++    {
++        Unit* pet = Pet();
++        return pet && !pet->HasAura(Buff());
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        if (Unit* pet = Pet())
++            pet->AddAura(Buff(), pet);
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (Player* player = GetTarget()->ToPlayer())
++            if (Unit* pet = player->GetGuardianPet())
++                pet->RemoveAurasDueToSpell(Buff());
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_pet_mastery::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_pet_mastery::HandleProc);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_pet_mastery::HandleRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Hydromancer: Water Bolt (1569697): Lightning Bolt or Chain Lightning damage on a target you Doused (954376) causes
++// Electrocute: 169 + 12% SP + 7.8% AP Nature damage (the builder tooltip's numbers) and a 2 sec incapacitate (954387),
++// which the same target can only suffer once every 6 sec.
++class spell_wcme_doused : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_doused);
++
++    static constexpr uint32 DOUSED = 954376;
++    static constexpr uint32 ELECTROCUTE = 954385;
++    static constexpr uint32 INCAPACITATE = 954387;
++    std::unordered_map<ObjectGuid, TimePoint> _incapReady;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        return target && target != GetTarget() && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeDealtDamage(eventInfo) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Lightning Bolt", "Chain Lightning" }) && target->HasAura(DOUSED, GetTarget()->GetGUID());
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (SpellInfo const* shock = sSpellMgr->GetSpellInfo(ELECTROCUTE))
++            WcmeExtraDamage(owner, target, shock, int64(169 + 0.12f * WcmeSpellPower(owner) + 0.078f * WcmeAttackPower(owner)));
++        TimePoint const now = GameTime::Now();
++        TimePoint& ready = _incapReady[target->GetGUID()];
++        if (now < ready || !target->IsAlive())
++            return;
++        ready = now + Seconds(6);
++        owner->CastSpell(target, INCAPACITATE, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_doused::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_doused::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -2198,4 +2292,6 @@ index 0000000..575de6f
 +    RegisterSpellScript(spell_wcme_frozen_chaos);
 +    RegisterSpellScript(spell_wcme_old_gods_madness);
 +    RegisterSpellScript(spell_wcme_prophet_of_wrath);
++    RegisterSpellScript(spell_wcme_pet_mastery);
++    RegisterSpellScript(spell_wcme_doused);
 +}

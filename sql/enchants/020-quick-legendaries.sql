@@ -45,3 +45,23 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (272951, 'spell_wcme_old_gods_madness'),
 (1571328, 'spell_wcme_old_gods_madness'),
 (979796, 'spell_wcme_prophet_of_wrath');
+-- Part 3: Frost and Demonology Mastery put their pet bonus on your Water Elemental / demon; Hydromancer's Doused makes
+-- Lightning Bolt and Chain Lightning Electrocute; Thermal Void now fires from Ice Barrier (its own flags only listed
+-- hostile spells), once a second at most.
+INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
+('spell_proc', 1134961),
+('spell_proc', 1134965),
+('spell_proc', 1569697),
+('spell_proc', 983739);
+DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (1134961, 1134965, 1569697, 983739);
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (1134961, 1134965, 1569697) AND `ScriptName` LIKE 'spell\_wcme\_%';
+DELETE FROM `spell_proc` WHERE `SpellId` IN (1134961, 1134965, 1569697, 983739);
+INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
+(1134961, 0, 0, 0, 0, 0, 87312, 0, 3, 0, 0, 0, 0, 100, 0, 0),
+(1134965, 0, 0, 0, 0, 0, 87312, 0, 3, 0, 0, 0, 0, 100, 0, 0),
+(1569697, 0, 0, 0, 0, 0, 65536, 1, 2, 0, 0, 0, 0, 100, 0, 0),
+(983739, 0, 3, 0, 1, 0, 17408, 0, 2, 0, 0, 0, 0, 100, 1000, 0);
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(1134961, 'spell_wcme_pet_mastery'),
+(1134965, 'spell_wcme_pet_mastery'),
+(1569697, 'spell_wcme_doused');
