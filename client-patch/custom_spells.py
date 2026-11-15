@@ -35,6 +35,7 @@ PASSIVE = 0x80000040  # can't be cancelled, and passive: never shown on the buff
 # The next ability: any spell hit (melee, ranged, magic or none damage class; harmful or helpful), not auto attacks
 NEXT_ABILITY = 0x10 | 0x100 | 0x400 | 0x1000 | 0x4000 | 0x10000
 ALL_SCHOOLS = 127
+MAGIC_SCHOOLS = 126  # every school but Physical
 ONE = struct.unpack('<I', struct.pack('<f', 1.0))[0]  # 1.0 as a float column
 HIDE_DURATION = 0x400  # AttributesEx5 (column 9): the client shows no timer
 BOOK_PASSIVE = 0x80000050  # a spellbook passive like the stock racials (ability, passive, can't be cancelled)
@@ -97,9 +98,10 @@ SPELLS = {
     # Mana-forged Barrier (patches/60-manaforged-barrier.ps1); icons from the stance (_D3energyarmor) and Power Surge
     BARRIER_SHIELD: ('Mana-forged Barrier',
                      'Absorbs up to 90% of damage taken, less as your mana runs low (half as much against magic), '
-                     'draining 1 mana per point absorbed. Threat increased by 160%. Immune to interrupts.',
-                     'Absorbing damage with mana. Threat increased. Immune to interrupts.',
-                     27330, 0, [(MANA_SHIELD, -1, ALL_SCHOOLS), (MOD_THREAT, 160, ALL_SCHOOLS), (EFFECT_IMMUNITY, 0, 68)],
+                     'draining 1 mana per point absorbed. Threat from Magic damage increased by 160%. Immune to '
+                     'interrupts.',
+                     'Absorbing damage with mana. Threat from Magic damage increased. Immune to interrupts.',
+                     27330, 0, [(MANA_SHIELD, -1, ALL_SCHOOLS), (MOD_THREAT, 160, MAGIC_SCHOOLS), (EFFECT_IMMUNITY, 0, 68)],
                      {4: PASSIVE, 101: ONE}),  # infinite amount: the script sets each absorb; 1 mana per point
     BARRIER_PENALTY: ('Mana-forged Barrier',
                       'Damage done reduced by 30% and healing done by 40%. 6% less chance to be critically hit by '

@@ -2,7 +2,7 @@
 # Channeled Mana, but nothing else: it has no code for that form, and the Wildcard client's copy of the spell has its
 # effects blanked. While in the stance (our spells, sql/enchants/150-custom-spells.sql and client-patch/custom_spells.py):
 # - 9990009 (hidden): a mana shield that absorbs up to 90% of damage, scaled by how full your mana is (half as much
-#   against magic), draining 1 mana per point absorbed; +160% threat; immune to interrupts.
+#   against magic), draining 1 mana per point absorbed; +160% threat from Magic damage; immune to interrupts.
 # - 9990010 (hidden): 30% less damage done, 40% less healing done, 6% less chance to be critically hit in melee.
 # - Damage taken from players (and their pets) doubled.
 # - Dodge, parry and block while casting or channeling.
