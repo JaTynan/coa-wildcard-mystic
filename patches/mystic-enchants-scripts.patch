@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..b1b4fbe
+index 0000000..abb4786
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,1945 @@
+@@ -0,0 +1,2448 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -14,6 +14,7 @@ index 0000000..b1b4fbe
 +// enchant's own (blanked) trigger effects and does exactly what the tooltip says instead.
 +
 +#include "Containers.h"
++#include "Creature.h"
 +#include "DBCStores.h"
 +#include "GameTime.h"
 +#include "Item.h"
@@ -33,6 +34,7 @@ index 0000000..b1b4fbe
 +#include <cstring>
 +#include <initializer_list>
 +#include <list>
++#include <unordered_map>
 +#include <unordered_set>
 +#include <vector>
 +
@@ -1909,6 +1911,496 @@ index 0000000..b1b4fbe
 +    }
 +};
 +
++// Overheating (81119): melee abilities deal extra Fire damage (81120) and put a stack of Overheating (93582) on the
++// target; once it is fully stacked, your Fire Mage spells cause Heat Stroke (81121) on that target.
++class spell_wcme_overheating : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_overheating);
++
++    static constexpr uint32 FIRE_HIT = 81120;
++    static constexpr uint32 OVERHEATING = 93582;
++    static constexpr uint32 HEAT_STROKE = 81121;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (!spell || !target || target == GetTarget() || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) ||
++            !WcmeDealtDamage(eventInfo) || spell->Id == FIRE_HIT || spell->Id == HEAT_STROKE)
++            return false;
++        if (spell->DmgClass == SPELL_DAMAGE_CLASS_MELEE)
++            return true;
++        return spell->SpellFamilyName == SPELLFAMILY_MAGE && (spell->GetSchoolMask() & SPELL_SCHOOL_MASK_FIRE);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (eventInfo.GetSpellInfo()->DmgClass == SPELL_DAMAGE_CLASS_MELEE)
++        {
++            owner->CastSpell(target, FIRE_HIT, true);
++            owner->CastSpell(target, OVERHEATING, true);
++            return;
++        }
++        if (Aura const* heat = target->GetAura(OVERHEATING, owner->GetGUID()))
++            if (heat->GetStackAmount() >= std::max<uint32>(1, heat->GetSpellInfo()->StackAmount))
++                owner->CastSpell(target, HEAT_STROKE, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_overheating::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_overheating::HandleProc);
++    }
++};
++
++// Explosive Shot (Aimed) (81449, Aimed Explosive Shot's transformed shot): its charge blasts every enemy it hit once a
++// second for the next 2 sec, for its base damage + 10% of ranged attack power as Fire.
++class spell_wcme_aimed_explosive_shot : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_aimed_explosive_shot);
++
++    void HandleBlast(AuraEffect const* aurEff)
++    {
++        Unit* caster = GetCaster();
++        Unit* target = GetTarget();
++        if (!caster || !target->IsAlive())
++            return;
++        WcmeExtraDamage(caster, target, GetSpellInfo(), int64(aurEff->GetAmount() + 0.1f * caster->GetTotalAttackPowerValue(RANGED_ATTACK)));
++    }
++
++    void Register() override
++    {
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_aimed_explosive_shot::HandleBlast, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
++    }
++};
++
++// Flame On! (965293): damaging Fireball, Scorch and Flamestrike casts add a stack of Flame On! (965560: Fire Blast and
++// Meteor crit chance, damage and crit damage, up to 3). At 3 stacks the next Fire Blast critical strike also burns the
++// target for 40% more of its damage (984968). The enchant's stray +5 yd range on every Mage spell (a modifier with no
++// spell list) is switched off; the tooltip has no such bonus.
++class spell_wcme_flame_on : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_flame_on);
++
++    static constexpr uint32 FLAME_ON = 965560;
++    static constexpr uint32 EMPOWERED = 984968;
++
++    void NoRange(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/) { amount = 0; }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return WcmeNamedAny(spell, { "Fireball", "Scorch", "Flamestrike" });
++        return WcmeNamed(spell, "Fire Blast") && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && WcmeDealtDamage(eventInfo) &&
++            GetTarget()->HasAura(EMPOWERED);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            owner->CastSpell(owner, FLAME_ON, true);
++            if (Aura const* stacks = owner->GetAura(FLAME_ON); stacks && stacks->GetStackAmount() >= 3)
++                owner->CastSpell(owner, EMPOWERED, true);
++            return;
++        }
++        owner->RemoveAurasDueToSpell(EMPOWERED);
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        if (Unit* target = eventInfo.GetActionTarget())
++            WcmeExtraDamage(owner, target, eventInfo.GetSpellInfo(), int64(damage->GetDamage() + damage->GetAbsorb()) * 40 / 100);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_flame_on::NoRange, EFFECT_1, SPELL_AURA_ADD_FLAT_MODIFIER);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_flame_on::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_flame_on::HandleProc);
++    }
++};
++
++// Frozen Chaos (980673): Frostbolt, Ice Lance, Cone of Cold and Frost Shock critical hits give a charge of Frozen Chaos
++// (275616: next Chaos Bolt has no cooldown and deals more damage; up to 4 charges) and reset Chaos Bolt's cooldown.
++// Casting Conflagrate grants Splintered Chaos (980678) and, if you know Fingers of Frost, Fingers of Frost.
++class spell_wcme_frozen_chaos : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_frozen_chaos);
++
++    static constexpr uint32 FROZEN_CHAOS = 275616;
++    static constexpr uint32 SPLINTERED_CHAOS = 980678;
++    static constexpr uint32 FINGERS_OF_FROST = 44544;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return WcmeNamed(spell, "Conflagrate");
++        return (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && WcmeNamedAny(spell, { "Frostbolt", "Ice Lance", "Cone of Cold", "Frost Shock" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Player* player = owner->ToPlayer();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            owner->CastSpell(owner, SPLINTERED_CHAOS, true);
++            if (player && (player->HasSpell(44543) || player->HasSpell(44545) || player->HasSpell(1144543) || player->HasSpell(1144545)))
++                owner->CastSpell(owner, FINGERS_OF_FROST, true);
++            return;
++        }
++        if (Aura* charges = owner->GetAura(FROZEN_CHAOS))
++        {
++            if (charges->GetCharges() < 4)
++                charges->ModCharges(1);
++            charges->RefreshDuration();
++        }
++        else
++            owner->CastSpell(owner, FROZEN_CHAOS, true);
++        if (player)
++            for (uint32 bolt : { 50796u, 59170u, 59171u, 59172u, 1150796u, 1159170u, 1159171u, 1159172u })
++                if (player->HasSpellCooldown(bolt))
++                    player->RemoveSpellCooldown(bolt, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_frozen_chaos::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_frozen_chaos::HandleProc);
++    }
++};
++
++// Whispers of the Old Gods (272951 / 1571328, the tentacle summons): the summon itself is data; its second effect, a
++// dummy, grants Madness of the Old Gods (+8% Magic damage, 15 sec).
++class spell_wcme_old_gods_madness : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_old_gods_madness);
++
++    void HandleDummy(SpellEffIndex /*effIndex*/)
++    {
++        if (Unit* caster = GetCaster())
++            caster->CastSpell(caster, GetSpellInfo()->Id == 1571328 ? 1571329 : 965471, true);
++    }
++
++    void Register() override
++    {
++        OnEffectHit += SpellEffectFn(spell_wcme_old_gods_madness::HandleDummy, EFFECT_1, SPELL_EFFECT_DUMMY);
++    }
++};
++
++// Prophet of Wrath (979796): Arcane Blast and Arcane Missiles damage extends Divine Illumination by 0.5 sec, and
++// casting them adds a stack of Divine Wrath (979737: next Smite or Holy Fire +30%, up to 5). Smite and Holy Fire take 6
++// sec off Divine Illumination's cooldown.
++class spell_wcme_prophet_of_wrath : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_prophet_of_wrath);
++
++    static constexpr uint32 DIVINE_WRATH = 979737;
++    static constexpr std::array<uint32, 5> ILLUMINATION = { 31842, 71166, 1131842, 1231842, 1575125 };
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(spell, { "Arcane Blast", "Arcane Missiles", "Smite", "Holy Fire" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const cast = eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        if (WcmeNamedAny(spell, { "Smite", "Holy Fire" }))
++        {
++            if (cast)
++                if (Player* player = owner->ToPlayer())
++                    for (uint32 rank : ILLUMINATION)
++                        if (player->HasSpellCooldown(rank))
++                            player->ModifySpellCooldown(rank, -6000);
++            return;
++        }
++        if (cast)
++        {
++            if (!eventInfo.GetProcSpell() || !eventInfo.GetProcSpell()->IsTriggered())
++                WcmeAddStacks(owner, DIVINE_WRATH, 1, 0);
++            if (Aura* wrath = owner->GetAura(DIVINE_WRATH); wrath && wrath->GetStackAmount() > 5)
++                wrath->SetStackAmount(5);
++            return;
++        }
++        if (!WcmeDealtDamage(eventInfo))
++            return;
++        for (uint32 rank : ILLUMINATION)
++            if (Aura* illumination = owner->GetAura(rank))
++            {
++                illumination->SetMaxDuration(illumination->GetMaxDuration() + 500);
++                illumination->SetDuration(illumination->GetDuration() + 500);
++            }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_prophet_of_wrath::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_prophet_of_wrath::HandleProc);
++    }
++};
++
++// Frost Mastery (1134961) and Demonology Mastery (1134965): the pet half of each is a dummy in the data. While the
++// enchant is active, your Water Elemental (Frost: 1134963, +10% damage) or your summoned demon (Demonology: 1134966,
++// +10% damage and attack speed) carries the bonus; it is checked whenever you cast, so a new summon picks it up.
++class spell_wcme_pet_mastery : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_pet_mastery);
++
++    bool Frost() const { return GetId() == 1134961; }
++    uint32 Buff() const { return Frost() ? 1134963 : 1134966; }
++
++    Unit* Pet() const
++    {
++        Player* player = GetTarget()->ToPlayer();
++        if (!player)
++            return nullptr;
++        Unit* pet = player->GetGuardianPet();
++        if (!pet || !pet->IsAlive())
++            return nullptr;
++        if (Frost())
++            return pet->GetEntry() == 510 || pet->GetEntry() == 37994 ? pet : nullptr;
++        return player->GetPet() == pet && pet->ToCreature()->GetCreatureTemplate()->family != 0 ? pet : nullptr;
++    }
++
++    bool CheckProc(ProcEventInfo& /*eventInfo*/)
++    {
++        Unit* pet = Pet();
++        return pet && !pet->HasAura(Buff());
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        if (Unit* pet = Pet())
++            pet->AddAura(Buff(), pet);
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (Player* player = GetTarget()->ToPlayer())
++            if (Unit* pet = player->GetGuardianPet())
++                pet->RemoveAurasDueToSpell(Buff());
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_pet_mastery::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_pet_mastery::HandleProc);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_pet_mastery::HandleRemove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Hydromancer: Water Bolt (1569697): Lightning Bolt or Chain Lightning damage on a target you Doused (954376) causes
++// Electrocute: 169 + 12% SP + 7.8% AP Nature damage (the builder tooltip's numbers) and a 2 sec incapacitate (954387),
++// which the same target can only suffer once every 6 sec.
++class spell_wcme_doused : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_doused);
++
++    static constexpr uint32 DOUSED = 954376;
++    static constexpr uint32 ELECTROCUTE = 954385;
++    static constexpr uint32 INCAPACITATE = 954387;
++    std::unordered_map<ObjectGuid, TimePoint> _incapReady;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        return target && target != GetTarget() && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeDealtDamage(eventInfo) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Lightning Bolt", "Chain Lightning" }) && target->HasAura(DOUSED, GetTarget()->GetGUID());
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (SpellInfo const* shock = sSpellMgr->GetSpellInfo(ELECTROCUTE))
++            WcmeExtraDamage(owner, target, shock, int64(169 + 0.12f * WcmeSpellPower(owner) + 0.078f * WcmeAttackPower(owner)));
++        TimePoint const now = GameTime::Now();
++        TimePoint& ready = _incapReady[target->GetGUID()];
++        if (now < ready || !target->IsAlive())
++            return;
++        ready = now + Seconds(6);
++        owner->CastSpell(target, INCAPACITATE, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_doused::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_doused::HandleProc);
++    }
++};
++
++namespace
++{
++void WcmeCutCooldownByName(Unit* unit, char const* name, int32 ms)
++{
++    Player* player = unit->ToPlayer();
++    if (!player)
++        return;
++    for (auto const& [spellId, known] : player->GetSpellMap())
++        if (known->State != PLAYERSPELL_REMOVED && player->HasSpellCooldown(spellId))
++            if (WcmeNamed(sSpellMgr->GetSpellInfo(spellId), name))
++                player->ModifySpellCooldown(spellId, -ms);
++}
++}
++
++// Elemental Assassin (978229): Backstab grants Elemental Assassin (978642, up to 2 stacks; its bonus is a dummy in the
++// data). A stack makes your next Flame Shock or Earth Shock deal 110% more direct damage, or Ice Shock 70% more (the
++// builder tooltip's numbers), and spending it takes 5 sec off Stormstrike's cooldown. (The Elemental Blades the
++// tooltip also lists have no usable spells in our client, so they are left out.)
++class spell_wcme_elemental_assassin : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_elemental_assassin);
++
++    static constexpr uint32 ASSASSIN = 978642;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (WcmeNamed(spell, "Backstab"))
++            return eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_HIT) && WcmeDealtDamage(eventInfo) && GetTarget()->HasAura(ASSASSIN) &&
++            WcmeNamedAny(spell, { "Flame Shock", "Earth Shock", "Ice Shock" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (WcmeNamed(spell, "Backstab"))
++        {
++            owner->CastSpell(owner, ASSASSIN, true);
++            if (Aura* stacks = owner->GetAura(ASSASSIN); stacks && stacks->GetStackAmount() > 2)
++                stacks->SetStackAmount(2);
++            return;
++        }
++        if (Aura* stacks = owner->GetAura(ASSASSIN))
++        {
++            if (stacks->GetStackAmount() > 1)
++                stacks->SetStackAmount(stacks->GetStackAmount() - 1);
++            else
++                stacks->Remove();
++        }
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        int32 const pct = WcmeNamed(spell, "Ice Shock") ? 70 : 110;
++        if (Unit* target = eventInfo.GetActionTarget())
++            WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * pct / 100);
++        WcmeCutCooldownByName(owner, "Stormstrike", 5000);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_elemental_assassin::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_elemental_assassin::HandleProc);
++    }
++};
++
++// Stormborn (977991): while Elemental Mastery or Shamanistic Rage is active, Stormstrike also sends a cone of Nature
++// damage (977992) ahead of you. Lightning Shield damage takes 10 sec off Elemental Mastery's cooldown, and Lightning
++// Bolt or Chain Lightning cast with 3 or more Maelstrom Weapon stacks takes 6 more off. (Stormstrike's cooldown cut and
++// Lightning Shield's damage bonus are already in the spell data.)
++class spell_wcme_stormborn : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_stormborn);
++
++    static constexpr uint32 CONE = 977992;
++
++    static bool Empowered(Unit const* unit)
++    {
++        return WcmeHasAnyAura(unit, { 16166, 64701, 1116166, 1164701, 1216166, 1264701, 30823, 1130823, 1230823 });
++    }
++
++    static uint8 Maelstrom(Unit const* unit)
++    {
++        uint8 best = 0;
++        for (uint32 id : { 53817u, 853817u, 853818u })
++            if (Aura const* aura = unit->GetAura(id))
++                best = std::max(best, aura->GetStackAmount());
++        return best;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && spell->Id != CONE &&
++            WcmeNamedAny(spell, { "Stormstrike", "Lightning Shield", "Lightning Bolt", "Chain Lightning" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const cast = eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        if (WcmeNamed(spell, "Stormstrike"))
++        {
++            Spell const* procSpell = eventInfo.GetProcSpell();
++            if (cast && Empowered(owner) && procSpell && !procSpell->IsTriggered())
++                owner->CastSpell(owner, CONE, true);
++            return;
++        }
++        if (WcmeNamed(spell, "Lightning Shield"))
++        {
++            if (!cast && WcmeDealtDamage(eventInfo))
++                WcmeCutCooldownByName(owner, "Elemental Mastery", 10000);
++            return;
++        }
++        if (cast && Maelstrom(owner) >= 3 && eventInfo.GetProcSpell() && !eventInfo.GetProcSpell()->IsTriggered())
++            WcmeCutCooldownByName(owner, "Elemental Mastery", 6000);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_stormborn::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_stormborn::HandleProc);
++    }
++};
++
++// Compound Power (979740): successful Steady Shots and Arcane Shots award 2 combo points (the data's own trigger gave 1).
++class spell_wcme_compound_power : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_compound_power);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        return target && target != GetTarget() && WcmeDealtDamage(eventInfo) && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Steady Shot", "Arcane Shot" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        GetTarget()->AddComboPoints(eventInfo.GetActionTarget(), 2);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_compound_power::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_compound_power::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -1948,4 +2440,15 @@ index 0000000..b1b4fbe
 +    RegisterSpellScript(spell_wcme_unrelenting_beast_within);
 +    RegisterSpellScript(spell_wcme_reactive_spell);
 +    RegisterSpellScript(spell_wcme_fel_damage);
++    RegisterSpellScript(spell_wcme_overheating);
++    RegisterSpellScript(spell_wcme_aimed_explosive_shot);
++    RegisterSpellScript(spell_wcme_flame_on);
++    RegisterSpellScript(spell_wcme_frozen_chaos);
++    RegisterSpellScript(spell_wcme_old_gods_madness);
++    RegisterSpellScript(spell_wcme_prophet_of_wrath);
++    RegisterSpellScript(spell_wcme_pet_mastery);
++    RegisterSpellScript(spell_wcme_doused);
++    RegisterSpellScript(spell_wcme_elemental_assassin);
++    RegisterSpellScript(spell_wcme_stormborn);
++    RegisterSpellScript(spell_wcme_compound_power);
 +}
