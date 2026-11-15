@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..af8a25c
+index 0000000..68ae01a
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,1174 @@
+@@ -0,0 +1,1556 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13,6 +13,7 @@ index 0000000..af8a25c
 +// on that spell says which events reach it (sql/enchants/017-enchant-scripts.sql). Every handler prevents the
 +// enchant's own (blanked) trigger effects and does exactly what the tooltip says instead.
 +
++#include "Containers.h"
 +#include "DBCStores.h"
 +#include "GameTime.h"
 +#include "Item.h"
@@ -27,9 +28,11 @@ index 0000000..af8a25c
 +#include "SpellScript.h"
 +#include "Unit.h"
 +#include <algorithm>
++#include <array>
 +#include <cstring>
 +#include <initializer_list>
 +#include <unordered_set>
++#include <vector>
 +
 +namespace
 +{
@@ -83,6 +86,37 @@ index 0000000..af8a25c
 +    attacker->CalculateSpellDamageTaken(&log, int32(std::min<int64>(amount, INT32_MAX)), spell);
 +    attacker->SendSpellNonMeleeDamageLog(&log);
 +    attacker->DealSpellDamage(&log, false);
++}
++
++// Adds stacks to a counter aura (its stack number shown on the buff). Returns true when the threshold is reached;
++// the counter is then removed.
++bool WcmeAddStacks(Unit* owner, uint32 counter, uint8 add, uint8 threshold)
++{
++    Aura* aura = owner->GetAura(counter);
++    uint32 const now = (aura ? aura->GetStackAmount() : 0) + add;
++    if (threshold && now >= threshold)
++    {
++        owner->RemoveAurasDueToSpell(counter);
++        return true;
++    }
++    if (!aura)
++    {
++        owner->CastSpell(owner, counter, true);
++        if (!(aura = owner->GetAura(counter)))
++            return false;
++    }
++    aura->SetStackAmount(uint8(std::min<uint32>(now, 255)));
++    aura->RefreshDuration();
++    return false;
++}
++
++bool WcmeDealsDamage(SpellInfo const* spell)
++{
++    for (SpellEffectInfo const& effect : spell->GetEffects())
++        if (effect.Effect == SPELL_EFFECT_SCHOOL_DAMAGE ||
++            (effect.Effect == SPELL_EFFECT_APPLY_AURA && effect.ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE))
++            return true;
++    return false;
 +}
 +
 +bool WcmeCostsPower(SpellInfo const* spell)
@@ -1150,6 +1184,346 @@ index 0000000..af8a25c
 +    }
 +};
 +
++// "Cast an additional random <class> spell for free" (Crazy Cultist, Deranged Druid, Eccentric Elementalist, Wacky
++// Wizardry, Zany Zealot; two versions each): an offensive spell of that class, cast at a target, has the enchant's
++// chance (25% or 15%, from its spell data) to also cast a random damaging spell of the same class that you know
++// (highest rank you have; not channeled, not ground-targeted, no cooldown of a minute or more) at that target, free.
++class spell_wcme_random_class_spell : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_random_class_spell);
++
++    uint32 Family() const
++    {
++        switch (GetId())
++        {
++            case 84529: case 1568195: return SPELLFAMILY_WARLOCK;
++            case 84531: case 1568216: return SPELLFAMILY_DRUID;
++            case 84533: case 1568237: return SPELLFAMILY_SHAMAN;
++            case 965442: case 1571306: return SPELLFAMILY_MAGE;
++            default: return SPELLFAMILY_PRIEST;   // 84527, 1568174
++        }
++    }
++
++    static Unit* CastTarget(ProcEventInfo& eventInfo)
++    {
++        Spell const* cast = eventInfo.GetProcSpell();
++        return cast ? cast->m_targets.GetUnitTarget() : nullptr;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = CastTarget(eventInfo);
++        return spell && (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) && spell->SpellFamilyName == Family() &&
++            !spell->IsPositive() && WcmeDealsDamage(spell) && target && target != GetTarget() && target->IsAlive();
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Player* player = GetTarget()->ToPlayer();
++        Unit* target = CastTarget(eventInfo);
++        if (!player || !target)
++            return;
++        std::vector<uint32> pool;
++        for (auto const& [spellId, known] : player->GetSpellMap())
++        {
++            if (known->State == PLAYERSPELL_REMOVED || !known->Active)
++                continue;
++            SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId);
++            if (!info || info->SpellFamilyName != Family() || info->IsPassive() || info->IsPositive() || !WcmeDealsDamage(info) ||
++                info->IsChanneled() || !info->NeedsExplicitUnitTarget() || info->RecoveryTime >= 60000 ||
++                info->CategoryRecoveryTime >= 60000)
++                continue;
++            if (SpellInfo const* next = info->GetNextRankSpell())
++                if (player->HasSpell(next->Id))
++                    continue;
++            pool.push_back(spellId);
++        }
++        if (!pool.empty())
++            player->CastSpell(target, Acore::Containers::SelectRandomContainerElement(pool), true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_random_class_spell::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_random_class_spell::HandleProc);
++    }
++};
++
++// Blessing of the Divines (965476): Holy or Nature heals have its 35% chance to cast one of its five blessings at
++// random on the healed ally (Titan, Creation, Time, Mending, the Divines).
++class spell_wcme_blessing_of_the_divines_random : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_blessing_of_the_divines_random);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return heal && heal->GetHeal() > 0 && spell && (spell->GetSchoolMask() & (SPELL_SCHOOL_MASK_HOLY | SPELL_SCHOOL_MASK_NATURE));
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        std::array<uint32, 5> const blessings = { 965478, 965479, 965480, 965481, 965482 };
++        owner->CastSpell(target ? target : owner, Acore::Containers::SelectRandomContainerElement(blessings), true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_blessing_of_the_divines_random::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_blessing_of_the_divines_random::HandleProc);
++    }
++};
++
++// Felborne (101086): direct damage from an ability or spell adds a stack of Meteoric Impact, at most once a second, up to
++// 5. At 5 stacks you can cast Fel Meteor (taught while the enchant is active), which spends them.
++// Abiding Fel Energy (84805): direct damage or healing adds Fel Energy, at most once a second; 5 stacks become Abiding
++// Fel Energy, during which direct damage also deals Unleash Fel Energy to the target.
++// Fel Strike (84806): direct damage or healing adds Fel Energy, at most once a second; 4 stacks reset the cooldown of
++// Fel Strike (the version this enchant teaches says "Fel Energy resets this cooldown").
++class spell_wcme_fel_energy : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_fel_energy);
++
++    static constexpr Seconds RATE{1};
++    TimePoint _ready{};
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        if (!eventInfo.GetSpellInfo() || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        return WcmeDealtDamage(eventInfo) || (GetId() != 101086 && heal && heal->GetHeal() > 0);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (GetId() == 84805 && owner->HasAura(84810) && WcmeDealtDamage(eventInfo) && target && target != owner)
++            owner->CastSpell(target, 84808, true);   // Unleash Fel Energy
++
++        TimePoint const now = GameTime::Now();
++        if (now < _ready)
++            return;
++        _ready = now + RATE;
++        switch (GetId())
++        {
++            case 101086:
++                WcmeAddStacks(owner, 300230, 1, 0);   // Meteoric Impact, capped at 5 by its own stack limit
++                if (Aura* impact = owner->GetAura(300230))
++                    if (impact->GetStackAmount() > 5)
++                        impact->SetStackAmount(5);
++                break;
++            case 84805:
++                if (WcmeAddStacks(owner, 983900, 1, 5))
++                    owner->CastSpell(owner, 84810, true);
++                break;
++            default:   // 84806
++                if (WcmeAddStacks(owner, 983897, 1, 4))
++                    if (Player* player = owner->ToPlayer())
++                        player->RemoveSpellCooldown(1568346, true);
++                break;
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_fel_energy::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_fel_energy::HandleProc);
++    }
++};
++
++// Overloaded Froststorm (81122) and Astral Tempest (81479): direct Nature or Frost (Froststorm) / Nature or Arcane
++// (Tempest) damage adds a stack of Overloaded, once per cast however many targets it hits, 2 against players. At 10 the
++// stacks are spent on the storm at the target's location, which also grants Overloaded Mind / Astral Power. While
++// Overloaded Mind is up, Nature and Frost spells deal 20% of their damage again as Froststorm.
++class spell_wcme_overloaded : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_overloaded);
++
++    Spell const* _lastCast = nullptr;
++
++    bool Froststorm() const { return GetId() == 81122; }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        if (!eventInfo.GetSpellInfo() || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) || !target ||
++            target == GetTarget() || !WcmeDealtDamage(eventInfo))
++            return false;
++        uint32 const schools = SPELL_SCHOOL_MASK_NATURE | (Froststorm() ? SPELL_SCHOOL_MASK_FROST : SPELL_SCHOOL_MASK_ARCANE);
++        return (eventInfo.GetDamageInfo()->GetSchoolMask() & schools) != 0;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (Froststorm() && owner->HasAura(954046))
++            if (SpellInfo const* storm = sSpellMgr->GetSpellInfo(954048))
++            {
++                DamageInfo const* damage = eventInfo.GetDamageInfo();
++                WcmeExtraDamage(owner, target, storm, int64(damage->GetDamage() + damage->GetAbsorb()) * 20 / 100);
++            }
++        if (eventInfo.GetProcSpell() && eventInfo.GetProcSpell() == _lastCast)
++            return;
++        _lastCast = eventInfo.GetProcSpell();
++        uint8 const add = target->GetTypeId() == TYPEID_PLAYER ? 2 : 1;
++        if (WcmeAddStacks(owner, Froststorm() ? 81123 : 982220, add, 10))
++            owner->CastSpell(target, Froststorm() ? 81124 : 81125, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_overloaded::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_overloaded::HandleProc);
++    }
++};
++
++// Blademaster (965862): parrying an attack, or a melee ability critical strike (at most once every 8 sec), adds a stack
++// of Study the Blade; 3 stacks become Blademaster.
++class spell_wcme_blademaster : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_blademaster);
++
++    static constexpr Seconds CRIT_RATE{8};
++    TimePoint _critReady{};
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* owner = GetTarget();
++        if (eventInfo.GetActionTarget() == owner)
++            return (eventInfo.GetHitMask() & PROC_HIT_PARRY) != 0;
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->DmgClass == SPELL_DAMAGE_CLASS_MELEE && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) &&
++            GameTime::Now() >= _critReady;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetActionTarget() != owner)
++            _critReady = GameTime::Now() + CRIT_RATE;
++        if (WcmeAddStacks(owner, 990042, 1, 3))
++            owner->CastSpell(owner, 965863, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_blademaster::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_blademaster::HandleProc);
++    }
++};
++
++// Shadow Visions (965299: 9 fragments; 1570700: 6 fragments): Mind Flay damage adds a Soul Fragment; enough of them
++// become Shadow Visions, which empowers your next ability.
++class spell_wcme_shadow_visions : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_shadow_visions);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeNamed(eventInfo.GetSpellInfo(), "Mind Flay") && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        bool const original = GetId() == 965299;
++        if (WcmeAddStacks(owner, original ? 965899 : 1570701, 1, original ? 9 : 6))
++            owner->CastSpell(owner, original ? 965900 : 1570702, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_shadow_visions::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_shadow_visions::HandleProc);
++    }
++};
++
++// Unrelenting Wrath (965288): each damaging Hunter ability cast adds a stack of Unrelenting Assault (once per cast); 10
++// stacks give a charge of Unrelenting Wrath, which lets you cast Unrelenting Wrath (taught while the enchant is active).
++class spell_wcme_unrelenting_wrath : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_unrelenting_wrath);
++
++    static constexpr uint32 ASSAULT = 983870;
++    static constexpr uint32 CHARGE = 983873;
++    static constexpr uint8 MAX_CHARGES = 2;   // "a charge"; no limit survives, 2 assumed
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) && spell->SpellFamilyName == SPELLFAMILY_HUNTER &&
++            !spell->IsPositive() && WcmeDealsDamage(spell);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (!WcmeAddStacks(owner, ASSAULT, 1, 10))
++            return;
++        if (Aura* charges = owner->GetAura(CHARGE))
++        {
++            if (charges->GetStackAmount() < MAX_CHARGES)
++                charges->SetStackAmount(charges->GetStackAmount() + 1);
++            charges->RefreshDuration();
++        }
++        else
++            WcmeAddStacks(owner, CHARGE, 1, 0);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_unrelenting_wrath::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_unrelenting_wrath::HandleProc);
++    }
++};
++
++// Fel Meteor (101087) needs 5 stacks of Meteoric Impact and spends them; Unrelenting Wrath (965289) needs a charge of
++// Unrelenting Wrath and spends one.
++class spell_wcme_reactive_spell : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_reactive_spell);
++
++    uint32 Requirement() { return GetSpellInfo()->Id == 101087 ? 300230 : 983873; }
++    uint8 Needed() { return GetSpellInfo()->Id == 101087 ? 5 : 1; }
++
++    SpellCastResult CheckCast()
++    {
++        Aura const* aura = GetCaster()->GetAura(Requirement());
++        return aura && aura->GetStackAmount() >= Needed() ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void Spend()
++    {
++        if (Aura* aura = GetCaster()->GetAura(Requirement()))
++        {
++            if (Needed() == 1 && aura->GetStackAmount() > 1)
++                aura->SetStackAmount(aura->GetStackAmount() - 1);
++            else
++                aura->Remove();
++        }
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_reactive_spell::CheckCast);
++        AfterCast += SpellCastFn(spell_wcme_reactive_spell::Spend);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -1177,4 +1551,12 @@ index 0000000..af8a25c
 +    RegisterSpellScript(spell_wcme_benevolent_crusader);
 +    RegisterSpellScript(spell_wcme_unbounded_spell_slinger);
 +    RegisterSpellScript(spell_wcme_evoker);
++    RegisterSpellScript(spell_wcme_random_class_spell);
++    RegisterSpellScript(spell_wcme_blessing_of_the_divines_random);
++    RegisterSpellScript(spell_wcme_fel_energy);
++    RegisterSpellScript(spell_wcme_overloaded);
++    RegisterSpellScript(spell_wcme_blademaster);
++    RegisterSpellScript(spell_wcme_shadow_visions);
++    RegisterSpellScript(spell_wcme_unrelenting_wrath);
++    RegisterSpellScript(spell_wcme_reactive_spell);
 +}
