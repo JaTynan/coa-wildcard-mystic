@@ -18,7 +18,7 @@ for good by deleting its part from the script.
 
 | Script / patch | Change | Setting |
 |---|---|---|
-| `mystic-enchants-*.patch` | Mystic Enchants on Wildcard: enchant actions, SpellAffect data, altars on Wildcard | always on |
+| `mystic-enchants-*.patch` | Mystic Enchants on Wildcard: enchant actions (casting every listed helper spell; mana from attack power for helpers like Molten Mana), SpellAffect data, altars on Wildcard | always on |
 | `wildcard-ability-pool.patch` | Which classes' abilities Wildcard rolls from | `Wildcard.AbilityPool` |
 | `10-mod-ollama-chat-fit.ps1` | Makes the AI chat module compile on the CoA core | always on |
 | | Less bot chat in raids and dungeons (direct answers to players kept) | `OllamaChat.RaidChatterPct`, `OllamaChat.DungeonChatterPct` |
@@ -73,8 +73,8 @@ load, waking, zones), PvP rewards, AI chat, MySQL and world server performance, 
 ## Database
 
 `sql/enchants/000-015`: Mystic Enchant data fixes (`014`: "your next X" buffs such as Empowered Light are used up
-by that next spell; `015`: 29 Legendary enchants that fired on every hit now fire only from the abilities their
-tooltip names, or no more often than its stated cooldown). `090-mysql-tuning.sql`: MySQL settings that survive the manager.
+by that next spell; `015`: 33 Legendary enchants that fired on every hit now fire only from the abilities their
+tooltip names, no more often than its stated cooldown, or at most every 0.1 sec where it states none). `090-mysql-tuning.sql`: MySQL settings that survive the manager.
 `100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
 `110-manastorm-caches-unstack.sql`: Manastorm caches no longer stack, so each one opens and disappears when emptied.
 `120-battleground-spoils.sql`: Battleground Spoils can be opened (used by the Battleground Spoils patch).

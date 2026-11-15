@@ -23,7 +23,7 @@ new file mode 100644
 index 000000000..d3e25688c
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantActions.cpp
-@@ -0,0 +1,258 @@
+@@ -0,0 +1,276 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -40,7 +40,9 @@ index 000000000..d3e25688c
 +//   chance        percent; cooldown_ms: per enchant and row
 +//   action        reduce_cooldown (amount = ms), reduce_cooldown_pct (amount = percent of what is left),
 +//                 reset_cooldown, cast_target, cast_self
-+//   action_spells the spells whose cooldown changes, or the spell to cast (first id)
++//   action_spells the spells whose cooldown changes, or the spells to cast (every id, in order)
++//   amount        for cast_target/cast_self: when not 0, an energize spell in the list restores this percent of
++//                 the player's attack power (for helpers whose own amount is 0, such as Molten Mana)
 +// Rows are read at every startup.
 +
 +#include "DatabaseEnv.h"
@@ -246,16 +248,32 @@ index 000000000..d3e25688c
 +                            player->RemoveSpellCooldown(spell, true);
 +                break;
 +            case WcmeAction::CastTarget:
++            case WcmeAction::CastSelf:
 +            {
-+                Unit* target = eventInfo.GetActionTarget();
-+                if (!target || target == owner)
-+                    target = eventInfo.GetProcTarget();
-+                owner->CastSpell(target ? target : owner, rule->ActionSpells.front(), true);
++                Unit* target = owner;
++                if (rule->Action == WcmeAction::CastTarget)
++                {
++                    target = eventInfo.GetActionTarget();
++                    if (!target || target == owner)
++                        target = eventInfo.GetProcTarget();
++                    if (!target)
++                        target = owner;
++                }
++                for (uint32 spellId : rule->ActionSpells)
++                {
++                    SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId);
++                    if (!info)
++                        continue;
++                    if (rule->Amount && info->Effects[EFFECT_0].Effect == SPELL_EFFECT_ENERGIZE)
++                    {
++                        int32 const mana = std::max<int32>(1, int32(owner->GetTotalAttackPowerValue(BASE_ATTACK) * rule->Amount / 100.0f));
++                        owner->CastCustomSpell(spellId, SPELLVALUE_BASE_POINT0, mana, owner, true);
++                    }
++                    else
++                        owner->CastSpell(target, spellId, true);
++                }
 +                break;
 +            }
-+            case WcmeAction::CastSelf:
-+                owner->CastSpell(owner, rule->ActionSpells.front(), true);
-+                break;
 +        }
 +    }
 +
