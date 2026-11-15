@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..22948ea
+index 0000000..ba39b52
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,3201 @@
+@@ -0,0 +1,3542 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13,10 +13,13 @@ index 0000000..22948ea
 +// on that spell says which events reach it (sql/enchants/017-enchant-scripts.sql). Every handler prevents the
 +// enchant's own (blanked) trigger effects and does exactly what the tooltip says instead.
 +
++#include "CellImpl.h"
 +#include "Containers.h"
 +#include "Creature.h"
 +#include "DBCStores.h"
 +#include "GameTime.h"
++#include "GridNotifiers.h"
++#include "GridNotifiersImpl.h"
 +#include "Item.h"
 +#include "Pet.h"
 +#include "Player.h"
@@ -3139,6 +3142,338 @@ index 0000000..22948ea
 +    }
 +};
 +
++// Time Warp (965245): Blink grants Time Distortion (965246, 8 sec) and marks where you blinked from for 3 sec (848019).
++// Damaging spells with a cast time extend Time Distortion by 1 sec and take 2 sec off Blink. The taught Time Warp
++// (1570042, spell_wcme_time_warp_return) takes you back to the marked spot and extends Time Distortion by 3 sec.
++std::unordered_map<ObjectGuid, WorldLocation> WcmeTimeWarpPoints;
++
++void WcmeExtendAura(Unit* unit, uint32 spellId, int32 ms)
++{
++    if (Aura* aura = unit->GetAura(spellId))
++    {
++        int32 const duration = aura->GetDuration() + ms;
++        if (duration > aura->GetMaxDuration())
++            aura->SetMaxDuration(duration);
++        aura->SetDuration(duration);
++    }
++}
++
++class spell_wcme_time_warp : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_time_warp);
++
++    static constexpr uint32 DISTORTION = 965246;
++    static constexpr uint32 WARP_MARK = 848019;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || !(eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST))
++            return false;
++        if (WcmeNamed(spell, "Blink"))
++            return true;
++        Spell const* cast = eventInfo.GetProcSpell();
++        return cast && cast->GetCastTime() > 0 && WcmeDealsAnyDamage(spell);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (WcmeNamed(eventInfo.GetSpellInfo(), "Blink"))
++        {
++            WcmeTimeWarpPoints[owner->GetGUID()] = owner->GetWorldLocation();
++            owner->CastSpell(owner, DISTORTION, true);
++            owner->AddAura(WARP_MARK, owner);
++            return;
++        }
++        WcmeExtendAura(owner, DISTORTION, 1000);
++        WcmeCutCooldownByName(owner, "Blink", 2000);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_time_warp::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_time_warp::HandleProc);
++    }
++};
++
++class spell_wcme_time_warp_return : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_time_warp_return);
++
++    SpellCastResult CheckMark()
++    {
++        Unit* caster = GetCaster();
++        if (!caster->HasAura(848019) || !WcmeTimeWarpPoints.count(caster->GetGUID()))
++            return SPELL_FAILED_NOT_READY;
++        return SPELL_CAST_OK;
++    }
++
++    void Return()
++    {
++        Player* player = GetCaster()->ToPlayer();
++        auto const point = WcmeTimeWarpPoints.find(GetCaster()->GetGUID());
++        if (!player || point == WcmeTimeWarpPoints.end())
++            return;
++        WorldLocation const destination = point->second;
++        WcmeTimeWarpPoints.erase(point);
++        if (destination.GetMapId() != player->GetMapId() || player->GetDistance(destination) > 100.0f)
++            return;
++        player->NearTeleportTo(destination.GetPositionX(), destination.GetPositionY(), destination.GetPositionZ(),
++            destination.GetOrientation());
++        WcmeExtendAura(player, 965246, 3000);
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_time_warp_return::CheckMark);
++        AfterCast += SpellCastFn(spell_wcme_time_warp_return::Return);
++    }
++};
++
++// Enemies of `caster` within `radius` yards of `center`, nearest first, at most `limit`.
++std::list<Unit*> WcmeEnemiesNear(Unit* caster, Unit* center, float radius, size_t limit)
++{
++    std::list<Unit*> enemies;
++    Acore::AnyUnfriendlyUnitInObjectRangeCheck check(center, caster, radius);
++    Acore::UnitListSearcher<Acore::AnyUnfriendlyUnitInObjectRangeCheck> searcher(center, enemies, check);
++    Cell::VisitObjects(center, searcher, radius);
++    enemies.remove_if([caster](Unit* enemy) { return !enemy->IsAlive() || !caster->IsValidAttackTarget(enemy); });
++    enemies.sort([center](Unit* first, Unit* second) { return center->GetDistance(first) < center->GetDistance(second); });
++    if (enemies.size() > limit)
++        enemies.resize(limit);
++    return enemies;
++}
++
++// Snowblind (990055): teaches Ice Prism (990056: a Frost DoT that makes your Holy spells crit and hit 10% harder on
++// the target). Cone of Cold or Frostbolt damage on a target with your Ice Prism refreshes it and spreads it to 5
++// enemies within 8 yards. Holy critical strikes on a target with your Ice Prism shatter it: Ice Prism Shatter (990057)
++// hits up to 5 enemies within 8 yards for your Cone of Cold's damage, with a 50% chance to grant Surge of Light (33151)
++// if you know it, at most once every 2 sec.
++class spell_wcme_snowblind : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_snowblind);
++
++    static constexpr uint32 PRISM = 990056;
++    static constexpr uint32 SHATTER = 990057;
++    static constexpr uint32 SURGE = 33151;
++    static constexpr std::array<uint32, 8> CONE_OF_COLD = { 42931, 42930, 27087, 10161, 10160, 10159, 8492, 120 };
++    uint32 _nextSurge = 0;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (!spell || !target || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) || !WcmeDealtDamage(eventInfo) ||
++            !target->GetAura(PRISM, GetTarget()->GetGUID()))
++            return false;
++        if (WcmeNamedAny(spell, { "Cone of Cold", "Frostbolt" }))
++            return true;
++        return spell->Id != SHATTER && (spell->GetSchoolMask() & SPELL_SCHOOL_MASK_HOLY) && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL);
++    }
++
++    int32 ConeOfColdDamage(Unit* owner, Unit* target) const
++    {
++        Player* player = owner->ToPlayer();
++        for (uint32 rank : CONE_OF_COLD)
++            if (player && player->HasSpell(rank))
++                if (SpellInfo const* cone = sSpellMgr->GetSpellInfo(rank))
++                    return int32(owner->SpellDamageBonusDone(target, cone, uint32(std::max(0, cone->Effects[EFFECT_0].CalcValue(owner))),
++                        SPELL_DIRECT_DAMAGE, EFFECT_0));
++        return 0;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (WcmeNamedAny(eventInfo.GetSpellInfo(), { "Cone of Cold", "Frostbolt" }))
++        {
++            if (Aura* prism = target->GetAura(PRISM, owner->GetGUID()))
++                prism->RefreshDuration();
++            for (Unit* enemy : WcmeEnemiesNear(owner, target, 8.0f, 6))
++                if (enemy != target)
++                    owner->CastSpell(enemy, PRISM, true);
++            return;
++        }
++        target->RemoveAura(PRISM, owner->GetGUID());
++        int32 const damage = ConeOfColdDamage(owner, target);
++        if (damage > 0)
++            for (Unit* enemy : WcmeEnemiesNear(owner, target, 8.0f, 5))
++                owner->CastCustomSpell(enemy, SHATTER, &damage, nullptr, nullptr, true);
++        uint32 const now = GameTime::GetGameTimeMS().count();
++        if (now >= _nextSurge && WcmeHasAnyAura(owner, { 33150, 33154, 233150, 233154, 281302 }) && roll_chance_i(50))
++        {
++            owner->CastSpell(owner, SURGE, true);
++            _nextSurge = now + 2000;
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_snowblind::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_snowblind::HandleProc);
++    }
++};
++
++// Allies of `caster` within `radius` yards of `center` (center first, then nearest), at most `limit`.
++std::list<Unit*> WcmeAlliesNear(Unit* caster, Unit* center, float radius, size_t limit)
++{
++    std::list<Unit*> allies;
++    Acore::AnyFriendlyUnitInObjectRangeCheck check(center, caster, radius);
++    Acore::UnitListSearcher<Acore::AnyFriendlyUnitInObjectRangeCheck> searcher(center, allies, check);
++    Cell::VisitObjects(center, searcher, radius);
++    allies.remove_if([center](Unit* ally) { return !ally->IsAlive() || ally == center; });
++    allies.sort([center](Unit* first, Unit* second) { return center->GetDistance(first) < center->GetDistance(second); });
++    allies.push_front(center);
++    if (allies.size() > limit)
++        allies.resize(limit);
++    return allies;
++}
++
++// Mending Tide (965309): your Riptide heals put Mending Tides (944823) on that ally, one ally at a time. Every 2 sec for
++// 6 sec it heals the ally and up to 5 allies within 8 yards (spell_wcme_mending_tide_pulse) and gives each Mending
++// Chains (944825: +15% healing from Chain Heal for 3 sec). Not done: Riptide making the next Chain Heal not consume it.
++class spell_wcme_mending_tide : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_mending_tide);
++
++    static constexpr uint32 TIDES = 944823;
++    ObjectGuid _tideTarget;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return eventInfo.GetActionTarget() && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamed(eventInfo.GetSpellInfo(), "Riptide");
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (_tideTarget && _tideTarget != target->GetGUID())
++            if (Unit* previous = ObjectAccessor::GetUnit(*owner, _tideTarget))
++                previous->RemoveAura(TIDES, owner->GetGUID());
++        _tideTarget = target->GetGUID();
++        owner->CastSpell(target, TIDES, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_mending_tide::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_mending_tide::HandleProc);
++    }
++};
++
++// Mending Tides (944823): each 2-sec pulse heals the ally and up to 5 allies within 8 yards for about 256 at level 60
++// (the tooltip's 251.64 to 260.64, scaled by the caster's level) plus healing bonuses, and can critically strike.
++class spell_wcme_mending_tide_pulse : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_mending_tide_pulse);
++
++    static constexpr uint32 HEAL = 944826;
++    static constexpr uint32 CHAINS = 944825;
++
++    void Pulse(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++        Unit* caster = GetCaster();
++        SpellInfo const* heal = sSpellMgr->GetSpellInfo(HEAL);
++        if (!caster || !heal)
++            return;
++        uint32 const base = 256 * caster->GetLevel() / 60;
++        for (Unit* ally : WcmeAlliesNear(caster, GetTarget(), 8.0f, 6))
++        {
++            uint32 amount = caster->SpellHealingBonusDone(ally, heal, base, ::HEAL, EFFECT_0);
++            amount = ally->SpellHealingBonusTaken(caster, heal, amount, ::HEAL);
++            float chance = caster->SpellDoneCritChance(ally, heal, heal->GetSchoolMask(), BASE_ATTACK, false);
++            chance = ally->SpellTakenCritChance(caster, heal, heal->GetSchoolMask(), chance, BASE_ATTACK, false);
++            bool const crit = roll_chance_f(chance);
++            if (crit)
++                amount = Unit::SpellCriticalHealingBonus(caster, heal, amount, ally);
++            HealInfo healInfo(caster, ally, amount, heal, heal->GetSchoolMask());
++            caster->HealBySpell(healInfo, crit);
++            caster->AddAura(CHAINS, ally);
++        }
++    }
++
++    void Register() override
++    {
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_mending_tide_pulse::Pulse, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
++    }
++};
++
++// Temporal Shift (977972): teaches Temporal Blast (930451). Each Temporal Blast adds a charge of Temporal Haste
++// (954209: the next direct damage spell casts 40% faster), up to 3; reaching 3 triggers Eclipse (Lunar) (48518) if you
++// know Eclipse, lasting a third as long. While Eclipse (Lunar) is up, Starfire, Starsurge and Moonfire hits deal 45%
++// more (15% against players). Not done: a cancelled Temporal Blast storing its cast time (no cancel hook).
++class spell_wcme_temporal_shift : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_temporal_shift);
++
++    static constexpr uint32 HASTE = 954209;
++    static constexpr uint32 LUNAR = 48518;
++    uint8 _chargesBefore = 0;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (WcmeNamed(spell, "Temporal Blast"))
++            return true;
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_HIT) && GetTarget()->HasAura(LUNAR) &&
++            eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo) && WcmeNamedAny(spell, { "Starfire", "Starsurge", "Moonfire" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!WcmeNamed(spell, "Temporal Blast"))
++        {
++            Unit* target = eventInfo.GetActionTarget();
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            int64 const dealt = damage->GetDamage() + damage->GetAbsorb();
++            WcmeExtraDamage(owner, target, spell, dealt * (target->IsPlayer() ? 15 : 45) / 100);
++            return;
++        }
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            Aura const* haste = owner->GetAura(HASTE);
++            _chargesBefore = haste ? std::max<uint8>(1, haste->GetCharges()) : 0;
++            return;
++        }
++        Aura* haste = owner->GetAura(HASTE);
++        if (!haste)
++            haste = owner->AddAura(HASTE, owner);
++        if (!haste)
++            return;
++        uint8 const charges = std::min<uint8>(3, _chargesBefore + 1);
++        haste->SetCharges(charges);
++        _chargesBefore = charges;
++        if (charges == 3 && WcmeHasAnyAura(owner, { 48516, 48521, 48525 }))
++        {
++            owner->CastSpell(owner, LUNAR, true);
++            if (Aura* lunar = owner->GetAura(LUNAR))
++            {
++                lunar->SetMaxDuration(lunar->GetMaxDuration() / 3);
++                lunar->SetDuration(lunar->GetMaxDuration());
++            }
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_temporal_shift::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_temporal_shift::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -3204,4 +3539,10 @@ index 0000000..22948ea
 +    RegisterSpellScript(spell_wcme_blood_for_the_blood_god);
 +    RegisterSpellScript(spell_wcme_elemental_lord);
 +    RegisterSpellScript(spell_wcme_elemental_air_watch);
++    RegisterSpellScript(spell_wcme_time_warp);
++    RegisterSpellScript(spell_wcme_time_warp_return);
++    RegisterSpellScript(spell_wcme_snowblind);
++    RegisterSpellScript(spell_wcme_mending_tide);
++    RegisterSpellScript(spell_wcme_mending_tide_pulse);
++    RegisterSpellScript(spell_wcme_temporal_shift);
 +}
