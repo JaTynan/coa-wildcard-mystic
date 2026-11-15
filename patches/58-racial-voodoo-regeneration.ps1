@@ -14,7 +14,7 @@ $file = 'core/src/server/game/Entities/Player/Player.h'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
 $anchor = "public:`n    explicit Player(WorldSession* session);`n"
 if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'Core changed: the Player constructor in Player.h was not found' }
-$add = "    uint32 WcmeVoodooTimer = 0;`n"
+$add = "    uint32 WcmeVoodooTimer = 0;`n    float WcmeVoodooCarry = 0.0f;`n"
 Set-Content $file $text.Replace($anchor, $anchor + $add) -NoNewline
 }
 
@@ -59,6 +59,7 @@ public:
         if (!player->IsAlive())
         {
             player->WcmeVoodooTimer = 0;
+            player->WcmeVoodooCarry = 0.0f;
             return;
         }
         if (player->HealthBelowPct(35) && !player->HasAura(Cooldown))
@@ -72,8 +73,20 @@ public:
             float percent = player->HasAura(Burst) ? 3.0f : 0.0f;
             if (player->IsInCombat())
                 percent += player->HasAura(Cooldown) ? 0.15f : 0.3f;
-            if (percent > 0.0f && !player->IsFullHealth())
-                player->ModifyHealth(int32(std::max(1.0f, float(player->GetMaxHealth()) * percent / 100.0f)));
+            // Fractions carry over to the next second instead of rounding up to 1, which at low level was many
+            // times the intended rate (0.1 health a second at 68 health became 1).
+            if (percent <= 0.0f || player->IsFullHealth())
+            {
+                player->WcmeVoodooCarry = 0.0f;
+                continue;
+            }
+            player->WcmeVoodooCarry += float(player->GetMaxHealth()) * percent / 100.0f;
+            int32 const whole = int32(player->WcmeVoodooCarry);
+            if (whole > 0)
+            {
+                player->WcmeVoodooCarry -= float(whole);
+                player->ModifyHealth(whole);
+            }
         }
     }
 
