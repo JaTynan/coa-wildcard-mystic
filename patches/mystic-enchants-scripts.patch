@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..70e2364
+index 0000000..77f477d
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,432 @@
+@@ -0,0 +1,716 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -19,6 +19,8 @@ index 0000000..70e2364
 +#include "Player.h"
 +#include "Random.h"
 +#include "ScriptMgr.h"
++#include "Spell.h"
++#include "SpellAuraEffects.h"
 +#include "SpellAuras.h"
 +#include "SpellInfo.h"
 +#include "SpellMgr.h"
@@ -424,6 +426,282 @@ index 0000000..70e2364
 +    }
 +};
 +
++// Controlled Burn (81407): Chaos Bolt refreshes Immolate; Chaos Bolt, Incinerate, Searing Pain and Scorch grant
++// Controlled Burn, which keeps Immolate on the target through the next Conflagrate; Conflagrate applies Heating Up!.
++class spell_wcme_controlled_burn : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_controlled_burn);
++
++    static constexpr uint32 IMMOLATE_REFRESH = 981407;
++    static constexpr uint32 CONTROLLED_BURN = 954675;
++    static constexpr uint32 HEATING_UP = 954715;
++    ObjectGuid _keptOn;
++    uint32 _keptSpell = 0;
++    int32 _keptDuration = 0;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return eventInfo.GetSpellInfo() != nullptr;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (WcmeNamedAny(spell, { "Chaos Bolt", "Incinerate", "Searing Pain", "Scorch" }))
++                owner->CastSpell(owner, CONTROLLED_BURN, true);
++            // remember the Immolate that Conflagrate is about to consume
++            _keptSpell = 0;
++            if (WcmeNamed(spell, "Conflagrate") && owner->HasAura(CONTROLLED_BURN))
++                if (Spell const* cast = eventInfo.GetProcSpell())
++                    if (Unit* target = cast->m_targets.GetUnitTarget())
++                        for (AuraEffect const* periodic : target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE))
++                            if (periodic->GetCasterGUID() == owner->GetGUID() &&
++                                periodic->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_WARLOCK &&
++                                (periodic->GetSpellInfo()->SpellFamilyFlags[0] & 0x4))
++                            {
++                                _keptOn = target->GetGUID();
++                                _keptSpell = periodic->GetId();
++                                _keptDuration = periodic->GetBase()->GetDuration();
++                                break;
++                            }
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target || target == owner || !WcmeDealtDamage(eventInfo))
++            return;
++        if (WcmeNamed(spell, "Chaos Bolt"))
++            owner->CastSpell(target, IMMOLATE_REFRESH, true);
++        else if (WcmeNamed(spell, "Conflagrate"))
++        {
++            owner->CastSpell(target, HEATING_UP, true);
++            if (_keptSpell && target->GetGUID() == _keptOn)
++            {
++                if (!target->HasAura(_keptSpell, owner->GetGUID()))
++                    if (Aura* immolate = owner->AddAura(_keptSpell, target))
++                        immolate->SetDuration(_keptDuration);
++                owner->RemoveAurasDueToSpell(CONTROLLED_BURN);
++            }
++            _keptSpell = 0;
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_controlled_burn::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_controlled_burn::HandleProc);
++    }
++};
++
++// Eldritch Knight (81116): melee abilities while Eldritch Weapon is up grant Eldritch Knight (Eldritch Wrath grants
++// it itself); Eldritch Wrath hits apply Eldritch Condemnation. While Eldritch Knight is up, melee abilities restore
++// mana and add a stack of Anomaly; full stacks become Eldritch Horror.
++class spell_wcme_eldritch_knight : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_eldritch_knight);
++
++    static constexpr uint32 KNIGHT = 983715;
++    static constexpr uint32 MANA = 983712;
++    static constexpr uint32 ANOMALY = 983723;
++    static constexpr uint32 HORROR = 983722;
++    static constexpr uint32 CONDEMNATION = 983710;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        return eventInfo.GetSpellInfo() && target && target != GetTarget() && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (WcmeNamed(spell, "Eldritch Wrath"))
++        {
++            owner->CastSpell(eventInfo.GetActionTarget(), CONDEMNATION, true);
++            return;
++        }
++        if (spell->DmgClass != SPELL_DAMAGE_CLASS_MELEE)
++            return;
++        if (owner->HasAura(KNIGHT))
++        {
++            owner->CastSpell(owner, MANA, true);
++            owner->CastSpell(owner, ANOMALY, true);
++            if (Aura const* anomaly = owner->GetAura(ANOMALY))
++            {
++                uint32 const full = anomaly->GetSpellInfo()->StackAmount;
++                if (full && anomaly->GetStackAmount() >= full)
++                {
++                    owner->RemoveAurasDueToSpell(ANOMALY);
++                    owner->CastSpell(owner, HORROR, true);
++                }
++            }
++        }
++        if (WcmeHasAnyAura(owner, { 983701, 270032, 270033, 852191, 1566917, 1566937, 1590944 }))
++            owner->CastSpell(owner, KNIGHT, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_eldritch_knight::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_eldritch_knight::HandleProc);
++    }
++};
++
++// Disciple of the Tides (274921, the buff): casting Penance spends every stack, adding the buff's bonus per stack
++// to that Penance (through its hidden modifier spells), then the buff is gone.
++class spell_wcme_disciple_of_the_tides : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_disciple_of_the_tides);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeNamed(eventInfo.GetSpellInfo(), "Penance") && (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        int32 const stacks = std::max<int32>(1, GetStackAmount());
++        for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
++            if (AuraEffect const* effect = GetEffect(i))
++                if (uint32 const helper = GetSpellInfo()->Effects[i].TriggerSpell)
++                    owner->CastCustomSpell(helper, SPELLVALUE_BASE_POINT0, effect->GetAmount() * stacks, owner, true);
++    }
++
++    void SpendStacks(ProcEventInfo& /*eventInfo*/)
++    {
++        Remove();
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_disciple_of_the_tides::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_disciple_of_the_tides::HandleProc);
++        AfterProc += AuraProcFn(spell_wcme_disciple_of_the_tides::SpendStacks);
++    }
++};
++
++// Twilight Paragon (977824): direct damage with Smite and Holy Fire, and with Penance against creatures, grants
++// Paragon of Light. Casting Exorcism spends every stack: one Twilight Torment on the target per stack, then
++// Paragon of Darkness for 1 sec per stack.
++class spell_wcme_twilight_paragon : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_twilight_paragon);
++
++    static constexpr uint32 LIGHT = 977825;
++    static constexpr uint32 DARKNESS = 977826;
++    static constexpr uint32 TORMENT = 977851;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return eventInfo.GetSpellInfo() != nullptr;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (!WcmeNamed(spell, "Exorcism"))
++                return;
++            Aura const* light = owner->GetAura(LIGHT);
++            if (!light)
++                return;
++            uint8 const stacks = light->GetStackAmount();
++            owner->RemoveAurasDueToSpell(LIGHT);
++            if (Spell const* cast = eventInfo.GetProcSpell())
++                if (Unit* target = cast->m_targets.GetUnitTarget())
++                    for (uint8 i = 0; i < stacks; ++i)
++                        owner->CastSpell(target, TORMENT, true);
++            owner->CastSpell(owner, DARKNESS, true);
++            if (Aura* darkness = owner->GetAura(DARKNESS))
++                darkness->SetDuration(int32(stacks) * IN_MILLISECONDS);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target || target == owner || !WcmeDealtDamage(eventInfo) || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return;
++        if (WcmeNamedAny(spell, { "Smite", "Holy Fire" }) || (WcmeNamed(spell, "Penance") && target->GetTypeId() == TYPEID_UNIT))
++            owner->CastSpell(owner, LIGHT, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_twilight_paragon::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_twilight_paragon::HandleProc);
++    }
++};
++
++// Consecrated Strikes (965295): Crusader Strike, Divine Storm and Hammer of the Righteous have a chance to create
++// Consecrated Ground. No proc chance survives in any record; 20% is assumed.
++class spell_wcme_consecrated_strikes : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_consecrated_strikes);
++
++    static constexpr uint32 CONSECRATED_GROUND = 965321;
++    static constexpr int32 CHANCE = 20;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeNamedAny(eventInfo.GetSpellInfo(), { "Crusader Strike", "Divine Storm", "Hammer of the Righteous" }) &&
++            WcmeDealtDamage(eventInfo) && roll_chance_i(CHANCE);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        GetTarget()->CastSpell(GetTarget(), CONSECRATED_GROUND, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_consecrated_strikes::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_consecrated_strikes::HandleProc);
++    }
++};
++
++// Consecrated Weapon (977848, taught by Consecrated Strikes): melee abilities have a chance to deal a Consecrated
++// Strike, which also triggers Consecrated Strikes' Seal of Command. 20% is assumed (no record of the chance).
++class spell_wcme_consecrated_weapon : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_consecrated_weapon);
++
++    static constexpr uint32 CONSECRATED_STRIKE = 977827;
++    static constexpr uint32 SEAL_OF_COMMAND = 278746;
++    static constexpr int32 CHANCE = 20;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        return spell && spell->DmgClass == SPELL_DAMAGE_CLASS_MELEE && target && target != GetTarget() &&
++            WcmeDealtDamage(eventInfo) && roll_chance_i(CHANCE);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        owner->CastSpell(target, CONSECRATED_STRIKE, true);
++        owner->CastSpell(target, SEAL_OF_COMMAND, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_consecrated_weapon::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_consecrated_weapon::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -435,4 +713,10 @@ index 0000000..70e2364
 +    RegisterSpellScript(spell_wcme_borrowed_time_kept);
 +    RegisterSpellScript(spell_wcme_ambidextrous);
 +    RegisterSpellScript(spell_wcme_natures_fervor);
++    RegisterSpellScript(spell_wcme_controlled_burn);
++    RegisterSpellScript(spell_wcme_eldritch_knight);
++    RegisterSpellScript(spell_wcme_disciple_of_the_tides);
++    RegisterSpellScript(spell_wcme_twilight_paragon);
++    RegisterSpellScript(spell_wcme_consecrated_strikes);
++    RegisterSpellScript(spell_wcme_consecrated_weapon);
 +}
