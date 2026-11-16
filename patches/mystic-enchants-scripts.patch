@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..0a3e623
+index 0000000..8274629
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,6558 @@
+@@ -0,0 +1,7092 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -173,6 +173,35 @@ index 0000000..0a3e623
 +            player->removeSpell(rank, SPEC_MASK_ALL, true);
 +    if (wanted && !player->HasSpell(wanted))
 +        player->learnSpell(wanted, true);
++}
++
++// Shows an enchant's replacement ability in place of every known rank of the named ability while active (learned for
++// the session, like the core's own enchant replacements), and takes it away again. The core only does this itself when
++// the replacement's name contains the original's, or the enchant's description says "transform".
++void WcmeSyncSwap(Unit* unit, char const* originalName, uint32 family, uint32 replacement, bool active)
++{
++    Player* player = unit->ToPlayer();
++    if (!player || !sSpellMgr->GetSpellInfo(replacement))
++        return;
++    std::vector<uint32> originals;
++    for (auto const& [spellId, known] : player->GetSpellMap())
++        if (known->State != PLAYERSPELL_REMOVED && known->Active && spellId != replacement)
++            if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId))
++                if (info->SpellFamilyName == family && !info->IsPassive() && WcmeNamed(info, originalName))
++                    originals.push_back(spellId);
++    if (active && !originals.empty())
++    {
++        if (!player->HasSpell(replacement))
++            player->learnSpell(replacement, true);
++        for (uint32 original : originals)
++            player->SetTemporarySpellReplacement(original, replacement);
++        return;
++    }
++    for (uint32 original : originals)
++        if (player->GetTemporarySpellReplacement(original) == replacement)
++            player->SetTemporarySpellReplacement(original, 0);
++    if (!active && player->HasSpell(replacement))
++        player->removeSpell(replacement, SPEC_MASK_ALL, true);
 +}
 +
 +float WcmeAttackPower(Unit* unit)
@@ -5070,8 +5099,8 @@ index 0000000..0a3e623
 +    }
 +};
 +
-+// Demolisher (977864): its own design instead of twin 273786 (003 no longer links them). The core's replacement turns
-+// Mortal Strike into Demolishing Strike (947486), which puts Demolish on the target (273795: 2% more Physical damage
++// Demolisher (977864): its own design instead of twin 273786 (003 no longer links them). Mortal Strike shows as
++// Demolishing Strike (947486, WcmeSyncSwap: the core does not swap it, the names differ), which puts Demolish on the target (273795: 2% more Physical damage
 +// taken from you per stack, 6 stacks). Each of your melee critical strikes on it adds a stack; at 6 stacks Demolish is
 +// spent and your next of these abilities is empowered: Expose Armor gives you Demolishing Strikes (954090: 35% armor
 +// penetration for 20 sec); Riposte awards 2 more combo points and slows the target's attack speed by 10% more;
@@ -5161,9 +5190,21 @@ index 0000000..0a3e623
 +        demolish->RefreshDuration();
 +    }
 +
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Mortal Strike", SPELLFAMILY_WARRIOR, 947486, true);
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Mortal Strike", SPELLFAMILY_WARRIOR, 947486, false);
++    }
++
 +    void Register() override
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_demolisher::CheckProc);
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_demolisher::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_demolisher::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
 +        OnProc += AuraProcFn(spell_wcme_demolisher::HandleProc);
 +    }
 +};
@@ -5823,23 +5864,11 @@ index 0000000..0a3e623
 +    return bg && bg->isArena() && bg->GetArenaType() == ARENA_TYPE_1v1 ? amount / 2 : amount;
 +}
 +
-+// Crusader Strike shows as Crusader's Justice (985972) only while Righteous Justice is up (the core's enchant replacement
-+// would otherwise swap it for as long as Champion of Justice is worn).
++// Crusader Strike shows as Crusader's Justice (985972) only while Righteous Justice is up (the core does not swap it:
++// the names differ).
 +void WcmeSyncCrusadersJustice(Unit* unit)
 +{
-+    Player* player = unit->ToPlayer();
-+    if (!player)
-+        return;
-+    bool const active = player->HasAura(985957) && player->HasAura(986000);
-+    for (SpellInfo const* rank = sSpellMgr->GetSpellInfo(sSpellMgr->GetFirstSpellInChain(35395)); rank; rank = rank->GetNextRankSpell())
-+    {
-+        if (!player->HasActiveSpell(rank->Id))
-+            continue;
-+        if (active)
-+            player->SetTemporarySpellReplacement(rank->Id, 985972);
-+        else if (player->GetTemporarySpellReplacement(rank->Id) == 985972)
-+            player->SetTemporarySpellReplacement(rank->Id, 0);
-+    }
++    WcmeSyncSwap(unit, "Crusader Strike", SPELLFAMILY_PALADIN, 985972, unit->HasAura(985957) && unit->HasAura(986000));
 +}
 +
 +std::unordered_map<ObjectGuid, ObjectGuid> WcmeJusticeBonds;
@@ -5860,7 +5889,7 @@ index 0000000..0a3e623
 +    {
 +        WcmeSyncTaughtRank(GetTarget(), PROMISE, true);
 +        Unit* owner = GetTarget();
-+        owner->m_Events.AddEventAtOffset([owner]() { WcmeSyncCrusadersJustice(owner); }, 1s);
++        WcmeSyncCrusadersJustice(owner);
 +    }
 +
 +    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
@@ -6035,8 +6064,8 @@ index 0000000..0a3e623
 +    }
 +};
 +
-+// Fel Corruption (984165): the core's replacements give Felblade (984168, for Bloodthirst) and Fel Cleave (984167, for
-+// Cleave). Chaos Bolt and Felblade casts add a stack of Corrupted Core (984462, up to 10); with Molten Core known, each
++// Fel Corruption (984165): teaches Felblade (984168, alongside Bloodthirst, which keeps its own cooldown); the core's
++// replacement turns Cleave into Fel Cleave (984167). Chaos Bolt and Felblade casts add a stack of Corrupted Core (984462, up to 10); with Molten Core known, each
 +// stack gives your Corruption ticks a 3% chance to grant Molten Core (71162). While Molten Core is up, Chaos Bolt and
 +// Felblade use it too: Molten Core (984181: +15% damage and +10% crit for Chaos Bolt; Felblade gets the +15% against
 +// monsters as extra damage) and each such cast spends a Molten Core charge. Fel Cleave and Chaos Bolt casts take 4 sec
@@ -6153,9 +6182,21 @@ index 0000000..0a3e623
 +        }
 +    }
 +
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncTaughtRank(GetTarget(), std::array<uint32, 1>{ FELBLADE }, true);
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncTaughtRank(GetTarget(), std::array<uint32, 1>{ FELBLADE }, false);
++    }
++
 +    void Register() override
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_fel_corruption::CheckProc);
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_fel_corruption::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_fel_corruption::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
 +        OnProc += AuraProcFn(spell_wcme_fel_corruption::HandleProc);
 +    }
 +};
@@ -6332,9 +6373,9 @@ index 0000000..0a3e623
 +// Dragon Warrior (954252): its own design instead of twin 271907 (004 no longer links them). Bloodthirst and Execute
 +// hits give Draconic Slam (954261: the next Slam is instant, the data's own spell mod); that Slam deals 50% more as
 +// extra damage and grants a stack of Dragon Fury (954253, up to 3, with its Dragon Fury Visual 954254): each stack takes
-+// 5 sec off Dragon Roar and makes it deal 50% more (the data's own mod). The core's replacement turns Death Wish into
-+// Dragon Roar (954250) and Intercept into Dragon Charge (954256). Dragon Roar spends the stacks and stuns (954255) only
-+// with 3 of them (spell_wcme_dragon_roar_stun).
++// 5 sec off Dragon Roar and makes it deal 50% more (the data's own mod). Death Wish shows as Dragon Roar (954250) and
++// Intercept as Dragon Charge (954256) (WcmeSyncSwap: the core does not swap them, the names differ). Dragon Roar spends
++// the stacks and stuns (954255) only with 3 of them (spell_wcme_dragon_roar_stun).
 +class spell_wcme_dragon_warrior : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_dragon_warrior);
@@ -6382,9 +6423,23 @@ index 0000000..0a3e623
 +        WcmeCutCooldownByName(owner, "Dragon Roar", 5000);
 +    }
 +
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Death Wish", SPELLFAMILY_WARRIOR, DRAGON_ROAR, true);
++        WcmeSyncSwap(GetTarget(), "Intercept", SPELLFAMILY_WARRIOR, 954256, true);
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Death Wish", SPELLFAMILY_WARRIOR, DRAGON_ROAR, false);
++        WcmeSyncSwap(GetTarget(), "Intercept", SPELLFAMILY_WARRIOR, 954256, false);
++    }
++
 +    void Register() override
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_dragon_warrior::CheckProc);
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_dragon_warrior::HandleApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_dragon_warrior::HandleRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
 +        OnProc += AuraProcFn(spell_wcme_dragon_warrior::HandleProc);
 +    }
 +};
@@ -6441,6 +6496,480 @@ index 0000000..0a3e623
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_wind_lash::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_wind_lash::HandleProc);
++    }
++};
++
++// Apostle of Eredath (902185): teaches Beam of Hatred (902186, wcme_enchant_teach). Soul Fire cast during Decimation, or
++// Incinerate, adds a stack of Destructive Bargain (902189, up to 5). Your last Soul Fire, Chaos Bolt or Rain of Fire
++// decides what your next Conflagrate does: Soul Fire - it spends Destructive Bargain to restore 25% of your base mana
++// per stack (125% at 5); Chaos Bolt - 5 sec off Beam of Hatred (902198); Rain of Fire - its damage over time (17964)
++// is copied in full onto every enemy your Rain of Fire hit in the last 4 sec.
++class spell_wcme_apostle_of_eredath : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_apostle_of_eredath);
++
++    enum class Empower : uint8 { NONE, SOUL_FIRE, CHAOS_BOLT, RAIN_OF_FIRE };
++
++    static constexpr uint32 BARGAIN = 902189;
++    static constexpr uint32 BEAM_CDR = 902198;
++    static constexpr uint32 CONFLAGRATE_DOT = 17964;
++    static constexpr Seconds RAIN_MEMORY{4};
++    Empower _next = Empower::NONE;
++    bool _spread = false;
++    std::unordered_map<ObjectGuid, TimePoint> _rainTargets;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || spell->SpellFamilyName != SPELLFAMILY_WARLOCK)
++            return false;
++        if (WcmeNamed(spell, "Rain of Fire"))
++            return true;
++        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return WcmeNamedAny(spell, { "Soul Fire", "Incinerate", "Chaos Bolt", "Conflagrate" });
++        return _spread && WcmeNamed(spell, "Conflagrate") && eventInfo.GetActionTarget();
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (WcmeNamed(spell, "Rain of Fire"))
++        {
++            if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++                _next = Empower::RAIN_OF_FIRE;
++            else if (Unit* target = eventInfo.GetActionTarget())
++                _rainTargets[target->GetGUID()] = GameTime::Now();
++            return;
++        }
++        if (!(eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST))
++        {
++            _spread = false;
++            ObjectGuid const sourceGuid = eventInfo.GetActionTarget()->GetGUID();
++            std::vector<ObjectGuid> targets;
++            TimePoint const now = GameTime::Now();
++            for (auto const& [guid, when] : _rainTargets)
++                if (guid != sourceGuid && now - when <= RAIN_MEMORY)
++                    targets.push_back(guid);
++            _rainTargets.clear();
++            owner->m_Events.AddEventAtOffset([owner, sourceGuid, targets]()
++            {
++                Unit* source = ObjectAccessor::GetUnit(*owner, sourceGuid);
++                AuraEffect const* dot = source ? source->GetAuraEffect(CONFLAGRATE_DOT, EFFECT_0, owner->GetGUID()) : nullptr;
++                if (!dot)
++                    return;
++                for (ObjectGuid const& guid : targets)
++                    if (Unit* enemy = ObjectAccessor::GetUnit(*owner, guid))
++                        if (enemy->IsAlive() && owner->IsValidAttackTarget(enemy))
++                            if (Aura* copy = owner->AddAura(CONFLAGRATE_DOT, enemy))
++                                if (AuraEffect* tick = copy->GetEffect(EFFECT_0))
++                                    tick->ChangeAmount(dot->GetAmount());
++            }, 200ms);
++            return;
++        }
++        if (WcmeNamed(spell, "Conflagrate"))
++        {
++            Empower const empower = _next;
++            _next = Empower::NONE;
++            if (empower == Empower::SOUL_FIRE)
++            {
++                if (uint32 const stacks = owner->GetAuraCount(BARGAIN))
++                {
++                    owner->RemoveAurasDueToSpell(BARGAIN);
++                    owner->EnergizeBySpell(owner, spell->Id, owner->GetCreateMana() * 25 * stacks / 100, POWER_MANA);
++                }
++            }
++            else if (empower == Empower::CHAOS_BOLT)
++                owner->CastSpell(owner, BEAM_CDR, true);
++            else if (empower == Empower::RAIN_OF_FIRE)
++                _spread = true;
++            return;
++        }
++        if (WcmeNamed(spell, "Chaos Bolt"))
++        {
++            _next = Empower::CHAOS_BOLT;
++            return;
++        }
++        bool const soulFire = WcmeNamed(spell, "Soul Fire");
++        if (soulFire)
++            _next = Empower::SOUL_FIRE;
++        if (!soulFire || WcmeHasAnyAura(owner, { 63165, 63167, 1163165, 1163167, 1263165, 1263167 }))
++        {
++            if (Aura* bargain = owner->GetAura(BARGAIN))
++            {
++                if (bargain->GetStackAmount() < bargain->GetSpellInfo()->StackAmount)
++                    bargain->SetStackAmount(bargain->GetStackAmount() + 1);
++                bargain->RefreshDuration();
++            }
++            else
++                owner->AddAura(BARGAIN, owner);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_apostle_of_eredath::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_apostle_of_eredath::HandleProc);
++    }
++};
++
++// Astral Bomber (978235): Starfire shows as Astral Flare (908945) and Starsurge as Astral Plasma (983758) (WcmeSyncSwap:
++// the core does not swap them, the names differ). With Eclipse at rank 3, your Fireball and Fire Blast hits trigger
++// Eclipse (Lunar) (48518) when no Eclipse is up, at most once every 30 sec. Astral Flare crits give Astral Fusion
++// (983769, up to 3); a crit while you have it also finishes Astral Plasma's cooldown and adds a stack of Astral Strike
++// (300146, up to 3: the next Astral Plasma is instant and deals 50% more per stack, the data's own mods), which that
++// Astral Plasma spends. Fireball and Pyroblast casts during Eclipse (Solar) give Lunar Bomber (978874, up to 3); Astral
++// Flare and Astral Plasma casts during Eclipse (Lunar) give Solar Bomber (978858, up to 3). With Lunar Bomber, Astral
++// Flare and Astral Plasma hits add Lunar Flames (978875, up to 3: those two deal 8% more per Flames stack per Lunar
++// Bomber stack, 72% at 3 and 3); with Solar Bomber, Fireball and Pyroblast hits add Solar Flames (978860: 9% per stack
++// of each, 81% at 3 and 3).
++class spell_wcme_astral_bomber : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_astral_bomber);
++
++    static constexpr uint32 ASTRAL_FLARE = 908945;
++    static constexpr uint32 ASTRAL_PLASMA = 983758;
++    static constexpr uint32 ECLIPSE_SOLAR = 48517;
++    static constexpr uint32 ECLIPSE_LUNAR = 48518;
++    static constexpr uint32 FUSION = 983769;
++    static constexpr uint32 ASTRAL_STRIKE = 300146;
++    static constexpr uint32 LUNAR_BOMBER = 978874;
++    static constexpr uint32 LUNAR_FLAMES = 978875;
++    static constexpr uint32 SOLAR_BOMBER = 978858;
++    static constexpr uint32 SOLAR_FLAMES = 978860;
++    static constexpr Seconds LUNAR_COOLDOWN{30};
++    TimePoint _lunarReady{};
++
++    void Sync(bool active)
++    {
++        WcmeSyncSwap(GetTarget(), "Starfire", SPELLFAMILY_DRUID, ASTRAL_FLARE, active);
++        WcmeSyncSwap(GetTarget(), "Starsurge", SPELLFAMILY_DRUID, ASTRAL_PLASMA, active);
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    static void AddStack(Unit* owner, uint32 spellId)
++    {
++        Aura* aura = owner->GetAura(spellId);
++        if (!aura)
++        {
++            owner->AddAura(spellId, owner);
++            return;
++        }
++        if (aura->GetStackAmount() < aura->GetSpellInfo()->StackAmount)
++            aura->SetStackAmount(aura->GetStackAmount() + 1);
++        aura->RefreshDuration();
++    }
++
++    static void Flames(Unit* owner, uint32 flamesId, uint32 bomberId, int32 perStack)
++    {
++        AddStack(owner, flamesId);
++        if (Aura* flames = owner->GetAura(flamesId))
++            if (AuraEffect* bonus = flames->GetEffect(EFFECT_0))
++                bonus->ChangeAmount(perStack * int32(owner->GetAuraCount(bomberId)) * flames->GetStackAmount());
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        bool const astral = spell->Id == ASTRAL_FLARE || spell->Id == ASTRAL_PLASMA;
++        bool const fire = WcmeNamedAny(spell, { "Fireball", "Pyroblast", "Fire Blast" }) && spell->SpellFamilyName == SPELLFAMILY_MAGE;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return astral || fire;
++        return (astral || fire) && eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const astral = spell->Id == ASTRAL_FLARE || spell->Id == ASTRAL_PLASMA;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (spell->Id == ASTRAL_PLASMA)
++                owner->m_Events.AddEventAtOffset([owner]() { owner->RemoveAurasDueToSpell(ASTRAL_STRIKE); }, 500ms);
++            if (astral && owner->HasAura(ECLIPSE_LUNAR))
++                AddStack(owner, SOLAR_BOMBER);
++            else if (!astral && !WcmeNamed(spell, "Fire Blast") && owner->HasAura(ECLIPSE_SOLAR))
++                AddStack(owner, LUNAR_BOMBER);
++            return;
++        }
++        bool const crit = eventInfo.GetHitMask() & PROC_HIT_CRITICAL;
++        if (astral)
++        {
++            if (owner->HasAura(LUNAR_BOMBER))
++                Flames(owner, LUNAR_FLAMES, LUNAR_BOMBER, 8);
++            if (spell->Id == ASTRAL_FLARE && crit)
++            {
++                if (owner->HasAura(FUSION))
++                {
++                    WcmeCutCooldownByName(owner, "Astral Plasma", 3600000);
++                    AddStack(owner, ASTRAL_STRIKE);
++                }
++                AddStack(owner, FUSION);
++            }
++            return;
++        }
++        if (!WcmeNamed(spell, "Fire Blast") && owner->HasAura(SOLAR_BOMBER))
++            Flames(owner, SOLAR_FLAMES, SOLAR_BOMBER, 9);
++        if (WcmeNamedAny(spell, { "Fireball", "Fire Blast" }) && WcmeHasAnyAura(owner, { 48525, 1148525, 1248525 }) &&
++            !owner->HasAura(ECLIPSE_SOLAR) && !owner->HasAura(ECLIPSE_LUNAR) && GameTime::Now() >= _lunarReady)
++        {
++            _lunarReady = GameTime::Now() + LUNAR_COOLDOWN;
++            owner->CastSpell(owner, ECLIPSE_LUNAR, true);
++        }
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_astral_bomber::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_astral_bomber::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_astral_bomber::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_astral_bomber::HandleProc);
++    }
++};
++
++// Cauterizing Flames (86460): Fireball shows as Cauterizing Fire (86461) (WcmeSyncSwap: the core does not swap it, the
++// names differ). Its damage (86462) or effective healing (86464) grants Flames of the Apostate (997000, up to 3, with
++// its Flamestrike and Circle of Healing parts 997002 and 997001, the data's own spell mods: Holy Fire hits 1 more enemy
++// and lasts 2 sec longer, Flamestrike casts 34% faster and lasts 2 sec longer, Circle of Healing heals 25% more). While
++// it is up, Holy Fire hits also put Radiant Flames (997007: a heal over time) on you and up to 4 allies within 10 yards
++// of you, and Circle of Healing heals trigger Circle of Fire (997003) on up to 3 enemies near each healed ally. Holy
++// Fire and Flamestrike damage applies Radiant Kindling (997006, up to 8: the next Circle of Fire deals 20% more per
++// stack to that enemy), which Circle of Fire spends. The "6% hit chance" for Holy Fire is not done.
++class spell_wcme_cauterizing_flames : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_cauterizing_flames);
++
++    static constexpr uint32 CAUTERIZING_FIRE = 86461;
++    static constexpr uint32 FIRE_DAMAGE = 86462;
++    static constexpr uint32 FIRE_HEAL = 86464;
++    static constexpr uint32 APOSTATE = 997000;
++    static constexpr uint32 APOSTATE_COH = 997001;
++    static constexpr uint32 APOSTATE_FLAMESTRIKE = 997002;
++    static constexpr uint32 RADIANT_FLAMES = 997007;
++    static constexpr uint32 CIRCLE_OF_FIRE = 997003;
++    static constexpr uint32 KINDLING = 997006;
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Fireball", SPELLFAMILY_MAGE, CAUTERIZING_FIRE, true);
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Fireball", SPELLFAMILY_MAGE, CAUTERIZING_FIRE, false);
++        for (uint32 spellId : { APOSTATE, APOSTATE_COH, APOSTATE_FLAMESTRIKE })
++            GetTarget()->RemoveAurasDueToSpell(spellId);
++    }
++
++    static void AddStack(Unit* caster, Unit* target, uint32 spellId)
++    {
++        Aura* aura = target->GetAura(spellId, caster->GetGUID());
++        if (!aura)
++        {
++            caster->AddAura(spellId, target);
++            return;
++        }
++        if (aura->GetStackAmount() < aura->GetSpellInfo()->StackAmount)
++            aura->SetStackAmount(aura->GetStackAmount() + 1);
++        aura->RefreshDuration();
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (!spell || !target || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) || spell->Id == CIRCLE_OF_FIRE)
++            return false;
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        if (spell->Id == FIRE_HEAL)
++            return heal && heal->GetEffectiveHeal();
++        if (WcmeNamed(spell, "Circle of Healing"))
++            return heal && heal->GetHeal() && GetTarget()->HasAura(APOSTATE);
++        return WcmeDealtDamage(eventInfo) && (spell->Id == FIRE_DAMAGE || WcmeNamedAny(spell, { "Holy Fire", "Flamestrike" }));
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (spell->Id == FIRE_DAMAGE || spell->Id == FIRE_HEAL)
++        {
++            for (uint32 spellId : { APOSTATE, APOSTATE_COH, APOSTATE_FLAMESTRIKE })
++                AddStack(owner, owner, spellId);
++            return;
++        }
++        if (WcmeNamed(spell, "Circle of Healing"))
++        {
++            for (Unit* enemy : WcmeEnemiesNear(owner, target, 10.0f, 3))
++            {
++                owner->CastSpell(enemy, CIRCLE_OF_FIRE, true);
++                enemy->RemoveAura(KINDLING, owner->GetGUID());
++            }
++            return;
++        }
++        AddStack(owner, target, KINDLING);
++        if (WcmeNamed(spell, "Holy Fire") && owner->HasAura(APOSTATE))
++            for (Unit* ally : WcmeAlliesNear(owner, owner, 10.0f, 5))
++                owner->AddAura(RADIANT_FLAMES, ally);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_cauterizing_flames::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_cauterizing_flames::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_cauterizing_flames::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_cauterizing_flames::HandleProc);
++    }
++};
++
++// Dark Ranger (997115): Drain Life shows as Blood Arrow (997517) and Corruption as Shadow Arrow (997526) (WcmeSyncSwap:
++// the core does not swap them, the names differ); Shadow Artillery (998204) is taught. Shadow Bolt and Seed of
++// Corruption casts give Dark Arrows (997412, 6 charges): your next 6 Hunter shots, Shadow Bolts, Blood Arrows or Shadow
++// Arrows also deal Dark Arrows (997742: 65% weapon damage as Shadow) and give a stack of Shadow Shells (997539, up to
++// 10). Shadow Artillery needs 3 Shadow Shells and spends them (spell_wcme_shadow_artillery), restores 35% of your base
++// mana and adds a stack of Darkfall (984509: +20% Shadow Artillery damage per stack, the data's own mod; a cast at 3
++// stacks spends them). Molten Core also empowers Shadow Artillery: a cast with it spends a charge and its hits deal 12%
++// more. Shadow Arrow casts trigger Nightfall's Shadow Trance (17941) if you know Nightfall at its final rank.
++class spell_wcme_dark_ranger : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_dark_ranger);
++
++    static constexpr uint32 BLOOD_ARROW = 997517;
++    static constexpr uint32 SHADOW_ARROW = 997526;
++    static constexpr uint32 ARTILLERY = 998204;
++    static constexpr uint32 ARTILLERY_DOT = 984510;
++    static constexpr uint32 DARK_ARROWS = 997412;
++    static constexpr uint32 DARK_ARROWS_HIT = 997742;
++    static constexpr uint32 SHELLS = 997539;
++    static constexpr uint32 DARKFALL = 984509;
++    static constexpr uint32 MOLTEN_CORE = 71162;
++    static constexpr uint32 SHADOW_TRANCE = 17941;
++    static constexpr std::array<uint32, 1> TAUGHT = { ARTILLERY };
++    TimePoint _moltenUntil{};
++
++    void Sync(bool active)
++    {
++        WcmeSyncSwap(GetTarget(), "Drain Life", SPELLFAMILY_WARLOCK, BLOOD_ARROW, active);
++        WcmeSyncSwap(GetTarget(), "Corruption", SPELLFAMILY_WARLOCK, SHADOW_ARROW, active);
++        WcmeSyncTaughtRank(GetTarget(), TAUGHT, active);
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    static bool Empowered(SpellInfo const* spell)
++    {
++        return spell->Id == BLOOD_ARROW || spell->Id == SHADOW_ARROW ||
++            (spell->SpellFamilyName == SPELLFAMILY_HUNTER && spell->DmgClass == SPELL_DAMAGE_CLASS_RANGED) ||
++            (WcmeNamed(spell, "Shadow Bolt") && spell->SpellFamilyName == SPELLFAMILY_WARLOCK);
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) || spell->Id == DARK_ARROWS_HIT)
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return spell->Id == ARTILLERY || spell->Id == SHADOW_ARROW || Empowered(spell) ||
++                WcmeNamedAny(spell, { "Shadow Bolt", "Seed of Corruption" });
++        return eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo) &&
++            ((Empowered(spell) && GetTarget()->HasAura(DARK_ARROWS)) || ((spell->Id == ARTILLERY || spell->Id == ARTILLERY_DOT) && GameTime::Now() < _moltenUntil));
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (spell->Id == ARTILLERY)
++            {
++                owner->EnergizeBySpell(owner, ARTILLERY, owner->GetCreateMana() * 35 / 100, POWER_MANA);
++                Aura* darkfall = owner->GetAura(DARKFALL);
++                if (darkfall && darkfall->GetStackAmount() >= darkfall->GetSpellInfo()->StackAmount)
++                    owner->m_Events.AddEventAtOffset([owner]() { owner->RemoveAurasDueToSpell(DARKFALL); }, 500ms);
++                else if (darkfall)
++                    darkfall->SetStackAmount(darkfall->GetStackAmount() + 1);
++                else
++                    owner->AddAura(DARKFALL, owner);
++                _moltenUntil = {};
++                if (Aura* molten = owner->GetAura(MOLTEN_CORE))
++                {
++                    _moltenUntil = GameTime::Now() + Seconds(10);
++                    molten->DropCharge();
++                }
++                return;
++            }
++            if (spell->Id == SHADOW_ARROW && WcmeHasAnyAura(owner, { 18095, 1118095, 1218095 }))
++                owner->CastSpell(owner, SHADOW_TRANCE, true);
++            if (WcmeNamedAny(spell, { "Shadow Bolt", "Seed of Corruption" }) && spell->SpellFamilyName == SPELLFAMILY_WARLOCK &&
++                !owner->HasAura(DARK_ARROWS))
++                owner->AddAura(DARK_ARROWS, owner);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        if (spell->Id == ARTILLERY || spell->Id == ARTILLERY_DOT)
++        {
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * 12 / 100);
++            return;
++        }
++        owner->CastSpell(target, DARK_ARROWS_HIT, true);
++        if (Aura* shells = owner->GetAura(SHELLS))
++        {
++            if (shells->GetStackAmount() < shells->GetSpellInfo()->StackAmount)
++                shells->SetStackAmount(shells->GetStackAmount() + 1);
++            shells->RefreshDuration();
++        }
++        else
++            owner->AddAura(SHELLS, owner);
++        if (Aura* arrows = owner->GetAura(DARK_ARROWS))
++            arrows->DropCharge();
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_dark_ranger::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_dark_ranger::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_dark_ranger::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_dark_ranger::HandleProc);
++    }
++};
++
++// Shadow Artillery (998204): needs 3 Shadow Shells (997539) and spends them.
++class spell_wcme_shadow_artillery : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_shadow_artillery);
++
++    static constexpr uint32 SHELLS = 997539;
++
++    SpellCastResult CheckCast()
++    {
++        return GetCaster()->GetAuraCount(SHELLS) >= 3 ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void HandleAfterCast()
++    {
++        if (Aura* shells = GetCaster()->GetAura(SHELLS))
++            shells->ModStackAmount(-3);
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_shadow_artillery::CheckCast);
++        AfterCast += SpellCastFn(spell_wcme_shadow_artillery::HandleAfterCast);
 +    }
 +};
 +
@@ -6561,4 +7090,9 @@ index 0000000..0a3e623
 +    RegisterSpellScript(spell_wcme_dragon_warrior);
 +    RegisterSpellScript(spell_wcme_dragon_roar_stun);
 +    RegisterSpellScript(spell_wcme_wind_lash);
++    RegisterSpellScript(spell_wcme_apostle_of_eredath);
++    RegisterSpellScript(spell_wcme_astral_bomber);
++    RegisterSpellScript(spell_wcme_cauterizing_flames);
++    RegisterSpellScript(spell_wcme_dark_ranger);
++    RegisterSpellScript(spell_wcme_shadow_artillery);
 +}
