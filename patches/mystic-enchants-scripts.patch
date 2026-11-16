@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..79a88d5
+index 0000000..7810253
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,5318 @@
+@@ -0,0 +1,5440 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -5223,6 +5223,126 @@ index 0000000..79a88d5
 +    }
 +};
 +
++// Mind Mending Armor (1106118): healing power from 30% of Intellect is the data's own aura. While you are at 40% mana
++// or more, each of your effective heals (not Arcane Echo itself) triggers Arcane Echo (1106120) on the ally 1 sec later
++// for 10% of the effective healing at 40% mana, rising evenly to 25% at 90% mana or more, measured when the heal lands.
++// The echo drains 0.5 mana per point it heals (it heals less if you run short). While Arcane Power or Resonating Power
++// is up the echo is at full value and costs no mana. Arcane Reverberation (1100170) triples the echo and makes it cost
++// 25% less mana.
++class spell_wcme_mind_mending_armor : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_mind_mending_armor);
++
++    static constexpr uint32 ECHO = 1106120;
++    static constexpr uint32 REVERBERATION = 1100170;
++    static constexpr Milliseconds ECHO_DELAY{1000};
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return heal && heal->GetEffectiveHeal() && spell && spell->Id != ECHO && eventInfo.GetActionTarget() &&
++            GetTarget()->GetMaxPower(POWER_MANA) > 0;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        Unit* owner = GetTarget();
++        bool const empowered = WcmeHasAnyAura(owner, { 12042, 1112042, 1112044 });
++        float const manaPct = owner->GetPowerPct(POWER_MANA);
++        if (!empowered && manaPct < 40.0f)
++            return;
++        float const share = empowered ? 25.0f : 10.0f + 15.0f * std::min(1.0f, (manaPct - 40.0f) / 50.0f);
++        bool const reverberation = owner->HasAura(REVERBERATION);
++        uint32 const echo = uint32(eventInfo.GetHealInfo()->GetEffectiveHeal() * share / 100.0f * (reverberation ? 3 : 1));
++        if (!echo)
++            return;
++        float const manaPerPoint = empowered ? 0.0f : (reverberation ? 0.375f : 0.5f);
++        ObjectGuid const allyGuid = eventInfo.GetActionTarget()->GetGUID();
++        owner->m_Events.AddEventAtOffset([owner, allyGuid, echo, manaPerPoint]()
++        {
++            SpellInfo const* echoSpell = sSpellMgr->GetSpellInfo(ECHO);
++            Unit* ally = ObjectAccessor::GetUnit(*owner, allyGuid);
++            if (!echoSpell || !ally || !ally->IsAlive() || !owner->IsAlive() || !owner->IsInWorld())
++                return;
++            uint32 amount = echo;
++            if (manaPerPoint > 0.0f)
++            {
++                uint32 const affordable = uint32(owner->GetPower(POWER_MANA) / manaPerPoint);
++                amount = std::min(amount, affordable);
++                if (!amount)
++                    return;
++                owner->ModifyPower(POWER_MANA, -int32(amount * manaPerPoint));
++            }
++            HealInfo healInfo(owner, ally, amount, echoSpell, echoSpell->GetSchoolMask());
++            owner->HealBySpell(healInfo);
++        }, ECHO_DELAY);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_mind_mending_armor::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_mind_mending_armor::HandleProc);
++    }
++};
++
++// Resonating Power (1112044, Arcane Power for an Arcane Reverberation wearer): lasts until your mana drops below 30%.
++// Every 2 sec it adds a stack of Resonating Power (1112045: 2% haste and healing per stack, the data's own effect) and
++// borrows 3% of your maximum mana. When it ends, for any reason, the borrowed mana comes back over 3 sec. The data's
++// own drain and regen triggers (1112046, 1112048) are replaced by this.
++class spell_wcme_resonating_power : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_resonating_power);
++
++    int32 _borrowed = 0;
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetAura()->SetMaxDuration(-1);
++        GetAura()->SetDuration(-1);
++    }
++
++    void Borrow(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        int32 const amount = int32(owner->GetMaxPower(POWER_MANA) * 3 / 100);
++        int32 const taken = std::min<int32>(amount, owner->GetPower(POWER_MANA));
++        owner->ModifyPower(POWER_MANA, -taken);
++        _borrowed += taken;
++        if (owner->GetPowerPct(POWER_MANA) < 30.0f)
++            GetAura()->Remove(AURA_REMOVE_BY_EXPIRE);
++    }
++
++    void Skip(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* owner = GetTarget();
++        int32 const perTick = _borrowed / 3;
++        _borrowed = 0;
++        if (perTick <= 0)
++            return;
++        for (uint32 tick = 1; tick <= 3; ++tick)
++            owner->m_Events.AddEventAtOffset([owner, perTick]()
++            {
++                if (owner->IsAlive() && owner->IsInWorld())
++                    owner->ModifyPower(POWER_MANA, perTick);
++            }, Seconds(tick));
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_resonating_power::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_resonating_power::Borrow, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_resonating_power::Skip, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_resonating_power::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -5321,4 +5441,6 @@ index 0000000..79a88d5
 +    RegisterSpellScript(spell_wcme_bloodbath);
 +    RegisterSpellScript(spell_wcme_demolisher);
 +    RegisterSpellScript(spell_wcme_blood_and_guts);
++    RegisterSpellScript(spell_wcme_mind_mending_armor);
++    RegisterSpellScript(spell_wcme_resonating_power);
 +}
