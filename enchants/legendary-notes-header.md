@@ -45,9 +45,21 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 1. Audit (October to November 2026): `enchants/enchant_audit.py` sorted every enchant into working, broken or missing
    (`enchants/tracker.csv`), followed by a deep audit of the legendaries against the builder tooltips.
 2. Fixes in batches, each its own pull request: runaway procs (#164), dead procs (#165), enchants needing memory
-   (#166), the next 20 (#167), the tooltip review (#169), quick and medium legendaries (#171 to #175), and the last
-   legendaries (this file's first version).
+   (#166), the next 20 (#167), the tooltip review (#169), quick and medium legendaries (#171 to #175), the Windows
+   build fix (#176), and the last legendaries plus every gap the earlier pull requests had recorded as not done
+   (#177: Demonic Persistence, Temporal Shift, Hot Hands, Elemental Assassin, Aspect of the Fox, Demonic Reoccurence).
 3. Every batch was compile-checked against the core release the build uses and its SQL loaded into a scratch
    database. None of that replaces in-game testing, which is recorded per enchant below.
+
+## Open items
+
+Nothing in the legendaries is knowingly left undone after #177. What is still open is testing:
+
+- Almost every changed legendary is still awaiting an in-game test (see each entry's Testing line).
+- Astral Storm changed after its last test and needs a retest.
+- Hand of Gul'dan (1398206): check that the Wild Imps appear; the code path looks complete but is untested.
+- Aspect of the Fox: if the game client itself refuses Auto Shot while moving, the server cannot fix that.
+- Epic copies reported broken in talent testing (Demonic Reoccurence 272730, issue #148; Demonic Persistence 276506,
+  issue #149) are separate enchants and are not covered here.
 
 ## Enchants

@@ -45,10 +45,22 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 1. Audit (October to November 2026): `enchants/enchant_audit.py` sorted every enchant into working, broken or missing
    (`enchants/tracker.csv`), followed by a deep audit of the legendaries against the builder tooltips.
 2. Fixes in batches, each its own pull request: runaway procs (#164), dead procs (#165), enchants needing memory
-   (#166), the next 20 (#167), the tooltip review (#169), quick and medium legendaries (#171 to #175), and the last
-   legendaries (this file's first version).
+   (#166), the next 20 (#167), the tooltip review (#169), quick and medium legendaries (#171 to #175), the Windows
+   build fix (#176), and the last legendaries plus every gap the earlier pull requests had recorded as not done
+   (#177: Demonic Persistence, Temporal Shift, Hot Hands, Elemental Assassin, Aspect of the Fox, Demonic Reoccurence).
 3. Every batch was compile-checked against the core release the build uses and its SQL loaded into a scratch
    database. None of that replaces in-game testing, which is recorded per enchant below.
+
+## Open items
+
+Nothing in the legendaries is knowingly left undone after #177. What is still open is testing:
+
+- Almost every changed legendary is still awaiting an in-game test (see each entry's Testing line).
+- Astral Storm changed after its last test and needs a retest.
+- Hand of Gul'dan (1398206): check that the Wild Imps appear; the code path looks complete but is untested.
+- Aspect of the Fox: if the game client itself refuses Auto Shot while moving, the server cannot fix that.
+- Epic copies reported broken in talent testing (Demonic Reoccurence 272730, issue #148; Demonic Persistence 276506,
+  issue #149) are separate enchants and are not covered here.
 
 ## Enchants
 
@@ -214,9 +226,13 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 ### Aspect of the Fox (1143164)
 
-**Status:** left as is (decision)
+**Status:** changed, awaiting in-game test
 
-**Decisions:** James decided to leave Aspect of the Fox as it is.
+**Assumptions:** Steady Shot already worked while moving through the aspect's own aura. Auto Shot needed a core change (patch 68). If the game client itself refuses Auto Shot while moving, the server cannot fix that; test it in game.
+
+**Sources:** our client spell data (Spell.dbc); core Unit::CanCastSpellWhileMoving
+
+**Decisions:** James decided to leave Aspect of the Fox as it is. 2026-11-17 James: fix every known gap. (Earlier decision 2026-11-15: leave it as it is; reversed.)
 
 **Testing:** nothing recorded yet
 
@@ -1076,12 +1092,20 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 **What the server does (from the code and SQL comments):**
 
-- Demonic Persistence (990130): casting Incinerate or Mind Blast sacrifices your Wild Imp with the least health: it explodes for Fire damage around itself (990141) and empowers your summoned demon (990138: +20% damage against creatures, up to 4 stacks, 20 sec). The Wild Imps' own crits cutting Hand of Gul'dan's cooldown need a hook on the imps and are not done.
+- Demonic Persistence (990130): casting Incinerate or Mind Blast sacrifices your Wild Imp with the least health: it explodes for Fire damage around itself (990141) and empowers your summoned demon (990138: +20% damage against creatures, up to 4 stacks, 20 sec). Every second your Wild Imps are given Demonic Persistence's pet aura (990131, passive, from the client data): their critical strikes take 1 sec off Hand of Gul'dan's cooldown and restore 3% mana to your summoned demon, at most once a second (spell_wcme_demonic_persistence_imp). The tooltip's "deteriorate over time" is taken to be the imps' own summon duration; it gives no rate.
+- Demonic Persistence pet aura (990131) on a Wild Imp: its critical strikes (spell_proc: crits only, 1 sec cooldown) take 1 sec off its owner's Hand of Gul'dan and restore 3% of the owner's summoned demon's mana, while the owner has Demonic Persistence (990130).
+- 046-legendary-gaps.sql: Demonic Persistence (990130): its Wild Imps carry the pet aura 990131; their critical strikes take 1 sec off Hand of Gul'dan and restore 3% of your demon's mana, once a second.
 
 **What the pull requests said:**
 
 - #173: `65-enchant-tuning-auras.ps1` (core):** the core only applies Ascension's PvE and PvP damage auras (341 and 322) to an allowlist of spells. This adds Pack Tactics, Demonic Persistence, Demonic Influence and Gurubashi Berserker. That fully fixes Demonic Influence; the others still need their scripts.
 - #173: Demonic Persistence:** Incinerate or Mind Blast sacrifices your weakest Wild Imp. It explodes for Fire damage and empowers your demon (+20% damage against creatures, up to 4 stacks).
+
+**Assumptions:** Imp crits: 1 sec off Hand of Gul'dan and 3% of your demon's mana, at most once a second (tooltip numbers), through the client's own pet aura 990131. The tooltip's "deteriorate over time" gives no rate, so it is taken to be the imps' summon duration.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc) (990131 "Demonic Persistence pet aura")
+
+**Decisions:** 2026-11-17 James: fix every known gap.
 
 **Testing:** nothing recorded yet
 
@@ -1092,6 +1116,17 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+
+**What the server does (from the code and SQL comments):**
+
+- Demonic Reoccurence (1570995): Metamorphosis' cooldown cut and its smaller armor bonus are the enchant's own data. In exchange, Metamorphosis no longer lowers your chance to be critically hit or the duration of stuns and snares: those parts of the form (54879 / 1154879 and 54817 / 1154817) are removed while you have the enchant, checked every 0.25 sec.
+- 046-legendary-gaps.sql: Demonic Reoccurence (1570995): Metamorphosis no longer lowers critical hit chance taken or stun / snare duration.
+
+**Assumptions:** The cooldown cut and smaller armor bonus already worked from its data (they target the Wildcard Metamorphosis 1147241). Only the trade-off was missing: the form's crit-taken and stun / snare parts (54879 / 1154879, 54817 / 1154817) are now removed. Your talent test of the epic copy 272730 (issue #148) found it doing nothing; that copy's modifiers name no spell and are not fixed here.
+
+**Sources:** our client spell data (Spell.dbc); GitHub issue #148
+
+**Decisions:** 2026-11-17 James: fix every known gap.
 
 **Testing:** nothing recorded yet
 
@@ -1388,11 +1423,19 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 **What the server does (from the code and SQL comments):**
 
-- Elemental Assassin (978229): Backstab grants Elemental Assassin (978642, up to 2 stacks; its bonus is a dummy in the data). A stack makes your next Flame Shock or Earth Shock deal 110% more direct damage, or Ice Shock 70% more (the builder tooltip's numbers), and spending it takes 5 sec off Stormstrike's cooldown. (The Elemental Blades the tooltip also lists have no usable spells in our client, so they are left out.)
+- Elemental Assassin (978229): Backstab grants Elemental Assassin (978642, up to 2 stacks; its bonus is a dummy in the data). A stack makes your next Flame Shock or Earth Shock deal 110% more direct damage, or Ice Shock 70% more (the builder tooltip's numbers), and spending it takes 5 sec off Stormstrike's cooldown. Shaman Shocks grant the Elemental Blade of their element: Flame Shock the Fire blade (978646), Frost Shock and Ice Shock the Ice blade (978648), Earth Shock the Earth blade (978644). Each blade carries a hidden helper (978844 / 978845 / 978651) that lets Backstab be used from any side (aura 334, handled by the core); the blades' Stormstrike bonus is their own data (misc 38 / 36, applied in wcme_kit_target_mods). Each unique blade adds 33% to Backstab (12% against players) and, with all three, Backstab and Stormstrike hits deal 40% more as Elemental damage (985319) within 5 yards (wcme_last_legendary_hooks). Reverberation's Echoes of Earth gives +40 (60% in all) and Booming Echoes' capstone buff +10 (15%) while the enchant is on.
+- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
+- 046-legendary-gaps.sql: Elemental Assassin (978229): Shocks grant the Elemental Blade of their element (978644 / 978646 / 978648), each with its Backstab-from-any-side helper;
 
 **What the pull requests said:**
 
 - #171: Elemental Assassin:** Backstab stacks it (up to 2). The next Flame or Earth Shock deals 110% more and Ice Shock 70% more, and spending a stack takes 5 sec off Stormstrike.
+
+**Assumptions:** Blade per Shock: Flame Shock gives Fire, Frost Shock and Ice Shock give Ice, Earth Shock gives Earth. Backstab +33% per unique blade (the tooltip's number) and 12% against players (taken from the standard Elemental Blade 274678, since this version's player value is level-scaled data we cannot read). The all-three burst (40% within 5 yards) applies to Backstab and Stormstrike. Reverberation's next-Shock bonus becomes 60% and Booming Echoes' school bonus 15%, from the data's +40 / +10. The earlier note that the blades had no spells in our client was wrong: 978644, 978646 and 978648 are there.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc) (Elemental Blade 300010 text; blades 978644 / 978646 / 978648; helpers 978651 / 978844 / 978845; 985318 / 985319 / 985325 / 985326); standard version 274673-274678
+
+**Decisions:** 2026-11-17 James: fix every known gap.
 
 **Testing:** nothing recorded yet
 
@@ -1496,7 +1539,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 **What the server does (from the code and SQL comments):**
 
-- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores).
+- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 - 045-last-legendaries.sql: Explosive Charge (1568152): 25% of Explosive Shot's damage to other enemies within 5 yards (its aura 354 had no handler for this enchant; done in the damage hook wcme_last_legendary_hooks, so it needs no rows here).
 
 **Assumptions:** Explosive Shot's ticks are triggered casts that raise no procs, so the splash is done in a damage hook on every Explosive Shot hit; the 25% is taken from the hit before critical strikes and mitigation.
@@ -1654,7 +1697,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 **What the server does (from the code and SQL comments):**
 
 - Flame Ascendance (1398169): teaches Flame Ascendance (2110000: form, Chain Lightning as Lava Beam and Lava Burst's cooldown halved are its own data). While in the form, casting Flame Shock finishes the cooldowns of Lava Burst and Lava Beam (2110123, 2110124). Lava Burst's critical chance above 100% is added to its critical damage (in wcme_kit6_hooks).
-- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores).
+- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 - 045-last-legendaries.sql: Flame Ascendance (1398169): Flame Shock in the form finishes Lava Burst and Lava Beam;
 
 **Assumptions:** Excess critical chance above 100% adds the same percentage of the hit to the critical damage; Lava Beam cooldowns finished by spell id (2110123, 2110124).
@@ -2152,7 +2195,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 **What the server does (from the code and SQL comments):**
 
-- Hot Hands (979765 / 1575104): Pyroblast counts toward Hot Streak (patches/66-enchant-core-hooks.ps1 and sql 026), and a Pyroblast cast with Hot Streak up costs no mana. Your spells crit 8% more often on targets with your Living Bomb (Hot Hands mark 9990019, kept as long as the bomb). Fireball or Fire Blast hits on a Living Bomb target add a stack of Living Fire (979848: +8% damage and crit for your next Pyroblast, up to 5), used up by that Pyroblast. Instant Pyroblasts add a stack of Superheated (984658: +3% Fire damage and haste, up to 8) without refreshing its duration.
+- Hot Hands (979765 / 1575104): Pyroblast counts toward Hot Streak (patches/66-enchant-core-hooks.ps1 and sql 026), and a Pyroblast cast with Hot Streak up costs no mana and, against monsters, deals 35% more (wcme_last_legendary_hooks; players get no bonus). Your spells crit 8% more often on targets with your Living Bomb (Hot Hands mark 9990019, kept as long as the bomb). Fireball or Fire Blast hits on a Living Bomb target add a stack of Living Fire (979848: +8% damage and crit for your next Pyroblast, up to 5), used up by that Pyroblast. Instant Pyroblasts add a stack of Superheated (984658: +3% Fire damage and haste, up to 8) without refreshing its duration.
+- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 - 026-medium-legendaries-3-extras.sql: Hot Hands (979765 / 1575104): Pyroblast joins Hot Streak's spell mask (the core's Hot Streak script still ignores Pyroblast unless Hot Hands is on you, so nothing changes for anyone else), Living Fire, Superheated, the Living Bomb crit mark and free Hot Streak Pyroblasts.
 
 **What the pull requests said:**
@@ -2160,6 +2204,12 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 - #174: Hot Hands (979765 / 1575104)**:
 - #174: Pyroblast counts toward Hot Streak. The core already supported this for a different Hot Hands spell; patch 66 adds ours, and `026` adds Pyroblast to Hot Streak's proc mask. For anyone without Hot Hands, the core's own check still ignores Pyroblast, so nothing changes for them.
 - #174: Targets with your Living Bomb get a new mark, Hot Hands (9990019): +8% spell crit for you, lasting as long as the bomb.
+
+**Assumptions:** Our Hot Streak gives Pyroblast no damage bonus, so the tooltip's "only 35% against monsters" is applied as +35% against monsters (none against players) to the first Pyroblast hit within 5 sec of a Hot Streak cast.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: fix every known gap.
 
 **Testing:** nothing recorded yet
 
@@ -2173,7 +2223,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 **What the server does (from the code and SQL comments):**
 
-- Hot Hands (979765 / 1575104): Pyroblast counts toward Hot Streak (patches/66-enchant-core-hooks.ps1 and sql 026), and a Pyroblast cast with Hot Streak up costs no mana. Your spells crit 8% more often on targets with your Living Bomb (Hot Hands mark 9990019, kept as long as the bomb). Fireball or Fire Blast hits on a Living Bomb target add a stack of Living Fire (979848: +8% damage and crit for your next Pyroblast, up to 5), used up by that Pyroblast. Instant Pyroblasts add a stack of Superheated (984658: +3% Fire damage and haste, up to 8) without refreshing its duration.
+- Hot Hands (979765 / 1575104): Pyroblast counts toward Hot Streak (patches/66-enchant-core-hooks.ps1 and sql 026), and a Pyroblast cast with Hot Streak up costs no mana and, against monsters, deals 35% more (wcme_last_legendary_hooks; players get no bonus). Your spells crit 8% more often on targets with your Living Bomb (Hot Hands mark 9990019, kept as long as the bomb). Fireball or Fire Blast hits on a Living Bomb target add a stack of Living Fire (979848: +8% damage and crit for your next Pyroblast, up to 5), used up by that Pyroblast. Instant Pyroblasts add a stack of Superheated (984658: +3% Fire damage and haste, up to 8) without refreshing its duration.
+- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 - 026-medium-legendaries-3-extras.sql: Hot Hands (979765 / 1575104): Pyroblast joins Hot Streak's spell mask (the core's Hot Streak script still ignores Pyroblast unless Hot Hands is on you, so nothing changes for anyone else), Living Fire, Superheated, the Living Bomb crit mark and free Hot Streak Pyroblasts.
 
 **What the pull requests said:**
@@ -2181,6 +2232,12 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 - #174: Hot Hands (979765 / 1575104)**:
 - #174: Pyroblast counts toward Hot Streak. The core already supported this for a different Hot Hands spell; patch 66 adds ours, and `026` adds Pyroblast to Hot Streak's proc mask. For anyone without Hot Hands, the core's own check still ignores Pyroblast, so nothing changes for them.
 - #174: Targets with your Living Bomb get a new mark, Hot Hands (9990019): +8% spell crit for you, lasting as long as the bomb.
+
+**Assumptions:** Our Hot Streak gives Pyroblast no damage bonus, so the tooltip's "only 35% against monsters" is applied as +35% against monsters (none against players) to the first Pyroblast hit within 5 sec of a Hot Streak cast.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: fix every known gap.
 
 **Testing:** nothing recorded yet
 
@@ -3402,6 +3459,12 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 - #174: Temporal Shift (977972) | Teaches Temporal Blast. Each Temporal Blast adds a Temporal Haste charge, up to 3. At 3 charges you get a Lunar Eclipse lasting a third as long, if you know Eclipse. During Lunar Eclipse, Starfire, Starsurge and Moonfire hits deal 45% more (15% against players). | Done in the follow-up below. |
 - #174: Temporal Shift**: cancelling a Temporal Blast part-way stores the time already spent, and your next Temporal Blast casts faster by that much. This needs a core hook in `Spell::cancel` (`patches/66-enchant-core-hooks.ps1`) and a new helper spell, Stored Time (9990018), added in `custom_spells.py` and `150`. Side effect: the stored time also applies to Arcane Blast, because both spells share the same spell-family flag.
+
+**Assumptions:** Stored Time (9990018) shares Arcane Blast's spell flag, so it also shortened Arcane Blast; the server now limits it to Temporal Blast. No client change was needed.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: fix every known gap.
 
 **Testing:** nothing recorded yet
 

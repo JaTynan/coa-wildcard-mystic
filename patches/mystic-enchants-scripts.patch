@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..8546240
+index 0000000..ca2e31f
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,11288 @@
+@@ -0,0 +1,11495 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -2342,13 +2342,29 @@ index 0000000..8546240
 +
 +// Elemental Assassin (978229): Backstab grants Elemental Assassin (978642, up to 2 stacks; its bonus is a dummy in the
 +// data). A stack makes your next Flame Shock or Earth Shock deal 110% more direct damage, or Ice Shock 70% more (the
-+// builder tooltip's numbers), and spending it takes 5 sec off Stormstrike's cooldown. (The Elemental Blades the
-+// tooltip also lists have no usable spells in our client, so they are left out.)
++// builder tooltip's numbers), and spending it takes 5 sec off Stormstrike's cooldown. Shaman Shocks grant the
++// Elemental Blade of their element: Flame Shock the Fire blade (978646), Frost Shock and Ice Shock the Ice blade
++// (978648), Earth Shock the Earth blade (978644). Each blade carries a hidden helper (978844 / 978845 / 978651) that lets
++// Backstab be used from any side (aura 334, handled by the core); the blades' Stormstrike bonus is their own data (misc
++// 38 / 36, applied in wcme_kit_target_mods). Each unique blade adds 33% to Backstab (12% against players) and, with all
++// three, Backstab and Stormstrike hits deal 40% more as Elemental damage (985319) within 5 yards (wcme_last_legendary_hooks).
++// Reverberation's Echoes of Earth gives +40 (60% in all) and Booming Echoes' capstone buff +10 (15%) while the enchant is on.
 +class spell_wcme_elemental_assassin : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_elemental_assassin);
 +
 +    static constexpr uint32 ASSASSIN = 978642;
++
++    static uint32 BladeFor(SpellInfo const* spell)
++    {
++        if (WcmeNamed(spell, "Flame Shock"))
++            return 978646;
++        if (WcmeNamedAny(spell, { "Frost Shock", "Ice Shock" }))
++            return 978648;
++        if (WcmeNamed(spell, "Earth Shock"))
++            return 978644;
++        return 0;
++    }
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
@@ -2357,6 +2373,8 @@ index 0000000..8546240
 +            return false;
 +        if (WcmeNamed(spell, "Backstab"))
 +            return eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST;
++        if ((eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) && BladeFor(spell))
++            return true;
 +        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_HIT) && WcmeDealtDamage(eventInfo) && GetTarget()->HasAura(ASSASSIN) &&
 +            WcmeNamedAny(spell, { "Flame Shock", "Earth Shock", "Ice Shock" });
 +    }
@@ -2371,6 +2389,12 @@ index 0000000..8546240
 +            owner->CastSpell(owner, ASSASSIN, true);
 +            if (Aura* stacks = owner->GetAura(ASSASSIN); stacks && stacks->GetStackAmount() > 2)
 +                stacks->SetStackAmount(2);
++            return;
++        }
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (uint32 const blade = BladeFor(spell))
++                owner->CastSpell(owner, blade, true);
 +            return;
 +        }
 +        if (Aura* stacks = owner->GetAura(ASSASSIN))
@@ -2391,6 +2415,41 @@ index 0000000..8546240
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_elemental_assassin::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_elemental_assassin::HandleProc);
++    }
++};
++
++// Elemental Blades (978644 Earth, 978646 Fire, 978648 Ice) from Elemental Assassin: each keeps its hidden helper
++// (978651 / 978844 / 978845: Backstab from any side) for as long as it lasts.
++class spell_wcme_elemental_blade : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_elemental_blade);
++
++    uint32 Helper() const
++    {
++        switch (GetId())
++        {
++            case 978644: return 978651;
++            case 978646: return 978844;
++            default: return 978845;
++        }
++    }
++
++    void Apply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->AddAura(Helper(), GetTarget());
++    }
++
++    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->RemoveAurasDueToSpell(Helper());
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_elemental_blade::Apply, EFFECT_0, SPELL_AURA_ANY,
++            AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_elemental_blade::Remove, EFFECT_0, SPELL_AURA_ANY,
++            AURA_EFFECT_HANDLE_REAL);
 +    }
 +};
 +
@@ -2976,11 +3035,28 @@ index 0000000..8546240
 +
 +// Demonic Persistence (990130): casting Incinerate or Mind Blast sacrifices your Wild Imp with the least health: it
 +// explodes for Fire damage around itself (990141) and empowers your summoned demon (990138: +20% damage against
-+// creatures, up to 4 stacks, 20 sec). The Wild Imps' own crits cutting Hand of Gul'dan's cooldown need a hook on the
-+// imps and are not done.
++// creatures, up to 4 stacks, 20 sec). Every second your Wild Imps are given Demonic Persistence's pet aura (990131,
++// passive, from the client data): their critical strikes take 1 sec off Hand of Gul'dan's cooldown and restore 3% mana
++// to your summoned demon, at most once a second (spell_wcme_demonic_persistence_imp). The tooltip's "deteriorate over
++// time" is taken to be the imps' own summon duration; it gives no rate.
 +class spell_wcme_demonic_persistence : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_demonic_persistence);
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void ChargeImps(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++        for (Unit* minion : GetTarget()->m_Controlled)
++            if (minion && minion->IsAlive() && minion->GetTypeId() == TYPEID_UNIT && minion->GetName() == "Wild Imp" &&
++                !minion->HasAura(990131))
++                minion->AddAura(990131, minion);
++    }
 +
 +    Unit* WeakestImp() const
 +    {
@@ -3014,6 +3090,42 @@ index 0000000..8546240
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_demonic_persistence::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_demonic_persistence::HandleProc);
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_demonic_persistence::CalcPeriod, EFFECT_0,
++            SPELL_AURA_PROC_TRIGGER_SPELL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_demonic_persistence::ChargeImps, EFFECT_0,
++            SPELL_AURA_PROC_TRIGGER_SPELL);
++    }
++};
++
++// Demonic Persistence pet aura (990131) on a Wild Imp: its critical strikes (spell_proc: crits only, 1 sec cooldown)
++// take 1 sec off its owner's Hand of Gul'dan and restore 3% of the owner's summoned demon's mana, while the owner has
++// Demonic Persistence (990130).
++class spell_wcme_demonic_persistence_imp : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_demonic_persistence_imp);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* owner = GetTarget()->GetOwner();
++        return owner && owner->HasAura(990130) && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget()->GetOwner();
++        if (!owner)
++            return;
++        WcmeCutCooldownByName(owner, "Hand of Gul'dan", 1000);
++        if (Player* player = owner->ToPlayer())
++            if (Pet* demon = player->GetPet(); demon && demon->IsAlive() && demon->GetMaxPower(POWER_MANA) > 0)
++                demon->ModifyPower(POWER_MANA, int32(demon->GetMaxPower(POWER_MANA) * 3 / 100));
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_demonic_persistence_imp::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_demonic_persistence_imp::HandleProc);
 +    }
 +};
 +
@@ -3684,8 +3796,11 @@ index 0000000..8546240
 +    }
 +};
 +
++static std::unordered_map<ObjectGuid, TimePoint> WcmeHotStreakPyroblast;      // a Pyroblast cast with Hot Streak, until it lands
++
 +// Hot Hands (979765 / 1575104): Pyroblast counts toward Hot Streak (patches/66-enchant-core-hooks.ps1 and sql 026), and a
-+// Pyroblast cast with Hot Streak up costs no mana. Your spells crit 8% more often on targets with your Living Bomb
++// Pyroblast cast with Hot Streak up costs no mana and, against monsters, deals 35% more (wcme_last_legendary_hooks;
++// players get no bonus). Your spells crit 8% more often on targets with your Living Bomb
 +// (Hot Hands mark 9990019, kept as long as the bomb). Fireball or Fire Blast hits on a Living Bomb target add a stack of
 +// Living Fire (979848: +8% damage and crit for your next Pyroblast, up to 5), used up by that Pyroblast. Instant
 +// Pyroblasts add a stack of Superheated (984658: +3% Fire damage and haste, up to 8) without refreshing its duration.
@@ -3723,6 +3838,8 @@ index 0000000..8546240
 +            if (!WcmeNamed(spell, "Pyroblast"))
 +                return;
 +            _streakAtCast = owner->HasAura(HOT_STREAK);
++            if (_streakAtCast)
++                WcmeHotStreakPyroblast[owner->GetGUID()] = GameTime::Now() + 5s;
 +            if (_streakAtCast && cast)
 +                owner->ModifyPower(POWER_MANA, cast->GetPowerCost());
 +            if (cast && cast->GetCastTime() <= 0)
@@ -8359,6 +8476,8 @@ index 0000000..8546240
 +    {
 +        if (affect->Id == 276927 && ((check->Id >= 92726 && check->Id <= 92736) || check->Id == 997559))
 +            affected = true;
++        if (affect->Id == 9990018)
++            affected = WcmeNamed(check, "Temporal Blast");
 +    }
 +};
 +
@@ -8915,7 +9034,7 @@ index 0000000..8546240
 +            for (AuraEffect const* effect : attacker->GetAuraEffectsByType(SPELL_AURA_ADD_PCT_MODIFIER))
 +            {
 +                uint32 const id = effect->GetId();
-+                if ((id == 978539 || id == 978537 || id == 954044) &&
++                if ((id == 978539 || id == 978537 || id == 954044 || id == 978644 || id == 978646 || id == 978648) &&
 +                    effect->GetMiscValue() == (versusPlayer ? 36 : 38) && effect->IsAffectedOnSpell(spellInfo))
 +                    damage = damage * (100 + effect->GetAmount()) / 100;
 +            }
@@ -11009,6 +11128,33 @@ index 0000000..8546240
 +    }
 +};
 +
++// Demonic Reoccurence (1570995): Metamorphosis' cooldown cut and its smaller armor bonus are the enchant's own data. In
++// exchange, Metamorphosis no longer lowers your chance to be critically hit or the duration of stuns and snares: those
++// parts of the form (54879 / 1154879 and 54817 / 1154817) are removed while you have the enchant, checked every 0.25 sec.
++class spell_wcme_demonic_reoccurence : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_demonic_reoccurence);
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 250;
++    }
++
++    void Strip(AuraEffect const* /*aurEff*/)
++    {
++        for (uint32 part : { 54879u, 1154879u, 54817u, 1154817u })
++            GetTarget()->RemoveAurasDueToSpell(part);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_demonic_reoccurence::CalcPeriod, EFFECT_2,
++            SPELL_AURA_DUMMY);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_demonic_reoccurence::Strip, EFFECT_2, SPELL_AURA_DUMMY);
++    }
++};
++
 +// Damage parts of the last legendaries:
 +// - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered
 +//   casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every
@@ -11018,11 +11164,51 @@ index 0000000..8546240
 +//   excess is added to its critical damage bonus (+1% of the hit per 1% excess).
 +// - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures
 +//   (its misc 38, which the core ignores).
++// - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within
++//   5 sec of the cast).
++// - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades,
++//   Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the
++//   target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 +class wcme_last_legendary_hooks : public UnitScript
 +{
 +public:
 +    wcme_last_legendary_hooks() : UnitScript("wcme_last_legendary_hooks", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN,
-+        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK }) { }
++        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK, UNITHOOK_ON_AFTER_AURA_EFFECT_CALCULATE_AMOUNT }) { }
++
++    void OnAfterAuraEffectCalculateAmount(AuraEffect const* effect, Unit* caster, int32& amount) override
++    {
++        if (!caster || effect->GetEffIndex() != EFFECT_0 || !caster->HasAura(978229))
++            return;
++        if (effect->GetId() == 965977)
++            amount += 40;
++        else if (effect->GetId() == 863375)
++            amount += 10;
++    }
++
++    static uint8 Blades(Unit* unit)
++    {
++        uint8 count = 0;
++        for (uint32 blade : { 978644u, 978646u, 978648u })
++            if (unit->HasAura(blade))
++                ++count;
++        return count;
++    }
++
++    static void BladeBurst(Unit* attacker, Unit* target, int64 share)
++    {
++        if (share <= 0)
++            return;
++        ObjectGuid const targetGuid = target->GetGUID();
++        attacker->m_Events.AddEventAtOffset([attacker, targetGuid, share]()
++        {
++            SpellInfo const* burst = sSpellMgr->GetSpellInfo(985319);
++            Unit* center = ObjectAccessor::GetUnit(*attacker, targetGuid);
++            if (!burst || !center || !attacker->IsAlive())
++                return;
++            for (Unit* enemy : WcmeEnemiesNear(attacker, center, 5.0f, 20))
++                WcmeExtraDamage(attacker, enemy, burst, share);
++        }, 1ms);
++    }
 +
 +    static bool IsDisease(SpellInfo const* spell)
 +    {
@@ -11060,6 +11246,24 @@ index 0000000..8546240
 +        if (!target || !attacker || !spellInfo || damage <= 0 || target == attacker)
 +            return;
 +        int64 value = Harbinger(damage, target, attacker, spellInfo);
++        if (WcmeNamed(spellInfo, "Pyroblast") && !target->IsControlledByPlayer())
++        {
++            auto streak = WcmeHotStreakPyroblast.find(attacker->GetGUID());
++            if (streak != WcmeHotStreakPyroblast.end())
++            {
++                if (GameTime::Now() <= streak->second && WcmeHasAnyAura(attacker, { 979765, 1575104 }))
++                    value = value * 135 / 100;
++                WcmeHotStreakPyroblast.erase(streak);
++            }
++        }
++        if (attacker->HasAura(978229) && WcmeNamedAny(spellInfo, { "Backstab", "Stormstrike" }))
++        {
++            uint8 const blades = Blades(attacker);
++            if (blades && WcmeNamed(spellInfo, "Backstab"))
++                value = value * (100 + (target->IsControlledByPlayer() ? 12 : 33) * blades) / 100;
++            if (blades == 3)
++                BladeBurst(attacker, target, value * 40 / 100);
++        }
 +        if (spellInfo->SpellFamilyName == SPELLFAMILY_HUNTER && spellInfo->SpellName[0] &&
 +            std::strncmp(spellInfo->SpellName[0], "Explosive Shot", 14) == 0)
 +            if (AuraEffect const* charge = attacker->GetAuraEffect(1568152, EFFECT_0))
@@ -11092,6 +11296,9 @@ index 0000000..8546240
 +    RegisterSpellScript(spell_wcme_social_distancing);
 +    RegisterSpellScript(spell_wcme_harbinger_of_pestilence);
 +    RegisterSpellScript(spell_wcme_flame_ascendance);
++    RegisterSpellScript(spell_wcme_elemental_blade);
++    RegisterSpellScript(spell_wcme_demonic_persistence_imp);
++    RegisterSpellScript(spell_wcme_demonic_reoccurence);
 +    new wcme_kit_damage_hooks();
 +    new wcme_rage_cap();
 +    new wcme_blooming_mods();

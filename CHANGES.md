@@ -24,6 +24,7 @@ for good by deleting its part from the script.
 | `65-enchant-tuning-auras.ps1` | Lets Ascension's PvE / PvP damage auras (341 / 322) count for the Mystic Enchant spells that use them: Pack Tactics (Beast and Blade), Demonic Persistence, Demonic Influence and Gurubashi Berserker. The core only applies those auras for a reviewed allowlist. | — |
 | `66-enchant-core-hooks.ps1` | Two small hooks for Mystic Enchants: the Hot Hands enchants let Pyroblast count toward Hot Streak (the core already did this for another Hot Hands spell), and Temporal Shift stores the time spent on a cancelled Temporal Blast so the next one casts faster. | — |
 | `67-hoplite-polearm-shield.ps1` | Hoplite (Mystic Enchant) lets you wield a polearm with a shield while it is on, as its tooltip says; the core only allowed that for the Guardian class. The shield goes back to your bags when the enchant comes off. | — |
+| `68-aspect-of-the-fox-auto-shot.ps1` | Aspect of the Fox (Mystic Enchant) keeps Auto Shot firing while you move, as its tooltip says; the core only let Steady Shot through. | — |
 | `10-mod-ollama-chat-fit.ps1` | Makes the AI chat module compile on the CoA core | always on |
 | | Less bot chat in raids and dungeons (direct answers to players kept) | `OllamaChat.RaidChatterPct`, `OllamaChat.DungeonChatterPct` |
 | `20-bots.ps1` | Bots level near real players | `AiPlayerbot.WildcardLevelNearPlayersPct` |

@@ -206,7 +206,7 @@ text in our client is the only record.
 | 1100170 | Arcane Reverberation | changed, awaiting in-game test (#175) |
 | 1582341 | Armor of Faith | changed, awaiting in-game test (#20) |
 | 1134995 | Arms Mastery | unchanged: working (audit) |
-| 1143164 | Aspect of the Fox | left as is (decision) |
+| 1143164 | Aspect of the Fox | changed, awaiting in-game test |
 | 1134972 | Assassination Mastery | unchanged: working (audit) |
 | 1134979 | Balance Mastery | unchanged: working (audit) |
 | 1180019 | Bane of Havoc | changed, awaiting in-game test (#174) |
@@ -306,4 +306,4 @@ text in our client is the only record.
 | 1760200 | Wind Lash | changed, awaiting in-game test (#175) |
 | 1544910 | Wraithweaver: Shadow Orbs | changed, awaiting in-game test (#175) |
 
-Copy totals (all 305): changed, awaiting in-game test: 208, unchanged: working: 82, tested: 5, works from its data: 3, works: 2, handled by the core: 2, left as is: 1, changed after its last test: 1, handled: 1.
+Copy totals (all 305): changed, awaiting in-game test: 209, unchanged: working: 82, tested: 5, works from its data: 3, works: 2, handled by the core: 2, changed after its last test: 1, handled: 1.
