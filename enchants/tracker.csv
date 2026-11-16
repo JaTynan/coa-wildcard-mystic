@@ -23,7 +23,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 978209,Dark Surgeon,Legendary,1178679,needs-code,modifier on a placeholder,live,own design scripted (spell_wcme_dark_surgeon; no longer linked to twin 1573136),,027-medium-legendaries-4.sql,,
 955076,Deadly Leap,Epic,1234935,needs-code,modifier on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",283483,004-twin-links-dedup.sql,,
 81503,Desperation,Epic,1176057,needs-code,modifier on a placeholder,live,linked to working twin,1581832,003-twin-links-close.sql,,
-978234,Disciple of the Tides,Legendary,1178699,needs-code,modifier on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",274918,004-twin-links-dedup.sql,,
+978234,Disciple of the Tides,Legendary,1178699,needs-code,modifier on a placeholder,live,own design scripted (spell_wcme_tidal_disciple; no longer linked to twin 274918),,040-kits-2.sql,,
 81472,Dominant Word: Shield,Legendary,1176049,needs-code,modifier on a placeholder,live,linked to working twin,270561,003-twin-links-close.sql,,
 954252,Dragon Warrior,Legendary,1178447,needs-code,modifier on a placeholder,live,own design scripted (spell_wcme_dragon_warrior; no longer linked to twin 271907),,038-core-handlers-and-visuals.sql,,
 978229,Elemental Assassin,Legendary,1178694,needs-code,modifier on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",274673,004-twin-links-dedup.sql,,

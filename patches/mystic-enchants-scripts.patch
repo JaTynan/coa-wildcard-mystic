@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..d1fa934
+index 0000000..9bad11a
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,7101 @@
+@@ -0,0 +1,7665 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -6982,8 +6982,563 @@ index 0000000..d1fa934
 +    }
 +};
 +
++namespace
++{
++// Adds one stack of an aura the caster keeps on a target (applied on the first one), refreshing it.
++void WcmeAddStackOn(Unit* caster, Unit* target, uint32 spellId)
++{
++    if (Aura* aura = target->GetAura(spellId, caster->GetGUID()))
++    {
++        aura->ModStackAmount(1);
++        aura->RefreshDuration();
++    }
++    else
++        caster->AddAura(spellId, target);
++}
++
++// The charmed demon or undead of a Darkmaster (Enslave Demon, Dominate Undead and the like).
++Unit* WcmeDarkmasterMinion(Unit* owner)
++{
++    Unit* charm = owner->GetCharm();
++    if (!charm || !charm->IsAlive() || !charm->IsCreature())
++        return nullptr;
++    uint32 const type = charm->GetCreatureType();
++    return (type == CREATURE_TYPE_DEMON || type == CREATURE_TYPE_UNDEAD) ? charm : nullptr;
++}
++
++bool WcmeIsDrainSoul(SpellInfo const* spell)
++{
++    return spell && spell->SpellFamilyName == SPELLFAMILY_WARLOCK && (spell->SpellFamilyFlags[0] & 0x00004000);
++}
++
++bool WcmeIsDrainLife(SpellInfo const* spell)
++{
++    return spell && spell->SpellFamilyName == SPELLFAMILY_WARLOCK && (spell->SpellFamilyFlags[0] & 0x00000008);
++}
++}
++
++// Darkmaster (983180). Shadow Bolt and Haunt hits give Harvested Essence (983186, 2 against players). A Drain Soul cast
++// at 5 Essence makes its ticks add Afflicted Soul (983192) to the target, and Ruptured Soul (983193) at 15 (none while
++// Ruptured Soul is on). Drain Life and Drain Soul casts spend the Essence once the channel has started. Drain Life ticks
++// heal your charmed demon or undead for the same 20% the enchant's own modifier leaves you, and a Drain Life channel
++// that runs to its last tick spends Necromancer's Touch. The rest is in wcme_kit_damage_hooks: Drain Life crits,
++// Drain Soul at 3 times instead of 4, and Necromancer's Touch from your minion's abilities.
++class spell_wcme_darkmaster : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_darkmaster);
++
++    static constexpr uint32 ESSENCE = 983186;
++    static constexpr uint32 AFFLICTED = 983192;
++    static constexpr uint32 RUPTURED = 983193;
++    static constexpr uint32 TOUCH = 983181;
++    static constexpr uint32 TOUCH_SHOWN = 983190;
++    bool _empoweredDrainSoul = false;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || spell->SpellFamilyName != SPELLFAMILY_WARLOCK)
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return WcmeIsDrainSoul(spell) || WcmeIsDrainLife(spell);
++        if (!eventInfo.GetActionTarget() || !WcmeDealtDamage(eventInfo))
++            return false;
++        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
++            return WcmeIsDrainLife(spell) || (WcmeIsDrainSoul(spell) && _empoweredDrainSoul);
++        return WcmeNamedAny(spell, { "Shadow Bolt", "Haunt" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (WcmeIsDrainSoul(spell))
++                _empoweredDrainSoul = owner->GetAuraCount(ESSENCE) >= 5;
++            if (owner->HasAura(ESSENCE))
++                owner->m_Events.AddEventAtOffset([owner]() { owner->RemoveAurasDueToSpell(ESSENCE); }, 500ms);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        if (!(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++        {
++            for (uint8 i = target->IsControlledByPlayer() ? 2 : 1; i; --i)
++                WcmeAddStackOn(owner, owner, ESSENCE);
++            return;
++        }
++        if (WcmeIsDrainSoul(spell))
++        {
++            if (target->HasAura(RUPTURED, owner->GetGUID()))
++                return;
++            WcmeAddStackOn(owner, target, AFFLICTED);
++            if (target->GetAuraCount(AFFLICTED) >= 15)
++                owner->CastSpell(target, RUPTURED, true);
++            return;
++        }
++        if (Unit* minion = WcmeDarkmasterMinion(owner))
++            if (uint32 const heal = uint32(int64(damage->GetDamage() + damage->GetAbsorb()) * 20 / 100))
++            {
++                HealInfo minionHeal(owner, minion, heal, spell, spell->GetSchoolMask());
++                owner->HealBySpell(minionHeal);
++            }
++        if (Aura const* drain = target->GetAura(spell->Id, owner->GetGUID()))
++            for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
++                if (AuraEffect const* effect = drain->GetEffect(i))
++                    if (effect->GetAuraType() == SPELL_AURA_PERIODIC_LEECH && effect->GetTotalTicks() &&
++                        effect->GetTickNumber() >= uint32(effect->GetTotalTicks()))
++                    {
++                        target->RemoveAurasDueToSpell(TOUCH, owner->GetGUID());
++                        target->RemoveAurasDueToSpell(TOUCH_SHOWN, owner->GetGUID());
++                    }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_darkmaster::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_darkmaster::HandleProc);
++    }
++};
++
++// Necromancer's Touch (983181, hidden): its data holds both values, 22% (effect 0) and 10% for players (effect 1);
++// only the one that fits the target counts.
++class spell_wcme_necromancers_touch : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_necromancers_touch);
++
++    void CalcCreature(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
++    {
++        if (GetUnitOwner() && GetUnitOwner()->IsControlledByPlayer())
++            amount = 0;
++    }
++
++    void CalcPlayer(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
++    {
++        if (GetUnitOwner() && !GetUnitOwner()->IsControlledByPlayer())
++            amount = 0;
++    }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_necromancers_touch::CalcCreature, EFFECT_0, SPELL_AURA_MOD_DAMAGE_FROM_CASTER);
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_necromancers_touch::CalcPlayer, EFFECT_1, SPELL_AURA_MOD_DAMAGE_FROM_CASTER);
++    }
++};
++
++// Defias Gunslinger (997047): Multi-Shot shows as Grape Shot (300191) and Sinister Strike as Pistol Shot (997048)
++// (WcmeSyncSwap), and Defias Tactics (997051: 0.5 sec less global cooldown, its data's Mongoose Bite and Raptor Strike
++// mask) is kept on you. Pistol Shot hits add Gunslinger's Strike (997050, up to 3). Pistol Shot and Grape Shot casts
++// take 1.5 sec off Raptor Strike and Mongoose Bite. A Mongoose Bite with Gunslinger's Strike adds Pirate's Flurry
++// (997429): 3 blows of 225% weapon damage over a second. Mongoose Bite or Raptor Strike spends Gunslinger's Strike.
++// The single one-handed weapon rule is checked by spell_wcme_gunslinger_shot.
++class spell_wcme_defias_gunslinger : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_defias_gunslinger);
++
++    static constexpr uint32 GRAPE_SHOT = 300191;
++    static constexpr uint32 PISTOL_SHOT = 997048;
++    static constexpr uint32 STRIKE = 997050;
++    static constexpr uint32 TACTICS = 997051;
++    static constexpr uint32 FLURRY = 997429;
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncSwap(owner, "Multi-Shot", SPELLFAMILY_HUNTER, GRAPE_SHOT, active);
++        WcmeSyncSwap(owner, "Sinister Strike", SPELLFAMILY_ROGUE, PISTOL_SHOT, active);
++        if (active && !owner->HasAura(TACTICS))
++            owner->AddAura(TACTICS, owner);
++        else if (!active)
++            owner->RemoveAurasDueToSpell(TACTICS);
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell)
++            return false;
++        bool const shot = spell->Id == PISTOL_SHOT || spell->Id == GRAPE_SHOT;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return shot;
++        if (!eventInfo.GetActionTarget() || !WcmeDealtDamage(eventInfo))
++            return false;
++        return spell->Id == PISTOL_SHOT ||
++            (spell->SpellFamilyName == SPELLFAMILY_HUNTER && WcmeNamedAny(spell, { "Mongoose Bite", "Raptor Strike" }) &&
++                GetTarget()->HasAura(STRIKE));
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            WcmeCutCooldownByName(owner, "Raptor Strike", 1500);
++            WcmeCutCooldownByName(owner, "Mongoose Bite", 1500);
++            return;
++        }
++        if (spell->Id == PISTOL_SHOT)
++        {
++            WcmeAddStackOn(owner, owner, STRIKE);
++            return;
++        }
++        owner->RemoveAurasDueToSpell(STRIKE);
++        if (!WcmeNamed(spell, "Mongoose Bite"))
++            return;
++        ObjectGuid const targetGuid = eventInfo.GetActionTarget()->GetGUID();
++        for (uint8 blow = 0; blow < 3; ++blow)
++            owner->m_Events.AddEventAtOffset([owner, targetGuid]()
++            {
++                if (Unit* victim = ObjectAccessor::GetUnit(*owner, targetGuid))
++                    if (victim->IsAlive())
++                        owner->CastCustomSpell(FLURRY, SPELLVALUE_BASE_POINT0, 225, victim, true);
++            }, Milliseconds(blow * 333));
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_defias_gunslinger::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_defias_gunslinger::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_defias_gunslinger::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_defias_gunslinger::HandleProc);
++    }
++};
++
++// Pistol Shot (997048) and Grape Shot (300191): need a single one-handed weapon and an empty off-hand slot.
++class spell_wcme_gunslinger_shot : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_gunslinger_shot);
++
++    SpellCastResult CheckCast()
++    {
++        Player* player = GetCaster()->ToPlayer();
++        if (!player)
++            return SPELL_CAST_OK;
++        Item const* main = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
++        uint32 const type = main ? main->GetTemplate()->InventoryType : 0;
++        bool const oneHanded = type == INVTYPE_WEAPON || type == INVTYPE_WEAPONMAINHAND;
++        if (!oneHanded || player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND))
++            return SPELL_FAILED_EQUIPPED_ITEM_CLASS;
++        return SPELL_CAST_OK;
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_gunslinger_shot::CheckCast);
++    }
++};
++
++// Disciple of Arugal (982980): Arcane Missiles shows as Shadow Missiles (982981, WcmeSyncSwap); its ticks taint the
++// target through their own data. Shadow Bolt hits taint the target (983007) and give Arugal's Fury (997422, 10
++// charges), and, if you know Missile Barrage at rank 3 or higher, have a 30% chance (+4% per Lessons in Shadow stack)
++// to trigger Missile Barrage (44401), which spends the Lessons. Unstable Affliction, Curse of Agony and Shadow Bolt
++// damage has a 40% chance (the buff's own data) to add a Lessons in Shadow stack (997417, up to 25). Tainted charges are
++// spent by wcme_kit_damage_hooks; Curse of Agony haste by spell_wcme_arugal_curse_haste.
++class spell_wcme_disciple_of_arugal : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_disciple_of_arugal);
++
++    static constexpr uint32 SHADOW_MISSILES = 982981;
++    static constexpr uint32 TAINTED = 983007;
++    static constexpr uint32 FURY = 997422;
++    static constexpr uint32 LESSONS = 997417;
++    static constexpr uint32 BARRAGE = 44401;
++
++    void Sync(bool active) { WcmeSyncSwap(GetTarget(), "Arcane Missiles", SPELLFAMILY_MAGE, SHADOW_MISSILES, active); }
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    static bool KnowsBarrage(Unit const* unit)
++    {
++        Player const* player = unit->ToPlayer();
++        if (!player)
++            return false;
++        for (uint32 rank : { 54488u, 54489u, 54490u, 1154488u, 1154489u, 1154490u })
++            if (player->HasSpell(rank))
++                return true;
++        return false;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->SpellFamilyName == SPELLFAMILY_WARLOCK && eventInfo.GetActionTarget() &&
++            WcmeDealtDamage(eventInfo) && WcmeNamedAny(spell, { "Shadow Bolt", "Unstable Affliction", "Curse of Agony" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        bool const shadowBolt = WcmeNamed(spell, "Shadow Bolt") && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK);
++        if (shadowBolt)
++        {
++            owner->CastSpell(target, TAINTED, true);
++            owner->CastSpell(owner, FURY, true);
++            if (KnowsBarrage(owner) && roll_chance_i(30 + 4 * int32(owner->GetAuraCount(LESSONS))))
++            {
++                owner->CastSpell(owner, BARRAGE, true);
++                owner->RemoveAurasDueToSpell(LESSONS);
++                return;
++            }
++        }
++        if (roll_chance_i(40))
++            WcmeAddStackOn(owner, owner, LESSONS);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_disciple_of_arugal::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_disciple_of_arugal::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_disciple_of_arugal::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_disciple_of_arugal::HandleProc);
++    }
++};
++
++// Curse of Agony (every rank): with Disciple of Arugal (982980) on the caster, haste shortens the time between ticks,
++// so the curse ticks more often over the same duration.
++class spell_wcme_arugal_curse_haste : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_arugal_curse_haste);
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& /*isPeriodic*/, int32& amplitude)
++    {
++        Unit* caster = GetCaster();
++        if (!caster || !caster->HasAura(982980) || amplitude <= 0)
++            return;
++        float const speed = caster->GetFloatValue(UNIT_MOD_CAST_SPEED);
++        if (speed > 0.0f && speed < 1.0f)
++            amplitude = std::max<int32>(500, int32(amplitude * speed));
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_arugal_curse_haste::CalcPeriod, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
++    }
++};
++
++// Disciple of the Tides (978234): its own design instead of twin 274918 (004 no longer links it). Chain Heal shows as
++// Blessed Waves (847749, WcmeSyncSwap). Each Blessed Waves bolt (847750, counted on its first target) adds a charge
++// of Tidal Swell (978698, up to 5). Single-target Shaman critical heals take 1 sec off Blessed Waves.
++class spell_wcme_tidal_disciple : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_tidal_disciple);
++
++    static constexpr uint32 BLESSED_WAVES = 847749;
++    static constexpr uint32 BLESSED_BOLT = 847750;
++    static constexpr uint32 TIDAL_SWELL = 978698;
++
++    void Sync(bool active) { WcmeSyncSwap(GetTarget(), "Chain Heal", SPELLFAMILY_SHAMAN, BLESSED_WAVES, active); }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Sync(false);
++        GetTarget()->RemoveAurasDueToSpell(TIDAL_SWELL);
++    }
++
++    static bool SingleTarget(SpellInfo const* spell)
++    {
++        if (spell->IsAffectingArea())
++            return false;
++        for (SpellEffectInfo const& effect : spell->GetEffects())
++            if (effect.ChainTarget > 1)
++                return false;
++        return true;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (!spell || !heal || !target)
++            return false;
++        if (spell->Id == BLESSED_BOLT)
++        {
++            Spell const* bolt = eventInfo.GetProcSpell();
++            return bolt && bolt->m_targets.GetUnitTargetGUID() == target->GetGUID();
++        }
++        return spell->SpellFamilyName == SPELLFAMILY_SHAMAN && (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) &&
++            heal->GetHeal() > 0 && SingleTarget(spell);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetSpellInfo()->Id != BLESSED_BOLT)
++        {
++            WcmeCutCooldownByName(owner, "Blessed Waves", 1000);
++            return;
++        }
++        if (Aura* swell = owner->GetAura(TIDAL_SWELL))
++        {
++            swell->SetCharges(std::min<uint8>(5, swell->GetCharges() + 1));
++            swell->RefreshDuration();
++        }
++        else if (Aura* added = owner->AddAura(TIDAL_SWELL, owner))
++            added->SetCharges(1);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_tidal_disciple::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_tidal_disciple::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_tidal_disciple::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_tidal_disciple::HandleProc);
++    }
++};
++
++// Tidal Swell (978698): while it has charges, Lesser Healing Wave shows as Tidal Shield (978690).
++class spell_wcme_tidal_swell : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_tidal_swell);
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Lesser Healing Wave", SPELLFAMILY_SHAMAN, 978690, true);
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Lesser Healing Wave", SPELLFAMILY_SHAMAN, 978690, false);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_tidal_swell::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_tidal_swell::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Tidal Shield (978690): needs and spends a Tidal Swell charge. The target gets an absorb shield (847753) for 50% of
++// the health actually restored, or 10% of the heal when all of it is overhealing; further casts add to the shield,
++// up to 35% of the target's maximum health.
++class spell_wcme_tidal_shield : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_tidal_shield);
++
++    static constexpr uint32 TIDAL_SWELL = 978698;
++    static constexpr uint32 SHIELD = 847753;
++    uint32 _missing = 0;
++
++    SpellCastResult CheckCast()
++    {
++        return GetCaster()->HasAura(TIDAL_SWELL) ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void HandleBeforeHit(SpellMissInfo /*missInfo*/)
++    {
++        if (Unit* target = GetHitUnit())
++            _missing = target->GetMaxHealth() - target->GetHealth();
++    }
++
++    void HandleAfterHit()
++    {
++        Unit* caster = GetCaster();
++        Unit* target = GetHitUnit();
++        if (!target)
++            return;
++        uint32 const healed = uint32(std::max(0, GetHitHeal()));
++        uint32 const restored = std::min(healed, _missing);
++        int32 add = int32(restored ? restored / 2 : healed / 10);
++        int32 const cap = int32(target->CountPctFromMaxHealth(35));
++        if (Aura* shield = target->GetAura(SHIELD, caster->GetGUID()))
++        {
++            if (AuraEffect* absorb = shield->GetEffect(EFFECT_0))
++                absorb->SetAmount(std::min(cap, absorb->GetAmount() + add));
++            shield->RefreshDuration();
++        }
++        else if (add > 0)
++            caster->CastCustomSpell(SHIELD, SPELLVALUE_BASE_POINT0, std::min(cap, add), target, true);
++    }
++
++    void HandleAfterCast()
++    {
++        if (Aura* swell = GetCaster()->GetAura(TIDAL_SWELL))
++            swell->DropCharge();
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_tidal_shield::CheckCast);
++        BeforeHit += BeforeSpellHitFn(spell_wcme_tidal_shield::HandleBeforeHit);
++        AfterHit += SpellHitFn(spell_wcme_tidal_shield::HandleAfterHit);
++        AfterCast += SpellCastFn(spell_wcme_tidal_shield::HandleAfterCast);
++    }
++};
++
++// Damage hooks the kits above need, which no aura script can reach:
++// - Darkmaster (983180): Drain Soul's own bonus below 25% health (4 times, in the core) is cut to 3 times; Drain Life
++//   ticks can critically hit (the leech heal follows the bigger hit); your charmed demon's or undead's ability damage
++//   adds Necromancer's Touch (983181 and the visible 983190, up to 10) to its target.
++// - Disciple of Arugal (982980): each Unstable Affliction, Curse of Agony or Curse of Doom tick on a target you tainted
++//   (983007) spends one Tainted charge, after that tick has had its bonus.
++class wcme_kit_damage_hooks : public UnitScript
++{
++public:
++    wcme_kit_damage_hooks() : UnitScript("wcme_kit_damage_hooks", true, { UNITHOOK_ON_AFTER_AURA_EFFECT_CALCULATE_AMOUNT,
++        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK, UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN }) { }
++
++    void OnAfterAuraEffectCalculateAmount(AuraEffect const* effect, Unit* caster, int32& amount) override
++    {
++        if (!caster || effect->GetAuraType() != SPELL_AURA_PERIODIC_DAMAGE || !WcmeIsDrainSoul(effect->GetSpellInfo()) ||
++            !caster->HasAura(983180))
++            return;
++        Unit* target = effect->GetBase()->GetUnitOwner();
++        if (target && !target->HealthAbovePct(25))
++            amount = amount * 3 / 4;
++    }
++
++    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override
++    {
++        if (!attacker || !target || !spellInfo || spellInfo->SpellFamilyName != SPELLFAMILY_WARLOCK)
++            return;
++        if (WcmeIsDrainLife(spellInfo) && attacker->HasAura(983180))
++        {
++            SpellSchoolMask const school = spellInfo->GetSchoolMask();
++            float const done = attacker->SpellDoneCritChance(target, spellInfo, school, BASE_ATTACK, true);
++            if (roll_chance_f(target->SpellTakenCritChance(attacker, spellInfo, school, done, BASE_ATTACK, true)))
++                damage = Unit::SpellCriticalDamageBonus(attacker, spellInfo, damage, target);
++            return;
++        }
++        bool const tainting = (spellInfo->SpellFamilyFlags[0] & 0x400) || (spellInfo->SpellFamilyFlags[1] & (0x100 | 0x2));
++        if (tainting && target->HasAura(983007, attacker->GetGUID()))
++        {
++            ObjectGuid const casterGuid = attacker->GetGUID();
++            target->m_Events.AddEventAtOffset([target, casterGuid]()
++            {
++                if (Aura* tainted = target->GetAura(983007, casterGuid))
++                    tainted->DropCharge();
++            }, 1ms);
++        }
++    }
++
++    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
++    {
++        if (!target || !attacker || !spellInfo || damage <= 0 || !attacker->IsCharmed() || attacker == target)
++            return;
++        Unit* master = attacker->GetCharmer();
++        if (!master || !master->HasAura(983180) || WcmeDarkmasterMinion(master) != attacker)
++            return;
++        WcmeAddStackOn(master, target, 983181);
++        WcmeAddStackOn(master, target, 983190);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
++    new wcme_kit_damage_hooks();
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
 +    RegisterSpellScript(spell_wcme_unique_physical_stacks);
 +    RegisterSpellScript(spell_wcme_curse_of_arugal);
@@ -7104,4 +7659,13 @@ index 0000000..d1fa934
 +    RegisterSpellScript(spell_wcme_cauterizing_flames);
 +    RegisterSpellScript(spell_wcme_dark_ranger);
 +    RegisterSpellScript(spell_wcme_shadow_artillery);
++    RegisterSpellScript(spell_wcme_darkmaster);
++    RegisterSpellScript(spell_wcme_necromancers_touch);
++    RegisterSpellScript(spell_wcme_defias_gunslinger);
++    RegisterSpellScript(spell_wcme_gunslinger_shot);
++    RegisterSpellScript(spell_wcme_disciple_of_arugal);
++    RegisterSpellScript(spell_wcme_arugal_curse_haste);
++    RegisterSpellScript(spell_wcme_tidal_disciple);
++    RegisterSpellScript(spell_wcme_tidal_swell);
++    RegisterSpellScript(spell_wcme_tidal_shield);
 +}
