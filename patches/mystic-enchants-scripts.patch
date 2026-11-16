@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..ac0a5ed
+index 0000000..1b40332
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,11034 @@
+@@ -0,0 +1,11053 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -9907,6 +9907,7 @@ index 0000000..ac0a5ed
 +std::unordered_map<ObjectGuid, ObjectGuid> WcmeLightningRod;              // each Tree of Wrath caster's Lightning Rod target
 +std::unordered_map<ObjectGuid, ObjectGuid> WcmeShadowBeacon;              // each Vampire Lord's Beacon of Shadow target
 +std::unordered_map<ObjectGuid, uint8> WcmeFrozenBladeCharges;             // White Walker's empowered strikes left
++std::unordered_map<ObjectGuid, TimePoint> WcmeFingersAllowedUntil;        // White Walker: Fingers of Frost from Eviscerate
 +struct WcmeGonkShard { uint32 map; Position spot; TimePoint until; };
 +std::unordered_map<ObjectGuid, std::vector<WcmeGonkShard>> WcmeGonkShards; // Shards of Gonk waiting to be picked up
 +
@@ -10522,7 +10523,8 @@ index 0000000..ac0a5ed
 +// of Winter add Howl of Winter (979053, +50% on the next Deep Freeze, which spends it). Manual Ice Lance criticals
 +// restore 10 energy. Frozen Blade, if you know Fingers of Frost at rank 2 or more: Eviscerate has a 20% chance per combo
 +// point to grant Fingers of Frost, and Winds of Winter a 20% chance per combo point to make the next 5 Sinister Strikes
-+// or Eviscerates deal 125% more.
++// or Eviscerates deal 125% more. Fingers of Frost can then only come from Eviscerate (wcme_kit6_hooks removes it from
++// any other source).
 +class spell_wcme_white_walker : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_white_walker);
@@ -10630,7 +10632,11 @@ index 0000000..ac0a5ed
 +            if (crit && slice)
 +                owner->CastSpell(target, ICE_LANCE, true);
 +            if (WcmeNamed(spell, "Eviscerate") && FrozenBlade(owner) && roll_chance_i(20 * _combo))
++            {
++                WcmeFingersAllowedUntil[owner->GetGUID()] = GameTime::Now() + 500ms;
++                owner->CastSpell(owner, 74396, true);
 +                owner->CastSpell(owner, 44544, true);
++            }
 +            return;
 +        }
 +        if (spell->Id == ICE_SPEAR || std::find(WINDS.begin(), WINDS.end(), spell->Id) != WINDS.end())
@@ -10822,7 +10828,8 @@ index 0000000..ac0a5ed
 +    }
 +};
 +
-+// Last batch's hooks: Warden of Demonreach blocks Hot Streak (48108).
++// Last batch's hooks: Warden of Demonreach blocks Hot Streak (48108); White Walker with Frozen Blade only keeps Fingers of
++// Frost that Eviscerate granted.
 +class wcme_kit6_hooks : public UnitScript
 +{
 +public:
@@ -10830,9 +10837,21 @@ index 0000000..ac0a5ed
 +
 +    void OnAuraApply(Unit* unit, Aura* aura) override
 +    {
-+        if (!unit || !aura || aura->GetId() != 48108 || !unit->HasAura(997113))
++        if (!unit || !aura)
 +            return;
-+        unit->m_Events.AddEventAtOffset([unit]() { unit->RemoveAurasDueToSpell(48108); }, 1ms);
++        uint32 const id = aura->GetId();
++        if (id == 48108 && unit->HasAura(997113))
++        {
++            unit->m_Events.AddEventAtOffset([unit]() { unit->RemoveAurasDueToSpell(48108); }, 1ms);
++            return;
++        }
++        bool const fingers = id == 44544 || id == 74396 || id == 844544 || id == 1144544 || id == 1244544;
++        if (!fingers || !unit->HasAura(978202) || !(unit->ToPlayer() && (unit->ToPlayer()->HasSpell(44545) || unit->ToPlayer()->HasSpell(1144545))))
++            return;
++        auto allowed = WcmeFingersAllowedUntil.find(unit->GetGUID());
++        if (allowed != WcmeFingersAllowedUntil.end() && GameTime::Now() <= allowed->second)
++            return;
++        unit->m_Events.AddEventAtOffset([unit, id]() { unit->RemoveAurasDueToSpell(id); }, 1ms);
 +    }
 +};
 +
