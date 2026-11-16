@@ -35,6 +35,8 @@ SURGEONS_OATH = 9990021     # Dark Surgeon: 30% less healing taken
 RESONANCE_PENALTY = {9990022: 28, 9990023: 88, 9990024: 76, 9990025: 84}  # Legacy of the Arcanist: Arcane, Fire,
 # Frost and Nature Resonance lower the other three elements' damage by 30% (school masks of those three)
 HIDDEN = 0x80000080  # can't be cancelled, and not shown on the buff bar
+APOSTATE_HOLY_FIRE_HIT = 9990026  # Cauterizing Flames: Flames of the Apostate gives Holy Fire 6% more hit chance
+SPELLMOD_RESIST_MISS_CHANCE = 16
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
@@ -192,6 +194,9 @@ SPELLS = {
                     'Healing taken reduced by 30%.',
                     3836, 0, [(MOD_HEALING_PCT, -30, 0)], {4: PASSIVE}),  # hidden like a passive
 }
+SPELLS[APOSTATE_HOLY_FIRE_HIT] = ('Flames of the Apostate', 'Holy Fire has 6% more chance to hit.', '', 4828, 0,
+                                  [(ADD_FLAT_MODIFIER, 6, SPELLMOD_RESIST_MISS_CHANCE)],
+                                  {4: HIDDEN, 122: 0x100000, 208: 6})  # Holy Fire's class mask (Priest)
 for _spell, _schools in RESONANCE_PENALTY.items():
     SPELLS[_spell] = ('Resonance', 'Damage with the other elements reduced by 30%.', '', 4828, 0,
                       [(MOD_DAMAGE_PERCENT_DONE, -30, _schools)], {4: HIDDEN})

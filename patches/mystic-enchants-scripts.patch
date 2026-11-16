@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..8274629
+index 0000000..d1fa934
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,7092 @@
+@@ -0,0 +1,7101 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -6743,7 +6743,7 @@ index 0000000..8274629
 +// it is up, Holy Fire hits also put Radiant Flames (997007: a heal over time) on you and up to 4 allies within 10 yards
 +// of you, and Circle of Healing heals trigger Circle of Fire (997003) on up to 3 enemies near each healed ally. Holy
 +// Fire and Flamestrike damage applies Radiant Kindling (997006, up to 8: the next Circle of Fire deals 20% more per
-+// stack to that enemy), which Circle of Fire spends. The "6% hit chance" for Holy Fire is not done.
++// stack to that enemy), which Circle of Fire spends. Holy Fire also has 6% more hit chance while it lasts (9990026).
 +class spell_wcme_cauterizing_flames : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_cauterizing_flames);
@@ -6757,6 +6757,7 @@ index 0000000..8274629
 +    static constexpr uint32 RADIANT_FLAMES = 997007;
 +    static constexpr uint32 CIRCLE_OF_FIRE = 997003;
 +    static constexpr uint32 KINDLING = 997006;
++    static constexpr uint32 HOLY_FIRE_HIT = 9990026;
 +
 +    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
@@ -6766,7 +6767,7 @@ index 0000000..8274629
 +    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
 +        WcmeSyncSwap(GetTarget(), "Fireball", SPELLFAMILY_MAGE, CAUTERIZING_FIRE, false);
-+        for (uint32 spellId : { APOSTATE, APOSTATE_COH, APOSTATE_FLAMESTRIKE })
++        for (uint32 spellId : { APOSTATE, APOSTATE_COH, APOSTATE_FLAMESTRIKE, HOLY_FIRE_HIT })
 +            GetTarget()->RemoveAurasDueToSpell(spellId);
 +    }
 +
@@ -6807,6 +6808,12 @@ index 0000000..8274629
 +        {
 +            for (uint32 spellId : { APOSTATE, APOSTATE_COH, APOSTATE_FLAMESTRIKE })
 +                AddStack(owner, owner, spellId);
++            if (Aura* apostate = owner->GetAura(APOSTATE))
++                if (Aura* hit = owner->GetAura(HOLY_FIRE_HIT) ? owner->GetAura(HOLY_FIRE_HIT) : owner->AddAura(HOLY_FIRE_HIT, owner))
++                {
++                    hit->SetMaxDuration(apostate->GetMaxDuration());
++                    hit->SetDuration(apostate->GetDuration());
++                }
 +            return;
 +        }
 +        if (WcmeNamed(spell, "Circle of Healing"))
@@ -6836,11 +6843,12 @@ index 0000000..8274629
 +// Dark Ranger (997115): Drain Life shows as Blood Arrow (997517) and Corruption as Shadow Arrow (997526) (WcmeSyncSwap:
 +// the core does not swap them, the names differ); Shadow Artillery (998204) is taught. Shadow Bolt and Seed of
 +// Corruption casts give Dark Arrows (997412, 6 charges): your next 6 Hunter shots, Shadow Bolts, Blood Arrows or Shadow
-+// Arrows also deal Dark Arrows (997742: 65% weapon damage as Shadow) and give a stack of Shadow Shells (997539, up to
-+// 10). Shadow Artillery needs 3 Shadow Shells and spends them (spell_wcme_shadow_artillery), restores 35% of your base
-+// mana and adds a stack of Darkfall (984509: +20% Shadow Artillery damage per stack, the data's own mod; a cast at 3
-+// stacks spends them). Molten Core also empowers Shadow Artillery: a cast with it spends a charge and its hits deal 12%
-+// more. Shadow Arrow casts trigger Nightfall's Shadow Trance (17941) if you know Nightfall at its final rank.
++// Arrows (any ranged Hunter ability or Hunter "Shot") also deal Dark Arrows (997742: 65% weapon damage as Shadow) and
++// give a stack of Shadow Shells (997539, up to 10). Shadow Artillery needs 3 Shadow Shells and spends them
++// (spell_wcme_shadow_artillery), restores 35% of your base mana and adds a stack of Darkfall (984509: +20% Shadow
++// Artillery damage per stack, the data's own mod; a cast at 3 stacks spends them). Molten Core also empowers Shadow
++// Artillery: a cast with it spends a charge and its hits deal 12% more. Shadow Arrow casts trigger Nightfall's Shadow
++// Trance (17941) if you know Nightfall at its final rank.
 +class spell_wcme_dark_ranger : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_dark_ranger);
@@ -6871,7 +6879,8 @@ index 0000000..8274629
 +    static bool Empowered(SpellInfo const* spell)
 +    {
 +        return spell->Id == BLOOD_ARROW || spell->Id == SHADOW_ARROW ||
-+            (spell->SpellFamilyName == SPELLFAMILY_HUNTER && spell->DmgClass == SPELL_DAMAGE_CLASS_RANGED) ||
++            (spell->SpellFamilyName == SPELLFAMILY_HUNTER && (spell->DmgClass == SPELL_DAMAGE_CLASS_RANGED ||
++                (spell->SpellName[0] && std::strstr(spell->SpellName[0], "Shot")))) ||
 +            (WcmeNamed(spell, "Shadow Bolt") && spell->SpellFamilyName == SPELLFAMILY_WARLOCK);
 +    }
 +
