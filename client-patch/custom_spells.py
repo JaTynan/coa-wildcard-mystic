@@ -30,8 +30,16 @@ BOOK_RADIANT = 9990017
 # Mystic Enchant helpers (sql/enchants/150 carries the server rows; scripts in mystic-enchants-scripts.patch)
 TEMPORAL_STORE = 9990018    # Temporal Shift: a cancelled Temporal Blast's cast time, taken off the next one
 HOT_HANDS_MARK = 9990019    # Hot Hands: +8% spell crit for the Mage whose Living Bomb is on the target
+ABYSSAL_HUNGER = 9990020    # Feeding the Abyss: the hidden physical absorb that stores damage for Life Tap
+SURGEONS_OATH = 9990021     # Dark Surgeon: 30% less healing taken
+RESONANCE_PENALTY = {9990022: 28, 9990023: 88, 9990024: 76, 9990025: 84}  # Legacy of the Arcanist: Arcane, Fire,
+# Frost and Nature Resonance lower the other three elements' damage by 30% (school masks of those three)
+HIDDEN = 0x80000080  # can't be cancelled, and not shown on the buff bar
+APOSTATE_HOLY_FIRE_HIT = 9990026  # Cauterizing Flames: Flames of the Apostate gives Holy Fire 6% more hit chance
+SPELLMOD_RESIST_MISS_CHANCE = 16
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
+SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
 MOD_THREAT, PERIODIC_ENERGIZE, EFFECT_IMMUNITY, MANA_SHIELD, MOD_ATTACKER_MELEE_CRIT_CHANCE = 10, 24, 37, 97, 187
 DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
     MOD_HEALTH_REGEN_PERCENT, MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 87, 88, 136, 193  # aura types
@@ -177,12 +185,32 @@ SPELLS = {
                      'on it.',
                      'Your Living Bomb\'s Mage has 8% more spell critical strike chance against you.',
                      3000, 0, [(MOD_CRIT_CHANCE_AGAINST_TARGET, 8, ALL_SCHOOLS)], {86: 6}),  # on the enemy; lasts as long as Living Bomb
+    ABYSSAL_HUNGER: ('Abyssal Hunger',
+                     'A chance equal to 10% plus your spell critical strike chance to fully absorb a physical hit and '
+                     'store it for your next Life Tap.',
+                     '', 4828, 0, [(SCHOOL_ABSORB, -1, PHYSICAL)], {4: PASSIVE}),  # hidden; the script decides each absorb
+    SURGEONS_OATH: ('Dark Surgeon\'s Oath',
+                    'Healing taken reduced by 30% while you are a Dark Surgeon.',
+                    'Healing taken reduced by 30%.',
+                    3836, 0, [(MOD_HEALING_PCT, -30, 0)], {4: PASSIVE}),  # hidden like a passive
 }
+SPELLS[APOSTATE_HOLY_FIRE_HIT] = ('Flames of the Apostate', 'Holy Fire has 6% more chance to hit.', '', 4828, 0,
+                                  [(ADD_FLAT_MODIFIER, 6, SPELLMOD_RESIST_MISS_CHANCE)],
+                                  {4: HIDDEN, 122: 0x100000, 208: 6})  # Holy Fire's class mask (Priest)
+for _spell, _schools in RESONANCE_PENALTY.items():
+    SPELLS[_spell] = ('Resonance', 'Damage with the other elements reduced by 30%.', '', 4828, 0,
+                      [(MOD_DAMAGE_PERCENT_DONE, -30, _schools)], {4: HIDDEN})
+
+# Spell charge categories the client shows for spells whose charges the server changes:
+# category -> (maximum, recovery ms), and spell -> category (SpellChargesCategory.dbc / SpellCharges.dbc).
+CHARGE_CATEGORIES = {9001: (3, 8000)}  # Dark Transfusion (spell_wcme_dark_transfusion)
+CHARGE_LINKS = {978640: 9001}
 RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT)}
 
 # spell_script_names rows: id -> script (in the server patch named next to the spell)
 SCRIPTS = {
     BARRIER_SHIELD: 'spell_wcme_manaforged_barrier',  # patches/60-manaforged-barrier.ps1
+    ABYSSAL_HUNGER: 'spell_wcme_abyssal_hunger',  # mystic-enchants-scripts.patch
 }
 
 # spell_proc rows (charges used up by the next ability): id -> (ProcFlags, SpellTypeMask, SpellPhaseMask, Charges)
@@ -190,6 +218,7 @@ PROCS = {
     # Used by the next ability that lands, whatever it does: damage and heals, and also spells that only apply an aura
     # (Renew, Corruption: they would otherwise keep the +50% on every cast, and buffs can't be told apart from them).
     AMBUSH: (NEXT_ABILITY, 7, 2, 1),
+    ABYSSAL_HUNGER: (0x400 | 0x4000, 0, 1, 0),  # Life Tap casts: spends the stored damage
 }
 
 STRINGS = {136: 0, 170: 1, 187: 2}  # enUS name, description, aura text (index into the tuple above)

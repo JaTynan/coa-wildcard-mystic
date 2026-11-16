@@ -81,6 +81,10 @@ worldserver.conf | Racials.RadiantPresence = 1
 # casting, Power Surge mana return; 30% less damage, 40% less healing, double damage from players; leaving it leaves
 # 10 sec of Mana-forged Mindset. 0 = off (the stance is just its form again).
 worldserver.conf | Wildcard.ManaforgedBarrier = 1
+# Mystic Enchants with a "Primary Stat" requirement (Son of Gruul: Strength; Grove Ranger: the healing path / Spirit)
+# only work with that primary stat: the chosen Wildcard stat path, or on realms without paths the highest of Strength,
+# Agility, Intellect and Spirit. 0 = the requirement is ignored.
+worldserver.conf | Wildcard.EnchantPrimaryStat = 1
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100
