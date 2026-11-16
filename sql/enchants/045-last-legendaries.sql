@@ -9,7 +9,7 @@
 -- over 100% adds to its critical damage.
 -- Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery
 -- (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes
--- (1572260); see enchants/legendaries.md.
+-- (1572260); see enchants/legendary-notes.md.
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 81102),
 ('spell_proc', 990020),
