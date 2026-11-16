@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..f47cfdc
+index 0000000..45ed0d8
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,5796 @@
+@@ -0,0 +1,5907 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -5695,6 +5695,116 @@ index 0000000..f47cfdc
 +    }
 +};
 +
++// Lava Sweep (417700): teaches Lava Sweep (417699, two-handed weapons other than staves, from the data) while you know
++// Lava Lash. Lava Sweep deals 50% more to your current target when your main-hand weapon carries Flametongue. Damage
++// from Lava Sweep, Lava Lash or Fire Blast adds a stack of Eruption (417707, up to 3) if you know Sundering. A
++// Pyroblast cast with 3 stacks spends them: Lava Sundering (417696), Lava Sweep's cooldown finished and Sweeper
++// (417705: the next Lava Sweep deals 40% more). Flame Shock casts grant Doomhammer's Fury (417701, with its Fire Blast
++// and Flame Shock part 417708); its own proc stays in 015.
++class spell_wcme_lava_sweep : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_lava_sweep);
++
++    static constexpr uint32 SWEEP = 417699;
++    static constexpr uint32 ERUPTION = 417707;
++    static constexpr uint32 SUNDERING = 417696;
++    static constexpr uint32 SWEEPER = 417705;
++    static constexpr uint32 DOOMHAMMERS_FURY = 417701;
++    static constexpr uint32 DOOMHAMMERS_FURY_SHOCKS = 417708;
++    static constexpr std::array<uint32, 1> TAUGHT = { SWEEP };
++
++    static bool Knows(Player* player, char const* name)
++    {
++        for (auto const& [spellId, known] : player->GetSpellMap())
++            if (known->State != PLAYERSPELL_REMOVED && spellId != SWEEP && WcmeNamed(sSpellMgr->GetSpellInfo(spellId), name))
++                return true;
++        return false;
++    }
++
++    void Sync(bool keep)
++    {
++        Player* player = GetTarget()->ToPlayer();
++        WcmeSyncTaughtRank(GetTarget(), TAUGHT, keep && player && Knows(player, "Lava Lash"));
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    static bool Flametongue(Unit* owner)
++    {
++        Player* player = owner->ToPlayer();
++        Item* weapon = player ? player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) : nullptr;
++        if (!weapon)
++            return false;
++        SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
++        return enchant && enchant->description[LOCALE_enUS] && std::strstr(enchant->description[LOCALE_enUS], "Flametongue");
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return (WcmeNamed(spell, "Flame Shock") && spell->SpellFamilyName == SPELLFAMILY_SHAMAN) ||
++                (WcmeNamed(spell, "Pyroblast") && GetTarget()->GetAuraCount(ERUPTION) >= 3);
++        return eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo) &&
++            (spell->Id == SWEEP || WcmeNamedAny(spell, { "Lava Lash", "Fire Blast" }));
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (WcmeNamed(spell, "Flame Shock"))
++            {
++                owner->CastSpell(owner, DOOMHAMMERS_FURY, true);
++                owner->CastSpell(owner, DOOMHAMMERS_FURY_SHOCKS, true);
++                return;
++            }
++            owner->RemoveAurasDueToSpell(ERUPTION);
++            if (Unit* target = eventInfo.GetProcTarget())
++                owner->CastSpell(target, SUNDERING, true);
++            WcmeCutCooldownByName(owner, "Lava Sweep", 3600000);
++            owner->AddAura(SWEEPER, owner);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        if (spell->Id == SWEEP)
++        {
++            Spell const* sweep = eventInfo.GetProcSpell();
++            if (sweep && target == sweep->m_targets.GetUnitTarget() && Flametongue(owner))
++            {
++                DamageInfo const* damage = eventInfo.GetDamageInfo();
++                WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) / 2);
++            }
++            owner->m_Events.AddEventAtOffset([owner]() { owner->RemoveAurasDueToSpell(SWEEPER); }, 200ms);
++        }
++        Player* player = owner->ToPlayer();
++        if (!player || !Knows(player, "Sundering"))
++            return;
++        if (Aura* eruption = owner->GetAura(ERUPTION))
++        {
++            if (eruption->GetStackAmount() < eruption->GetSpellInfo()->StackAmount)
++                eruption->SetStackAmount(eruption->GetStackAmount() + 1);
++            eruption->RefreshDuration();
++        }
++        else
++            owner->AddAura(ERUPTION, owner);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_lava_sweep::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_lava_sweep::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_lava_sweep::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_lava_sweep::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -5799,4 +5909,5 @@ index 0000000..f47cfdc
 +    RegisterSpellScript(spell_wcme_oracles_blessing);
 +    RegisterSpellScript(spell_wcme_overflow);
 +    RegisterSpellScript(spell_wcme_legacy_of_the_arcanist);
++    RegisterSpellScript(spell_wcme_lava_sweep);
 +}
