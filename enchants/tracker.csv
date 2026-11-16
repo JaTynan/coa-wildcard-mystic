@@ -92,7 +92,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 977906,Blood and Guts,Legendary,1178650,needs-code,other placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",273885,004-twin-links-dedup.sql,,
 274209,Dark Surgeon,Epic,201045,needs-code,other placeholder,live,linked to working twin,1573136,003-twin-links-close.sql,,
 965292,Deadly Bite,Legendary,1178480,needs-code,other placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",272353,004-twin-links-dedup.sql,,
-977864,Demolisher,Legendary,1178642,needs-code,other placeholder,live,linked to working twin,273786,003-twin-links-close.sql,,
+977864,Demolisher,Legendary,1178642,needs-code,other placeholder,live,own design scripted (spell_wcme_demolisher; no longer linked to twin 273786),,029-medium-legendaries-6.sql,,
 81111,Forked Lightning,Epic,1175934,needs-code,other placeholder,live,linked to working twin,1579746,003-twin-links-close.sql,,
 281363,Forked Lightning,Epic,201916,needs-code,other placeholder,live,linked to working twin,1579746,003-twin-links-close.sql,,
 284205,Freezing Blood,Epic,201742,needs-code,other placeholder,live,linked to working twin,979135,003-twin-links-close.sql,,

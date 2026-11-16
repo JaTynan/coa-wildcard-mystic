@@ -43,7 +43,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (1328332, 911189, 2, 'WCME: Frost Warding uses twin 911189 (standard, tooltip 0.20 alike)'),
 (852174, 1180660, 2, 'WCME: Shadow Siphon uses twin 1180660 (standard, tooltip 0.19 alike)'),
 (118055, 54845, 2, 'WCME: Glyph of Starfire uses twin 54845 (standard, tooltip 0.19 alike)'),
-(977864, 273786, 2, 'WCME: Demolisher uses twin 273786 (scripted, tooltip 0.19 alike)'),
 (1329076, 929074, 2, 'WCME: Master of Elements uses twin 929074 (standard, tooltip 0.18 alike)'),
 (1355340, 955339, 2, 'WCME: Torment the Weak uses twin 955339 (standard, tooltip 0.15 alike)'),
 (272427, 1570523, 2, 'WCME: Ice Barrage uses twin 1570523 (scripted, tooltip 0.14 alike)'),

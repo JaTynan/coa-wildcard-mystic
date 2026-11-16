@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..e2cbe3c
+index 0000000..79a88d5
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,4974 @@
+@@ -0,0 +1,5318 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -4885,6 +4885,344 @@ index 0000000..e2cbe3c
 +    }
 +};
 +
++// Growing Light (81520): Holy Light or Flash of Light healing your Beacon of Light target also heals up to 3 other
++// allies within 8 yards of it for 20% of the heal (270665), puts Growing Light (977990: 10% less physical damage taken
++// for 10 sec) on the Beacon target, extends its Beacon of Light by 30 sec, and gives you a stack of Growing Light
++// (986035, up to 3, 30 sec): your Beacon of Light heals transfer 20% more per stack.
++class spell_wcme_growing_light : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_growing_light);
++
++    static constexpr uint32 RADIATE = 270665;
++    static constexpr uint32 BEACON_BUFF = 977990;
++    static constexpr uint32 GROWING = 986035;
++    static constexpr uint32 BEACON = 53563;
++
++    static Aura* MyBeacon(Unit* target, Unit* owner)
++    {
++        for (auto const& [id, application] : target->GetAppliedAuras())
++            if (application->GetBase()->GetCasterGUID() == owner->GetGUID() &&
++                WcmeNamed(application->GetBase()->GetSpellInfo(), "Beacon of Light"))
++                return application->GetBase();
++        return nullptr;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (!heal || !heal->GetHeal() || !spell || !target || spell->Id == RADIATE)
++            return false;
++        if (WcmeNamed(spell, "Beacon of Light"))
++            return GetTarget()->HasAura(GROWING);
++        return WcmeNamedAny(spell, { "Holy Light", "Flash of Light" }) && MyBeacon(target, GetTarget());
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        uint32 const healed = heal->GetHeal();
++        if (WcmeNamed(eventInfo.GetSpellInfo(), "Beacon of Light"))
++        {
++            Aura* growing = owner->GetAura(GROWING);
++            HealInfo extra(owner, target, healed * 20 * growing->GetStackAmount() / 100, eventInfo.GetSpellInfo(),
++                eventInfo.GetSpellInfo()->GetSchoolMask());
++            owner->HealBySpell(extra);
++            return;
++        }
++        if (SpellInfo const* radiate = sSpellMgr->GetSpellInfo(RADIATE))
++            for (Unit* ally : WcmeAlliesNear(owner, target, 8.0f, 4))
++                if (ally != target)
++                {
++                    HealInfo extra(owner, ally, healed * 20 / 100, radiate, radiate->GetSchoolMask());
++                    owner->HealBySpell(extra);
++                }
++        owner->CastSpell(target, BEACON_BUFF, true);
++        if (Aura* beacon = MyBeacon(target, owner))
++            if (beacon->GetId() != BEACON)
++            {
++                int32 const duration = beacon->GetDuration() + 30000;
++                if (duration > beacon->GetMaxDuration())
++                    beacon->SetMaxDuration(duration);
++                beacon->SetDuration(duration);
++            }
++        if (Aura* growing = owner->GetAura(GROWING))
++        {
++            if (growing->GetStackAmount() < growing->GetSpellInfo()->StackAmount)
++                growing->SetStackAmount(growing->GetStackAmount() + 1);
++            growing->RefreshDuration();
++        }
++        else
++            owner->AddAura(GROWING, owner);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_growing_light::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_growing_light::HandleProc);
++    }
++};
++
++// Soul Harvest (1436395, taught by enchant 1398159): lasts 6 sec plus 3 sec for each enemy within 40 yards afflicted by
++// your Corruption, Curse of Agony or Immolate, up to 24 sec, and your pet gets the same damage bonus for as long.
++class spell_wcme_soul_harvest : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_soul_harvest);
++
++    static bool Afflicted(Unit* enemy, Unit* warlock)
++    {
++        for (AuraEffect const* dot : enemy->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE))
++            if (dot->GetCasterGUID() == warlock->GetGUID() &&
++                WcmeNamedAny(dot->GetSpellInfo(), { "Corruption", "Curse of Agony", "Immolate" }))
++                return true;
++        return false;
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* owner = GetTarget();
++        if (owner->IsPet())
++            return;
++        int32 duration = 6000;
++        for (Unit* enemy : WcmeEnemiesNear(owner, owner, 40.0f, 100))
++            if (Afflicted(enemy, owner))
++                duration += 3000;
++        duration = std::min(duration, 24000);
++        GetAura()->SetMaxDuration(duration);
++        GetAura()->SetDuration(duration);
++        if (Player* player = owner->ToPlayer())
++            if (Pet* pet = player->GetPet())
++                if (Aura* petAura = owner->AddAura(GetId(), pet))
++                {
++                    petAura->SetMaxDuration(duration);
++                    petAura->SetDuration(duration);
++                }
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_soul_harvest::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Void Eruption (2110122, taught by enchant 1398184): also applies Shadow Word: Pain (the rank for your level) to up to
++// 10 enemies within 10 yards of the target.
++class spell_wcme_void_eruption : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_void_eruption);
++
++    static constexpr std::array<uint32, 12> PAIN = { 589, 594, 970, 992, 2767, 10892, 10893, 10894, 25367, 25368, 48124, 48125 };
++
++    void HandleAfterCast()
++    {
++        Unit* caster = GetCaster();
++        Unit* target = GetExplTargetUnit();
++        if (!target)
++            return;
++        uint32 const pain = WcmeRankFor(caster, PAIN);
++        for (Unit* enemy : WcmeEnemiesNear(caster, target, 10.0f, 10))
++            caster->CastSpell(enemy, pain, true);
++    }
++
++    void Register() override
++    {
++        AfterCast += SpellCastFn(spell_wcme_void_eruption::HandleAfterCast);
++    }
++};
++
++// Bloodbath (2304814, taught by enchant 1398215): for 6 sec your melee abilities make the target bleed for 5 + 5% of your
++// attack power over 5 sec and slow it by 30% (2304815). The data's second trigger (2304816) does not exist and is not
++// used.
++class spell_wcme_bloodbath : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_bloodbath);
++
++    static constexpr uint32 BLEED = 2304815;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->Id != BLEED && eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo) &&
++            !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* bleed = sSpellMgr->GetSpellInfo(BLEED);
++        if (!bleed)
++            return;
++        int32 const ticks = std::max(1, bleed->GetMaxDuration() / std::max<int32>(1, bleed->Effects[EFFECT_0].Amplitude));
++        int32 const perTick = std::max(1, int32((5 + 0.05f * owner->GetTotalAttackPowerValue(BASE_ATTACK)) / ticks));
++        owner->CastCustomSpell(BLEED, SPELLVALUE_BASE_POINT0, perTick, eventInfo.GetActionTarget(), true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_bloodbath::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_bloodbath::HandleProc);
++    }
++};
++
++// Demolisher (977864): its own design instead of twin 273786 (003 no longer links them). The core's replacement turns
++// Mortal Strike into Demolishing Strike (947486), which puts Demolish on the target (273795: 2% more Physical damage
++// taken from you per stack, 6 stacks). Each of your melee critical strikes on it adds a stack; at 6 stacks Demolish is
++// spent and your next of these abilities is empowered: Expose Armor gives you Demolishing Strikes (954090: 35% armor
++// penetration for 20 sec); Riposte awards 2 more combo points and slows the target's attack speed by 10% more;
++// Mongoose Bite triggers no cooldown and deals as much as a critical strike with 100% more damage (50% against
++// players).
++class spell_wcme_demolisher : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_demolisher);
++
++    static constexpr uint32 DEMOLISH = 273795;
++    static constexpr uint32 DEMOLISHING_STRIKES = 954090;
++    bool _empowered = false;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
++            return false;
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return _empowered && WcmeNamedAny(spell, { "Expose Armor", "Mongoose Bite" });
++        if (!target || !WcmeDealtDamage(eventInfo))
++            return false;
++        if (spell && (WcmeNamed(spell, "Demolishing Strike") || (_empowered && WcmeNamedAny(spell, { "Riposte", "Mongoose Bite" }))))
++            return true;
++        return (eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && target->HasAura(DEMOLISH, GetTarget()->GetGUID());
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (WcmeNamed(spell, "Mongoose Bite"))
++            {
++                WcmeCutCooldownByName(owner, "Mongoose Bite", 3600000);
++                return;
++            }
++            _empowered = false;
++            if (Aura* strikes = owner->AddAura(DEMOLISHING_STRIKES, owner))
++                if (AuraEffect* pen = strikes->GetEffect(EFFECT_0))
++                    pen->ChangeAmount(35);
++            return;
++        }
++        if (_empowered && WcmeNamed(spell, "Riposte"))
++        {
++            _empowered = false;
++            owner->AddComboPoints(target, 2);
++            for (AuraEffect* slow : target->GetAuraEffectsByType(SPELL_AURA_MOD_MELEE_HASTE))
++                if (slow->GetCasterGUID() == owner->GetGUID() && slow->GetId() == spell->Id)
++                    slow->ChangeAmount(slow->GetAmount() - 10);
++            return;
++        }
++        if (_empowered && WcmeNamed(spell, "Mongoose Bite"))
++        {
++            _empowered = false;
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            int64 const dealt = int64(damage->GetDamage() + damage->GetAbsorb());
++            bool const crit = eventInfo.GetHitMask() & PROC_HIT_CRITICAL;
++            int64 const normal = crit ? dealt / 2 : dealt;
++            int64 const wanted = normal * 2 * (target->IsPlayer() ? 150 : 200) / 100;
++            WcmeExtraDamage(owner, target, spell, wanted - dealt);
++            return;
++        }
++        if (WcmeNamed(spell, "Demolishing Strike") && !target->HasAura(DEMOLISH, owner->GetGUID()))
++        {
++            owner->AddAura(DEMOLISH, target);
++            return;
++        }
++        Aura* demolish = target->GetAura(DEMOLISH, owner->GetGUID());
++        if (!demolish || !(eventInfo.GetHitMask() & PROC_HIT_CRITICAL))
++        {
++            if (demolish)
++                demolish->RefreshDuration();
++            return;
++        }
++        if (uint32(demolish->GetStackAmount()) + 1 >= demolish->GetSpellInfo()->StackAmount)
++        {
++            demolish->Remove();
++            _empowered = true;
++            return;
++        }
++        demolish->SetStackAmount(demolish->GetStackAmount() + 1);
++        demolish->RefreshDuration();
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_demolisher::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_demolisher::HandleProc);
++    }
++};
++
++// Blood and Guts (977906; its Execute explosion comes from twin 273885 through the core's enchant procs): Mutilate hits
++// on a target bleeding from your Disembowel also deal Mutilating Disembowel (977907). Execute on a Disemboweled target
++// consumes Disembowel (just after the twin's explosion has seen it), and the Remorseless buff the explosion grants is
++// taken away again unless you know Remorseless Attacks.
++class spell_wcme_blood_and_guts : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_blood_and_guts);
++
++    static constexpr uint32 MUTILATING = 977907;
++
++    static Aura* MyDisembowel(Unit* target, Unit* owner)
++    {
++        for (AuraEffect const* dot : target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE))
++            if (dot->GetCasterGUID() == owner->GetGUID() && WcmeNamed(dot->GetSpellInfo(), "Disembowel"))
++                return dot->GetBase();
++        return nullptr;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        return target && WcmeDealtDamage(eventInfo) && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Mutilate", "Execute" }) && MyDisembowel(target, GetTarget());
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (WcmeNamed(eventInfo.GetSpellInfo(), "Mutilate"))
++        {
++            owner->CastSpell(target, MUTILATING, true);
++            return;
++        }
++        ObjectGuid const targetGuid = target->GetGUID();
++        owner->m_Events.AddEventAtOffset([owner, targetGuid]()
++        {
++            if (Unit* bleeding = ObjectAccessor::GetUnit(*owner, targetGuid))
++                if (Aura* disembowel = MyDisembowel(bleeding, owner))
++                    disembowel->Remove();
++            if (!WcmeHasAnyAura(owner, { 14144, 14148, 914144, 914148, 1114144, 1114148, 1214144, 1214148, 1314148 }))
++            {
++                owner->RemoveAurasDueToSpell(14143);
++                owner->RemoveAurasDueToSpell(14149);
++            }
++        }, 200ms);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_blood_and_guts::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_blood_and_guts::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -4977,4 +5315,10 @@ index 0000000..e2cbe3c
 +    RegisterSpellScript(spell_wcme_prayer_of_preservation);
 +    RegisterSpellScript(spell_wcme_prayer_of_preservation_hot);
 +    RegisterSpellScript(spell_wcme_righteous_flames);
++    RegisterSpellScript(spell_wcme_growing_light);
++    RegisterSpellScript(spell_wcme_soul_harvest);
++    RegisterSpellScript(spell_wcme_void_eruption);
++    RegisterSpellScript(spell_wcme_bloodbath);
++    RegisterSpellScript(spell_wcme_demolisher);
++    RegisterSpellScript(spell_wcme_blood_and_guts);
 +}
