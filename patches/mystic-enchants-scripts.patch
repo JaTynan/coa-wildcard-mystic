@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..3f3f39f
+index 0000000..d8d879f
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,4258 @@
+@@ -0,0 +1,4447 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -21,7 +21,9 @@ index 0000000..3f3f39f
 +#include "GridNotifiers.h"
 +#include "GridNotifiersImpl.h"
 +#include "Item.h"
++#include "ObjectMgr.h"
 +#include "Pet.h"
++#include "PetDefines.h"
 +#include "Player.h"
 +#include "Random.h"
 +#include "ScriptMgr.h"
@@ -31,6 +33,7 @@ index 0000000..3f3f39f
 +#include "SpellInfo.h"
 +#include "SpellMgr.h"
 +#include "SpellScript.h"
++#include "TemporarySummon.h"
 +#include "Unit.h"
 +#include <algorithm>
 +#include <array>
@@ -3939,9 +3942,10 @@ index 0000000..3f3f39f
 +
 +// Feeding the Abyss (1154364): your dodge is gone (the data's own -100% dodge). While the enchant is on, Abyssal Hunger
 +// (9990020, hidden) has a chance equal to 10% plus your spell critical strike chance to absorb a physical hit fully,
-+// storing the damage. Once the oldest stored damage is 10 sec old, your next Life Tap spends the store as Shadow
-+// damage (1154363) split between up to 5 enemies within 10 yards, and heals you and your pet for half of the damage it
-+// dealt each.
++// storing the damage. The first stored hit shows Feeding the Abyss (1154363, "Harm is being stored...", 10 sec; its
++// own 1-point absorb is switched off by spell_wcme_feeding_the_abyss_store). When it fades the store is fed to the
++// abyss: your next Life Tap spends it as Shadow damage (1154363) split between up to 5 enemies within 10 yards, and
++// heals you and your pet for half of the damage it dealt each.
 +class spell_wcme_feeding_the_abyss : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_feeding_the_abyss);
@@ -3966,14 +3970,28 @@ index 0000000..3f3f39f
 +    }
 +};
 +
++class spell_wcme_feeding_the_abyss_store : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_feeding_the_abyss_store);
++
++    void Absorb(AuraEffect* /*aurEff*/, DamageInfo& /*dmgInfo*/, uint32& absorbAmount)
++    {
++        PreventDefaultAction();
++        absorbAmount = 0;
++    }
++
++    void Register() override
++    {
++        OnEffectAbsorb += AuraEffectAbsorbFn(spell_wcme_feeding_the_abyss_store::Absorb, EFFECT_0);
++    }
++};
++
 +class spell_wcme_abyssal_hunger : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_abyssal_hunger);
 +
 +    static constexpr uint32 FEED = 1154363;
-+    static constexpr Seconds DIGEST{10};
 +    int64 _stored = 0;
-+    TimePoint _since{};
 +
 +    void CalcAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
 +    {
@@ -3992,14 +4010,14 @@ index 0000000..3f3f39f
 +            return;
 +        }
 +        absorbAmount = dmgInfo.GetDamage();
-+        if (!_stored)
-+            _since = GameTime::Now();
++        if (!_stored && !owner->HasAura(FEED))
++            owner->AddAura(FEED, owner);
 +        _stored += absorbAmount;
 +    }
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
-+        return _stored > 0 && GameTime::Now() - _since >= DIGEST && WcmeNamed(eventInfo.GetSpellInfo(), "Life Tap") &&
++        return _stored > 0 && !GetTarget()->HasAura(FEED) && WcmeNamed(eventInfo.GetSpellInfo(), "Life Tap") &&
 +            (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST);
 +    }
 +
@@ -4008,12 +4026,10 @@ index 0000000..3f3f39f
 +        Unit* owner = GetTarget();
 +        SpellInfo const* feed = sSpellMgr->GetSpellInfo(FEED);
 +        int64 const stored = _stored;
-+        _stored = 0;
-+        if (!feed)
-+            return;
 +        std::list<Unit*> enemies = WcmeEnemiesNear(owner, owner, 10.0f, 5);
-+        if (enemies.empty())
++        if (!feed || enemies.empty())
 +            return;
++        _stored = 0;
 +        int64 dealt = 0;
 +        int32 const share = int32(std::min<int64>(stored / int64(enemies.size()), INT32_MAX));
 +        for (Unit* enemy : enemies)
@@ -4046,12 +4062,14 @@ index 0000000..3f3f39f
 +    }
 +};
 +
-+// Dark Surgeon (978209): teaches Hippocratic Oath (978430: healing power from 20% of attack power) and, if you know Holy
-+// Nova, Dark Transfusion (978640). Mutilate damage gives a stack of Dark Surgeon (978429, up to 2, with its Circle of
++// Dark Surgeon (978209): teaches Hippocratic Oath (978430: healing power from 20% of attack power); the core's own
++// replacement turns Holy Nova into Dark Transfusion (978640, spell_wcme_dark_transfusion). Healing taken is 30% lower
++// (Dark Surgeon's Oath, 9990021). Mutilate damage gives a stack of Dark Surgeon (978429, up to 2, with its Circle of
 +// Healing bonus 978856). Damaging Rogue finishing moves then have a 10% chance per stack per combo point to spend it on
 +// a Lesser Circle of Healing (978855): up to 5 allies within 30 yards (6 with Glyph of Circle of Healing) are healed
-+// for 3.575 x level + 9 + 15.6% SP + 7.8% AP, and as much as half that again over 3 sec. Damaging finishing moves also
-+// have a 20% chance per combo point to give a stack of Trauma Care (979021, up to 2).
++// for 3.575 x level + 9 + 15.6% SP + 7.8% AP, and 1.7875 x level + 9 + 7.8% SP + 3.9% AP more over 3 sec. Damaging
++// finishing moves also have a 20% chance per combo point to give a stack of Trauma Care (979021, up to 2): Flash Heal
++// keeps it, the next Greater Heal spends it.
 +class spell_wcme_dark_surgeon : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_dark_surgeon);
@@ -4060,34 +4078,30 @@ index 0000000..3f3f39f
 +    static constexpr uint32 SURGEON_COH = 978856;
 +    static constexpr uint32 LESSER_COH = 978855;
 +    static constexpr uint32 TRAUMA_CARE = 979021;
++    static constexpr uint32 OATH_PENALTY = 9990021;
 +    static constexpr std::array<uint32, 1> OATH = { 978430 };
-+    static constexpr std::array<uint32, 1> TRANSFUSION = { 978640 };
 +
-+    static bool KnowsHolyNova(Player* player)
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
-+        for (auto const& [spellId, known] : player->GetSpellMap())
-+            if (known->State != PLAYERSPELL_REMOVED && spellId != TRANSFUSION[0] &&
-+                WcmeNamed(sSpellMgr->GetSpellInfo(spellId), "Holy Nova"))
-+                return true;
-+        return false;
++        WcmeSyncTaughtRank(GetTarget(), OATH, true);
++        if (!GetTarget()->HasAura(OATH_PENALTY))
++            GetTarget()->AddAura(OATH_PENALTY, GetTarget());
 +    }
 +
-+    void Sync(bool keep)
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
-+        WcmeSyncTaughtRank(GetTarget(), OATH, keep);
-+        Player* player = GetTarget()->ToPlayer();
-+        WcmeSyncTaughtRank(GetTarget(), TRANSFUSION, keep && player && KnowsHolyNova(player));
++        WcmeSyncTaughtRank(GetTarget(), OATH, false);
++        GetTarget()->RemoveAurasDueToSpell(OATH_PENALTY);
 +    }
-+
-+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
-+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
 +
 +    static void AddCappedStack(Unit* owner, uint32 spellId)
 +    {
 +        Aura* aura = owner->GetAura(spellId);
 +        if (!aura)
 +        {
-+            owner->AddAura(spellId, owner);
++            aura = owner->AddAura(spellId, owner);
++            if (aura && spellId == TRAUMA_CARE)
++                aura->SetCharges(0);
 +            return;
 +        }
 +        if (aura->GetStackAmount() < aura->GetSpellInfo()->StackAmount)
@@ -4098,7 +4112,11 @@ index 0000000..3f3f39f
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
 +        SpellInfo const* spell = eventInfo.GetSpellInfo();
-+        if (!spell || spell->SpellFamilyName != SPELLFAMILY_ROGUE || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_FINISH)
++            return WcmeNamed(spell, "Greater Heal") && GetTarget()->HasAura(TRAUMA_CARE);
++        if (spell->SpellFamilyName != SPELLFAMILY_ROGUE)
 +            return false;
 +        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
 +            return spell->NeedsComboPoints() && WcmeDealsAnyDamage(spell);
@@ -4149,6 +4167,11 @@ index 0000000..3f3f39f
 +    {
 +        PreventDefaultAction();
 +        Unit* owner = GetTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_FINISH)
++        {
++            owner->RemoveAurasDueToSpell(TRAUMA_CARE);
++            return;
++        }
 +        if (!(eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST))
 +        {
 +            AddCappedStack(owner, SURGEON);
@@ -4176,6 +4199,168 @@ index 0000000..3f3f39f
 +        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_dark_surgeon::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_dark_surgeon::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_dark_surgeon::HandleProc);
++    }
++};
++
++// Dark Transfusion (978640, Holy Nova for a Dark Surgeon): 3 charges, one back every 8 sec, as its tooltip says (the
++// client charge data gave 2 every 12 sec; client charge category 9001 matches, client-patch/custom_spells.py). Each
++// cast restores 10 energy and awards 1 combo point to your target, or the nearest enemy, within 30 yards.
++class spell_wcme_dark_transfusion : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_dark_transfusion);
++
++    bool Validate(SpellInfo const* spellInfo) override
++    {
++        SpellInfo* info = const_cast<SpellInfo*>(spellInfo);
++        info->MaxCharges = 3;
++        info->ChargeRecoveryTime = 8000;
++        info->ChargeRecoveryKey = spellInfo->Id;
++        info->ChargeCategoryId = 9001;
++        return true;
++    }
++
++    void HandleAfterCast()
++    {
++        Unit* caster = GetCaster();
++        caster->EnergizeBySpell(caster, GetSpellInfo()->Id, 10, POWER_ENERGY);
++        Unit* target = nullptr;
++        if (Player* player = caster->ToPlayer())
++            target = player->GetSelectedUnit();
++        if (!target || !caster->IsValidAttackTarget(target) || !caster->IsWithinDistInMap(target, 30.0f))
++        {
++            std::list<Unit*> enemies = WcmeEnemiesNear(caster, caster, 30.0f, 1);
++            target = enemies.empty() ? nullptr : enemies.front();
++        }
++        if (target)
++            caster->AddComboPoints(target, 1);
++    }
++
++    void Register() override
++    {
++        AfterCast += SpellCastFn(spell_wcme_dark_transfusion::HandleAfterCast);
++    }
++};
++
++// Dark Transfusion Heal (978641): up to 6 allies, the most injured first.
++class spell_wcme_dark_transfusion_heal : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_dark_transfusion_heal);
++
++    void LimitTargets(std::list<WorldObject*>& targets)
++    {
++        targets.remove_if([](WorldObject* target) { return !target->ToUnit(); });
++        targets.sort([](WorldObject* first, WorldObject* second)
++        {
++            return first->ToUnit()->GetHealthPct() < second->ToUnit()->GetHealthPct();
++        });
++        if (targets.size() > 6)
++            targets.resize(6);
++    }
++
++    void Register() override
++    {
++        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_dark_transfusion_heal::LimitTargets, EFFECT_0, TARGET_UNIT_CASTER_AREA_RAID);
++    }
++};
++
++// Nether Portal (1180440 teaches the portal 1180441; its buff 1180443 lasts 30 sec): while the portal is open, each
++// Shadow Bolt, Soul Fire or Incinerate you cast summons a random demon (840096 to 840099, the core's Nether Portal
++// demons with their own AI) that fights for you until the portal closes, scaled to your level and carrying the
++// portal's scaling aura (1180447). During Decimation, Soul Fire summons an additional demon. Closing the portal
++// dismisses the demons and the portal.
++class spell_wcme_nether_portal : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_nether_portal);
++
++    static constexpr uint32 PORTAL_SPELL = 1180441;
++    static constexpr uint32 PORTAL_CREATURE = 840095;
++    static constexpr uint32 SUMMON_SPELL = 1180444;
++    static constexpr uint32 SCALING = 1180447;
++    static constexpr uint32 GUARDIAN_PROPERTIES = 61;
++    static constexpr uint32 GRACE_MS = 500;
++    static constexpr std::array<uint32, 4> DEMONS = { 840096, 840097, 840098, 840099 };
++    std::vector<ObjectGuid> _demons;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Spell const* spell = eventInfo.GetProcSpell();
++        SpellInfo const* info = eventInfo.GetSpellInfo();
++        return GetTarget()->IsPlayer() && eventInfo.GetActor() == GetTarget() && spell && !spell->IsTriggered() &&
++            info && info->SpellFamilyName == SPELLFAMILY_WARLOCK && WcmeNamedAny(info, { "Shadow Bolt", "Soul Fire", "Incinerate" });
++    }
++
++    static void ScaleToOwner(Creature* demon, Unit* owner)
++    {
++        CreatureTemplate const* info = demon->GetCreatureTemplate();
++        uint8 const level = owner->GetLevel();
++        CreatureBaseStats const* stats = sObjectMgr->GetCreatureBaseStats(level, info->unit_class);
++        demon->SetLevel(level);
++        uint32 const health = std::max<uint32>(1, stats->GenerateHealth(info));
++        demon->SetCreateHealth(health);
++        demon->SetStatFlatModifier(UNIT_MOD_HEALTH, BASE_VALUE, float(health));
++        float const damage = stats->GenerateBaseDamage(info);
++        for (WeaponAttackType attack : { BASE_ATTACK, OFF_ATTACK, RANGED_ATTACK })
++        {
++            demon->SetBaseWeaponDamage(attack, MINDAMAGE, damage);
++            demon->SetBaseWeaponDamage(attack, MAXDAMAGE, damage * 1.5f);
++        }
++        demon->SetStatFlatModifier(UNIT_MOD_ATTACK_POWER, BASE_VALUE, float(stats->AttackPower));
++        demon->SetStatFlatModifier(UNIT_MOD_ATTACK_POWER_RANGED, BASE_VALUE, float(stats->RangedAttackPower));
++        demon->UpdateAllStats();
++        demon->SetFullHealth();
++    }
++
++    void SummonDemon(Unit* owner, Unit* target)
++    {
++        SummonPropertiesEntry const* properties = sSummonPropertiesStore.LookupEntry(GUARDIAN_PROPERTIES);
++        int32 const remaining = GetDuration();
++        if (!properties || remaining <= 0)
++            return;
++        Position const spot = owner->GetNearPosition(PET_FOLLOW_DIST, frand(0.0f, 2.0f * float(M_PI)));
++        TempSummon* demon = owner->GetMap()->SummonCreature(Acore::Containers::SelectRandomContainerElement(DEMONS), spot,
++            properties, uint32(remaining) + GRACE_MS, owner, SUMMON_SPELL);
++        if (!demon)
++            return;
++        demon->SetTempSummonType(TEMPSUMMON_TIMED_DESPAWN);
++        ScaleToOwner(demon, owner);
++        demon->CastSpell(demon, SCALING, true);
++        _demons.push_back(demon->GetGUID());
++        if (target && demon->IsAIEnabled && demon->IsValidAttackTarget(target))
++            demon->AI()->AttackStart(target);
++    }
++
++    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Spell const* spell = eventInfo.GetProcSpell();
++        Unit* target = spell ? spell->m_targets.GetUnitTarget() : nullptr;
++        SummonDemon(owner, target);
++        if (WcmeNamed(eventInfo.GetSpellInfo(), "Soul Fire") &&
++            WcmeHasAnyAura(owner, { 63165, 63167, 1163165, 1163167, 1263165, 1263167 }))
++            SummonDemon(owner, target);
++    }
++
++    void Close(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* owner = GetTarget();
++        for (ObjectGuid const& guid : _demons)
++            if (Creature* demon = ObjectAccessor::GetCreature(*owner, guid))
++                demon->DespawnOrUnsummon(Milliseconds(GRACE_MS));
++        _demons.clear();
++        std::list<Creature*> portals;
++        owner->GetCreatureListWithEntryInGrid(portals, PORTAL_CREATURE, 100.0f);
++        for (Creature* portal : portals)
++            if (TempSummon* summon = portal->ToTempSummon())
++                if (summon->GetSummonerGUID() == owner->GetGUID() && portal->GetUInt32Value(UNIT_CREATED_BY_SPELL) == PORTAL_SPELL)
++                    portal->DespawnOrUnsummon(Milliseconds(GRACE_MS));
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_nether_portal::CheckProc);
++        OnEffectProc += AuraEffectProcFn(spell_wcme_nether_portal::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_nether_portal::Close, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
 +    }
 +};
 +
@@ -4259,6 +4444,10 @@ index 0000000..3f3f39f
 +    RegisterSpellScript(spell_wcme_gift_of_light);
 +    RegisterSpellScript(spell_wcme_stormbound_instinct);
 +    RegisterSpellScript(spell_wcme_feeding_the_abyss);
++    RegisterSpellScript(spell_wcme_feeding_the_abyss_store);
 +    RegisterSpellScript(spell_wcme_abyssal_hunger);
 +    RegisterSpellScript(spell_wcme_dark_surgeon);
++    RegisterSpellScript(spell_wcme_dark_transfusion);
++    RegisterSpellScript(spell_wcme_dark_transfusion_heal);
++    RegisterSpellScript(spell_wcme_nether_portal);
 +}

@@ -31,9 +31,10 @@ BOOK_RADIANT = 9990017
 TEMPORAL_STORE = 9990018    # Temporal Shift: a cancelled Temporal Blast's cast time, taken off the next one
 HOT_HANDS_MARK = 9990019    # Hot Hands: +8% spell crit for the Mage whose Living Bomb is on the target
 ABYSSAL_HUNGER = 9990020    # Feeding the Abyss: the hidden physical absorb that stores damage for Life Tap
+SURGEONS_OATH = 9990021     # Dark Surgeon: 30% less healing taken
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
-SCHOOL_ABSORB, PHYSICAL = 69, 1
+SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
 MOD_THREAT, PERIODIC_ENERGIZE, EFFECT_IMMUNITY, MANA_SHIELD, MOD_ATTACKER_MELEE_CRIT_CHANCE = 10, 24, 37, 97, 187
 DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
     MOD_HEALTH_REGEN_PERCENT, MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 87, 88, 136, 193  # aura types
@@ -183,7 +184,16 @@ SPELLS = {
                      'A chance equal to 10% plus your spell critical strike chance to fully absorb a physical hit and '
                      'store it for your next Life Tap.',
                      '', 4828, 0, [(SCHOOL_ABSORB, -1, PHYSICAL)], {4: PASSIVE}),  # hidden; the script decides each absorb
+    SURGEONS_OATH: ('Dark Surgeon\'s Oath',
+                    'Healing taken reduced by 30% while you are a Dark Surgeon.',
+                    'Healing taken reduced by 30%.',
+                    3836, 0, [(MOD_HEALING_PCT, -30, 0)], {4: PASSIVE}),  # hidden like a passive
 }
+
+# Spell charge categories the client shows for spells whose charges the server changes:
+# category -> (maximum, recovery ms), and spell -> category (SpellChargesCategory.dbc / SpellCharges.dbc).
+CHARGE_CATEGORIES = {9001: (3, 8000)}  # Dark Transfusion (spell_wcme_dark_transfusion)
+CHARGE_LINKS = {978640: 9001}
 RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT)}
 
 # spell_script_names rows: id -> script (in the server patch named next to the spell)
