@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..6483e7b
+index 0000000..c79e173
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,9933 @@
+@@ -0,0 +1,10000 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -8937,22 +8937,38 @@ index 0000000..6483e7b
 +
 +namespace
 +{
-+// Mana Fiend's Delirium: ends it (if running) and starts Recovery: 14% of base mana per Delirium stack every 3 sec for
-+// 12 sec, as Delirium's tooltip says.
 +constexpr uint32 MANA_FIEND = 977870;
 +constexpr uint32 DELIRIUM = 977876;
 +constexpr uint32 DELIRIUM_COST = 977873;
 +constexpr uint32 MANA_RECOVERY = 977874;
++constexpr uint32 MANACHARGED_STRIKE = 977871;
 +
++std::unordered_map<ObjectGuid, uint32> WcmeDeliriumMana;                 // mana before each player update in Delirium
++std::unordered_map<ObjectGuid, uint32> WcmeDeliriumDrained;              // mana Delirium has drained so far
++std::unordered_set<ObjectGuid> WcmeManaFiendArmed;                       // the next auto attack is a Manacharged Strike
++std::unordered_map<ObjectGuid, uint64> WcmeTimeBindDamage;               // damage taken during each Time-bind
++constexpr std::array<uint32, 8> HATEFUL_STRIKE_RANKS = { 984226, 984649, 984650, 984651, 984652, 984653, 984654, 984655 };
++constexpr std::array<uint32, 5> GROUND_SLAM_RANKS = { 984201, 984456, 984457, 984458, 984459 };
++constexpr std::array<uint32, 8> UPHEAVAL_RANKS = { 984202, 984232, 984233, 984234, 984235, 984236, 984237, 984238 };
++
++// Ends Delirium (if running) and starts Recovery: the mana Delirium drained comes back over 12 sec (4 ticks).
 +void WcmeManaFiendRecover(Unit* owner)
 +{
-+    uint8 const stacks = owner->GetAuraCount(DELIRIUM);
++    bool const delirious = owner->HasAura(DELIRIUM);
 +    owner->RemoveAurasDueToSpell(DELIRIUM);
 +    owner->RemoveAurasDueToSpell(DELIRIUM_COST);
-+    if (!stacks)
++    uint32 drained = 0;
++    if (auto entry = WcmeDeliriumDrained.find(owner->GetGUID()); entry != WcmeDeliriumDrained.end())
++    {
++        drained = entry->second;
++        WcmeDeliriumDrained.erase(entry);
++    }
++    if (!delirious)
 +        return;
 +    owner->AddAura(MANA_RECOVERY, owner);
-+    int32 const restore = int32(owner->GetCreateMana() * 14 / 100) * stacks;
++    int32 const restore = int32(drained / 4);
++    if (restore <= 0)
++        return;
 +    for (uint8 tick = 1; tick <= 4; ++tick)
 +        owner->m_Events.AddEventAtOffset([owner, restore]()
 +        {
@@ -8961,24 +8977,52 @@ index 0000000..6483e7b
 +        }, Seconds(3 * tick));
 +}
 +
-+std::unordered_map<ObjectGuid, uint32> WcmeDeliriumMana;                 // mana before each player update in Delirium
-+std::unordered_map<ObjectGuid, uint64> WcmeTimeBindDamage;               // damage taken during each Time-bind
-+constexpr std::array<uint32, 8> HATEFUL_STRIKE_RANKS = { 984226, 984649, 984650, 984651, 984652, 984653, 984654, 984655 };
-+constexpr std::array<uint32, 5> GROUND_SLAM_RANKS = { 984201, 984456, 984457, 984458, 984459 };
-+constexpr std::array<uint32, 8> UPHEAVAL_RANKS = { 984202, 984232, 984233, 984234, 984235, 984236, 984237, 984238 };
++// The replaced auto attack: drains 3% of base mana and deals that much Arcane damage (Manacharged Strike), with a 50%
++// chance to start Delirium.
++void WcmeManachargedStrike(Unit* owner, Unit* target)
++{
++    int32 const drain = std::min<int32>(int32(owner->GetCreateMana() * 3 / 100), int32(owner->GetPower(POWER_MANA)));
++    if (drain <= 0 || !target->IsAlive())
++        return;
++    owner->ModifyPower(POWER_MANA, -drain);
++    owner->CastCustomSpell(MANACHARGED_STRIKE, SPELLVALUE_BASE_POINT0, drain, target, true);
++    if (owner->HasAura(DELIRIUM) || !roll_chance_i(50))
++        return;
++    owner->AddAura(DELIRIUM, owner);
++    if (Aura* cost = owner->AddAura(DELIRIUM_COST, owner))
++    {
++        cost->SetMaxDuration(-1);
++        cost->SetDuration(-1);
++    }
++    WcmeDeliriumMana[owner->GetGUID()] = owner->GetPower(POWER_MANA);
++    WcmeDeliriumDrained[owner->GetGUID()] = 0;
++}
 +}
 +
-+// Mana Fiend (977870): Mana Fiend's Mind Focus (990218) is taught. Arcane direct damage spells and damaging Arcane
-+// melee abilities trigger Manacharged Strike (977871): it drains 3% of your base mana and deals that much Arcane damage,
-+// with a 50% chance to start Delirium (977876). While in Delirium: Arcane spells cost no mana (977873, its cost effect
-+// set to -100%), you cannot gain mana (wcme_mana_fiend_regen), and every second Delirium gains a stack (up to 20) and
-+// drains 1% of your base mana per stack. Falling below 20% mana ends it in Recovery (WcmeManaFiendRecover).
++// Mana Fiend (977870): +30% Intellect (the enchant's unused second effect becomes that, in Validate) and Mana Fiend's
++// Mind Focus (990218) is taught. Arcane direct damage spells and damaging Arcane melee abilities make your next melee
++// auto attack a Manacharged Strike instead (wcme_kit5_hooks, WcmeManachargedStrike). While in Delirium (977876, its
++// own script): Arcane spells cost no mana (977873, cost effect set to -100%), you cannot gain mana
++// (wcme_mana_fiend_regen), and every second Delirium gains a stack (no limit) and drains 1% of your base mana per stack.
++// Falling below 20% mana ends it in Recovery (WcmeManaFiendRecover).
 +class spell_wcme_mana_fiend : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_mana_fiend);
 +
-+    static constexpr uint32 STRIKE = 977871;
 +    static constexpr std::array<uint32, 1> MIND_FOCUS = { 990218 };
++
++    bool Validate(SpellInfo const* spellInfo) override
++    {
++        SpellEffectInfo& intellect = const_cast<SpellInfo*>(spellInfo)->Effects[EFFECT_1];
++        if (intellect.Effect == SPELL_EFFECT_APPLY_AURA && intellect.ApplyAuraName == SPELL_AURA_ADD_FLAT_MODIFIER)
++        {
++            intellect.ApplyAuraName = SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE;
++            intellect.MiscValue = STAT_INTELLECT;
++            intellect.BasePoints = 29;
++            intellect.DieSides = 1;
++        }
++        return true;
++    }
 +
 +    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
 +    {
@@ -8991,6 +9035,7 @@ index 0000000..6483e7b
 +    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
 +        WcmeSyncTaughtRank(GetTarget(), MIND_FOCUS, false);
++        WcmeManaFiendArmed.erase(GetTarget()->GetGUID());
 +        GetTarget()->RemoveAurasDueToSpell(DELIRIUM);
 +        GetTarget()->RemoveAurasDueToSpell(DELIRIUM_COST);
 +    }
@@ -8998,50 +9043,34 @@ index 0000000..6483e7b
 +    void HandleTick(AuraEffect const* /*aurEff*/)
 +    {
 +        Unit* owner = GetTarget();
-+        if (!owner->HasAura(DELIRIUM))
++        Aura* delirium = owner->GetAura(DELIRIUM);
++        if (!delirium)
 +            return;
 +        if (owner->GetPowerPct(POWER_MANA) < 20.0f)
 +        {
 +            WcmeManaFiendRecover(owner);
 +            return;
 +        }
-+        if (Aura* delirium = owner->GetAura(DELIRIUM))
-+        {
-+            if (delirium->GetStackAmount() < delirium->GetSpellInfo()->StackAmount)
-+                delirium->ModStackAmount(1);
-+            delirium->RefreshDuration();
-+            int32 const drain = int32(owner->GetCreateMana() * delirium->GetStackAmount() / 100);
-+            owner->ModifyPower(POWER_MANA, -std::min<int32>(drain, int32(owner->GetPower(POWER_MANA))));
-+            WcmeDeliriumMana[owner->GetGUID()] = owner->GetPower(POWER_MANA);
-+        }
++        if (delirium->GetStackAmount() < 255)
++            delirium->ModStackAmount(1);
++        delirium->RefreshDuration();
++        int32 const drain = std::min<int32>(int32(owner->GetCreateMana() * delirium->GetStackAmount() / 100), int32(owner->GetPower(POWER_MANA)));
++        owner->ModifyPower(POWER_MANA, -drain);
++        WcmeDeliriumDrained[owner->GetGUID()] += uint32(drain);
++        WcmeDeliriumMana[owner->GetGUID()] = owner->GetPower(POWER_MANA);
 +    }
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
 +        SpellInfo const* spell = eventInfo.GetSpellInfo();
-+        return spell && spell->Id != STRIKE && (spell->GetSchoolMask() & SPELL_SCHOOL_MASK_ARCANE) && eventInfo.GetActionTarget() &&
++        return spell && spell->Id != MANACHARGED_STRIKE && (spell->GetSchoolMask() & SPELL_SCHOOL_MASK_ARCANE) && eventInfo.GetActionTarget() &&
 +            !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeDealtDamage(eventInfo);
 +    }
 +
-+    void HandleProc(ProcEventInfo& eventInfo)
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
 +    {
 +        PreventDefaultAction();
-+        Unit* owner = GetTarget();
-+        int32 const drain = std::min<int32>(int32(owner->GetCreateMana() * 3 / 100), int32(owner->GetPower(POWER_MANA)));
-+        if (drain <= 0)
-+            return;
-+        owner->ModifyPower(POWER_MANA, -drain);
-+        owner->CastCustomSpell(STRIKE, SPELLVALUE_BASE_POINT0, drain, eventInfo.GetActionTarget(), true);
-+        if (!owner->HasAura(DELIRIUM) && roll_chance_i(50))
-+        {
-+            owner->AddAura(DELIRIUM, owner);
-+            if (Aura* cost = owner->AddAura(DELIRIUM_COST, owner))
-+            {
-+                cost->SetMaxDuration(-1);
-+                cost->SetDuration(-1);
-+            }
-+            WcmeDeliriumMana[owner->GetGUID()] = owner->GetPower(POWER_MANA);
-+        }
++        WcmeManaFiendArmed.insert(GetTarget()->GetGUID());
 +    }
 +
 +    void Register() override
@@ -9052,6 +9081,29 @@ index 0000000..6483e7b
 +        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_mana_fiend::HandleTick, EFFECT_0, SPELL_AURA_DUMMY);
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_mana_fiend::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_mana_fiend::HandleProc);
++    }
++};
++
++// Delirium (977876): Arcane spell power +10% of Intellect per stack (only Arcane; the data had 5% for every school)
++// and no stack limit.
++class spell_wcme_delirium : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_delirium);
++
++    bool Validate(SpellInfo const* spellInfo) override
++    {
++        SpellInfo* info = const_cast<SpellInfo*>(spellInfo);
++        info->StackAmount = 255;
++        if (info->Effects[EFFECT_0].ApplyAuraName == SPELL_AURA_MOD_SPELL_DAMAGE_OF_STAT_PERCENT)
++            info->Effects[EFFECT_0].MiscValue = SPELL_SCHOOL_MASK_ARCANE;
++        return true;
++    }
++
++    void CalcAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/) { amount = 10; }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_delirium::CalcAmount, EFFECT_0, SPELL_AURA_MOD_SPELL_DAMAGE_OF_STAT_PERCENT);
 +    }
 +};
 +
@@ -9086,7 +9138,7 @@ index 0000000..6483e7b
 +    }
 +};
 +
-+// Delirium: "you cannot generate mana". Any mana gained between player updates while in Delirium is taken back.
++// Delirium: "you cannot gain mana". Any mana gained between player updates while in Delirium is taken back.
 +class wcme_mana_fiend_regen : public PlayerScript
 +{
 +public:
@@ -9737,11 +9789,25 @@ index 0000000..6483e7b
 +    }
 +};
 +
-+// Batch 5 damage bookkeeping: damage taken by a target bound by Time-bind is counted for its heal.
++// Batch 5 damage bookkeeping: damage taken by a target bound by Time-bind is counted for its heal, and Mana Fiend's
++// armed auto attack is replaced by a Manacharged Strike (the auto attack itself deals nothing).
 +class wcme_kit5_hooks : public UnitScript
 +{
 +public:
-+    wcme_kit5_hooks() : UnitScript("wcme_kit5_hooks", true, { UNITHOOK_ON_DAMAGE }) { }
++    wcme_kit5_hooks() : UnitScript("wcme_kit5_hooks", true, { UNITHOOK_ON_DAMAGE, UNITHOOK_MODIFY_MELEE_DAMAGE }) { }
++
++    void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage) override
++    {
++        if (!target || !attacker || WcmeManaFiendArmed.erase(attacker->GetGUID()) == 0 || !attacker->HasAura(MANA_FIEND))
++            return;
++        damage = 0;
++        ObjectGuid const targetGuid = target->GetGUID();
++        attacker->m_Events.AddEventAtOffset([attacker, targetGuid]()
++        {
++            if (Unit* victim = ObjectAccessor::GetUnit(*attacker, targetGuid))
++                WcmeManachargedStrike(attacker, victim);
++        }, 1ms);
++    }
 +
 +    void OnDamage(Unit* /*attacker*/, Unit* victim, uint32& damage) override
 +    {
@@ -9918,6 +9984,7 @@ index 0000000..6483e7b
 +    RegisterSpellScript(spell_wcme_storm_smash);
 +    RegisterSpellScript(spell_wcme_locust_ranger);
 +    RegisterSpellScript(spell_wcme_mana_fiend);
++    RegisterSpellScript(spell_wcme_delirium);
 +    RegisterSpellScript(spell_wcme_delirium_cost);
 +    RegisterSpellScript(spell_wcme_mind_focus);
 +    RegisterSpellScript(spell_wcme_serpent_form);

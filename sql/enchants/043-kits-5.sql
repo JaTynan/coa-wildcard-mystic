@@ -1,6 +1,7 @@
 -- Legendary kits, batch 5 (needs the build with this version of mystic-enchants-scripts.patch; no client patch change).
--- Mana Fiend (977870): Manacharged Strike from Arcane damage, Delirium (no Arcane mana cost, no mana gain, growing drain),
--- Recovery below 20% mana, Mana Fiend's Mind Focus taught.
+-- Mana Fiend (977870): +30% Intellect, Arcane damage turns the next auto attack into Manacharged Strike, Delirium (+10%
+-- of Intellect as Arcane spell power per stack, no stack limit, no Arcane mana cost, no mana gain, growing drain),
+-- Recovery below 20% mana returns the drained mana, Mana Fiend's Mind Focus taught.
 -- Serpent Form (982400): Serpent Form, Serpent Strike, Puncture, Serpent Venom and Venomous Fury in place of the Cat Form
 -- abilities (by level rank), the serpent model, Poisonous Strikes on auto attacks, Serpent Strike's poison buff, combo
 -- point scaling for Serpent Venom and Venomous Fury.
@@ -19,7 +20,7 @@ INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 997127),
 ('spell_proc', 92802);
 DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (977870, 982400, 984200, 986162, 997127);
-DELETE FROM `spell_script_names` WHERE `spell_id` IN (92787, 92788, 92789, 92790, 92791, 92792, 92793, 92794, 92795, 92796, 92797, 92798, 92799, 92800, 92802, 302055, 302056, 302057, 977870, 977873, 982400, 982401, 984200, 984213, 984226, 984649, 984650, 984651, 984652, 984653, 984654, 984655, 986162, 986163, 986164, 986165, 986168, 990218, 997127, 997746, 997747, 997748, 997749, 997750, 997751, 997752, 997753, 997754, 997756, 997757, 997758, 997759, 997760, 997761, 997762, 997763, 997764) AND `ScriptName` LIKE 'spell\_wcme\_%';
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (977876, 92787, 92788, 92789, 92790, 92791, 92792, 92793, 92794, 92795, 92796, 92797, 92798, 92799, 92800, 92802, 302055, 302056, 302057, 977870, 977873, 982400, 982401, 984200, 984213, 984226, 984649, 984650, 984651, 984652, 984653, 984654, 984655, 986162, 986163, 986164, 986165, 986168, 990218, 997127, 997746, 997747, 997748, 997749, 997750, 997751, 997752, 997753, 997754, 997756, 997757, 997758, 997759, 997760, 997761, 997762, 997763, 997764) AND `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE FROM `spell_proc` WHERE `SpellId` IN (977870, 982400, 984200, 986162, 997127, 92802);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
 (977870, 0, 0, 0, 0, 0, 65552, 0, 2, 0, 0, 0, 0, 100, 0, 0),
@@ -31,6 +32,7 @@ INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFami
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (977870, 'spell_wcme_mana_fiend'),
 (977873, 'spell_wcme_delirium_cost'),
+(977876, 'spell_wcme_delirium'),
 (990218, 'spell_wcme_mind_focus'),
 (982400, 'spell_wcme_serpent_form'),
 (982401, 'spell_wcme_serpent_shape'),
