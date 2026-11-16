@@ -1,5 +1,5 @@
 -- Legendary kits, batch 5 (needs the build with this version of mystic-enchants-scripts.patch; no client patch change).
--- Mana Fiend (977870): +30% Intellect, Arcane damage turns the next auto attack into Manacharged Strike, Delirium (+10%
+-- Mana Fiend (977870): +25% Intellect, Arcane damage turns the next auto attack into Manacharged Strike, Delirium (+10%
 -- of Intellect as Arcane spell power per stack, no stack limit, no Arcane mana cost, no mana gain, growing drain),
 -- Recovery below 20% mana returns the drained mana, Mana Fiend's Mind Focus taught.
 -- Serpent Form (982400): Serpent Form, Serpent Strike, Puncture, Serpent Venom and Venomous Fury in place of the Cat Form

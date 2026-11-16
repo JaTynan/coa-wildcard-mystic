@@ -1,6 +1,6 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..1b40332
+index 0000000..9fa2ab9
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
 @@ -0,0 +1,11053 @@
@@ -9024,7 +9024,7 @@ index 0000000..1b40332
 +}
 +}
 +
-+// Mana Fiend (977870): +30% Intellect (the enchant's unused second effect becomes that, in Validate) and Mana Fiend's
++// Mana Fiend (977870): +25% Intellect (the enchant's unused second effect becomes that, in Validate) and Mana Fiend's
 +// Mind Focus (990218) is taught. Arcane direct damage spells and damaging Arcane melee abilities make your next melee
 +// auto attack a Manacharged Strike instead (wcme_kit5_hooks, WcmeManachargedStrike). While in Delirium (977876, its
 +// own script): Arcane spells cost no mana (977873, cost effect set to -100%), you cannot gain mana
@@ -9043,7 +9043,7 @@ index 0000000..1b40332
 +        {
 +            intellect.ApplyAuraName = SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE;
 +            intellect.MiscValue = STAT_INTELLECT;
-+            intellect.BasePoints = 29;
++            intellect.BasePoints = 24;
 +            intellect.DieSides = 1;
 +        }
 +        return true;
