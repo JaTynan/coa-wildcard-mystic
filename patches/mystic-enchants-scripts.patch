@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..0e165c3
+index 0000000..32e16ec
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,11777 @@
+@@ -0,0 +1,12156 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -11568,8 +11568,387 @@ index 0000000..0e165c3
 +    }
 +};
 +
++// ===== Epic batch 2 =====
++
++static bool WcmeSwashbuckling(Unit const* unit)
++{
++    Player const* player = unit->ToPlayer();
++    if (!player || player->GetShapeshiftForm() != FORM_NONE)
++        return false;
++    Item const* main = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
++    uint32 const type = main ? main->GetTemplate()->InventoryType : 0;
++    return (type == INVTYPE_WEAPON || type == INVTYPE_WEAPONMAINHAND) &&
++        !player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
++}
++
++static bool WcmeCastKnownNamed(Unit* unit, char const* name, SpellFamilyNames family)
++{
++    Player* player = unit->ToPlayer();
++    if (!player)
++        return false;
++    for (auto const& [id, spell] : player->GetSpellMap())
++    {
++        if (spell->State == PLAYERSPELL_REMOVED || !spell->Active)
++            continue;
++        SpellInfo const* info = sSpellMgr->GetSpellInfo(id);
++        if (info && info->SpellFamilyName == family && WcmeNamed(info, name) && !info->IsPassive())
++        {
++            player->CastSpell(player, id, true);
++            return true;
++        }
++    }
++    return false;
++}
++
++// Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo
++// points are still on you:
++// - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance).
++// - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data).
++// - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858.
++//   283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827.
++// - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while
++//   Bloodrage is up.
++// - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip.
++// - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value).
++// - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling
++//   (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113
++//   (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while
++//   Swashbuckling give 285115 (crit, up to 5).
++class spell_wcme_finisher_combo : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_finisher_combo);
++
++    static bool Damaging(SpellInfo const* spell)
++    {
++        for (SpellEffectInfo const& effect : spell->GetEffects())
++            if (effect.IsEffect(SPELL_EFFECT_SCHOOL_DAMAGE) || effect.IsEffect(SPELL_EFFECT_WEAPON_DAMAGE) ||
++                effect.IsEffect(SPELL_EFFECT_WEAPON_PERCENT_DAMAGE) || effect.IsEffect(SPELL_EFFECT_NORMALIZED_WEAPON_DMG) ||
++                effect.IsEffect(SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL) || effect.ApplyAuraName == SPELL_AURA_PERIODIC_DAMAGE)
++                return true;
++        return false;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || !spell->NeedsComboPoints() || !(eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) ||
++            !GetTarget()->GetComboPoints())
++            return false;
++        switch (GetId())
++        {
++            case 983110:
++            case 285111:
++                return Damaging(spell) && WcmeSwashbuckling(GetTarget());
++            case 954436:
++                return spell->SpellFamilyName == SPELLFAMILY_ROGUE && GetTarget()->ToPlayer() &&
++                    GetTarget()->ToPlayer()->CanTitanGrip();
++            default:
++                return true;
++        }
++    }
++
++    bool BloodrageReady()
++    {
++        Unit* owner = GetTarget();
++        if (WcmeHasAuraNamed(owner, "Bloodrage", SPELLFAMILY_WARRIOR))
++            return false;
++        TimePoint const now = GameTime::Now();
++        if (now < _nextBloodrage)
++            return false;
++        _nextBloodrage = now + 20s;
++        return true;
++    }
++
++    void AddStackKeepingTimer(uint32 spellId)
++    {
++        Unit* owner = GetTarget();
++        if (Aura* aura = owner->GetAura(spellId))
++        {
++            int32 const left = aura->GetDuration();
++            if (aura->GetStackAmount() < aura->GetSpellInfo()->StackAmount)
++                aura->ModStackAmount(1);
++            aura->SetDuration(left);
++        }
++        else
++            owner->CastSpell(owner, spellId, true);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        uint8 const points = owner->GetComboPoints();
++        if (!roll_chance_i(20 * points))
++            return;
++        Player* player = owner->ToPlayer();
++        switch (GetId())
++        {
++            case 979106:
++            case 284148:
++                if (player && player->GetPet())
++                    owner->CastSpell(owner, 979105, true);
++                break;
++            case 275094:
++                owner->CastSpell(owner, 275096, true);
++                break;
++            case 977856:
++                if (WcmeKnowsPassive(owner, "Sudden Death", SPELLFAMILY_WARRIOR))
++                    owner->CastSpell(owner, 977858, true);
++                break;
++            case 283833:
++                if (owner->HasAura(973827) || WcmeKnowsPassive(owner, "Sudden Death", SPELLFAMILY_WARRIOR))
++                    owner->CastSpell(owner, 283835, true);
++                break;
++            case 283405:
++                if (BloodrageReady() && !WcmeCastKnownNamed(owner, "Bloodrage", SPELLFAMILY_WARRIOR) &&
++                    owner->HasAura(973827))
++                    owner->CastSpell(owner, 29131, true);
++                break;
++            case 954436:
++                if (BloodrageReady())
++                    WcmeCastKnownNamed(owner, "Bloodrage", SPELLFAMILY_WARRIOR);
++                break;
++            case 1589466:
++                WcmeCutCooldownByName(owner, "Adrenaline Rush", 12000);
++                break;
++            case 983110:
++                AddStackKeepingTimer(983112);
++                if (Aura const* stacks = owner->GetAura(983112))
++                {
++                    Aura* rage = owner->GetAura(983113);
++                    if (!rage)
++                        rage = owner->AddAura(983113, owner);
++                    if (rage)
++                    {
++                        rage->SetStackAmount(stacks->GetStackAmount());
++                        rage->SetMaxDuration(stacks->GetDuration());
++                        rage->SetDuration(stacks->GetDuration());
++                    }
++                }
++                break;
++            case 285111:
++                owner->CastSpell(owner, 285115, true);
++                break;
++            default:
++                break;
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_finisher_combo::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_finisher_combo::HandleProc);
++    }
++
++private:
++    TimePoint _nextBloodrage{};
++};
++
++// Bloodsail Swashbuckler rage (983113, kept in step with Bloodsail Swashbuckling's stacks): each main-hand auto attack
++// that hits gives 1 rage per stack (983114, its own energize).
++class spell_wcme_bloodsail_rage : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_bloodsail_rage);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        return damage && damage->GetAttackType() == BASE_ATTACK && !eventInfo.GetSpellInfo();
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        for (uint8 i = 0; i < GetStackAmount(); ++i)
++            GetTarget()->CastSpell(GetTarget(), 983114, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_bloodsail_rage::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_bloodsail_rage::HandleProc);
++    }
++};
++
++// Weapon Command (954057 / 283338): while you wield a single two-handed weapon, are not in Cat or Bear Form and cannot
++// use Titan's Grip, you have 954058 (+10% Physical damage and +4% melee critical strike chance, the client data). Checked
++// every second.
++class spell_wcme_weapon_command : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_weapon_command);
++
++    static constexpr uint32 BUFF = 954058;
++
++    static bool Eligible(Unit* unit)
++    {
++        Player* player = unit->ToPlayer();
++        if (!player || player->CanTitanGrip())
++            return false;
++        ShapeshiftForm const form = player->GetShapeshiftForm();
++        if (form == FORM_CAT || form == FORM_BEAR || form == FORM_DIREBEAR)
++            return false;
++        Item const* main = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
++        return main && main->GetTemplate()->InventoryType == INVTYPE_2HWEAPON &&
++            !player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
++    }
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void Tick(AuraEffect const* /*aurEff*/)
++    {
++        Unit* owner = GetTarget();
++        bool const wanted = Eligible(owner);
++        if (wanted && !owner->HasAura(BUFF))
++            owner->AddAura(BUFF, owner);
++        else if (!wanted)
++            owner->RemoveAurasDueToSpell(BUFF);
++    }
++
++    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->RemoveAurasDueToSpell(BUFF);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_weapon_command::CalcPeriod, EFFECT_2, SPELL_AURA_DUMMY);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_weapon_command::Tick, EFFECT_2, SPELL_AURA_DUMMY);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_weapon_command::Remove, EFFECT_2, SPELL_AURA_DUMMY,
++            AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Companions (81418 Arcane, 81419 Fire, 81420 Frost, 81421 Nature, 81422 Shadow): your hunter pet's auto attacks deal
++// only that school (the enchant's own school value) and 10% less damage (wcme_epic_batch2_hooks); the pet shows the
++// Companion's visual (81424-81428). Kept in step every second; the pet's school is put back when the enchant goes.
++class spell_wcme_companion : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_companion);
++
++    Creature* HunterPet() const
++    {
++        Player* player = GetTarget()->ToPlayer();
++        ::Pet* pet = player ? player->GetPet() : nullptr;
++        return pet && pet->IsAlive() && pet->getPetType() == HUNTER_PET ? pet : nullptr;
++    }
++
++    uint32 Visual() const
++    {
++        return GetSpellInfo()->Effects[EFFECT_0].TriggerSpell;
++    }
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void Tick(AuraEffect const* aurEff)
++    {
++        PreventDefaultAction();
++        if (Creature* pet = HunterPet())
++        {
++            pet->SetMeleeDamageSchool(SpellSchools(aurEff->GetMiscValue()));
++            if (!pet->HasAura(Visual()))
++                pet->AddAura(Visual(), pet);
++        }
++    }
++
++    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (Creature* pet = HunterPet())
++        {
++            pet->SetMeleeDamageSchool(SPELL_SCHOOL_NORMAL);
++            pet->RemoveAurasDueToSpell(Visual());
++        }
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_companion::CalcPeriod, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_companion::Tick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_companion::Remove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY,
++            AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Epic batch 2 hooks:
++// - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target.
++// - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10).
++// - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed),
++//   for as long as Enrage lasts.
++class wcme_epic_batch2_hooks : public UnitScript
++{
++public:
++    wcme_epic_batch2_hooks() : UnitScript("wcme_epic_batch2_hooks", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN,
++        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK, UNITHOOK_MODIFY_MELEE_DAMAGE, UNITHOOK_ON_AURA_APPLY,
++        UNITHOOK_ON_AURA_REMOVE }) { }
++
++    static int64 HighGround(Unit* target, Unit* attacker, int64 value)
++    {
++        if (attacker->HasAura(81090) && attacker->GetPositionZ() > target->GetPositionZ() + 5.0f)
++            value = value * 103 / 100;
++        return value;
++    }
++
++    static bool EnrageTalentBuff(SpellInfo const* info)
++    {
++        return info->SpellFamilyName == SPELLFAMILY_WARRIOR && WcmeNamed(info, "Enrage") && info->GetDuration() > 0 &&
++            info->GetDuration() <= 30000;
++    }
++
++    void OnAuraApply(Unit* unit, Aura* aura) override
++    {
++        if (unit && aura && unit->HasAura(954436) && EnrageTalentBuff(aura->GetSpellInfo()))
++            if (Aura* speed = unit->AddAura(954437, unit))
++            {
++                speed->SetMaxDuration(aura->GetMaxDuration());
++                speed->SetDuration(aura->GetDuration());
++            }
++    }
++
++    void OnAuraRemove(Unit* unit, AuraApplication* aurApp, AuraRemoveMode /*mode*/) override
++    {
++        if (unit && aurApp && EnrageTalentBuff(aurApp->GetBase()->GetSpellInfo()))
++            unit->RemoveAurasDueToSpell(954437);
++    }
++
++    void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage) override
++    {
++        if (!target || !attacker || !damage || target == attacker)
++            return;
++        int64 value = HighGround(target, attacker, damage);
++        if (attacker->IsPet())
++            if (Unit* owner = attacker->GetOwner())
++                if (WcmeHasAnyAura(owner, { 81418, 81419, 81420, 81421, 81422 }))
++                    value = value * 90 / 100;
++        damage = uint32(std::min<int64>(UINT32_MAX, value));
++    }
++
++    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* /*spellInfo*/) override
++    {
++        if (target && attacker && damage && target != attacker)
++            damage = uint32(std::min<int64>(UINT32_MAX, HighGround(target, attacker, damage)));
++    }
++
++    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* /*spellInfo*/) override
++    {
++        if (target && attacker && damage > 0 && target != attacker)
++            damage = int32(std::min<int64>(INT32_MAX, HighGround(target, attacker, damage)));
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
++    new wcme_epic_batch2_hooks();
++    RegisterSpellScript(spell_wcme_finisher_combo);
++    RegisterSpellScript(spell_wcme_bloodsail_rage);
++    RegisterSpellScript(spell_wcme_weapon_command);
++    RegisterSpellScript(spell_wcme_companion);
 +    new wcme_epic_batch1_hooks();
 +    RegisterSpellScript(spell_wcme_dancer_in_the_dark);
 +    RegisterSpellScript(spell_wcme_soul_restoration);

@@ -439,3 +439,13 @@ audit,919572,Improved Mend Pet,1175790,probably already works,.aura 919572; chec
 047,81521,Dancer in the Dark,0,periodic,.aura 81521; Shadow Dance; Stealth,Shadow Dance cooldown runs twice as fast in Stealth (also 282118)
 047,84381,Soul Restoration,0,proc,.aura 84381; Power Word: Shield an ally; Greater Heal them,"Weakened Soul 2 sec shorter (also 282213; 1181290: Flash Heal or Greater Heal)"
 047,272814,Swift Shadows,0,proc,.aura 272814 and 965334; Shadow Dance; Ambush a marked target,Shadowstep cooldown finished
+048,979106,Cobra Combo,0,proc,.aura 979106 with a pet; 5-point finishers,Pet often gets 979105 (+15% crit) (also 284148),
+048,275094,Double Team,0,proc,.aura 275094; 5-point finishers,Double Team (275096) often granted,
+048,977856,Deadly Combo,0,proc,.aura 977856 with Sudden Death; 5-point finishers,Sudden Death and Deadly Combo often granted (283833: Sudden Death only),
+048,283405,Enraging Finale,0,proc,.aura 283405 knowing Bloodrage; 5-point finishers,"Bloodrage at most once every 20 sec, never while it is up",
+048,954436,Titanic Finale,0,proc,.aura 954436 with Titan's Grip; Rogue finishers; trigger Enrage,Bloodrage at most once every 20 sec; +5% attack speed (954437) while Enrage lasts,
+048,1589466,Adrenaline Junkie,0,proc,.aura 1589466; Adrenaline Rush; 5-point finishers,Adrenaline Rush cooldown often 12 sec shorter,
+048,983110,Swashbuckler: Bloodsail,0,proc,".aura 983110 with one one-handed weapon, empty off-hand; damaging finishers; auto attack",Bloodsail stacks (timer not refreshed); 1 rage per stack per main-hand hit (285111: crit stacks),
+048,954057,Weapon Command,0,periodic,".aura 954057; equip a two-handed weapon, then a one-hander; Cat Form",954058 only with the two-hander and outside Cat/Bear Form (also 283338),
+048,81418,Mystic Companion,0,periodic,.aura 81418 with a hunter pet; let the pet attack,"Pet auto attacks deal Arcane damage, 10% lower; visual on the pet (81419 Fire, 81420 Frost, 81421 Nature, 81422 Shadow)",
+048,81090,I Have The High Ground,0,hook,.aura 81090; attack a target 5+ yards below you,3% more damage,

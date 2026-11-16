@@ -180,6 +180,37 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** pass: spell taught and works (2 Nov) | 2026-11-02
 
+### Adrenaline Junkie (1589466, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Assumptions:** 12 sec (1589467's value) taken off any Adrenaline Rush you know. The GCD removal was already its data.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Adumbral Companion (81422, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Companions (81418 Arcane, 81419 Fire, 81420 Frost, 81421 Nature, 81422 Shadow): your hunter pet's auto attacks deal only that school (the enchant's own school value) and 10% less damage (wcme_epic_batch2_hooks); the pet shows the Companion's visual (81424-81428). Kept in step every second; the pet's school is put back when the enchant goes.
+- Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
+- 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**Assumptions:** As 81418 (Shadow).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
 ### Aftershock (983635, Epic)
 
 **Status:** tested (see test notes)
@@ -854,6 +885,36 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Cobra Combo (284148, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Assumptions:** As 979106; the newer text says Tamed Pet of any kind, done as your active pet.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Cobra Combo (979106, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Assumptions:** The crit buff goes to your active pet (979105 targets the pet).
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
 ### Compound Power (275317, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -1039,6 +1100,36 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 - #166: Deadly Bite | The bleed is 40% of the triggering hit, added to what's left of a running bleed; the enchant's placeholder copy (965292) loses the duplicate rule #164 gave it |
 - #169: Deadly Bite (965292):** this is Ascension's real version, not a placeholder for its twin 272353. It teaches Savage Blade, and Mongoose Bite and Counterattack apply the stacking bleed (up to 5 stacks). Bleed ticks have a 20% chance of Sharpened Blade, which cuts Savage Blade's cooldown by 4 sec. The 20% is assumed; the tooltip only says "a chance". `004` no longer blanks it or links it to 272353.
 - #169: Follow our client's own spell text:** Deadly Bite 272353, Warcry's 30 sec lockout, Frost Lich's 12 sec and Spell Slinger's 6 sec. The site doesn't mention these.
+
+**Testing:** nothing recorded yet
+
+### Deadly Combo (283833, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Assumptions:** Sudden Death only (283835); needs the talent unless you have 973827, as its text says.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Deadly Combo (977856, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Assumptions:** Needs the Sudden Death talent known (any rank); triggers through its own 977858 (Sudden Death 52437 and Deadly Combo 954353).
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
@@ -1282,6 +1373,19 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Double Team (275094, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Sources:** our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
@@ -1546,6 +1650,21 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 **What the pull requests said:**
 
 - #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
+
+**Testing:** nothing recorded yet
+
+### Enraging Finale (283405, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Assumptions:** Casts your known Bloodrage; without it, only with 973827 (then the Bloodrage buff 29131). The 20 sec limit starts on every successful roll.
+
+**Sources:** our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
@@ -2046,6 +2165,20 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Glacial Companion (81420, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Companions (81418 Arcane, 81419 Fire, 81420 Frost, 81421 Nature, 81422 Shadow): your hunter pet's auto attacks deal only that school (the enchant's own school value) and 10% less damage (wcme_epic_batch2_hooks); the pet shows the Companion's visual (81424-81428). Kept in step every second; the pet's school is put back when the enchant goes.
+
+**Assumptions:** As 81418 (Frost).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
 ### Glacial Light (997220, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -2317,6 +2450,21 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### I Have The High Ground (81090, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
+- 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**Assumptions:** The 3% applies to spells, melee and periodic damage.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
@@ -2629,6 +2777,22 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
+
+**Testing:** nothing recorded yet
+
+### Mystic Companion (81418, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Companions (81418 Arcane, 81419 Fire, 81420 Frost, 81421 Nature, 81422 Shadow): your hunter pet's auto attacks deal only that school (the enchant's own school value) and 10% less damage (wcme_epic_batch2_hooks); the pet shows the Companion's visual (81424-81428). Kept in step every second; the pet's school is put back when the enchant goes.
+- Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
+- 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**Assumptions:** Only hunter pets; the school comes from the enchant's own school value; -10% applies to the pet's melee. "Does not stack" is met because the enchants are mutually exclusive in practice; if two were on, the last one checked wins the school and the -10% applies once.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
@@ -3360,6 +3524,20 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Smoldering Companion (81419, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Companions (81418 Arcane, 81419 Fire, 81420 Frost, 81421 Nature, 81422 Shadow): your hunter pet's auto attacks deal only that school (the enchant's own school value) and 10% less damage (wcme_epic_batch2_hooks); the pet shows the Companion's visual (81424-81428). Kept in step every second; the pet's school is put back when the enchant goes.
+
+**Assumptions:** As 81418 (Fire).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
 ### Snatch (850207, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3377,6 +3555,7 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-17 | 5e50d90 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3396,6 +3575,7 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-17 | 5e50d90 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3417,6 +3597,7 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-17 | 5e50d90 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3534,6 +3715,36 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Swashbuckler: Bloodsail (285111, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Assumptions:** Gives 285115 (crit, up to 5) with the same Swashbuckling check; the Defias Gunslinger helper 285113 is not used.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Swashbuckler: Bloodsail (983110, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Assumptions:** Swashbuckling means one one-handed weapon in the main hand, nothing in the off hand, not shapeshifted (the same check Swashbuckler: Bloodsail Captain uses). New stacks do not refresh the 18 sec timer. The rage is 1 per stack per main-hand auto attack hit (983113, kept at the same stacks).
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
@@ -3721,6 +3932,22 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Titanic Finale (954436, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
+- 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**Assumptions:** "While Titan's Grip is active" means you can use Titan's Grip. The Enrage talent buff is any Warrior aura named Enrage lasting up to 30 sec; 954437 lasts as long as it.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
 ### Total Lunar Eclipse (272255, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3884,6 +4111,20 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Voltaic Companion (81421, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Companions (81418 Arcane, 81419 Fire, 81420 Frost, 81421 Nature, 81422 Shadow): your hunter pet's auto attacks deal only that school (the enchant's own school value) and 10% less damage (wcme_epic_batch2_hooks); the pet shows the Companion's visual (81424-81428). Kept in step every second; the pet's school is put back when the enchant goes.
+
+**Assumptions:** As 81418 (Nature).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
 ### War Mage (81408, Epic)
 
 **Status:** tested (see test notes)
@@ -3946,6 +4187,36 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** works; no tooltip text | 2026-11-03
+
+### Weapon Command (283338, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Weapon Command (954057 / 283338): while you wield a single two-handed weapon, are not in Cat or Bear Form and cannot use Titan's Grip, you have 954058 (+10% Physical damage and +4% melee critical strike chance, the client data). Checked every second.
+- 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**Assumptions:** As 954057.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Weapon Command (954057, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Weapon Command (954057 / 283338): while you wield a single two-handed weapon, are not in Cat or Bear Form and cannot use Titan's Grip, you have 954058 (+10% Physical damage and +4% melee critical strike chance, the client data). Checked every second.
+- 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**Assumptions:** Our client's buff 954058 gives +10% Physical damage and +4% melee crit. The builder archive says +10% melee attack speed instead; we follow the client, which is what players see.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026) (disagrees on the first bonus); our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
 
 ### What We Do in the Shadows (84587, Epic)
 
