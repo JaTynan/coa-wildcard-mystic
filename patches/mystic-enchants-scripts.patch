@@ -1,6 +1,6 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..628f2f4
+index 0000000..8546240
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
 @@ -0,0 +1,11288 @@
@@ -9503,7 +9503,7 @@ index 0000000..628f2f4
 +
 +    static constexpr uint32 ALIGN = 986163;
 +    static constexpr uint32 TIME_BIND = 986164;
-+    static constexpr uint32 SYNCHRONIZE = 986165;
++    static constexpr uint32 SYNCHRONIZE_SPELL = 986165;
 +    static constexpr uint32 DISTORTION = 986166;
 +    static constexpr uint32 ETERNITY = 986167;
 +    static constexpr uint32 ETERNITY_WAVE = 986173;
@@ -9513,7 +9513,7 @@ index 0000000..628f2f4
 +        Unit* owner = GetTarget();
 +        WcmeSyncSwap(owner, "Moonfire", SPELLFAMILY_DRUID, ALIGN, active);
 +        WcmeSyncSwap(owner, "Renew", SPELLFAMILY_PRIEST, TIME_BIND, active);
-+        WcmeSyncSwap(owner, "Arcane Missiles", SPELLFAMILY_MAGE, SYNCHRONIZE, active);
++        WcmeSyncSwap(owner, "Arcane Missiles", SPELLFAMILY_MAGE, SYNCHRONIZE_SPELL, active);
 +        if (!active)
 +        {
 +            owner->RemoveAurasDueToSpell(DISTORTION);
@@ -9527,7 +9527,7 @@ index 0000000..628f2f4
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
 +        SpellInfo const* spell = eventInfo.GetSpellInfo();
-+        return spell && (spell->Id == ALIGN || spell->Id == TIME_BIND || spell->Id == SYNCHRONIZE);
++        return spell && (spell->Id == ALIGN || spell->Id == TIME_BIND || spell->Id == SYNCHRONIZE_SPELL);
 +    }
 +
 +    void HandleProc(ProcEventInfo& eventInfo)
