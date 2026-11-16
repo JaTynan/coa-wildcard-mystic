@@ -78,7 +78,6 @@ INSERT INTO `wcme_enchant_teach` (`enchant_spell`, `taught_spell`, `comment`) VA
 (986008, 1576573, 'Carnage Incarnate teaches Carnage Incarnate, as twin 1590982 does'),
 (977727, 1572102, 'Crimson Champion teaches Crimson Champion, as twin 1590926 does'),
 (84806, 1568346, 'Fel Strike teaches Fel Strike, as twin 1590951 does'),
-(954326, 271981, 'Forbidden Technique teaches Forbidden Technique, as twin 852208 does'),
 (81190, 1567159, 'Holy Supernova teaches Holy Supernova, as twin 1590947 does'),
 (956445, 1569955, 'Paratrooper teaches Paratrooper, as twin 1590917 does'),
 (977928, 273955, 'Stormhammer teaches Stormhammer, as twin 852224 does'),

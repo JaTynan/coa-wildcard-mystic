@@ -207,7 +207,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 997298,Fire and Fury,Epic,132724,needs-code,modifier on a placeholder,live,"teaches spell 1590642, as its twin does (wcme_enchant_teach)",1591145,006-teach-twins.sql,,
 81299,Flame Surge,Epic,1175999,needs-code,modifier on a placeholder,live,"teaches spell 1580833, as its twin does (wcme_enchant_teach)",1591028,006-teach-twins.sql,,
 978758,Focused Burst,Epic,1178719,needs-code,modifier on a placeholder,live,"teaches spell 1586444, as its twin does (wcme_enchant_teach)",1591066,006-teach-twins.sql,,
-954326,Forbidden Technique,Legendary,1178451,needs-code,modifier on a placeholder,live,"teaches spell 271981, as its twin does (wcme_enchant_teach)",852208,006-teach-twins.sql,,
+954326,Forbidden Technique,Legendary,1178451,needs-code,modifier on a placeholder,live,own design scripted (spell_wcme_forbidden_technique; no longer teaches twin spell 271981),,041-kits-3.sql,,
 92249,Frosty Charge,Epic,131041,needs-code,modifier on a placeholder,live,action: Charge also deals Frosty Charge damage,,007-enchant-actions.sql (part 1),,
 81467,Guardians of the Grove,Legendary,1176046,needs-code,modifier on a placeholder,live,action: Swiftmend takes 6 sec off Force of Nature,,007-enchant-actions.sql (part 1),,
 982650,Herod's Legacy,Epic,132595,needs-code,modifier on a placeholder,live,"teaches spell 1588110, as its twin does (wcme_enchant_teach)",1591099,006-teach-twins.sql,,

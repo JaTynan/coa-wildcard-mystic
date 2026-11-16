@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..9bad11a
+index 0000000..f463453
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,7665 @@
+@@ -0,0 +1,8334 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -7536,9 +7536,662 @@ index 0000000..9bad11a
 +    }
 +};
 +
++namespace
++{
++// A Hunter "shot": any ranged Hunter ability, or a Hunter spell with "Shot" in its name.
++bool WcmeIsHunterShot(SpellInfo const* spell)
++{
++    return spell && spell->SpellFamilyName == SPELLFAMILY_HUNTER && (spell->DmgClass == SPELL_DAMAGE_CLASS_RANGED ||
++        (spell->SpellName[0] && std::strstr(spell->SpellName[0], "Shot")));
++}
++
++// The id of the highest known, active, non-passive spell of that name and family, or 0.
++uint32 WcmeKnownByName(Unit const* unit, char const* name, uint32 family)
++{
++    Player const* player = unit->ToPlayer();
++    uint32 best = 0;
++    if (!player)
++        return 0;
++    for (auto const& [spellId, known] : player->GetSpellMap())
++        if (known->State != PLAYERSPELL_REMOVED && known->Active)
++            if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId))
++                if (info->SpellFamilyName == family && WcmeNamed(info, name) && (!best || info->SpellLevel >= sSpellMgr->GetSpellInfo(best)->SpellLevel))
++                    best = spellId;
++    return best;
++}
++
++bool WcmeKnowsPassive(Unit const* unit, char const* name, uint32 family)
++{
++    Player const* player = unit->ToPlayer();
++    if (!player)
++        return false;
++    for (auto const& [spellId, known] : player->GetSpellMap())
++        if (known->State != PLAYERSPELL_REMOVED)
++            if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId))
++                if (info->SpellFamilyName == family && WcmeNamed(info, name))
++                    return true;
++    return false;
++}
++
++bool WcmeMainHandDagger(Unit const* unit)
++{
++    Player const* player = unit->ToPlayer();
++    Item const* main = player ? player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) : nullptr;
++    return main && main->GetTemplate()->Class == ITEM_CLASS_WEAPON && main->GetTemplate()->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER;
++}
++
++std::unordered_set<ObjectGuid> WcmeFastSpree;                  // Killing Spree casts that Spiteful Strike triggered
++std::unordered_map<ObjectGuid, WorldLocation> WcmeShadowSpot;  // where Forbidden Technique left your Shadow
++}
++
++// Edge of Fury (986234): Heroic Strike shows as Spiteful Strike (986236) and Revenge as Blind Revenge (986240)
++// (WcmeSyncSwap). Blind Rage: 500 maximum rage (wcme_rage_cap), and Backstab hits give 100 rage and make Blind Revenge
++// usable (986237, spell_wcme_blind_revenge). While you have Edge of Fury stacks (986235), Killing Spree hits deal 12%
++// more per stack to monsters (its data's own modifiers use Ascension modifier types our core does not have);
++// spell_wcme_edge_killing_spree spends the stacks when the spree ends.
++class spell_wcme_edge_of_fury : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_edge_of_fury);
++
++    static constexpr uint32 SPITEFUL_STRIKE = 986236;
++    static constexpr uint32 BLIND_REVENGE = 986240;
++    static constexpr uint32 HUNGRY = 986237;
++    static constexpr uint32 EDGE = 986235;
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncSwap(owner, "Heroic Strike", SPELLFAMILY_WARRIOR, SPITEFUL_STRIKE, active);
++        WcmeSyncSwap(owner, "Revenge", SPELLFAMILY_WARRIOR, BLIND_REVENGE, active);
++        if (Player* player = owner->ToPlayer())
++            player->UpdateMaxPower(POWER_RAGE);
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (!spell || !target || !WcmeDealtDamage(eventInfo))
++            return false;
++        if (WcmeNamed(spell, "Backstab"))
++            return true;
++        return WcmeNamed(spell, "Killing Spree") && spell->SpellFamilyName == SPELLFAMILY_ROGUE && !target->IsControlledByPlayer() &&
++            GetTarget()->HasAura(EDGE);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (WcmeNamed(spell, "Backstab"))
++        {
++            owner->EnergizeBySpell(owner, GetId(), 1000, POWER_RAGE);
++            owner->AddAura(HUNGRY, owner);
++            return;
++        }
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        WcmeExtraDamage(owner, eventInfo.GetActionTarget(), spell,
++            int64(damage->GetDamage() + damage->GetAbsorb()) * 12 * owner->GetAuraCount(EDGE) / 100);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_edge_of_fury::HandleApply, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_edge_of_fury::HandleRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_edge_of_fury::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_edge_of_fury::HandleProc);
++    }
++};
++
++// Blind Revenge (986240): with Edge of Fury, usable only after a Backstab (986237); casting it spends that, finishes
++// Spiteful Strike's cooldown and adds an Edge of Fury stack.
++class spell_wcme_blind_revenge : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_blind_revenge);
++
++    static constexpr uint32 ENCHANT = 986234;
++    static constexpr uint32 HUNGRY = 986237;
++    static constexpr uint32 EDGE = 986235;
++
++    SpellCastResult CheckCast()
++    {
++        Unit* caster = GetCaster();
++        return !caster->HasAura(ENCHANT) || caster->HasAura(HUNGRY) ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void HandleAfterCast()
++    {
++        Unit* caster = GetCaster();
++        if (!caster->HasAura(ENCHANT))
++            return;
++        caster->RemoveAurasDueToSpell(HUNGRY);
++        WcmeCutCooldownByName(caster, "Spiteful Strike", 3600000);
++        WcmeAddStackOn(caster, caster, EDGE);
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_blind_revenge::CheckCast);
++        AfterCast += SpellCastFn(spell_wcme_blind_revenge::HandleAfterCast);
++    }
++};
++
++// Spiteful Strike (986236): its data always triggered Killing Spree; now it does so only at 5 Edge of Fury stacks and
++// only if you know Killing Spree (that spree runs twice as fast, spell_wcme_edge_killing_spree); otherwise it adds a
++// stack.
++class spell_wcme_spiteful_strike : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_spiteful_strike);
++
++    static constexpr uint32 EDGE = 986235;
++
++    void PreventSpree(SpellEffIndex effIndex)
++    {
++        PreventHitDefaultEffect(effIndex);
++    }
++
++    void HandleAfterHit()
++    {
++        Unit* caster = GetCaster();
++        Unit* target = GetHitUnit();
++        if (!target)
++            return;
++        Aura const* edge = caster->GetAura(EDGE);
++        uint32 const spree = WcmeKnownByName(caster, "Killing Spree", SPELLFAMILY_ROGUE);
++        if (edge && edge->GetStackAmount() >= edge->GetSpellInfo()->StackAmount && spree)
++        {
++            WcmeFastSpree.insert(caster->GetGUID());
++            caster->CastSpell(target, spree, true);
++            WcmeFastSpree.erase(caster->GetGUID());
++            return;
++        }
++        WcmeAddStackOn(caster, caster, EDGE);
++    }
++
++    void Register() override
++    {
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_spiteful_strike::PreventSpree, EFFECT_2, SPELL_EFFECT_TRIGGER_SPELL);
++        AfterHit += SpellHitFn(spell_wcme_spiteful_strike::HandleAfterHit);
++    }
++};
++
++// Killing Spree (51690, 800219): a spree Spiteful Strike triggers attacks twice as fast (same number of assaults).
++// With Edge of Fury on, the spree spends its stacks when it ends.
++class spell_wcme_edge_killing_spree : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_edge_killing_spree);
++
++    bool _fast = false;
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& /*isPeriodic*/, int32& amplitude)
++    {
++        if (Unit* caster = GetCaster())
++            if (WcmeFastSpree.count(caster->GetGUID()))
++            {
++                _fast = true;
++                amplitude = std::max(100, amplitude / 2);
++            }
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (!_fast)
++            return;
++        GetAura()->SetMaxDuration(GetAura()->GetMaxDuration() / 2);
++        GetAura()->SetDuration(GetAura()->GetMaxDuration());
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (Unit* caster = GetCaster())
++            if (caster->HasAura(986234))
++                caster->RemoveAurasDueToSpell(986235);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_edge_killing_spree::CalcPeriod, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_edge_killing_spree::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_edge_killing_spree::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Forbidden Technique (954326): Shadow Dance shows as the Forbidden Technique shot (954327, WcmeSyncSwap; it grants
++// Shadow Dance itself through its data). Each shot that hits grants Forbidden Dance (986233). During the Dance, Ambush
++// hits refund 30 energy, throw a Dusk Dagger (954330) and add Dusk Shot (901110: Hunter shots +7%, up to 5). Shadow
++// Powers (with a dagger in your main hand): Hunter shots have a 75% chance to throw a Shadow Dagger (954336), take 3 sec
++// (1 vs players) off Forbidden Technique (954339 / 954344) and add Dusk Blade (901111). Ambush deals 6% more per Dusk
++// Blade stack (2% vs players; done here, its data's modifier types are Ascension-only).
++class spell_wcme_forbidden_technique : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_forbidden_technique);
++
++    static constexpr uint32 SHOT = 954327;
++    static constexpr uint32 DANCE = 986233;
++    static constexpr uint32 DUSK_DAGGER = 954330;
++    static constexpr uint32 DUSK_SHOT = 901110;
++    static constexpr uint32 SHADOW_DAGGER = 954336;
++    static constexpr uint32 CDR = 954339;
++    static constexpr uint32 CDR_PVP = 954344;
++    static constexpr uint32 DUSK_BLADE = 901111;
++
++    void Sync(bool active) { WcmeSyncSwap(GetTarget(), "Shadow Dance", SPELLFAMILY_ROGUE, SHOT, active); }
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || !eventInfo.GetActionTarget() || !WcmeDealtDamage(eventInfo) || spell->Id == SHADOW_DAGGER || spell->Id == DUSK_DAGGER)
++            return false;
++        if (spell->Id == SHOT || WcmeNamed(spell, "Ambush"))
++            return true;
++        return WcmeIsHunterShot(spell) && WcmeMainHandDagger(GetTarget()) && roll_chance_i(75);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (spell->Id == SHOT)
++        {
++            owner->CastSpell(owner, DANCE, true);
++            return;
++        }
++        if (WcmeNamed(spell, "Ambush"))
++        {
++            if (uint8 const blades = owner->GetAuraCount(DUSK_BLADE))
++            {
++                DamageInfo const* damage = eventInfo.GetDamageInfo();
++                WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) *
++                    (target->IsControlledByPlayer() ? 2 : 6) * blades / 100);
++            }
++            if (owner->HasAura(DANCE))
++            {
++                owner->EnergizeBySpell(owner, GetId(), 30, POWER_ENERGY);
++                owner->CastSpell(target, DUSK_DAGGER, true);
++                WcmeAddStackOn(owner, owner, DUSK_SHOT);
++            }
++            return;
++        }
++        owner->CastSpell(target, SHADOW_DAGGER, true);
++        owner->CastSpell(owner, target->IsControlledByPlayer() ? CDR_PVP : CDR, true);
++        WcmeAddStackOn(owner, owner, DUSK_BLADE);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_forbidden_technique::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_forbidden_technique::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_forbidden_technique::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_forbidden_technique::HandleProc);
++    }
++};
++
++// Forbidden Technique shot (954327): remembers where you stood (your Shadow) before it teleports you.
++class spell_wcme_forbidden_shot : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_forbidden_shot);
++
++    void HandleBeforeCast()
++    {
++        Unit* caster = GetCaster();
++        WcmeShadowSpot[caster->GetGUID()] = caster->GetWorldLocation();
++    }
++
++    void Register() override
++    {
++        BeforeCast += SpellCastFn(spell_wcme_forbidden_shot::HandleBeforeCast);
++    }
++};
++
++// Forbidden Dance (986233): when it ends you teleport back to your Shadow (where the last Forbidden Technique shot
++// was fired from), if it is on the same map and within 60 yards.
++class spell_wcme_forbidden_dance : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_forbidden_dance);
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* owner = GetTarget();
++        auto spot = WcmeShadowSpot.find(owner->GetGUID());
++        if (spot == WcmeShadowSpot.end())
++            return;
++        WorldLocation const back = spot->second;
++        WcmeShadowSpot.erase(spot);
++        if (owner->IsAlive() && back.GetMapId() == owner->GetMapId() && owner->GetExactDist(&back) <= 60.0f)
++            owner->NearTeleportTo(back.GetPositionX(), back.GetPositionY(), back.GetPositionZ(), back.GetOrientation());
++    }
++
++    void Register() override
++    {
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_forbidden_dance::HandleRemove, EFFECT_0, SPELL_AURA_EFFECT_IMMUNITY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Meditate (965426): with Forbidden Technique, each tick adds a Forbidden Chants stack (901122: +1% attack power, up
++// to 5), and casting Meditate again first removes them.
++class spell_wcme_meditate_chants : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_meditate_chants);
++
++    static constexpr uint32 CHANTS = 901122;
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (GetTarget()->HasAura(954326))
++            GetTarget()->RemoveAurasDueToSpell(CHANTS);
++    }
++
++    void HandleTick(AuraEffect const* /*aurEff*/)
++    {
++        if (GetTarget()->HasAura(954326))
++            WcmeAddStackOn(GetTarget(), GetTarget(), CHANTS);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_meditate_chants::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE, AURA_EFFECT_HANDLE_REAL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_meditate_chants::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_ENERGIZE);
++    }
++};
++
++// Fury of the Titans (977810): 300 maximum rage (wcme_rage_cap) and Titanic Strike (977813) taught while you know
++// Titan's Grip. During Titanic Fury (977811) melee auto attacks add a combo point (984969). The next direct Warrior
++// ability on the global cooldown after Titanic Strike spends Titanic Power (986138, its +25% per stack is the data's)
++// and adds a combo point.
++class spell_wcme_fury_of_the_titans : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_fury_of_the_titans);
++
++    static constexpr uint32 TITANIC_STRIKE = 977813;
++    static constexpr uint32 TITANIC_STRIKE_OFF = 977812;
++    static constexpr uint32 FURY = 977811;
++    static constexpr uint32 POWER = 986138;
++    static constexpr uint32 COMBO_POINT = 984969;
++    static constexpr std::array<uint32, 1> TAUGHT = { TITANIC_STRIKE };
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncTaughtRank(owner, TAUGHT, active && WcmeKnowsPassive(owner, "Titan's Grip", SPELLFAMILY_WARRIOR));
++        if (Player* player = owner->ToPlayer())
++            player->UpdateMaxPower(POWER_RAGE);
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* owner = GetTarget();
++        if (!eventInfo.GetActionTarget() || eventInfo.GetActionTarget() == owner)
++            return false;
++        if (eventInfo.GetTypeMask() & PROC_FLAG_DONE_MELEE_AUTO_ATTACK)
++            return owner->HasAura(FURY);
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->SpellFamilyName == SPELLFAMILY_WARRIOR && spell->Id != TITANIC_STRIKE &&
++            spell->Id != TITANIC_STRIKE_OFF && spell->StartRecoveryTime > 0 && WcmeDealsAnyDamage(spell) &&
++            WcmeDealtDamage(eventInfo) && owner->HasAura(POWER);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (!(eventInfo.GetTypeMask() & PROC_FLAG_DONE_MELEE_AUTO_ATTACK))
++            owner->RemoveAurasDueToSpell(POWER);
++        owner->CastSpell(eventInfo.GetActionTarget(), COMBO_POINT, true);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_fury_of_the_titans::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_fury_of_the_titans::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_fury_of_the_titans::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_fury_of_the_titans::HandleProc);
++    }
++};
++
++// Titanic Strike (977813): used at full rage it starts Titanic Fury (977811), unless that is already running.
++class spell_wcme_titanic_strike : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_titanic_strike);
++
++    bool _full = false;
++
++    SpellCastResult CheckCast()
++    {
++        Unit* caster = GetCaster();
++        _full = caster->GetMaxPower(POWER_RAGE) > 0 && caster->GetPower(POWER_RAGE) >= caster->GetMaxPower(POWER_RAGE);
++        return SPELL_CAST_OK;
++    }
++
++    void HandleAfterCast()
++    {
++        Unit* caster = GetCaster();
++        if (_full && !caster->HasAura(977811))
++            caster->CastSpell(caster, 977811, true);
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_titanic_strike::CheckCast);
++        AfterCast += SpellCastFn(spell_wcme_titanic_strike::HandleAfterCast);
++    }
++};
++
++// Titanic Strike (Off Hand) (977812): its data started Titanic Fury on every strike; spell_wcme_titanic_strike decides.
++class spell_wcme_titanic_strike_off : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_titanic_strike_off);
++
++    void PreventFury(SpellEffIndex effIndex)
++    {
++        PreventHitDefaultEffect(effIndex);
++    }
++
++    void Register() override
++    {
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_titanic_strike_off::PreventFury, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
++    }
++};
++
++// Titanic Fury (977811): when it ends, your rage is lost.
++class spell_wcme_titanic_fury : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_titanic_fury);
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->SetPower(POWER_RAGE, 0);
++    }
++
++    void Register() override
++    {
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_titanic_fury::HandleRemove, EFFECT_0, SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Grove Ranger (997124), as the in-game description has it: Arcane Shot shows as Blooming Shot (92726) and Serpent
++// Sting as Medicinal Sting (92737) (WcmeSyncSwap); Grover's Touch (985610) and Grove Shot (985601) are taught; Grove
++// Ranger's Agility (997563) is kept on you (its healing-power effect named no stat; Validate makes it Agility). Hunter
++// shots add a Grove Ranger stack (997542, up to 3); Wild Growth spends them, Healing Touch and Regrowth spend up to 2.
++// Steady Shot casts have a 20% chance to give back a charge of Blooming Shot and of Medicinal Sting.
++class spell_wcme_grove_ranger : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_grove_ranger);
++
++    static constexpr uint32 BLOOMING_SHOT = 92726;
++    static constexpr uint32 MEDICINAL_STING = 92737;
++    static constexpr uint32 GROVE_SHOT = 985601;
++    static constexpr uint32 GROVERS_TOUCH = 985610;
++    static constexpr uint32 AGILITY = 997563;
++    static constexpr uint32 STACKS = 997542;
++    static constexpr std::array<uint32, 2> TAUGHT = { GROVERS_TOUCH, GROVE_SHOT };
++
++    bool Validate(SpellInfo const* /*spellInfo*/) override
++    {
++        if (SpellInfo const* agility = sSpellMgr->GetSpellInfo(AGILITY))
++            if (agility->Effects[EFFECT_1].ApplyAuraName == SPELL_AURA_MOD_SPELL_HEALING_OF_STAT_PERCENT &&
++                agility->Effects[EFFECT_1].MiscValue >= MAX_STATS)
++                const_cast<SpellInfo*>(agility)->Effects[EFFECT_1].MiscValue = STAT_AGILITY;
++        return true;
++    }
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncSwap(owner, "Arcane Shot", SPELLFAMILY_HUNTER, BLOOMING_SHOT, active);
++        WcmeSyncSwap(owner, "Serpent Sting", SPELLFAMILY_HUNTER, MEDICINAL_STING, active);
++        Player* player = owner->ToPlayer();
++        if (player)
++            for (uint32 spell : TAUGHT)
++            {
++                if (active && !player->HasSpell(spell))
++                    player->learnSpell(spell, true);
++                else if (!active && player->HasSpell(spell))
++                    player->removeSpell(spell, SPEC_MASK_ALL, true);
++            }
++        if (active && !owner->HasAura(AGILITY))
++            owner->AddAura(AGILITY, owner);
++        else if (!active)
++        {
++            owner->RemoveAurasDueToSpell(AGILITY);
++            owner->RemoveAurasDueToSpell(STACKS);
++        }
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell)
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return (spell->SpellFamilyName == SPELLFAMILY_HUNTER && WcmeNamed(spell, "Steady Shot")) ||
++                (spell->SpellFamilyName == SPELLFAMILY_DRUID && WcmeNamedAny(spell, { "Wild Growth", "Healing Touch", "Regrowth" }) &&
++                    GetTarget()->HasAura(STACKS));
++        return WcmeIsHunterShot(spell) && eventInfo.GetActionTarget() && eventInfo.GetActionTarget() != GetTarget();
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!(eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST))
++        {
++            WcmeAddStackOn(owner, owner, STACKS);
++            return;
++        }
++        if (WcmeNamed(spell, "Steady Shot"))
++        {
++            if (roll_chance_i(20))
++            {
++                WcmeRestoreChargeByName(owner, "Blooming Shot");
++                WcmeRestoreChargeByName(owner, "Medicinal Sting");
++            }
++            return;
++        }
++        if (WcmeNamed(spell, "Wild Growth"))
++            owner->RemoveAurasDueToSpell(STACKS);
++        else if (Aura* stacks = owner->GetAura(STACKS))
++            stacks->ModStackAmount(-std::min<int32>(2, stacks->GetStackAmount()));
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_grove_ranger::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_grove_ranger::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_grove_ranger::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_grove_ranger::HandleProc);
++    }
++};
++
++// Grove Shot (985601) and Grover's Touch (985610): their heals add 26% of your ranged attack power, as described.
++class spell_wcme_grove_heal : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_grove_heal);
++
++    void HandleHeal(SpellEffIndex /*effIndex*/)
++    {
++        SetHitHeal(GetHitHeal() + int32(GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.26f));
++    }
++
++    void Register() override
++    {
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_grove_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
++    }
++};
++
++// Blooming Shot (92726): its damage adds 30% of your ranged attack power, as described.
++class spell_wcme_blooming_shot : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_blooming_shot);
++
++    void HandleDamage(SpellEffIndex /*effIndex*/)
++    {
++        SetHitDamage(GetHitDamage() + int32(GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.30f));
++    }
++
++    void Register() override
++    {
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_blooming_shot::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
++    }
++};
++
++// Medicinal Sting (92737): its heal over time adds 30% of your ranged attack power in total, as described.
++class spell_wcme_medicinal_sting : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_medicinal_sting);
++
++    void CalcAmount(AuraEffect const* aurEff, int32& amount, bool& /*canBeRecalculated*/)
++    {
++        Unit* caster = GetCaster();
++        int32 const duration = GetAura() ? GetAura()->GetMaxDuration() : 0;
++        int32 const amplitude = aurEff->GetAmplitude();
++        if (!caster || duration <= 0 || amplitude <= 0)
++            return;
++        int32 const ticks = std::max(1, duration / amplitude);
++        amount += int32(caster->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.30f / ticks);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_medicinal_sting::CalcAmount, EFFECT_0, SPELL_AURA_PERIODIC_HEAL);
++    }
++};
++
++// Maximum rage for Edge of Fury's Blind Rage (500) and Fury of the Titans (300).
++class wcme_rage_cap : public PlayerScript
++{
++public:
++    wcme_rage_cap() : PlayerScript("wcme_rage_cap", { PLAYERHOOK_ON_AFTER_UPDATE_MAX_POWER }) { }
++
++    void OnPlayerAfterUpdateMaxPower(Player* player, Powers& power, float& value) override
++    {
++        if (power != POWER_RAGE)
++            return;
++        if (player->HasAura(986234))
++            value += 4000.0f;
++        else if (player->HasAura(977810))
++            value += 2000.0f;
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    new wcme_kit_damage_hooks();
++    new wcme_rage_cap();
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
 +    RegisterSpellScript(spell_wcme_unique_physical_stacks);
 +    RegisterSpellScript(spell_wcme_curse_of_arugal);
@@ -7668,4 +8321,20 @@ index 0000000..9bad11a
 +    RegisterSpellScript(spell_wcme_tidal_disciple);
 +    RegisterSpellScript(spell_wcme_tidal_swell);
 +    RegisterSpellScript(spell_wcme_tidal_shield);
++    RegisterSpellScript(spell_wcme_edge_of_fury);
++    RegisterSpellScript(spell_wcme_blind_revenge);
++    RegisterSpellScript(spell_wcme_spiteful_strike);
++    RegisterSpellScript(spell_wcme_edge_killing_spree);
++    RegisterSpellScript(spell_wcme_forbidden_technique);
++    RegisterSpellScript(spell_wcme_forbidden_shot);
++    RegisterSpellScript(spell_wcme_forbidden_dance);
++    RegisterSpellScript(spell_wcme_meditate_chants);
++    RegisterSpellScript(spell_wcme_fury_of_the_titans);
++    RegisterSpellScript(spell_wcme_titanic_strike);
++    RegisterSpellScript(spell_wcme_titanic_strike_off);
++    RegisterSpellScript(spell_wcme_titanic_fury);
++    RegisterSpellScript(spell_wcme_grove_ranger);
++    RegisterSpellScript(spell_wcme_grove_heal);
++    RegisterSpellScript(spell_wcme_blooming_shot);
++    RegisterSpellScript(spell_wcme_medicinal_sting);
 +}
