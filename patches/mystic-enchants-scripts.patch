@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..f463453
+index 0000000..0f5a33c
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,8334 @@
+@@ -0,0 +1,8404 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -7132,7 +7132,9 @@ index 0000000..f463453
 +// mask) is kept on you. Pistol Shot hits add Gunslinger's Strike (997050, up to 3). Pistol Shot and Grape Shot casts
 +// take 1.5 sec off Raptor Strike and Mongoose Bite. A Mongoose Bite with Gunslinger's Strike adds Pirate's Flurry
 +// (997429): 3 blows of 225% weapon damage over a second. Mongoose Bite or Raptor Strike spends Gunslinger's Strike.
-+// The single one-handed weapon rule is checked by spell_wcme_gunslinger_shot.
++// Pistol Shot triggers Piercing Shots and Master Tactician as its description says. Against players Gunslinger's
++// Strike adds 5% per stack to Mongoose Bite (wcme_kit_damage_hooks). The single one-handed weapon rule and Grape Shot's
++// own cooldown are handled by spell_wcme_gunslinger_shot.
 +class spell_wcme_defias_gunslinger : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_defias_gunslinger);
@@ -7142,6 +7144,31 @@ index 0000000..f463453
 +    static constexpr uint32 STRIKE = 997050;
 +    static constexpr uint32 TACTICS = 997051;
 +    static constexpr uint32 FLURRY = 997429;
++
++    static AuraEffect const* Talent(Unit* owner, char const* name)
++    {
++        for (AuraEffect const* effect : owner->GetAuraEffectsByType(SPELL_AURA_PROC_TRIGGER_SPELL))
++            if (effect->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_HUNTER && WcmeNamed(effect->GetSpellInfo(), name))
++                return effect;
++        return nullptr;
++    }
++
++    // Pistol Shot's description says it can trigger Piercing Shots and Master Tactician (Expose Weakness already
++    // triggers from any critical strike); those talents only look at Hunter spells, so this does it for them.
++    static void PistolShotTalents(Unit* owner, ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        if (AuraEffect const* piercing = Talent(owner, "Piercing Shots"))
++            if ((eventInfo.GetHitMask() & PROC_HIT_CRITICAL) && damage->GetDamage())
++                if (SpellInfo const* bleed = sSpellMgr->GetSpellInfo(63468); bleed && bleed->GetMaxTicks() > 0)
++                    target->CastDelayedSpellWithPeriodicAmount(owner, bleed->Id, SPELL_AURA_PERIODIC_DAMAGE,
++                        CalculatePct(int32(damage->GetDamage()), piercing->GetAmount()) / int32(bleed->GetMaxTicks()));
++        if (AuraEffect const* tactician = Talent(owner, "Master Tactician"))
++            if (uint32 const trigger = tactician->GetSpellInfo()->Effects[tactician->GetEffIndex()].TriggerSpell)
++                if (roll_chance_i(int32(tactician->GetSpellInfo()->ProcChance)))
++                    owner->CastSpell(owner, trigger, true);
++    }
 +
 +    void Sync(bool active)
 +    {
@@ -7186,6 +7213,7 @@ index 0000000..f463453
 +        if (spell->Id == PISTOL_SHOT)
 +        {
 +            WcmeAddStackOn(owner, owner, STRIKE);
++            PistolShotTalents(owner, eventInfo);
 +            return;
 +        }
 +        owner->RemoveAurasDueToSpell(STRIKE);
@@ -7228,9 +7256,23 @@ index 0000000..f463453
 +        return SPELL_CAST_OK;
 +    }
 +
++    // Grape Shot's description says Multi-Shot cooldown modifiers do not apply to it (it shares Multi-Shot's family
++    // flag), so its cooldown is put back to its own after each cast.
++    void HandleAfterCast()
++    {
++        Player* player = GetCaster()->ToPlayer();
++        SpellInfo const* spell = GetSpellInfo();
++        if (!player || spell->Id != 300191 || !spell->RecoveryTime)
++            return;
++        int32 const remaining = int32(player->GetSpellCooldownDelay(spell->Id));
++        if (remaining > 0 && remaining != int32(spell->RecoveryTime))
++            player->ModifySpellCooldown(spell->Id, int32(spell->RecoveryTime) - remaining);
++    }
++
 +    void Register() override
 +    {
 +        OnCheckCast += SpellCheckCastFn(spell_wcme_gunslinger_shot::CheckCast);
++        AfterCast += SpellCastFn(spell_wcme_gunslinger_shot::HandleAfterCast);
 +    }
 +};
 +
@@ -7239,7 +7281,8 @@ index 0000000..f463453
 +// charges), and, if you know Missile Barrage at rank 3 or higher, have a 30% chance (+4% per Lessons in Shadow stack)
 +// to trigger Missile Barrage (44401), which spends the Lessons. Unstable Affliction, Curse of Agony and Shadow Bolt
 +// damage has a 40% chance (the buff's own data) to add a Lessons in Shadow stack (997417, up to 25). Tainted charges are
-+// spent by wcme_kit_damage_hooks; Curse of Agony haste by spell_wcme_arugal_curse_haste.
++// spent by wcme_kit_damage_hooks, which also keeps Arugal's Fury at +10% against players; Curse of Agony haste by
++// spell_wcme_arugal_curse_haste.
 +class spell_wcme_disciple_of_arugal : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_disciple_of_arugal);
@@ -7524,9 +7567,28 @@ index 0000000..f463453
 +        }
 +    }
 +
++    // A buff whose tooltip gives a smaller bonus against players: its data bonus (pve per stack or charge) is scaled down
++    // to the player value for that hit.
++    static void PvpValue(Unit* attacker, SpellInfo const* spellInfo, uint32 buff, int32 pve, int32 pvp, int32& damage)
++    {
++        AuraEffect const* effect = attacker->GetAuraEffect(buff, EFFECT_0);
++        if (!effect || !effect->IsAffectedOnSpell(spellInfo))
++            return;
++        int32 const stacks = std::max<int32>(1, effect->GetBase()->GetStackAmount());
++        damage = int32(int64(damage) * (100 + pvp * stacks) / (100 + pve * stacks));
++    }
++
 +    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
 +    {
-+        if (!target || !attacker || !spellInfo || damage <= 0 || !attacker->IsCharmed() || attacker == target)
++        if (!target || !attacker || !spellInfo || damage <= 0 || attacker == target)
++            return;
++        if (target->IsControlledByPlayer() && attacker->IsPlayer())
++        {
++            PvpValue(attacker, spellInfo, 997050, 30, 5, damage);    // Gunslinger's Strike: Mongoose Bite +5% vs players
++            PvpValue(attacker, spellInfo, 986138, 25, 15, damage);   // Titanic Power: +15% vs players
++            PvpValue(attacker, spellInfo, 997422, 30, 10, damage);   // Arugal's Fury: Shadow Missiles +10% vs players
++        }
++        if (!attacker->IsCharmed())
 +            return;
 +        Unit* master = attacker->GetCharmer();
 +        if (!master || !master->HasAura(983180) || WcmeDarkmasterMinion(master) != attacker)
@@ -7762,7 +7824,7 @@ index 0000000..f463453
 +
 +// Forbidden Technique (954326): Shadow Dance shows as the Forbidden Technique shot (954327, WcmeSyncSwap; it grants
 +// Shadow Dance itself through its data). Each shot that hits grants Forbidden Dance (986233). During the Dance, Ambush
-+// hits refund 30 energy, throw a Dusk Dagger (954330) and add Dusk Shot (901110: Hunter shots +7%, up to 5). Shadow
++// costs 30 less energy (954338, the kit's own modifier, kept on you for the Dance) and its hits throw a Dusk Dagger (954330) and add Dusk Shot (901110: Hunter shots +7%, up to 5). Shadow
 +// Powers (with a dagger in your main hand): Hunter shots have a 75% chance to throw a Shadow Dagger (954336), take 3 sec
 +// (1 vs players) off Forbidden Technique (954339 / 954344) and add Dusk Blade (901111). Ambush deals 6% more per Dusk
 +// Blade stack (2% vs players; done here, its data's modifier types are Ascension-only).
@@ -7814,7 +7876,6 @@ index 0000000..f463453
 +            }
 +            if (owner->HasAura(DANCE))
 +            {
-+                owner->EnergizeBySpell(owner, GetId(), 30, POWER_ENERGY);
 +                owner->CastSpell(target, DUSK_DAGGER, true);
 +                WcmeAddStackOn(owner, owner, DUSK_SHOT);
 +            }
@@ -7851,15 +7912,23 @@ index 0000000..f463453
 +    }
 +};
 +
-+// Forbidden Dance (986233): when it ends you teleport back to your Shadow (where the last Forbidden Technique shot
-+// was fired from), if it is on the same map and within 60 yards.
++// Forbidden Dance (986233): Ambush costs 30 less energy while it lasts (954338). When it ends you teleport back to
++// your Shadow (where the last Forbidden Technique shot was fired from), if it is on the same map and within 60 yards.
 +class spell_wcme_forbidden_dance : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_forbidden_dance);
 +
++    static constexpr uint32 AMBUSH_COST = 954338;
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->AddAura(AMBUSH_COST, GetTarget());
++    }
++
 +    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
 +        Unit* owner = GetTarget();
++        owner->RemoveAurasDueToSpell(AMBUSH_COST);
 +        auto spot = WcmeShadowSpot.find(owner->GetGUID());
 +        if (spot == WcmeShadowSpot.end())
 +            return;
@@ -7871,6 +7940,7 @@ index 0000000..f463453
 +
 +    void Register() override
 +    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_forbidden_dance::HandleApply, EFFECT_0, SPELL_AURA_EFFECT_IMMUNITY, AURA_EFFECT_HANDLE_REAL);
 +        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_forbidden_dance::HandleRemove, EFFECT_0, SPELL_AURA_EFFECT_IMMUNITY, AURA_EFFECT_HANDLE_REAL);
 +    }
 +};
@@ -7904,8 +7974,8 @@ index 0000000..f463453
 +
 +// Fury of the Titans (977810): 300 maximum rage (wcme_rage_cap) and Titanic Strike (977813) taught while you know
 +// Titan's Grip. During Titanic Fury (977811) melee auto attacks add a combo point (984969). The next direct Warrior
-+// ability on the global cooldown after Titanic Strike spends Titanic Power (986138, its +25% per stack is the data's)
-+// and adds a combo point.
++// ability on the global cooldown after Titanic Strike spends Titanic Power (986138, its +25% per stack is the data's;
++// +15% against players in wcme_kit_damage_hooks) and adds a combo point.
 +class spell_wcme_fury_of_the_titans : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_fury_of_the_titans);
