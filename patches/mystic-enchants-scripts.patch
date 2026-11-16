@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..7810253
+index 0000000..584b6c3
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,5440 @@
+@@ -0,0 +1,5591 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -5343,6 +5343,155 @@ index 0000000..7810253
 +    }
 +};
 +
++// Oracle of the Eclipse (979240): Holy Light activates Oracle of the Eclipse (Lunar) (979243) and Healing Wave activates
++// Oracle of the Eclipse (Solar) (979242), 15 sec each, each with its own 30 sec cooldown, never both at once. Activating
++// either restores 16% of your missing mana and, in combat, gives 2 stacks of Blessing of the Moon (983518). Solar gives
++// you Light's Grace (31834); during it your Holy Light crits get Ancestral Healing's Ancestral Fortitude (16237) and
++// Ancestral Awakening's heal (52752: 30% to the most injured party member within 40 yards), and with Improved Healing
++// Wave each Holy Light gives Light's Grace again. Lunar gives you Tidal Waves (53390); during it your Healing Wave gets
++// Sanctified Light (+6% critical heal chance), Healing Light (+12% healing) and Divine Aegis (47753: a shield of 30% of
++// a critical heal). Each talent counts only at its final rank. Oracle's Blessing (983668) is taught by the enchant
++// (wcme_enchant_teach) and spends a stack of Blessing of the Moon (spell_wcme_oracles_blessing).
++class spell_wcme_oracle_of_the_eclipse : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_oracle_of_the_eclipse);
++
++    static constexpr uint32 SOLAR = 979242;
++    static constexpr uint32 LUNAR = 979243;
++    static constexpr uint32 BLESSING_OF_THE_MOON = 983518;
++    static constexpr uint32 LIGHTS_GRACE = 31834;
++    static constexpr uint32 TIDAL_WAVES = 53390;
++    static constexpr uint32 ANCESTRAL_FORTITUDE = 16237;
++    static constexpr uint32 ANCESTRAL_AWAKENING = 52752;
++    static constexpr uint32 DIVINE_AEGIS = 47753;
++    static constexpr Seconds ECLIPSE_COOLDOWN{30};
++    TimePoint _solarReady{};
++    TimePoint _lunarReady{};
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        return heal && heal->GetHeal() && eventInfo.GetActionTarget() && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(eventInfo.GetSpellInfo(), { "Holy Light", "Healing Wave" });
++    }
++
++    void Activate(Unit* owner, uint32 eclipse)
++    {
++        owner->AddAura(eclipse, owner);
++        int32 const missing = int32(owner->GetMaxPower(POWER_MANA)) - int32(owner->GetPower(POWER_MANA));
++        if (missing > 0)
++            owner->ModifyPower(POWER_MANA, missing * 16 / 100);
++        if (owner->IsInCombat())
++            for (uint8 stack = 0; stack < 2; ++stack)
++            {
++                Aura* blessing = owner->GetAura(BLESSING_OF_THE_MOON);
++                if (!blessing)
++                    owner->AddAura(BLESSING_OF_THE_MOON, owner);
++                else
++                {
++                    if (blessing->GetStackAmount() < blessing->GetSpellInfo()->StackAmount)
++                        blessing->SetStackAmount(blessing->GetStackAmount() + 1);
++                    blessing->RefreshDuration();
++                }
++            }
++        owner->AddAura(eclipse == SOLAR ? LIGHTS_GRACE : TIDAL_WAVES, owner);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        bool const holyLight = WcmeNamed(spell, "Holy Light");
++        bool const crit = eventInfo.GetHitMask() & PROC_HIT_CRITICAL;
++        if (holyLight && owner->HasAura(SOLAR))
++        {
++            if (crit && WcmeHasAnyAura(owner, { 16240, 1116240, 1216240 }))
++                owner->CastSpell(target, ANCESTRAL_FORTITUDE, true);
++            if (crit && WcmeHasAnyAura(owner, { 51558, 1151558, 1251558 }))
++                if (SpellInfo const* awakening = sSpellMgr->GetSpellInfo(ANCESTRAL_AWAKENING))
++                {
++                    Unit* lowest = nullptr;
++                    for (Unit* ally : WcmeAlliesNear(owner, owner, 40.0f, 40))
++                        if (ally->IsInRaidWith(owner) && (!lowest || ally->GetHealthPct() < lowest->GetHealthPct()))
++                            lowest = ally;
++                    if (lowest)
++                    {
++                        HealInfo extra(owner, lowest, heal->GetHeal() * 30 / 100, awakening, awakening->GetSchoolMask());
++                        owner->HealBySpell(extra);
++                    }
++                }
++            if (WcmeHasAnyAura(owner, { 16229, 1116229, 1216229 }))
++                owner->AddAura(LIGHTS_GRACE, owner);
++        }
++        else if (!holyLight && owner->HasAura(LUNAR))
++        {
++            uint32 extra = 0;
++            if (WcmeHasAnyAura(owner, { 20239, 1120239, 1220239 }))
++                extra += heal->GetHeal() * 12 / 100;
++            bool critical = crit;
++            if (!critical && WcmeHasAnyAura(owner, { 20361, 1120361, 1220361 }) && roll_chance_i(6))
++            {
++                critical = true;
++                extra += heal->GetHeal() / 2;
++            }
++            if (extra)
++            {
++                HealInfo bonus(owner, target, extra, spell, spell->GetSchoolMask());
++                owner->HealBySpell(bonus, critical);
++            }
++            if (critical && WcmeHasAnyAura(owner, { 47515, 1147515, 1247515 }))
++                owner->CastCustomSpell(DIVINE_AEGIS, SPELLVALUE_BASE_POINT0, int32((heal->GetHeal() + extra) * 30 / 100), target, true);
++        }
++        if (owner->HasAura(SOLAR) || owner->HasAura(LUNAR))
++            return;
++        TimePoint const now = GameTime::Now();
++        if (holyLight && now >= _lunarReady)
++        {
++            _lunarReady = now + ECLIPSE_COOLDOWN;
++            Activate(owner, LUNAR);
++        }
++        else if (!holyLight && now >= _solarReady)
++        {
++            _solarReady = now + ECLIPSE_COOLDOWN;
++            Activate(owner, SOLAR);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_oracle_of_the_eclipse::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_oracle_of_the_eclipse::HandleProc);
++    }
++};
++
++// Oracle's Blessing (983668): needs a stack of Blessing of the Moon (983518) and spends one.
++class spell_wcme_oracles_blessing : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_oracles_blessing);
++
++    static constexpr uint32 BLESSING_OF_THE_MOON = 983518;
++
++    SpellCastResult CheckCast()
++    {
++        return GetCaster()->HasAura(BLESSING_OF_THE_MOON) ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void HandleAfterCast()
++    {
++        if (Aura* blessing = GetCaster()->GetAura(BLESSING_OF_THE_MOON))
++            blessing->ModStackAmount(-1);
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_oracles_blessing::CheckCast);
++        AfterCast += SpellCastFn(spell_wcme_oracles_blessing::HandleAfterCast);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -5443,4 +5592,6 @@ index 0000000..7810253
 +    RegisterSpellScript(spell_wcme_blood_and_guts);
 +    RegisterSpellScript(spell_wcme_mind_mending_armor);
 +    RegisterSpellScript(spell_wcme_resonating_power);
++    RegisterSpellScript(spell_wcme_oracle_of_the_eclipse);
++    RegisterSpellScript(spell_wcme_oracles_blessing);
 +}
