@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..d8d879f
+index 0000000..e2cbe3c
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,4447 @@
+@@ -0,0 +1,4974 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -4364,6 +4364,527 @@ index 0000000..d8d879f
 +    }
 +};
 +
++// Assuaging Shadows (965334): Shadow Dance casts Shadow Nova (832712: enemies within 8 yards slowed by 80% for 3 sec)
++// and puts Shadow Mark (832713, 8 sec) with 5 charges (3 on players) on every enemy within 8 yards. Ambush or Ravage on
++// your marked target spends a charge to finish Shadowstep's cooldown, give a stack of Shadow's Embrace (832717, up to 5)
++// and trigger Shadow of Death (986229): 30% of the strike's damage as Shadow to every monster within 8 yards of the
++// target, less when more than 3 are hit. Shadowstep's speed and threat buffs last 2 sec longer. While Shadow's Embrace
++// is up, damaging Rogue and Feral finishing moves take 2 sec off Shadow Dance and restore 10 energy (832718) and deal
++// Last Gasp (832719: 2 + 10% SP + 10% AP Shadow damage per combo point), at most once every 5 sec.
++class spell_wcme_assuaging_shadows : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_assuaging_shadows);
++
++    static constexpr uint32 NOVA = 832712;
++    static constexpr uint32 MARK = 832713;
++    static constexpr uint32 EMBRACE = 832717;
++    static constexpr uint32 DANCE_CDR = 832718;
++    static constexpr uint32 LAST_GASP = 832719;
++    static constexpr uint32 SHADOW_OF_DEATH = 986229;
++    static constexpr uint32 SHADOWSTEP_SPEED = 36554;
++    static constexpr uint32 SHADOWSTEP_THREAT = 44373;
++    static constexpr Seconds GASP_RATE{5};
++    TimePoint _gaspReady{};
++
++    static bool IsFinisher(SpellInfo const* spell)
++    {
++        return (spell->SpellFamilyName == SPELLFAMILY_ROGUE || spell->SpellFamilyName == SPELLFAMILY_DRUID) &&
++            spell->NeedsComboPoints() && WcmeDealsAnyDamage(spell);
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        uint32 const phase = eventInfo.GetSpellPhaseMask();
++        if (phase & PROC_SPELL_PHASE_CAST)
++            return WcmeNamed(spell, "Shadow Dance") || (IsFinisher(spell) && GetTarget()->HasAura(EMBRACE));
++        if (phase & PROC_SPELL_PHASE_FINISH)
++            return WcmeNamed(spell, "Shadowstep");
++        Unit* target = eventInfo.GetActionTarget();
++        return WcmeNamedAny(spell, { "Ambush", "Ravage" }) && target && WcmeDealtDamage(eventInfo) &&
++            target->HasAura(MARK, GetTarget()->GetGUID());
++    }
++
++    void ShadowOfDeath(Unit* owner, Unit* target, int64 damage)
++    {
++        SpellInfo const* shadow = sSpellMgr->GetSpellInfo(SHADOW_OF_DEATH);
++        if (!shadow)
++            return;
++        std::list<Unit*> monsters = WcmeEnemiesNear(owner, target, 8.0f, 50);
++        monsters.remove_if([](Unit* enemy) { return enemy->IsPlayer() || enemy->IsCharmedOwnedByPlayerOrPlayer(); });
++        if (monsters.empty())
++            return;
++        int64 share = damage * 30 / 100;
++        if (monsters.size() > 3)
++            share = share * 3 / int64(monsters.size());
++        for (Unit* monster : monsters)
++            WcmeExtraDamage(owner, monster, shadow, share);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        uint32 const phase = eventInfo.GetSpellPhaseMask();
++        if (phase & PROC_SPELL_PHASE_FINISH)
++        {
++            WcmeExtendAura(owner, SHADOWSTEP_SPEED, 2000);
++            WcmeExtendAura(owner, SHADOWSTEP_THREAT, 2000);
++            return;
++        }
++        if (phase & PROC_SPELL_PHASE_CAST)
++        {
++            if (WcmeNamed(spell, "Shadow Dance"))
++            {
++                owner->CastSpell(owner, NOVA, true);
++                for (Unit* enemy : WcmeEnemiesNear(owner, owner, 8.0f, 50))
++                    if (Aura* mark = owner->AddAura(MARK, enemy))
++                        mark->SetCharges(enemy->IsPlayer() ? 3 : 5);
++                return;
++            }
++            // combo points are still on the caster during the cast phase
++            uint8 const points = owner->GetComboPoints();
++            Unit* target = eventInfo.GetProcTarget();
++            if (!points || GameTime::Now() < _gaspReady)
++                return;
++            _gaspReady = GameTime::Now() + GASP_RATE;
++            owner->CastSpell(owner, DANCE_CDR, true);
++            SpellInfo const* gasp = sSpellMgr->GetSpellInfo(LAST_GASP);
++            if (gasp && target && owner->IsValidAttackTarget(target))
++                WcmeExtraDamage(owner, target, gasp,
++                    int64((2 + 0.1f * WcmeSpellPower(owner) + 0.1f * WcmeAttackPower(owner)) * points));
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        if (Aura* mark = target->GetAura(MARK, owner->GetGUID()))
++            mark->DropCharge();
++        WcmeCutCooldownByName(owner, "Shadowstep", 3600000);
++        if (Aura* embrace = owner->GetAura(EMBRACE))
++        {
++            if (embrace->GetStackAmount() < embrace->GetSpellInfo()->StackAmount)
++                embrace->SetStackAmount(embrace->GetStackAmount() + 1);
++            embrace->RefreshDuration();
++        }
++        else
++            owner->AddAura(EMBRACE, owner);
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        ShadowOfDeath(owner, target, int64(damage->GetDamage() + damage->GetAbsorb()));
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_assuaging_shadows::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_assuaging_shadows::HandleProc);
++    }
++};
++
++// Corrupted Bear Form (99634): in Bear or Dire Bear Form you carry Corrupted Bear (954340: Physical damage done -30%;
++// spell_wcme_corrupted_bear_shape keeps it in step with the form). Melee auto attacks then deal Corrupted Paw (99638):
++// Shadow damage equal to 40% of the hit, with double threat. Maul and Mangle (Bear) have a 30% chance to apply your
++// highest Corruption, if you know it; Swipe (Bear) drains 30% of its damage from each target with your Corruption as
++// Corrupted Hunger (99636), healing you for it. A Shadow Bolt made instant (Nightfall, Backlash) keeps you in the form
++// and hits up to 2 more enemies within 8 yards of the target for half its damage; any other Shadow Bolt cast in the
++// form takes you out of it.
++class spell_wcme_corrupted_bear_form : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_corrupted_bear_form);
++
++    static constexpr uint32 CORRUPTED = 954340;
++    static constexpr uint32 PAW = 99638;
++    static constexpr uint32 HUNGER = 99636;
++
++    static bool InBearForm(Unit const* unit)
++    {
++        return unit->GetShapeshiftForm() == FORM_BEAR || unit->GetShapeshiftForm() == FORM_DIREBEAR;
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (InBearForm(GetTarget()) && !GetTarget()->HasAura(CORRUPTED))
++            GetTarget()->AddAura(CORRUPTED, GetTarget());
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->RemoveAurasDueToSpell(CORRUPTED);
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        if (!InBearForm(GetTarget()) || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetTypeMask() & PROC_FLAG_DONE_MELEE_AUTO_ATTACK)
++            return eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo);
++        if (!spell)
++            return false;
++        if (WcmeNamed(spell, "Shadow Bolt"))
++            return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST) ||
++                (eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo) && eventInfo.GetProcSpell() &&
++                 eventInfo.GetProcSpell()->GetCastTime() == 0 &&
++                 eventInfo.GetActionTarget() == eventInfo.GetProcSpell()->m_targets.GetUnitTarget());
++        return (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_HIT) && eventInfo.GetActionTarget() &&
++            WcmeDealtDamage(eventInfo) && WcmeNamedAny(spell, { "Maul", "Mangle (Bear)", "Swipe (Bear)" });
++    }
++
++    static uint32 HighestCorruption(Player* player)
++    {
++        uint32 best = 0;
++        uint32 bestLevel = 0;
++        for (auto const& [spellId, known] : player->GetSpellMap())
++        {
++            SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId);
++            if (known->State == PLAYERSPELL_REMOVED || !known->Active || !WcmeNamed(info, "Corruption") ||
++                info->SpellFamilyName != SPELLFAMILY_WARLOCK || !info->HasAura(SPELL_AURA_PERIODIC_DAMAGE))
++                continue;
++            if (!best || info->SpellLevel > bestLevel)
++            {
++                best = spellId;
++                bestLevel = info->SpellLevel;
++            }
++        }
++        return best;
++    }
++
++    static bool HasMyCorruption(Unit* target, Unit* owner)
++    {
++        for (AuraEffect const* dot : target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE))
++            if (dot->GetCasterGUID() == owner->GetGUID() && WcmeNamed(dot->GetSpellInfo(), "Corruption"))
++                return true;
++        return false;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        int64 const dealt = damage ? int64(damage->GetDamage() + damage->GetAbsorb()) : 0;
++        if (eventInfo.GetTypeMask() & PROC_FLAG_DONE_MELEE_AUTO_ATTACK)
++        {
++            if (SpellInfo const* paw = sSpellMgr->GetSpellInfo(PAW))
++            {
++                int64 const shadow = dealt * 40 / 100;
++                WcmeExtraDamage(owner, target, paw, shadow);
++                if (target->IsAlive() && target->CanHaveThreatList())
++                    target->AddThreat(owner, float(shadow), SPELL_SCHOOL_MASK_SHADOW, paw);
++            }
++            return;
++        }
++        if (WcmeNamed(spell, "Shadow Bolt"))
++        {
++            if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            {
++                if (eventInfo.GetProcSpell() && eventInfo.GetProcSpell()->GetCastTime() > 0)
++                    owner->RemoveAurasByType(SPELL_AURA_MOD_SHAPESHIFT);
++                return;
++            }
++            uint8 hits = 0;
++            for (Unit* enemy : WcmeEnemiesNear(owner, target, 8.0f, 3))
++                if (enemy != target && hits < 2)
++                {
++                    ++hits;
++                    WcmeExtraDamage(owner, enemy, spell, dealt / 2);
++                }
++            return;
++        }
++        if (WcmeNamed(spell, "Swipe (Bear)"))
++        {
++            SpellInfo const* hunger = sSpellMgr->GetSpellInfo(HUNGER);
++            if (!hunger || !HasMyCorruption(target, owner))
++                return;
++            SpellNonMeleeDamage log(owner, target, hunger, hunger->GetSchoolMask());
++            owner->CalculateSpellDamageTaken(&log, int32(std::min<int64>(dealt * 30 / 100, INT32_MAX)), hunger);
++            uint32 const drained = log.damage;
++            owner->SendSpellNonMeleeDamageLog(&log);
++            owner->DealSpellDamage(&log, false);
++            if (drained)
++            {
++                HealInfo heal(owner, owner, drained, hunger, hunger->GetSchoolMask());
++                owner->HealBySpell(heal);
++            }
++            return;
++        }
++        Player* player = owner->ToPlayer();
++        if (!player || !roll_chance_i(30))
++            return;
++        if (uint32 const corruption = HighestCorruption(player))
++            owner->CastSpell(target, corruption, true);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_corrupted_bear_form::HandleApply, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_corrupted_bear_form::HandleRemove, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_corrupted_bear_form::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_corrupted_bear_form::HandleProc);
++    }
++};
++
++// Bear Form and Dire Bear Form: gaining the form gives a Corrupted Bear Form (99634) wearer Corrupted Bear (954340),
++// and losing it takes it away.
++class spell_wcme_corrupted_bear_shape : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_corrupted_bear_shape);
++
++    static constexpr uint32 ENCHANT = 99634;
++    static constexpr uint32 CORRUPTED = 954340;
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (GetTarget()->HasAura(ENCHANT) && !GetTarget()->HasAura(CORRUPTED))
++            GetTarget()->AddAura(CORRUPTED, GetTarget());
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->RemoveAurasDueToSpell(CORRUPTED);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_corrupted_bear_shape::HandleApply, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_corrupted_bear_shape::HandleRemove, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Prayer of Preservation (986033): the core turns Prayer of Healing into Prayer of Preservation (888571). Each of its
++// heals gives the ally Preservation (888593: +20% chance to be critically healed by you); a Prayer of Preservation
++// cast while you have Divine Favor also gives each ally it heals Shield of Preservation (888591: 30% less area damage).
++// Your next other heal on an ally with your Preservation spends it: Shield of Preservation, an extra Preservation heal
++// (888592: 69 + 5% SP + 1% AP, like one Prayer of Preservation tick) on the ally and up to 4 allies within 10 yards,
++// and 3 sec off Prayer of Preservation's cooldown (888569). Its last tick heals 70% more (888594,
++// spell_wcme_prayer_of_preservation_hot).
++std::unordered_map<ObjectGuid, TimePoint> WcmePreservationFavor;
++
++class spell_wcme_prayer_of_preservation : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_prayer_of_preservation);
++
++    static constexpr uint32 PRESERVATION = 888593;
++    static constexpr uint32 SHIELD = 888591;
++    static constexpr uint32 EXTRA_HEAL = 888592;
++    static constexpr uint32 COOLDOWN_CUT = 888569;
++
++    static bool IsPrayer(SpellInfo const* spell)
++    {
++        return WcmeNamed(spell, "Prayer of Preservation");
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Unit* target = eventInfo.GetActionTarget();
++        if (!heal || !heal->GetHeal() || !spell || !target || spell->Id == EXTRA_HEAL)
++            return false;
++        return IsPrayer(spell) || target->HasAura(PRESERVATION, GetTarget()->GetGUID());
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (IsPrayer(eventInfo.GetSpellInfo()))
++        {
++            owner->AddAura(PRESERVATION, target);
++            auto favor = WcmePreservationFavor.find(owner->GetGUID());
++            if (favor != WcmePreservationFavor.end() && GameTime::Now() <= favor->second)
++                owner->CastSpell(target, SHIELD, true);
++            return;
++        }
++        target->RemoveAura(PRESERVATION, owner->GetGUID());
++        owner->CastSpell(target, SHIELD, true);
++        owner->CastSpell(owner, COOLDOWN_CUT, true);
++        SpellInfo const* extra = sSpellMgr->GetSpellInfo(EXTRA_HEAL);
++        if (!extra)
++            return;
++        uint32 const base = uint32(69 + 0.05f * owner->SpellBaseHealingBonusDone(SPELL_SCHOOL_MASK_ALL) + 0.01f * WcmeAttackPower(owner));
++        for (Unit* ally : WcmeAlliesNear(owner, target, 10.0f, 5))
++        {
++            uint32 amount = owner->SpellHealingBonusDone(ally, extra, base, ::HEAL, EFFECT_0);
++            amount = ally->SpellHealingBonusTaken(owner, extra, amount, ::HEAL);
++            HealInfo healInfo(owner, ally, amount, extra, extra->GetSchoolMask());
++            owner->HealBySpell(healInfo);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_prayer_of_preservation::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_prayer_of_preservation::HandleProc);
++    }
++};
++
++// Prayer of Preservation (888571): notes whether it was cast with Divine Favor up (for Shield of Preservation), and
++// makes its last heal 70% stronger (888594 for that tick only; the cast is self-targeted, so the caster is the target).
++class spell_wcme_prayer_of_preservation_hot : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_prayer_of_preservation_hot);
++
++    static constexpr uint32 FINAL_TICK = 888594;
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* caster = GetCaster();
++        if (!caster)
++            return;
++        bool favored = false;
++        for (auto const& [id, application] : caster->GetAppliedAuras())
++            if (WcmeNamed(application->GetBase()->GetSpellInfo(), "Divine Favor"))
++                favored = true;
++        if (favored)
++            WcmePreservationFavor[caster->GetGUID()] = GameTime::Now() + Milliseconds(GetMaxDuration() + 500);
++        else
++            WcmePreservationFavor.erase(caster->GetGUID());
++    }
++
++    void Tick(AuraEffect const* aurEff)
++    {
++        if (aurEff->GetTickNumber() < uint32(std::max(1, aurEff->GetTotalTicks())))
++            return;
++        PreventDefaultAction();
++        Unit* target = GetTarget();
++        target->AddAura(FINAL_TICK, target);
++        target->CastSpell(target, aurEff->GetSpellInfo()->Effects[aurEff->GetEffIndex()].TriggerSpell, true, nullptr, aurEff,
++            GetCasterGUID());
++        target->RemoveAurasDueToSpell(FINAL_TICK);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_prayer_of_preservation_hot::HandleApply, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL, AURA_EFFECT_HANDLE_REAL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_prayer_of_preservation_hot::Tick, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
++    }
++};
++
++// Righteous Flames (81298), as its in-game description says: Inner Fire gives 30% fewer charges (the data's own spell
++// mod). Each non-periodic Fire hit deals 1% more per Inner Fire charge (0.5% against players), spends 2 charges and
++// gives a stack of Righteous Flames (954069, up to 5: the next Holy Fire deals 40% more per stack, 10% against players).
++// A Holy Fire hit with 5 stacks also deals Radiant damage (270311 to 270321, the rank for your level, Holy and Fire)
++// to up to 5 enemies within 8 yards of its target, restores 15 Inner Fire charges per enemy hit, and makes your next 3
++// Fire spells extend your Holy Fire on their target by 1 sec. Holy Fire spends the stacks. Casting Inner Fire also
++// deals Radiant damage to enemies within 8 yards, at most once every 8.5 sec.
++class spell_wcme_righteous_flames : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_righteous_flames);
++
++    static constexpr uint32 FLAMES = 954069;
++    static constexpr std::array<uint32, 11> RADIANT = { 270311, 270313, 270314, 270315, 270316, 270317, 270318, 270312,
++        270319, 270320, 270321 };
++    static constexpr Milliseconds INNER_FIRE_RATE{8500};
++    TimePoint _innerFireReady{};
++    uint8 _extends = 0;
++
++    static bool IsHolyFire(SpellInfo const* spell)
++    {
++        return WcmeNamedAny(spell, { "Holy Fire", "Holy Fire (Righteous Flames)" });
++    }
++
++    static Aura* InnerFire(Unit* owner)
++    {
++        for (auto const& [id, application] : owner->GetAppliedAuras())
++            if (WcmeNamed(application->GetBase()->GetSpellInfo(), "Inner Fire") &&
++                application->GetBase()->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_PRIEST)
++                return application->GetBase();
++        return nullptr;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return WcmeNamed(spell, "Inner Fire") && spell->SpellFamilyName == SPELLFAMILY_PRIEST &&
++                GameTime::Now() >= _innerFireReady;
++        return (spell->GetSchoolMask() & SPELL_SCHOOL_MASK_FIRE) && eventInfo.GetActionTarget() &&
++            WcmeDealtDamage(eventInfo) && std::find(RADIANT.begin(), RADIANT.end(), spell->Id) == RADIANT.end();
++    }
++
++    uint32 Radiant(Unit* owner, Unit* center, float radius, size_t limit)
++    {
++        uint32 const rank = WcmeRankFor(owner, RADIANT);
++        uint32 hit = 0;
++        for (Unit* enemy : WcmeEnemiesNear(owner, center, radius, limit))
++        {
++            owner->CastSpell(enemy, rank, true);
++            ++hit;
++        }
++        return hit;
++    }
++
++    static bool ExtendHolyFire(Unit* owner, Unit* target)
++    {
++        for (AuraEffect const* dot : target->GetAuraEffectsByType(SPELL_AURA_PERIODIC_DAMAGE))
++            if (dot->GetCasterGUID() == owner->GetGUID() && IsHolyFire(dot->GetSpellInfo()))
++            {
++                Aura* aura = dot->GetBase();
++                int32 const duration = aura->GetDuration() + 1000;
++                if (duration > aura->GetMaxDuration())
++                    aura->SetMaxDuration(duration);
++                aura->SetDuration(duration);
++                return true;
++            }
++        return false;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            _innerFireReady = GameTime::Now() + INNER_FIRE_RATE;
++            Radiant(owner, owner, 8.0f, 50);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        Aura* innerFire = InnerFire(owner);
++        if (IsHolyFire(spell))
++        {
++            Aura* flames = owner->GetAura(FLAMES);
++            if (flames && flames->GetStackAmount() >= flames->GetSpellInfo()->StackAmount)
++            {
++                uint32 const hit = Radiant(owner, target, 8.0f, 5);
++                if (innerFire && hit)
++                    innerFire->SetCharges(uint8(std::min<uint32>(innerFire->GetCharges() + 15 * hit, innerFire->CalcMaxCharges())));
++                _extends = 3;
++            }
++            owner->RemoveAurasDueToSpell(FLAMES);
++        }
++        else if (_extends && ExtendHolyFire(owner, target))
++            --_extends;
++        if (!innerFire || !innerFire->GetCharges())
++            return;
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        int64 const dealt = int64(damage->GetDamage() + damage->GetAbsorb());
++        WcmeExtraDamage(owner, target, spell, dealt * innerFire->GetCharges() / (target->IsPlayer() ? 200 : 100));
++        innerFire->ModCharges(-2);
++        if (Aura* flames = owner->GetAura(FLAMES))
++        {
++            if (flames->GetStackAmount() < flames->GetSpellInfo()->StackAmount)
++                flames->SetStackAmount(flames->GetStackAmount() + 1);
++            flames->RefreshDuration();
++        }
++        else
++            owner->AddAura(FLAMES, owner);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_righteous_flames::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_righteous_flames::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -4450,4 +4971,10 @@ index 0000000..d8d879f
 +    RegisterSpellScript(spell_wcme_dark_transfusion);
 +    RegisterSpellScript(spell_wcme_dark_transfusion_heal);
 +    RegisterSpellScript(spell_wcme_nether_portal);
++    RegisterSpellScript(spell_wcme_assuaging_shadows);
++    RegisterSpellScript(spell_wcme_corrupted_bear_form);
++    RegisterSpellScript(spell_wcme_corrupted_bear_shape);
++    RegisterSpellScript(spell_wcme_prayer_of_preservation);
++    RegisterSpellScript(spell_wcme_prayer_of_preservation_hot);
++    RegisterSpellScript(spell_wcme_righteous_flames);
 +}
