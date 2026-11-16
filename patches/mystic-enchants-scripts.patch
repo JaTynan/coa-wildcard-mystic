@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..dbe2636
+index 0000000..6483e7b
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,9084 @@
+@@ -0,0 +1,9933 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -177,31 +177,42 @@ index 0000000..dbe2636
 +
 +// Shows an enchant's replacement ability in place of every known rank of the named ability while active (learned for
 +// the session, like the core's own enchant replacements), and takes it away again. The core only does this itself when
-+// the replacement's name contains the original's, or the enchant's description says "transform".
++// the replacement's name contains the original's, or the enchant's description says "transform". When the replacement
++// has later ranks in the core's rank chain, the highest one the unit's level allows is shown, and every rank is taken
++// away on removal.
 +void WcmeSyncSwap(Unit* unit, char const* originalName, uint32 family, uint32 replacement, bool active)
 +{
 +    Player* player = unit->ToPlayer();
-+    if (!player || !sSpellMgr->GetSpellInfo(replacement))
++    SpellInfo const* info = sSpellMgr->GetSpellInfo(replacement);
++    if (!player || !info)
 +        return;
++    std::vector<uint32> chain;
++    for (SpellInfo const* rank = info; rank; rank = rank->GetNextRankSpell())
++        chain.push_back(rank->Id);
++    uint32 wanted = replacement;
++    for (uint32 rank : chain)
++        if (sSpellMgr->GetSpellInfo(rank)->SpellLevel <= player->GetLevel())
++            wanted = rank;
++    auto inChain = [&chain](uint32 id) { return std::find(chain.begin(), chain.end(), id) != chain.end(); };
 +    std::vector<uint32> originals;
 +    for (auto const& [spellId, known] : player->GetSpellMap())
-+        if (known->State != PLAYERSPELL_REMOVED && known->Active && spellId != replacement)
-+            if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId))
-+                if (info->SpellFamilyName == family && !info->IsPassive() && WcmeNamed(info, originalName))
++        if (known->State != PLAYERSPELL_REMOVED && known->Active && !inChain(spellId))
++            if (SpellInfo const* spell = sSpellMgr->GetSpellInfo(spellId))
++                if (spell->SpellFamilyName == family && !spell->IsPassive() && WcmeNamed(spell, originalName))
 +                    originals.push_back(spellId);
-+    if (active && !originals.empty())
-+    {
-+        if (!player->HasSpell(replacement))
-+            player->learnSpell(replacement, true);
-+        for (uint32 original : originals)
-+            player->SetTemporarySpellReplacement(original, replacement);
-+        return;
-+    }
 +    for (uint32 original : originals)
-+        if (player->GetTemporarySpellReplacement(original) == replacement)
++        if (inChain(player->GetTemporarySpellReplacement(original)) &&
++            (!active || player->GetTemporarySpellReplacement(original) != wanted))
 +            player->SetTemporarySpellReplacement(original, 0);
-+    if (!active && player->HasSpell(replacement))
-+        player->removeSpell(replacement, SPEC_MASK_ALL, true);
++    for (uint32 rank : chain)
++        if ((!active || rank != wanted || originals.empty()) && player->HasSpell(rank))
++            player->removeSpell(rank, SPEC_MASK_ALL, true);
++    if (!active || originals.empty())
++        return;
++    if (!player->HasSpell(wanted))
++        player->learnSpell(wanted, true);
++    for (uint32 original : originals)
++        player->SetTemporarySpellReplacement(original, wanted);
 +}
 +
 +// WcmeSyncSwap with a ranked replacement: the level-appropriate rank is shown, and every other rank taken away.
@@ -8924,12 +8935,832 @@ index 0000000..dbe2636
 +    }
 +};
 +
++namespace
++{
++// Mana Fiend's Delirium: ends it (if running) and starts Recovery: 14% of base mana per Delirium stack every 3 sec for
++// 12 sec, as Delirium's tooltip says.
++constexpr uint32 MANA_FIEND = 977870;
++constexpr uint32 DELIRIUM = 977876;
++constexpr uint32 DELIRIUM_COST = 977873;
++constexpr uint32 MANA_RECOVERY = 977874;
++
++void WcmeManaFiendRecover(Unit* owner)
++{
++    uint8 const stacks = owner->GetAuraCount(DELIRIUM);
++    owner->RemoveAurasDueToSpell(DELIRIUM);
++    owner->RemoveAurasDueToSpell(DELIRIUM_COST);
++    if (!stacks)
++        return;
++    owner->AddAura(MANA_RECOVERY, owner);
++    int32 const restore = int32(owner->GetCreateMana() * 14 / 100) * stacks;
++    for (uint8 tick = 1; tick <= 4; ++tick)
++        owner->m_Events.AddEventAtOffset([owner, restore]()
++        {
++            if (owner->IsAlive())
++                owner->EnergizeBySpell(owner, MANA_RECOVERY, restore, POWER_MANA);
++        }, Seconds(3 * tick));
++}
++
++std::unordered_map<ObjectGuid, uint32> WcmeDeliriumMana;                 // mana before each player update in Delirium
++std::unordered_map<ObjectGuid, uint64> WcmeTimeBindDamage;               // damage taken during each Time-bind
++constexpr std::array<uint32, 8> HATEFUL_STRIKE_RANKS = { 984226, 984649, 984650, 984651, 984652, 984653, 984654, 984655 };
++constexpr std::array<uint32, 5> GROUND_SLAM_RANKS = { 984201, 984456, 984457, 984458, 984459 };
++constexpr std::array<uint32, 8> UPHEAVAL_RANKS = { 984202, 984232, 984233, 984234, 984235, 984236, 984237, 984238 };
++}
++
++// Mana Fiend (977870): Mana Fiend's Mind Focus (990218) is taught. Arcane direct damage spells and damaging Arcane
++// melee abilities trigger Manacharged Strike (977871): it drains 3% of your base mana and deals that much Arcane damage,
++// with a 50% chance to start Delirium (977876). While in Delirium: Arcane spells cost no mana (977873, its cost effect
++// set to -100%), you cannot gain mana (wcme_mana_fiend_regen), and every second Delirium gains a stack (up to 20) and
++// drains 1% of your base mana per stack. Falling below 20% mana ends it in Recovery (WcmeManaFiendRecover).
++class spell_wcme_mana_fiend : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_mana_fiend);
++
++    static constexpr uint32 STRIKE = 977871;
++    static constexpr std::array<uint32, 1> MIND_FOCUS = { 990218 };
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { WcmeSyncTaughtRank(GetTarget(), MIND_FOCUS, true); }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncTaughtRank(GetTarget(), MIND_FOCUS, false);
++        GetTarget()->RemoveAurasDueToSpell(DELIRIUM);
++        GetTarget()->RemoveAurasDueToSpell(DELIRIUM_COST);
++    }
++
++    void HandleTick(AuraEffect const* /*aurEff*/)
++    {
++        Unit* owner = GetTarget();
++        if (!owner->HasAura(DELIRIUM))
++            return;
++        if (owner->GetPowerPct(POWER_MANA) < 20.0f)
++        {
++            WcmeManaFiendRecover(owner);
++            return;
++        }
++        if (Aura* delirium = owner->GetAura(DELIRIUM))
++        {
++            if (delirium->GetStackAmount() < delirium->GetSpellInfo()->StackAmount)
++                delirium->ModStackAmount(1);
++            delirium->RefreshDuration();
++            int32 const drain = int32(owner->GetCreateMana() * delirium->GetStackAmount() / 100);
++            owner->ModifyPower(POWER_MANA, -std::min<int32>(drain, int32(owner->GetPower(POWER_MANA))));
++            WcmeDeliriumMana[owner->GetGUID()] = owner->GetPower(POWER_MANA);
++        }
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->Id != STRIKE && (spell->GetSchoolMask() & SPELL_SCHOOL_MASK_ARCANE) && eventInfo.GetActionTarget() &&
++            !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        int32 const drain = std::min<int32>(int32(owner->GetCreateMana() * 3 / 100), int32(owner->GetPower(POWER_MANA)));
++        if (drain <= 0)
++            return;
++        owner->ModifyPower(POWER_MANA, -drain);
++        owner->CastCustomSpell(STRIKE, SPELLVALUE_BASE_POINT0, drain, eventInfo.GetActionTarget(), true);
++        if (!owner->HasAura(DELIRIUM) && roll_chance_i(50))
++        {
++            owner->AddAura(DELIRIUM, owner);
++            if (Aura* cost = owner->AddAura(DELIRIUM_COST, owner))
++            {
++                cost->SetMaxDuration(-1);
++                cost->SetDuration(-1);
++            }
++            WcmeDeliriumMana[owner->GetGUID()] = owner->GetPower(POWER_MANA);
++        }
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_mana_fiend::CalcPeriod, EFFECT_0, SPELL_AURA_DUMMY);
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_mana_fiend::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_mana_fiend::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_mana_fiend::HandleTick, EFFECT_0, SPELL_AURA_DUMMY);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_mana_fiend::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_mana_fiend::HandleProc);
++    }
++};
++
++// Delirium's cost helper (977873): Arcane spells cost no mana; its own Delirium trigger is not used (the enchant adds
++// the stacks).
++class spell_wcme_delirium_cost : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_delirium_cost);
++
++    void CalcCost(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/) { amount = -100; }
++    void PreventTrigger(AuraEffect const* /*aurEff*/) { PreventDefaultAction(); }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_delirium_cost::CalcCost, EFFECT_1, SPELL_AURA_MOD_POWER_COST_SCHOOL_PCT);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_delirium_cost::PreventTrigger, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
++    }
++};
++
++// Mana Fiend's Mind Focus (990218): instantly enter Recovery, dropping every Delirium stack.
++class spell_wcme_mind_focus : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_mind_focus);
++
++    void PreventRecovery(SpellEffIndex effIndex) { PreventHitDefaultEffect(effIndex); }
++    void HandleAfterCast() { WcmeManaFiendRecover(GetCaster()); }
++
++    void Register() override
++    {
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_mind_focus::PreventRecovery, EFFECT_0, SPELL_EFFECT_TRIGGER_SPELL);
++        AfterCast += SpellCastFn(spell_wcme_mind_focus::HandleAfterCast);
++    }
++};
++
++// Delirium: "you cannot generate mana". Any mana gained between player updates while in Delirium is taken back.
++class wcme_mana_fiend_regen : public PlayerScript
++{
++public:
++    wcme_mana_fiend_regen() : PlayerScript("wcme_mana_fiend_regen", { PLAYERHOOK_ON_UPDATE }) { }
++
++    void OnPlayerUpdate(Player* player, uint32 /*diff*/) override
++    {
++        auto entry = WcmeDeliriumMana.find(player->GetGUID());
++        if (entry == WcmeDeliriumMana.end())
++            return;
++        if (!player->HasAura(DELIRIUM))
++        {
++            WcmeDeliriumMana.erase(entry);
++            return;
++        }
++        if (player->GetPower(POWER_MANA) > entry->second)
++            player->SetPower(POWER_MANA, entry->second);
++        entry->second = player->GetPower(POWER_MANA);
++    }
++};
++
++// Serpent Form (982400): Cat Form shows as Serpent Form (982401), Claw as Serpent Strike (92366-92373), Rake as Puncture
++// (997765-997771), Rip as Serpent Venom (997746-997754) and Ferocious Bite as Venomous Fury, each at your level's rank.
++// In Serpent Form your auto attacks also deal Poisonous Strikes (92374, Instant Poison's modifiers apply), and Serpent
++// Strike hits add its poison buff (92375).
++class spell_wcme_serpent_form : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_serpent_form);
++
++    static constexpr std::array<uint32, 1> FORM = { 982401 };
++    static constexpr std::array<uint32, 8> STRIKE = { 92366, 92367, 92368, 92369, 92370, 92371, 92372, 92373 };
++    static constexpr std::array<uint32, 7> PUNCTURE = { 997765, 997766, 997767, 997768, 997769, 997770, 997771 };
++    static constexpr std::array<uint32, 9> VENOM = { 997746, 997747, 997748, 997749, 997750, 997751, 997752, 997753, 997754 };
++    static constexpr std::array<uint32, 10> FURY = { 997756, 997757, 997758, 997760, 997759, 997761, 997762, 302055, 302056, 302057 };
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncSwapRanked(owner, "Cat Form", SPELLFAMILY_DRUID, FORM, active);
++        WcmeSyncSwapRanked(owner, "Claw", SPELLFAMILY_DRUID, STRIKE, active);
++        WcmeSyncSwapRanked(owner, "Rake", SPELLFAMILY_DRUID, PUNCTURE, active);
++        WcmeSyncSwapRanked(owner, "Rip", SPELLFAMILY_DRUID, VENOM, active);
++        WcmeSyncSwapRanked(owner, "Ferocious Bite", SPELLFAMILY_DRUID, FURY, active);
++        if (!active)
++            owner->RemoveAurasDueToSpell(982401);
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target || target == GetTarget() || !WcmeDealtDamage(eventInfo))
++            return false;
++        if (eventInfo.GetTypeMask() & PROC_FLAG_DONE_MELEE_AUTO_ATTACK)
++            return GetTarget()->HasAura(982401);
++        return WcmeNamed(eventInfo.GetSpellInfo(), "Serpent Strike");
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetTypeMask() & PROC_FLAG_DONE_MELEE_AUTO_ATTACK)
++            owner->CastSpell(eventInfo.GetActionTarget(), 92374, true);
++        else
++            WcmeAddStackOn(owner, owner, 92375);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_serpent_form::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_serpent_form::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_serpent_form::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_serpent_form::HandleProc);
++    }
++};
++
++// Serpent Form (982401, the shapeshift): you look like a serpent (the Druid of the Fang's serpent model, display 4480,
++// reused because the form has none of its own) instead of a cat.
++class spell_wcme_serpent_shape : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_serpent_shape);
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { GetTarget()->SetDisplayId(4480); }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_serpent_shape::HandleApply, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Serpent Venom (every rank): its poison also deals 2% of attack power plus spell power per combo point each tick;
++// Venomous Fury (every rank): 6% per combo point on the target and 3% on the others, as their tooltips describe.
++class spell_wcme_serpent_venom : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_serpent_venom);
++
++    void CalcAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
++    {
++        Unit* caster = GetCaster();
++        Player* player = caster ? caster->ToPlayer() : nullptr;
++        if (!player)
++            return;
++        float const power = player->GetTotalAttackPowerValue(BASE_ATTACK) + WcmeSpellPower(player);
++        amount += int32(power * 0.02f * player->GetComboPoints());
++    }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_serpent_venom::CalcAmount, EFFECT_0, SPELL_AURA_PERIODIC_DAMAGE);
++    }
++};
++
++class spell_wcme_venomous_fury : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_venomous_fury);
++
++    uint8 _combo = 0;
++
++    void HandleBeforeCast()
++    {
++        Player* player = GetCaster()->ToPlayer();
++        _combo = player ? player->GetComboPoints() : 0;
++    }
++
++    void HandleMain(SpellEffIndex /*effIndex*/)
++    {
++        Unit* caster = GetCaster();
++        SetHitDamage(GetHitDamage() + int32((caster->GetTotalAttackPowerValue(BASE_ATTACK) + WcmeSpellPower(caster)) * 0.06f * _combo));
++    }
++
++    void HandleCone(SpellEffIndex /*effIndex*/)
++    {
++        Unit* caster = GetCaster();
++        SetHitDamage(GetHitDamage() + int32((caster->GetTotalAttackPowerValue(BASE_ATTACK) + WcmeSpellPower(caster)) * 0.03f * _combo));
++    }
++
++    void Register() override
++    {
++        BeforeCast += SpellCastFn(spell_wcme_venomous_fury::HandleBeforeCast);
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_venomous_fury::HandleMain, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_venomous_fury::HandleCone, EFFECT_1, SPELL_EFFECT_SCHOOL_DAMAGE);
++    }
++};
++
++// Son of Gruul (984200): Mortal Strike shows as Hateful Strike (984226 ranks), Sundering as Ground Slam (984201 ranks)
++// and Lava Lash as Upheaval (984202 ranks), each at your level's rank. Physical Warrior ability hits have a 25% chance to
++// add a Hate charge (984211, up to 6); Ground Slam and Upheaval add 2 per cast and, if you know Rockbiter Weapon, a
++// Petrification stack (984212) on each target hit. Each Hate charge adds Seething Growth (984215, up to 10; at 10 it is
++// no longer refreshed and Ground Slam's cooldown resets). The 5th Petrification stuns for 2 sec (984214), then
++// Shatters the target (984213) for 2 more Hate; a critical Shatter deals Lava Flows' extra critical damage.
++class spell_wcme_son_of_gruul : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_son_of_gruul);
++
++    static constexpr uint32 PETRIFICATION = 984212;
++    static constexpr uint32 PETRIFIED = 984214;
++    static constexpr uint32 SHATTER = 984213;
++    TimePoint _lastSlam{};
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncSwapRanked(owner, "Mortal Strike", SPELLFAMILY_WARRIOR, HATEFUL_STRIKE_RANKS, active);
++        WcmeSyncSwapRanked(owner, "Sundering", SPELLFAMILY_SHAMAN, GROUND_SLAM_RANKS, active);
++        WcmeSyncSwapRanked(owner, "Lava Lash", SPELLFAMILY_SHAMAN, UPHEAVAL_RANKS, active);
++        if (!active)
++        {
++            owner->RemoveAurasDueToSpell(984211);
++            owner->RemoveAurasDueToSpell(984215);
++        }
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++  public:
++    static void GainHate(Unit* owner, uint8 count)
++    {
++        for (uint8 i = 0; i < count; ++i)
++        {
++            Aura* hate = owner->GetAura(984211);
++            if (!hate)
++            {
++                hate = owner->AddAura(984211, owner);
++                if (!hate)
++                    return;
++                hate->SetCharges(1);
++            }
++            else if (hate->GetCharges() < 6)
++            {
++                hate->SetCharges(hate->GetCharges() + 1);
++                hate->RefreshDuration();
++            }
++            Aura* growth = owner->GetAura(984215);
++            if (!growth)
++                owner->AddAura(984215, owner);
++            else if (growth->GetStackAmount() < growth->GetSpellInfo()->StackAmount)
++            {
++                growth->ModStackAmount(1);
++                if (growth->GetStackAmount() >= growth->GetSpellInfo()->StackAmount)
++                    WcmeCutCooldownByName(owner, "Ground Slam", 3600000);
++            }
++        }
++    }
++
++  private:
++    static bool IsSlam(SpellInfo const* spell) { return WcmeNamedAny(spell, { "Ground Slam", "Upheaval" }) && spell->SpellFamilyName == SPELLFAMILY_SHAMAN; }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || !eventInfo.GetActionTarget() || !WcmeDealtDamage(eventInfo))
++            return false;
++        if (IsSlam(spell))
++            return true;
++        if (spell->Id == SHATTER)
++            return eventInfo.GetHitMask() & PROC_HIT_CRITICAL;
++        return spell->SpellFamilyName == SPELLFAMILY_WARRIOR && (spell->GetSchoolMask() & SPELL_SCHOOL_MASK_NORMAL) && roll_chance_i(25);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (eventInfo.GetSpellInfo()->Id == SHATTER)
++        {
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            for (AuraEffect const* effect : owner->GetAuraEffectsByType(SPELL_AURA_ADD_PCT_MODIFIER))
++                if (WcmeNamed(effect->GetSpellInfo(), "Lava Flows") && effect->GetMiscValue() == SPELLMOD_CRIT_DAMAGE_BONUS)
++                {
++                    WcmeExtraDamage(owner, target, eventInfo.GetSpellInfo(), int64(damage->GetDamage() + damage->GetAbsorb()) * effect->GetAmount() / 200);
++                    return;
++                }
++            return;
++        }
++        if (!IsSlam(eventInfo.GetSpellInfo()))
++        {
++            GainHate(owner, 1);
++            return;
++        }
++        if (GameTime::Now() - _lastSlam > 200ms)
++        {
++            _lastSlam = GameTime::Now();
++            GainHate(owner, 2);
++        }
++        if (!WcmeKnowsPassive(owner, "Rockbiter Weapon", SPELLFAMILY_SHAMAN))
++            return;
++        WcmeAddStackOn(owner, target, PETRIFICATION);
++        if (target->GetAuraCount(PETRIFICATION) < 5)
++            return;
++        target->RemoveAurasDueToSpell(PETRIFICATION, owner->GetGUID());
++        owner->CastSpell(target, PETRIFIED, true);
++        ObjectGuid const targetGuid = target->GetGUID();
++        owner->m_Events.AddEventAtOffset([owner, targetGuid]()
++        {
++            if (Unit* victim = ObjectAccessor::GetUnit(*owner, targetGuid))
++                if (victim->IsAlive())
++                    owner->CastSpell(victim, SHATTER, true);
++        }, 2s);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_son_of_gruul::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_son_of_gruul::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_son_of_gruul::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_son_of_gruul::HandleProc);
++    }
++};
++
++// Hateful Strike (984226 ranks): needs and spends a Hate charge; its 0.5 sec global cooldown is not shortened further.
++class spell_wcme_hateful_strike : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_hateful_strike);
++
++    SpellCastResult CheckCast()
++    {
++        Unit* caster = GetCaster();
++        return !caster->HasAura(984200) || caster->HasAura(984211) ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void HandleAfterCast()
++    {
++        Unit* caster = GetCaster();
++        if (Aura* hate = caster->GetAura(984211))
++            hate->DropCharge();
++        if (Player* player = caster->ToPlayer())
++        {
++            player->GetGlobalCooldownMgr().CancelGlobalCooldown(GetSpellInfo());
++            player->GetGlobalCooldownMgr().AddGlobalCooldown(GetSpellInfo(), 500);
++        }
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_hateful_strike::CheckCast);
++        AfterCast += SpellCastFn(spell_wcme_hateful_strike::HandleAfterCast);
++    }
++};
++
++// Shatter (984213): grants 2 Hate through spell_wcme_son_of_gruul (its data's own Hate casts are not used). Its Lava
++// Flows bonus is in spell_wcme_son_of_gruul.
++class spell_wcme_shatter : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_shatter);
++
++    void PreventHate(SpellEffIndex effIndex) { PreventHitDefaultEffect(effIndex); }
++
++    void HandleAfterHit()
++    {
++        spell_wcme_son_of_gruul::GainHate(GetCaster(), 2);
++    }
++
++    void Register() override
++    {
++        OnEffectHit += SpellEffectFn(spell_wcme_shatter::PreventHate, EFFECT_1, SPELL_EFFECT_FORCE_CAST);
++        OnEffectHit += SpellEffectFn(spell_wcme_shatter::PreventHate, EFFECT_2, SPELL_EFFECT_FORCE_CAST);
++        AfterHit += SpellHitFn(spell_wcme_shatter::HandleAfterHit);
++    }
++};
++
++// Steward of Eternity (986162): Moonfire shows as Align (986163), Renew as Time-bind (986164) and Arcane Missiles as
++// Synchronize (986165). Each of them drains energy (Align 5, Time-bind 30, Synchronize 70, the amounts in their data)
++// and adds Temporal Distortion (986166, up to 20; Align on a Time-bound target adds one more), and triggers Borrowed Time
++// if you know its final rank. When one of them empties your energy, the distortion is released: Eternity's healing wave
++// (986173, 13% stronger per stack released) and Eternity (986167), which lasts until your energy is full again.
++class spell_wcme_steward_of_eternity : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_steward_of_eternity);
++
++    static constexpr uint32 ALIGN = 986163;
++    static constexpr uint32 TIME_BIND = 986164;
++    static constexpr uint32 SYNCHRONIZE = 986165;
++    static constexpr uint32 DISTORTION = 986166;
++    static constexpr uint32 ETERNITY = 986167;
++    static constexpr uint32 ETERNITY_WAVE = 986173;
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncSwap(owner, "Moonfire", SPELLFAMILY_DRUID, ALIGN, active);
++        WcmeSyncSwap(owner, "Renew", SPELLFAMILY_PRIEST, TIME_BIND, active);
++        WcmeSyncSwap(owner, "Arcane Missiles", SPELLFAMILY_MAGE, SYNCHRONIZE, active);
++        if (!active)
++        {
++            owner->RemoveAurasDueToSpell(DISTORTION);
++            owner->RemoveAurasDueToSpell(ETERNITY);
++        }
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    void HandleTick(AuraEffect const* /*aurEff*/)
++    {
++        Unit* owner = GetTarget();
++        if (owner->HasAura(ETERNITY) && owner->GetPower(POWER_ENERGY) >= owner->GetMaxPower(POWER_ENERGY))
++            owner->RemoveAurasDueToSpell(ETERNITY);
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && (spell->Id == ALIGN || spell->Id == TIME_BIND || spell->Id == SYNCHRONIZE);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (Player* player = owner->ToPlayer())
++            if (player->HasSpell(52800))
++                owner->CastSpell(owner, 59891, true);
++        uint8 add = 1;
++        if (spell->Id == ALIGN)
++            if (Unit* target = eventInfo.GetActionTarget())
++                if (WcmeHasAnyAuraFrom(target, owner, { TIME_BIND, 986161 }))
++                    add = 2;
++        for (uint8 i = 0; i < add; ++i)
++            WcmeAddStackOn(owner, owner, DISTORTION);
++        if (owner->GetMaxPower(POWER_ENERGY) == 0)
++            return;
++        int32 const drain = spell->Id == ALIGN ? 5 : spell->Id == TIME_BIND ? 30 : 70;
++        owner->ModifyPower(POWER_ENERGY, -std::min<int32>(drain, int32(owner->GetPower(POWER_ENERGY))));
++        if (owner->GetPower(POWER_ENERGY) > 0)
++            return;
++        uint8 const released = owner->GetAuraCount(DISTORTION);
++        owner->RemoveAurasDueToSpell(DISTORTION);
++        if (SpellInfo const* wave = sSpellMgr->GetSpellInfo(ETERNITY_WAVE))
++            owner->CastCustomSpell(ETERNITY_WAVE, SPELLVALUE_BASE_POINT0, wave->Effects[EFFECT_0].CalcValue(owner) * (100 + 13 * released) / 100, owner, true);
++        owner->CastSpell(owner, ETERNITY, true);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_steward_of_eternity::CalcPeriod, EFFECT_0, SPELL_AURA_DUMMY);
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_steward_of_eternity::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_steward_of_eternity::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_steward_of_eternity::HandleTick, EFFECT_0, SPELL_AURA_DUMMY);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_steward_of_eternity::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_steward_of_eternity::HandleProc);
++    }
++};
++
++// Align, Time-bind and Synchronize: their data drains energy by burning it (which would also hurt you); the enchant
++// script drains it instead.
++class spell_wcme_steward_spell : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_steward_spell);
++
++    void PreventBurn(SpellEffIndex effIndex) { PreventHitDefaultEffect(effIndex); }
++
++    void Register() override
++    {
++        OnEffectHit += SpellEffectFn(spell_wcme_steward_spell::PreventBurn, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE);
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_steward_spell::PreventBurn, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE);
++    }
++};
++
++// Time-bind (986164): when the bond ends (after 6 sec) the target gets Time-bound (986161), a heal over time restoring
++// 30% (15% for player targets) of the damage it took during the bond, plus healing power.
++class spell_wcme_time_bind : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_time_bind);
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { WcmeTimeBindDamage[GetTarget()->GetGUID()] = 0; }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* target = GetTarget();
++        auto taken = WcmeTimeBindDamage.find(target->GetGUID());
++        uint64 const damage = taken == WcmeTimeBindDamage.end() ? 0 : taken->second;
++        if (taken != WcmeTimeBindDamage.end())
++            WcmeTimeBindDamage.erase(taken);
++        Unit* caster = GetCaster();
++        SpellInfo const* bound = sSpellMgr->GetSpellInfo(986161);
++        if (!caster || !bound || !target->IsAlive() || GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
++            return;
++        uint32 const ticks = std::max<uint32>(1, bound->GetMaxTicks());
++        int64 const total = int64(damage) * (target->IsControlledByPlayer() ? 15 : 30) / 100;
++        caster->CastCustomSpell(986161, SPELLVALUE_BASE_POINT0, int32(std::max<int64>(1, total / ticks)), target, true);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_time_bind::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_time_bind::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Synchronize's heal (986168): heals only your Aligned or Time-bound targets nearby, and holds their Align in place
++// (each heal adds back the second that passed).
++class spell_wcme_synchronize_heal : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_synchronize_heal);
++
++    void FilterTargets(std::list<WorldObject*>& targets)
++    {
++        Unit* caster = GetCaster();
++        targets.remove_if([caster](WorldObject* object)
++        {
++            Unit* unit = object->ToUnit();
++            return !unit || !WcmeHasAnyAuraFrom(unit, caster, { 986160, 986164, 986161 });
++        });
++    }
++
++    void HandleHit(SpellEffIndex /*effIndex*/)
++    {
++        if (Unit* target = GetHitUnit())
++            if (Aura* align = target->GetAura(986160, GetCaster()->GetGUID()))
++                align->SetDuration(std::min(align->GetMaxDuration(), align->GetDuration() + 1000));
++    }
++
++    void Register() override
++    {
++        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_synchronize_heal::FilterTargets, EFFECT_0, TARGET_UNIT_SRC_AREA_ALLY);
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_synchronize_heal::HandleHit, EFFECT_0, SPELL_EFFECT_HEAL);
++    }
++};
++
++// Swashbuckler: Bloodsail Captain (997127): Devastate shows as Hammer the Gap (92786 ranks), Eviscerate as Panache
++// (92789 ranks) and Slice and Dice as Blurred Blade (92787 ranks), each at your level's rank. Mocking Blow grants En
++// Garde! (92785). Captain's Resolve (300110) is kept on you while Swashbuckling (a single one-handed weapon and an
++// empty off-hand) in Defensive Stance, checked every second.
++class spell_wcme_swashbuckler : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_swashbuckler);
++
++    static constexpr std::array<uint32, 9> HAMMER = { 92786, 93929, 93930, 93931, 93932, 93933, 93934, 93935, 93936 };
++    static constexpr std::array<uint32, 12> PANACHE = { 92789, 92790, 92791, 92792, 92793, 92794, 92795, 92796, 92797, 92798, 92799, 92800 };
++    static constexpr std::array<uint32, 2> BLURRED = { 92787, 92788 };
++    static constexpr uint32 RESOLVE = 300110;
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    static bool Swashbuckling(Unit const* unit)
++    {
++        Player const* player = unit->ToPlayer();
++        if (!player)
++            return false;
++        Item const* main = player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
++        uint32 const type = main ? main->GetTemplate()->InventoryType : 0;
++        return (type == INVTYPE_WEAPON || type == INVTYPE_WEAPONMAINHAND) && !player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
++    }
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncSwapRanked(owner, "Devastate", SPELLFAMILY_WARRIOR, HAMMER, active);
++        WcmeSyncSwapRanked(owner, "Eviscerate", SPELLFAMILY_ROGUE, PANACHE, active);
++        WcmeSyncSwapRanked(owner, "Slice and Dice", SPELLFAMILY_ROGUE, BLURRED, active);
++        if (!active)
++            owner->RemoveAurasDueToSpell(RESOLVE);
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    void HandleTick(AuraEffect const* /*aurEff*/)
++    {
++        Unit* owner = GetTarget();
++        bool const wanted = Swashbuckling(owner) && owner->GetShapeshiftForm() == FORM_DEFENSIVESTANCE;
++        if (wanted && !owner->HasAura(RESOLVE))
++            owner->AddAura(RESOLVE, owner);
++        else if (!wanted && owner->HasAura(RESOLVE))
++            owner->RemoveAurasDueToSpell(RESOLVE);
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->SpellFamilyName == SPELLFAMILY_WARRIOR && WcmeNamed(spell, "Mocking Blow");
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        GetTarget()->CastSpell(GetTarget(), 92785, true);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_swashbuckler::CalcPeriod, EFFECT_0, SPELL_AURA_DUMMY);
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_swashbuckler::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_swashbuckler::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_swashbuckler::HandleTick, EFFECT_0, SPELL_AURA_DUMMY);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_swashbuckler::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_swashbuckler::HandleProc);
++    }
++};
++
++// Panache (92789 ranks): shortens your active Stagger by 0.6 sec per combo point spent (its data's trigger is not used).
++class spell_wcme_panache : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_panache);
++
++    uint8 _combo = 0;
++
++    void HandleBeforeCast()
++    {
++        Player* player = GetCaster()->ToPlayer();
++        _combo = player ? player->GetComboPoints() : 0;
++    }
++
++    void PreventTrigger(SpellEffIndex effIndex) { PreventHitDefaultEffect(effIndex); }
++
++    void HandleAfterCast()
++    {
++        Unit* caster = GetCaster();
++        if (!_combo)
++            return;
++        for (auto const& [id, application] : caster->GetAppliedAuras())
++        {
++            Aura* aura = application->GetBase();
++            if (WcmeNamed(aura->GetSpellInfo(), "Stagger") && aura->GetDuration() > 0)
++                aura->SetDuration(std::max(1, aura->GetDuration() - 600 * _combo));
++        }
++    }
++
++    void Register() override
++    {
++        BeforeCast += SpellCastFn(spell_wcme_panache::HandleBeforeCast);
++        OnEffectHit += SpellEffectFn(spell_wcme_panache::PreventTrigger, EFFECT_2, SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE);
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_panache::PreventTrigger, EFFECT_2, SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE);
++        AfterCast += SpellCastFn(spell_wcme_panache::HandleAfterCast);
++    }
++};
++
++// Blurred Blade (92787 ranks): while it lasts its hidden helper (92802: less damage taken, from its data) is on you.
++class spell_wcme_blurred_blade : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_blurred_blade);
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { GetTarget()->AddAura(92802, GetTarget()); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { GetTarget()->RemoveAurasDueToSpell(92802); }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_blurred_blade::HandleApply, EFFECT_1, SPELL_AURA_MOD_MELEE_HASTE, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_blurred_blade::HandleRemove, EFFECT_1, SPELL_AURA_MOD_MELEE_HASTE, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Blurred Blade's helper (92802): a dodge or parry (once every 0.5 sec, spell_proc) answers with an immediate
++// follow-up attack (92804), gives 5 energy and takes 1 sec off Blurred Blade.
++class spell_wcme_blurred_blade_counter : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_blurred_blade_counter);
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (Unit* attacker = eventInfo.GetActor())
++            if (attacker != owner && attacker->IsAlive())
++                owner->CastSpell(attacker, 92804, true);
++        owner->EnergizeBySpell(owner, 92802, 5, POWER_ENERGY);
++        for (auto const& [id, application] : owner->GetAppliedAuras())
++        {
++            Aura* aura = application->GetBase();
++            if (WcmeNamed(aura->GetSpellInfo(), "Blurred Blade") && aura->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_ROGUE &&
++                aura->GetDuration() > 0)
++            {
++                aura->SetDuration(std::max(1, aura->GetDuration() - 1000));
++                return;
++            }
++        }
++    }
++
++    void Register() override
++    {
++        OnProc += AuraProcFn(spell_wcme_blurred_blade_counter::HandleProc);
++    }
++};
++
++// Batch 5 damage bookkeeping: damage taken by a target bound by Time-bind is counted for its heal.
++class wcme_kit5_hooks : public UnitScript
++{
++public:
++    wcme_kit5_hooks() : UnitScript("wcme_kit5_hooks", true, { UNITHOOK_ON_DAMAGE }) { }
++
++    void OnDamage(Unit* /*attacker*/, Unit* victim, uint32& damage) override
++    {
++        if (!victim || !damage)
++            return;
++        auto bound = WcmeTimeBindDamage.find(victim->GetGUID());
++        if (bound != WcmeTimeBindDamage.end())
++            bound->second += damage;
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    new wcme_kit_damage_hooks();
 +    new wcme_rage_cap();
 +    new wcme_blooming_mods();
 +    new wcme_kit_target_mods();
++    new wcme_mana_fiend_regen();
++    new wcme_kit5_hooks();
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
 +    RegisterSpellScript(spell_wcme_unique_physical_stacks);
 +    RegisterSpellScript(spell_wcme_curse_of_arugal);
@@ -9086,5 +9917,23 @@ index 0000000..dbe2636
 +    RegisterSpellScript(spell_wcme_thunder_hide_cast);
 +    RegisterSpellScript(spell_wcme_storm_smash);
 +    RegisterSpellScript(spell_wcme_locust_ranger);
++    RegisterSpellScript(spell_wcme_mana_fiend);
++    RegisterSpellScript(spell_wcme_delirium_cost);
++    RegisterSpellScript(spell_wcme_mind_focus);
++    RegisterSpellScript(spell_wcme_serpent_form);
++    RegisterSpellScript(spell_wcme_serpent_shape);
++    RegisterSpellScript(spell_wcme_serpent_venom);
++    RegisterSpellScript(spell_wcme_venomous_fury);
++    RegisterSpellScript(spell_wcme_son_of_gruul);
++    RegisterSpellScript(spell_wcme_hateful_strike);
++    RegisterSpellScript(spell_wcme_shatter);
++    RegisterSpellScript(spell_wcme_steward_of_eternity);
++    RegisterSpellScript(spell_wcme_steward_spell);
++    RegisterSpellScript(spell_wcme_time_bind);
++    RegisterSpellScript(spell_wcme_synchronize_heal);
++    RegisterSpellScript(spell_wcme_swashbuckler);
++    RegisterSpellScript(spell_wcme_panache);
++    RegisterSpellScript(spell_wcme_blurred_blade);
++    RegisterSpellScript(spell_wcme_blurred_blade_counter);
 +    RegisterSpellScript(spell_wcme_medicinal_sting);
 +}
