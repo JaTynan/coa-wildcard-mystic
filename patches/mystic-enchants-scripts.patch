@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..0f5a33c
+index 0000000..050a6bc
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,8404 @@
+@@ -0,0 +1,8429 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -8203,19 +8203,43 @@ index 0000000..0f5a33c
 +    }
 +};
 +
-+// Blooming Shot (92726): its damage adds 30% of your ranged attack power, as described.
++// Blooming Shot (92726): damage scales with 18.85% of spell power (its effect's coefficient, set in Validate; the
++// data has none) and 18.85% of ranged attack power. Blooming Shot (Heal) (997559) keeps its data's 18.8% spell power
++// and adds 18.85% of ranged attack power.
 +class spell_wcme_blooming_shot : public SpellScript
 +{
 +    PrepareSpellScript(spell_wcme_blooming_shot);
 +
++    bool Validate(SpellInfo const* spellInfo) override
++    {
++        if (spellInfo->Effects[EFFECT_0].Effect == SPELL_EFFECT_SCHOOL_DAMAGE && spellInfo->Effects[EFFECT_0].BonusMultiplier <= 0.0f)
++            const_cast<SpellInfo*>(spellInfo)->Effects[EFFECT_0].BonusMultiplier = 0.1885f;
++        return true;
++    }
++
 +    void HandleDamage(SpellEffIndex /*effIndex*/)
 +    {
-+        SetHitDamage(GetHitDamage() + int32(GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.30f));
++        SetHitDamage(GetHitDamage() + int32(GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.1885f));
 +    }
 +
 +    void Register() override
 +    {
 +        OnEffectHitTarget += SpellEffectFn(spell_wcme_blooming_shot::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
++    }
++};
++
++class spell_wcme_blooming_heal : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_blooming_heal);
++
++    void HandleHeal(SpellEffIndex /*effIndex*/)
++    {
++        SetHitHeal(GetHitHeal() + int32(GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.1885f));
++    }
++
++    void Register() override
++    {
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_blooming_heal::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
 +    }
 +};
 +
@@ -8406,5 +8430,6 @@ index 0000000..0f5a33c
 +    RegisterSpellScript(spell_wcme_grove_ranger);
 +    RegisterSpellScript(spell_wcme_grove_heal);
 +    RegisterSpellScript(spell_wcme_blooming_shot);
++    RegisterSpellScript(spell_wcme_blooming_heal);
 +    RegisterSpellScript(spell_wcme_medicinal_sting);
 +}

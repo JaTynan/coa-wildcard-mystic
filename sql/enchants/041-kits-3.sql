@@ -8,7 +8,7 @@
 -- (and the rage loss after it), combo points from Titanic Fury auto attacks and from spending Titanic Power.
 -- Grove Ranger (997124): Blooming Shot and Medicinal Sting in place of Arcane Shot and Serpent Sting, Grover's Touch and
 -- Grove Shot taught, Grove Ranger's Agility, Grove Ranger stacks, Steady Shot charge refunds, ranged attack power in
--- its heals and Blooming Shot's damage.
+-- its heals, Blooming Shot and its heal at 18.85% spell power and ranged attack power.
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 986234),
 ('spell_proc', 954326),
@@ -17,7 +17,7 @@ INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 DELETE FROM `wcme_enchant_teach` WHERE `enchant_spell` = 954326;
 DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (986234, 954326, 977810, 997124);
 DELETE FROM `spell_script_names` WHERE `spell_id` IN (986234, 986240, 986236, 51690, 800219, 954326, 954327, 986233, 965426,
-  977810, 977813, 977812, 977811, 997124, 985601, 985610, 92726, 92737) AND `ScriptName` LIKE 'spell\_wcme\_%';
+  977810, 977813, 977812, 977811, 997124, 985601, 985610, 92726, 997559, 92737) AND `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE FROM `spell_proc` WHERE `SpellId` IN (986234, 954326, 977810, 997124);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
 (986234, 0, 0, 0, 0, 0, 16, 0, 2, 0, 2, 0, 0, 100, 0, 0),
@@ -42,4 +42,5 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (985601, 'spell_wcme_grove_heal'),
 (985610, 'spell_wcme_grove_heal'),
 (92726, 'spell_wcme_blooming_shot'),
+(997559, 'spell_wcme_blooming_heal'),
 (92737, 'spell_wcme_medicinal_sting');
