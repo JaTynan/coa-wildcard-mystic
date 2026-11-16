@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..ca2e31f
+index 0000000..0cc2008
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,11495 @@
+@@ -0,0 +1,11782 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -11290,8 +11290,295 @@ index 0000000..ca2e31f
 +    }
 +};
 +
++// ===== Epic batch 1: low-effort epics =====
++
++static bool WcmeHasBleedFrom(Unit* target, Unit* caster)
++{
++    for (auto const& [id, app] : target->GetAppliedAuras())
++    {
++        Aura const* aura = app->GetBase();
++        if (caster && aura->GetCasterGUID() != caster->GetGUID())
++            continue;
++        SpellInfo const* info = aura->GetSpellInfo();
++        if (info->Mechanic == MECHANIC_BLEED || (info->GetAllEffectsMechanicMask() & (1ULL << MECHANIC_BLEED)))
++            return true;
++    }
++    return false;
++}
++
++static bool WcmeHasPoison(Unit* target)
++{
++    for (auto const& [id, app] : target->GetAppliedAuras())
++        if (app->GetBase()->GetSpellInfo()->Dispel == DISPEL_POISON)
++            return true;
++    return false;
++}
++
++static bool WcmeHasCrowdControl(Unit* unit)
++{
++    return unit->HasAuraType(SPELL_AURA_MOD_STUN) || unit->HasAuraType(SPELL_AURA_MOD_FEAR) ||
++        unit->HasAuraType(SPELL_AURA_MOD_CONFUSE) || unit->HasAuraType(SPELL_AURA_MOD_ROOT) ||
++        unit->HasAuraType(SPELL_AURA_MOD_SILENCE) || unit->HasAuraType(SPELL_AURA_MOD_PACIFY);
++}
++
++static thread_local bool WcmeInExtraStrike = false;
++
++// Dancer in the Dark (81521 / 282118): while you are in Stealth, Shadow Dance's cooldown recovers twice as fast
++// (1 extra sec off it every sec).
++class spell_wcme_dancer_in_the_dark : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_dancer_in_the_dark);
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void Tick(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++        if (GetTarget()->HasStealthAura())
++            WcmeCutCooldownByName(GetTarget(), "Shadow Dance", 1000);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_dancer_in_the_dark::CalcPeriod, EFFECT_0,
++            SPELL_AURA_PERIODIC_DUMMY);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_dancer_in_the_dark::Tick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
++    }
++};
++
++// Soul Restoration: your heals shorten Weakened Soul on the ally you heal.
++// 84381: Holy Light, Greater Heal, Healing Wave or Healing Touch, 2 sec. 282213: the same heals, 4 sec (its own value).
++// 1181290: Flash Heal or Greater Heal, 2 sec.
++class spell_wcme_soul_restoration : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_soul_restoration);
++
++    int32 Seconds() const
++    {
++        return GetId() == 282213 ? 4 : 2;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || !eventInfo.GetActionTarget() || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (GetId() == 1181290)
++            return WcmeNamedAny(spell, { "Flash Heal", "Greater Heal" });
++        return WcmeNamedAny(spell, { "Holy Light", "Greater Heal", "Healing Wave", "Healing Touch" });
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* target = eventInfo.GetActionTarget();
++        for (auto const& [id, app] : target->GetAppliedAuras())
++        {
++            Aura* aura = app->GetBase();
++            if (std::strcmp(aura->GetSpellInfo()->SpellName[0], "Weakened Soul") != 0)
++                continue;
++            int32 const left = aura->GetDuration() - Seconds() * IN_MILLISECONDS;
++            if (left <= 0)
++                aura->SetDuration(1);
++            else
++                aura->SetDuration(left);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_soul_restoration::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_soul_restoration::HandleProc);
++    }
++};
++
++// Swift Shadows (272814): Shadowstep's speed buff lasting 2 sec longer is its own data. Ambush, Deadly Throw or Ravage
++// on a target with your Shadow Mark (832713, from Assuaging Shadows) finishes Shadowstep's cooldown.
++class spell_wcme_swift_shadows : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_swift_shadows);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        Unit* target = eventInfo.GetActionTarget();
++        return WcmeNamedAny(eventInfo.GetSpellInfo(), { "Ambush", "Deadly Throw", "Ravage" }) && target &&
++            target->HasAura(832713, GetTarget()->GetGUID());
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        WcmeCutCooldownByName(GetTarget(), "Shadowstep", 600000);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_swift_shadows::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_swift_shadows::HandleProc);
++    }
++};
++
++// Epic batch 1 hooks:
++// - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished.
++// - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec
++//   (283429 / 954635, their own area and duration).
++// - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running.
++// - Spectre (81186): your periodic damage deals 10% more while you are stealthed.
++// - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds.
++// - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649,
++//   Killing Spree hits on such a target strike again for 25% of the damage (15% against players).
++// - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging
++//   spells remove Slow Fall from the target.
++// - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared,
++//   disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut
++//   is its own data.
++// - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk.
++// - Elemental Torrent (1180420): Waterbolt damage from your Water Elemental gives you a stack of 1180423 (spell haste).
++class wcme_epic_batch1_hooks : public UnitScript
++{
++public:
++    wcme_epic_batch1_hooks() : UnitScript("wcme_epic_batch1_hooks", true, { UNITHOOK_ON_AURA_REMOVE,
++        UNITHOOK_ON_UNIT_SET_SHAPESHIFT_FORM, UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN, UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK,
++        UNITHOOK_MODIFY_MELEE_DAMAGE }) { }
++
++    void OnAuraRemove(Unit* unit, AuraApplication* aurApp, AuraRemoveMode mode) override
++    {
++        if (!unit || !aurApp)
++            return;
++        SpellInfo const* info = aurApp->GetBase()->GetSpellInfo();
++        if (info->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(info, "Adrenaline Rush") &&
++            mode == AURA_REMOVE_BY_EXPIRE && WcmeHasAnyAura(unit, { 84453, 282309 }))
++            WcmeCutCooldownByName(unit, "Sprint", 600000);
++        if (info->SpellFamilyName == SPELLFAMILY_PRIEST && WcmeNamed(info, "Dispersion") && mode != AURA_REMOVE_BY_DEATH)
++        {
++            uint32 const nova = unit->HasAura(283428) ? 283429 : unit->HasAura(954634) ? 954635 : 0;
++            if (nova)
++                unit->m_Events.AddEventAtOffset([unit, nova]() { if (unit->IsAlive()) unit->CastSpell(unit, nova, true); },
++                    1ms);
++        }
++    }
++
++    void OnUnitSetShapeshiftForm(Unit* unit, uint8 form) override
++    {
++        if (!unit || !unit->HasAura(81216) || (form != FORM_BATTLESTANCE && form != FORM_DEFENSIVESTANCE &&
++            form != FORM_BERSERKERSTANCE))
++            return;
++        for (auto const& [id, app] : unit->GetAppliedAuras())
++        {
++            Aura* aura = app->GetBase();
++            if (aura->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_WARRIOR && WcmeNamed(aura->GetSpellInfo(), "Bloodrage") &&
++                aura->GetDuration() > 0)
++            {
++                aura->SetMaxDuration(aura->GetMaxDuration() + 6000);
++                aura->SetDuration(aura->GetDuration() + 6000);
++            }
++        }
++    }
++
++    static Player* TamingOwner(Unit* attacker)
++    {
++        if (attacker->IsPlayer())
++            return nullptr;
++        Unit* owner = attacker->GetCharmerOrOwner();
++        Player* player = owner ? owner->ToPlayer() : nullptr;
++        if (!player || !(attacker->IsPet() || attacker->IsCharmed() || attacker == player->GetPet()))
++            return nullptr;
++        return player;
++    }
++
++    static int64 Common(Unit* target, Unit* attacker, SpellInfo const* spell, int64 value, bool periodic)
++    {
++        if (Player* owner = TamingOwner(attacker))
++            if (WcmeHasAnyAura(owner, { 81453, 282009, 1581626 }) && WcmeHasAuraNamed(owner, "Berserk", SPELLFAMILY_DRUID))
++                value = value * 120 / 100;
++        if (attacker->HasAura(81110) && target->GetPositionZ() > attacker->GetPositionZ() + 5.0f)
++            value = value * 103 / 100;
++        if (periodic && spell)
++        {
++            if (attacker->HasAura(81186) && attacker->HasStealthAura())
++                value = value * 110 / 100;
++            if (attacker->HasAura(81188) && spell->Dispel == DISPEL_DISEASE && WcmeHasBleedFrom(target, attacker))
++                value = value * 105 / 100;
++        }
++        return value;
++    }
++
++    void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage) override
++    {
++        if (target && attacker && damage && target != attacker)
++            damage = uint32(std::min<int64>(UINT32_MAX, Common(target, attacker, nullptr, damage, false)));
++    }
++
++    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override
++    {
++        if (target && attacker && damage && target != attacker)
++            damage = uint32(std::min<int64>(UINT32_MAX, Common(target, attacker, spellInfo, damage, true)));
++    }
++
++    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
++    {
++        if (!target || !attacker || !spellInfo || damage <= 0)
++            return;
++        if (target == attacker)
++        {
++            if (WcmeNamed(spellInfo, "Shadow Word: Death") && WcmeHasCrowdControl(target))
++            {
++                if (target->HasAura(954128))
++                    target->CastSpell(target, 954129, true);
++                else if (target->HasAura(283360))
++                    target->CastSpell(target, 283361, true);
++            }
++            return;
++        }
++        int64 value = Common(target, attacker, spellInfo, damage, false);
++        if (attacker->HasAura(81110) && target->HasAuraType(SPELL_AURA_FEATHER_FALL))
++        {
++            ObjectGuid const guid = target->GetGUID();
++            attacker->m_Events.AddEventAtOffset([attacker, guid]()
++            {
++                if (Unit* victim = ObjectAccessor::GetUnit(*attacker, guid))
++                    victim->RemoveAurasByType(SPELL_AURA_FEATHER_FALL);
++            }, 1ms);
++        }
++        if (WcmeNamed(spellInfo, "Killing Spree") && !WcmeInExtraStrike && (WcmeHasBleedFrom(target, nullptr) ||
++            WcmeHasPoison(target)))
++        {
++            if (attacker->HasAura(81263))
++                value = value * 110 / 100;
++            if (attacker->HasAura(281649))
++            {
++                int64 const share = value * (target->IsControlledByPlayer() ? 15 : 25) / 100;
++                ObjectGuid const guid = target->GetGUID();
++                uint32 const spellId = spellInfo->Id;
++                attacker->m_Events.AddEventAtOffset([attacker, guid, share, spellId]()
++                {
++                    Unit* victim = ObjectAccessor::GetUnit(*attacker, guid);
++                    SpellInfo const* strike = sSpellMgr->GetSpellInfo(spellId);
++                    if (!victim || !strike)
++                        return;
++                    WcmeInExtraStrike = true;
++                    WcmeExtraDamage(attacker, victim, strike, share);
++                    WcmeInExtraStrike = false;
++                }, 1ms);
++            }
++        }
++        if (WcmeNamed(spellInfo, "Waterbolt") && attacker->GetTypeId() == TYPEID_UNIT)
++            if (Unit* owner = attacker->GetOwner(); owner && owner->HasAura(1180420))
++                owner->m_Events.AddEventAtOffset([owner]() { owner->CastSpell(owner, 1180423, true); }, 1ms);
++        damage = int32(std::min<int64>(INT32_MAX, value));
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
++    new wcme_epic_batch1_hooks();
++    RegisterSpellScript(spell_wcme_dancer_in_the_dark);
++    RegisterSpellScript(spell_wcme_soul_restoration);
++    RegisterSpellScript(spell_wcme_swift_shadows);
 +    new wcme_last_legendary_hooks();
 +    RegisterSpellScript(spell_wcme_social_distancing);
 +    RegisterSpellScript(spell_wcme_harbinger_of_pestilence);

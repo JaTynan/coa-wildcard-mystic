@@ -416,3 +416,26 @@ audit,919572,Improved Mend Pet,1175790,probably already works,.aura 919572; chec
 044,997113,Warden of Demonreach,0,kit,".aura 997113; Pyroblast (Fuego) then again (Arctis); Fireball x4; Combustion (Starborn)","no Hot Streak; Pyroblast alternates Fuego/Arctis with the opposite boon; 4 boon stacks empower the next cast with a barrage; Starborn resets Fuego/Arctis",
 044,978202,White Walker,0,kit,".aura 978202 with a two-handed weapon; Slice and Ice (Slice and Dice); Sinister Strike crits; Winds of Winter (Cone of Cold); Deep Freeze","Slice and Ice needs the 2H; crit rating from Intellect; Winter's Fury procs Ice Spear; crits cast Ice Lance; Howl of Winter boosts Deep Freeze",
 044,902137,Zandalari Windreaver,0,kit,".aura 902137; Loa's Assault (Slam); walk over the Shard of Gonk x3; Zandalari Glaive (Glaive Toss)","Shard lands nearby; picking it up gives 10 rage, speed and Embrace of Bwonsamdi; 3 stacks reset Zandalari Glaive and make the next Loa's Assault free",
+045,1568152,Explosive Charge,0,hook,.aura 1568152; Explosive Shot a target with another enemy within 5 yards,Every Explosive Shot hit (ticks too) also hits the other enemy for about 25% as Explosive Charge
+045,81102,Social Distancing,0,periodic,".aura 81102; stand alone, then next to another player; get hit by a disease","Debuff-resistance 20% while no other player is within 6 yards, 0 when one is"
+045,990020,Harbinger of Pestilence,0,proc,.aura 990020; Wrath and Haunt a monster and a player; Haunt with stacks near a group,"Stacks (2 from players), Nightfall procs if known, Harbinger's Bile on up to 5 enemies, Haunt cooldown shorter per stack"
+045,1398169,Flame Ascendance,0,proc,.aura 1398169; cast Flame Ascendance; Flame Shock then Lava Burst,Flame Shock finishes Lava Burst and Lava Beam cooldowns; Lava Burst over 100% crit chance hits harder
+046,990130,Demonic Persistence,0,proc,.aura 990130 with a demon out; Hand of Gul'dan; watch Wild Imp crits,"Imps get the pet aura; their crits take 1 sec off Hand of Gul'dan and give the demon 3% mana, at most once a second"
+046,978229,Elemental Assassin,0,proc,".aura 978229; Flame Shock, Frost Shock, Earth Shock; Backstab from the front; Stormstrike","One blade per element; Backstab works from any side and hits harder per blade; with all three, Backstab and Stormstrike splash"
+046,1570995,Demonic Reoccurence,0,periodic,.aura 1570995; Metamorphosis,"Shorter cooldown, smaller armor bonus, and no crit-taken or stun-duration reduction in the form"
+046,977972,Temporal Shift,0,hook,.aura 977972; store time; cast Arcane Blast then Temporal Blast,Stored Time only shortens Temporal Blast
+046,979765,Hot Hands,0,hook,.aura 979765; Hot Streak Pyroblast on a monster and a player,"+35% on the monster, no bonus on the player"
+046,1143164,Aspect of the Fox,0,core,.aura 1143164; Aspect of the Fox; Auto Shot while running,Auto Shot keeps firing while moving (if the client allows it)
+047,84453,Flash of Adrenaline,0,hook,.aura 84453; Sprint; Adrenaline Rush; let it expire,Sprint cooldown finished when Adrenaline Rush expires (also 282309)
+047,283428,Blinding Dispersion,0,hook,.aura 283428 near enemies; Dispersion; let it end,Enemies around you disoriented for 2 sec (also 954634)
+047,81216,Do The Stance Dance,0,hook,.aura 81216; Bloodrage; switch stance,Bloodrage 6 sec longer per switch
+047,81186,Spectre,0,hook,".aura 81186; DoT a target, then stealth",DoT ticks 10% higher while stealthed
+047,81188,Pestilent Opportunist,0,hook,.aura 81188; bleed and disease the same target,Disease ticks 5% higher while your bleed is on
+047,81263,Down For The Count,0,hook,.aura 81263; poison or bleed a target; Killing Spree,Killing Spree 10% higher; 281649 adds a 25% extra strike (15% on players)
+047,81110,Duck Hunting,0,hook,.aura 81110; hit a target 5+ yards above you; hit a Slow Falling target,3% more damage upward; Slow Fall removed
+047,954128,Freedom by Death,0,hook,.aura 954128; get rooted; Shadow Word: Death,20% damage and healing buff for 6 sec (also 283360)
+047,81453,Group Think,0,hook,.aura 81453 with a pet; Berserk,"Pet deals 20% more while Berserk lasts (also 282009, 1581626)"
+047,1180420,Elemental Torrent,0,hook,.aura 1180420; Water Elemental attacks,Spell haste stacks (1180423) from each Waterbolt
+047,81521,Dancer in the Dark,0,periodic,.aura 81521; Shadow Dance; Stealth,Shadow Dance cooldown runs twice as fast in Stealth (also 282118)
+047,84381,Soul Restoration,0,proc,.aura 84381; Power Word: Shield an ally; Greater Heal them,"Weakened Soul 2 sec shorter (282213: 4 sec; 1181290: Flash Heal or Greater Heal, 2 sec)"
+047,272814,Swift Shadows,0,proc,.aura 272814 and 965334; Shadow Dance; Ambush a marked target,Shadowstep cooldown finished
