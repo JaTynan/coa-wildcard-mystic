@@ -8,7 +8,9 @@
 -- (and the rage loss after it), combo points from Titanic Fury auto attacks and from spending Titanic Power.
 -- Grove Ranger (997124): Blooming Shot and Medicinal Sting in place of Arcane Shot and Serpent Sting, Grover's Touch and
 -- Grove Shot taught, Grove Ranger's Agility, Grove Ranger stacks, Steady Shot charge refunds, ranged attack power in
--- its heals, Blooming Shot and its heal at 18.85% spell power and ranged attack power.
+-- its heals, Blooming Shot at 18.85% spell power and ranged attack power and its heal at 10.5% / 21%; every rank
+-- of Blooming Shot, Medicinal Sting and Grove Shot is scripted (the right one for your level is shown); Blooming
+-- (997562) turns into Nature's Power after 5 sec without a Blooming Shot.
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 986234),
 ('spell_proc', 954326),
@@ -17,7 +19,10 @@ INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 DELETE FROM `wcme_enchant_teach` WHERE `enchant_spell` = 954326;
 DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (986234, 954326, 977810, 997124);
 DELETE FROM `spell_script_names` WHERE `spell_id` IN (986234, 986240, 986236, 51690, 800219, 954326, 954327, 986233, 965426,
-  977810, 977813, 977812, 977811, 997124, 985601, 985610, 92726, 997559, 92737) AND `ScriptName` LIKE 'spell\_wcme\_%';
+  977810, 977813, 977812, 977811, 997124, 997559, 997562,
+  985601, 985625, 985626, 985627, 985628, 985629, 985630, 985631, 985632, 985610,
+  92726, 92727, 92728, 92729, 92730, 92731, 92732, 92733, 92734, 92735, 92736,
+  92737, 92738, 92739, 92740, 92741, 92742, 92743, 92744, 92745, 92746, 92747, 92748) AND `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE FROM `spell_proc` WHERE `SpellId` IN (986234, 954326, 977810, 997124);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
 (986234, 0, 0, 0, 0, 0, 16, 0, 2, 0, 2, 0, 0, 100, 0, 0),
@@ -40,7 +45,37 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (977811, 'spell_wcme_titanic_fury'),
 (997124, 'spell_wcme_grove_ranger'),
 (985601, 'spell_wcme_grove_heal'),
+(985625, 'spell_wcme_grove_heal'),
+(985626, 'spell_wcme_grove_heal'),
+(985627, 'spell_wcme_grove_heal'),
+(985628, 'spell_wcme_grove_heal'),
+(985629, 'spell_wcme_grove_heal'),
+(985630, 'spell_wcme_grove_heal'),
+(985631, 'spell_wcme_grove_heal'),
+(985632, 'spell_wcme_grove_heal'),
 (985610, 'spell_wcme_grove_heal'),
 (92726, 'spell_wcme_blooming_shot'),
+(92727, 'spell_wcme_blooming_shot'),
+(92728, 'spell_wcme_blooming_shot'),
+(92729, 'spell_wcme_blooming_shot'),
+(92730, 'spell_wcme_blooming_shot'),
+(92731, 'spell_wcme_blooming_shot'),
+(92732, 'spell_wcme_blooming_shot'),
+(92733, 'spell_wcme_blooming_shot'),
+(92734, 'spell_wcme_blooming_shot'),
+(92735, 'spell_wcme_blooming_shot'),
+(92736, 'spell_wcme_blooming_shot'),
 (997559, 'spell_wcme_blooming_heal'),
-(92737, 'spell_wcme_medicinal_sting');
+(997562, 'spell_wcme_blooming'),
+(92737, 'spell_wcme_medicinal_sting'),
+(92738, 'spell_wcme_medicinal_sting'),
+(92739, 'spell_wcme_medicinal_sting'),
+(92740, 'spell_wcme_medicinal_sting'),
+(92741, 'spell_wcme_medicinal_sting'),
+(92742, 'spell_wcme_medicinal_sting'),
+(92743, 'spell_wcme_medicinal_sting'),
+(92744, 'spell_wcme_medicinal_sting'),
+(92745, 'spell_wcme_medicinal_sting'),
+(92746, 'spell_wcme_medicinal_sting'),
+(92747, 'spell_wcme_medicinal_sting'),
+(92748, 'spell_wcme_medicinal_sting');

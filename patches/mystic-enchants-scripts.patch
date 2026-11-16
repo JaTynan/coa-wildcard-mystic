@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..050a6bc
+index 0000000..119c4e7
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,8429 @@
+@@ -0,0 +1,8493 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -202,6 +202,18 @@ index 0000000..050a6bc
 +            player->SetTemporarySpellReplacement(original, 0);
 +    if (!active && player->HasSpell(replacement))
 +        player->removeSpell(replacement, SPEC_MASK_ALL, true);
++}
++
++// WcmeSyncSwap with a ranked replacement: the level-appropriate rank is shown, and every other rank taken away.
++template <typename Ranks>
++void WcmeSyncSwapRanked(Unit* unit, char const* originalName, uint32 family, Ranks const& ranks, bool active)
++{
++    uint32 const wanted = active ? WcmeRankFor(unit, ranks) : 0;
++    for (uint32 rank : ranks)
++        if (rank != wanted)
++            WcmeSyncSwap(unit, originalName, family, rank, false);
++    if (wanted)
++        WcmeSyncSwap(unit, originalName, family, wanted, true);
 +}
 +
 +float WcmeAttackPower(Unit* unit)
@@ -8089,22 +8101,26 @@ index 0000000..050a6bc
 +    }
 +};
 +
-+// Grove Ranger (997124), as the in-game description has it: Arcane Shot shows as Blooming Shot (92726) and Serpent
-+// Sting as Medicinal Sting (92737) (WcmeSyncSwap); Grover's Touch (985610) and Grove Shot (985601) are taught; Grove
++// Grove Ranger (997124), as the in-game description has it: Arcane Shot shows as Blooming Shot (92726-92736) and
++// Serpent Sting as Medicinal Sting (92737-92748), each at the rank your level allows (WcmeSyncSwapRanked); Grover's Touch
++// (985610) and Grove Shot (985601, 985625-985632, by level) are taught; Grove
 +// Ranger's Agility (997563) is kept on you (its healing-power effect named no stat; Validate makes it Agility). Hunter
-+// shots add a Grove Ranger stack (997542, up to 3); Wild Growth spends them, Healing Touch and Regrowth spend up to 2.
++// shots add a Grove Ranger stack (997542, up to 3); Blooming: each Blooming Shot cast (and putting the enchant on) starts
++// Blooming (997562, growing, 5 sec) and spends Nature's Power; when Blooming runs out you get Nature's Power (276927:
++// next Blooming Shot +400% damage and healing, -40% cost; wcme_blooming_mods lets it affect the enchant's ranks); Wild Growth spends them, Healing Touch and Regrowth spend up to 2.
 +// Steady Shot casts have a 20% chance to give back a charge of Blooming Shot and of Medicinal Sting.
 +class spell_wcme_grove_ranger : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_grove_ranger);
 +
-+    static constexpr uint32 BLOOMING_SHOT = 92726;
-+    static constexpr uint32 MEDICINAL_STING = 92737;
-+    static constexpr uint32 GROVE_SHOT = 985601;
-+    static constexpr uint32 GROVERS_TOUCH = 985610;
++    static constexpr std::array<uint32, 11> BLOOMING_SHOT = { 92726, 92727, 92728, 92729, 92730, 92731, 92732, 92733, 92734, 92735, 92736 };
++    static constexpr std::array<uint32, 12> MEDICINAL_STING = { 92737, 92738, 92739, 92740, 92741, 92742, 92743, 92744, 92745, 92746, 92747, 92748 };
++    static constexpr std::array<uint32, 9> GROVE_SHOT = { 985601, 985625, 985626, 985627, 985628, 985629, 985630, 985631, 985632 };
++    static constexpr std::array<uint32, 1> GROVERS_TOUCH = { 985610 };
 +    static constexpr uint32 AGILITY = 997563;
 +    static constexpr uint32 STACKS = 997542;
-+    static constexpr std::array<uint32, 2> TAUGHT = { GROVERS_TOUCH, GROVE_SHOT };
++    static constexpr uint32 GROWING = 997562;
++    static constexpr uint32 NATURES_POWER = 276927;
 +
 +    bool Validate(SpellInfo const* /*spellInfo*/) override
 +    {
@@ -8118,23 +8134,20 @@ index 0000000..050a6bc
 +    void Sync(bool active)
 +    {
 +        Unit* owner = GetTarget();
-+        WcmeSyncSwap(owner, "Arcane Shot", SPELLFAMILY_HUNTER, BLOOMING_SHOT, active);
-+        WcmeSyncSwap(owner, "Serpent Sting", SPELLFAMILY_HUNTER, MEDICINAL_STING, active);
-+        Player* player = owner->ToPlayer();
-+        if (player)
-+            for (uint32 spell : TAUGHT)
-+            {
-+                if (active && !player->HasSpell(spell))
-+                    player->learnSpell(spell, true);
-+                else if (!active && player->HasSpell(spell))
-+                    player->removeSpell(spell, SPEC_MASK_ALL, true);
-+            }
++        WcmeSyncSwapRanked(owner, "Arcane Shot", SPELLFAMILY_HUNTER, BLOOMING_SHOT, active);
++        WcmeSyncSwapRanked(owner, "Serpent Sting", SPELLFAMILY_HUNTER, MEDICINAL_STING, active);
++        WcmeSyncTaughtRank(owner, GROVE_SHOT, active);
++        WcmeSyncTaughtRank(owner, GROVERS_TOUCH, active);
 +        if (active && !owner->HasAura(AGILITY))
 +            owner->AddAura(AGILITY, owner);
-+        else if (!active)
++        if (active && !owner->HasAura(GROWING) && !owner->HasAura(NATURES_POWER))
++            owner->CastSpell(owner, GROWING, true);
++        if (!active)
 +        {
 +            owner->RemoveAurasDueToSpell(AGILITY);
 +            owner->RemoveAurasDueToSpell(STACKS);
++            owner->RemoveAurasDueToSpell(GROWING);
++            owner->RemoveAurasDueToSpell(NATURES_POWER);
 +        }
 +    }
 +
@@ -8147,7 +8160,7 @@ index 0000000..050a6bc
 +        if (!spell)
 +            return false;
 +        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
-+            return (spell->SpellFamilyName == SPELLFAMILY_HUNTER && WcmeNamed(spell, "Steady Shot")) ||
++            return (spell->SpellFamilyName == SPELLFAMILY_HUNTER && WcmeNamedAny(spell, { "Steady Shot", "Blooming Shot" })) ||
 +                (spell->SpellFamilyName == SPELLFAMILY_DRUID && WcmeNamedAny(spell, { "Wild Growth", "Healing Touch", "Regrowth" }) &&
 +                    GetTarget()->HasAura(STACKS));
 +        return WcmeIsHunterShot(spell) && eventInfo.GetActionTarget() && eventInfo.GetActionTarget() != GetTarget();
@@ -8161,6 +8174,13 @@ index 0000000..050a6bc
 +        if (!(eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST))
 +        {
 +            WcmeAddStackOn(owner, owner, STACKS);
++            return;
++        }
++        if (WcmeNamed(spell, "Blooming Shot"))
++        {
++            if (owner->HasAura(NATURES_POWER))
++                owner->m_Events.AddEventAtOffset([owner]() { owner->RemoveAurasDueToSpell(NATURES_POWER); }, 1s);
++            owner->CastSpell(owner, GROWING, true);
 +            return;
 +        }
 +        if (WcmeNamed(spell, "Steady Shot"))
@@ -8203,9 +8223,9 @@ index 0000000..050a6bc
 +    }
 +};
 +
-+// Blooming Shot (92726): damage scales with 18.85% of spell power (its effect's coefficient, set in Validate; the
-+// data has none) and 18.85% of ranged attack power. Blooming Shot (Heal) (997559) keeps its data's 18.8% spell power
-+// and adds 18.85% of ranged attack power.
++// Blooming Shot (every rank): damage scales with 18.85% of spell power (its effect's coefficient, set in Validate; the
++// data has none) and 18.85% of ranged attack power. Blooming Shot (Heal) (997559) scales with 10.5% of spell power
++// (Validate; the data had 18.8%) and 21% of ranged attack power.
 +class spell_wcme_blooming_shot : public SpellScript
 +{
 +    PrepareSpellScript(spell_wcme_blooming_shot);
@@ -8219,7 +8239,8 @@ index 0000000..050a6bc
 +
 +    void HandleDamage(SpellEffIndex /*effIndex*/)
 +    {
-+        SetHitDamage(GetHitDamage() + int32(GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.1885f));
++        float const bloom = GetCaster()->HasAura(276927) ? 5.0f : 1.0f;
++        SetHitDamage(GetHitDamage() + int32(GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.1885f * bloom));
 +    }
 +
 +    void Register() override
@@ -8232,9 +8253,17 @@ index 0000000..050a6bc
 +{
 +    PrepareSpellScript(spell_wcme_blooming_heal);
 +
++    bool Validate(SpellInfo const* spellInfo) override
++    {
++        if (spellInfo->Effects[EFFECT_0].Effect == SPELL_EFFECT_HEAL)
++            const_cast<SpellInfo*>(spellInfo)->Effects[EFFECT_0].BonusMultiplier = 0.105f;
++        return true;
++    }
++
 +    void HandleHeal(SpellEffIndex /*effIndex*/)
 +    {
-+        SetHitHeal(GetHitHeal() + int32(GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.1885f));
++        float const bloom = GetCaster()->HasAura(276927) ? 5.0f : 1.0f;
++        SetHitHeal(GetHitHeal() + int32(GetCaster()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.21f * bloom));
 +    }
 +
 +    void Register() override
@@ -8265,6 +8294,39 @@ index 0000000..050a6bc
 +    }
 +};
 +
++// Blooming (997562, growing): with Grove Ranger, running out turns into Nature's Power (276927).
++class spell_wcme_blooming : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_blooming);
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* owner = GetTarget();
++        AuraRemoveMode const mode = GetTargetApplication()->GetRemoveMode();
++        if (owner->IsAlive() && owner->HasAura(997124) && (mode == AURA_REMOVE_BY_EXPIRE || mode == AURA_REMOVE_BY_DEFAULT))
++            owner->CastSpell(owner, 276927, true);
++    }
++
++    void Register() override
++    {
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_blooming::HandleRemove, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Nature's Power (276927) also affects the enchant's Blooming Shot ranks and their heal. The core limits it to the
++// class version's spells (276884, 276926); this script is registered after that one, so its answer stands.
++class wcme_blooming_mods : public GlobalScript
++{
++public:
++    wcme_blooming_mods() : GlobalScript("wcme_blooming_mods", { GLOBALHOOK_ON_SPELL_MOD_FAMILY_MASK }) { }
++
++    void OnSpellModFamilyMask(SpellInfo const* affect, SpellInfo const* check, SpellModifier const* /*mod*/, bool& affected) override
++    {
++        if (affect->Id == 276927 && ((check->Id >= 92726 && check->Id <= 92736) || check->Id == 997559))
++            affected = true;
++    }
++};
++
 +// Maximum rage for Edge of Fury's Blind Rage (500) and Fury of the Titans (300).
 +class wcme_rage_cap : public PlayerScript
 +{
@@ -8286,6 +8348,7 @@ index 0000000..050a6bc
 +{
 +    new wcme_kit_damage_hooks();
 +    new wcme_rage_cap();
++    new wcme_blooming_mods();
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
 +    RegisterSpellScript(spell_wcme_unique_physical_stacks);
 +    RegisterSpellScript(spell_wcme_curse_of_arugal);
@@ -8431,5 +8494,6 @@ index 0000000..050a6bc
 +    RegisterSpellScript(spell_wcme_grove_heal);
 +    RegisterSpellScript(spell_wcme_blooming_shot);
 +    RegisterSpellScript(spell_wcme_blooming_heal);
++    RegisterSpellScript(spell_wcme_blooming);
 +    RegisterSpellScript(spell_wcme_medicinal_sting);
 +}
