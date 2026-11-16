@@ -250,7 +250,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 979137,Starburst Barrage,Epic,132329,needs-code,other placeholder,verified,"action: Starfire, Starsurge or Arcane Barrage grants Starburst Barrage",,007-enchant-actions.sql (part 1),2026-11-02,"pass: Starfire grants Starburst Barrage, stacks to 4 (2 Nov)"
 276361,Temporal Distortion,Epic,201305,needs-code,other placeholder,live,"action: Align, Synchronize or Time-Bind grants Temporal Distortion",,007-enchant-actions.sql (part 1),,
 84466,Throw Weapon,Epic,1176106,needs-code,other placeholder,live,"teaches spell 1582693, as its twin does (wcme_enchant_teach)",1591038,006-teach-twins.sql,,
-86438,Tree of Wrath,Legendary,1176316,needs-code,other placeholder,live,"teaches spell 1568396, as its twin does (wcme_enchant_teach)",1590901,006-teach-twins.sql,,
+86438,Tree of Wrath,Legendary,1176316,needs-code,modifier on a placeholder,live,own design scripted (spell_wcme_tree_of_wrath; no longer teaches twin spell 1568396),,044-kits-6.sql,,
 81352,Unbounded Drain Life,Epic,1176012,needs-code,other placeholder,live,"teaches spell 1581110, as its twin does (wcme_enchant_teach)",1591032,006-teach-twins.sql,,
 81363,Unbounded Drain Soul,Epic,1176014,needs-code,other placeholder,live,"teaches spell 1581160, as its twin does (wcme_enchant_teach)",1591034,006-teach-twins.sql,,
 982748,Bone Spear,Epic,132609,needs-code,proc on a placeholder,partly working,"teaches spell 1588371, as its twin does (wcme_enchant_teach)",1591119,006-teach-twins.sql,2026-11-03,"damage, rage cost and debuff work; no charges"

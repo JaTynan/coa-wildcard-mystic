@@ -82,7 +82,6 @@ INSERT INTO `wcme_enchant_teach` (`enchant_spell`, `taught_spell`, `comment`) VA
 (956445, 1569955, 'Paratrooper teaches Paratrooper, as twin 1590917 does'),
 (977928, 273955, 'Stormhammer teaches Stormhammer, as twin 852224 does'),
 (965245, 1570042, 'Time Warp teaches Time Warp, as twin 1590918 does'),
-(86438, 1568396, 'Tree of Wrath teaches Tree of Wrath, as twin 1590901 does'),
 (965337, 1571219, 'Warcry teaches Warcry, as twin 1590923 does'),
 (1398174, 278075, 'Chosen of Elune teaches Chosen of Elune, as twin 852305 does'),
 (1573649, 278067, 'Cremation teaches Cremation, as twin 852304 does'),
