@@ -88,4 +88,6 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (92800, 'spell_wcme_panache'),
 (92787, 'spell_wcme_blurred_blade'),
 (92788, 'spell_wcme_blurred_blade'),
+(92787, 'spell_wcme_blurred_blade_cast'),
+(92788, 'spell_wcme_blurred_blade_cast'),
 (92802, 'spell_wcme_blurred_blade_counter');

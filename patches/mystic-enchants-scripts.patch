@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..c5956e0
+index 0000000..5a7285d
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,10021 @@
+@@ -0,0 +1,10083 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -15,6 +15,7 @@ index 0000000..c5956e0
 +
 +#include "Battleground.h"
 +#include "CellImpl.h"
++#include "Config.h"
 +#include "Containers.h"
 +#include "Creature.h"
 +#include "DBCStores.h"
@@ -7623,6 +7624,26 @@ index 0000000..c5956e0
 +
 +namespace
 +{
++// An enchant's "Primary Stat" requirement (worldserver.conf Wildcard.EnchantPrimaryStat, default on): with the
++// Wildcard stat paths (Path of Strength 84864 and the others), the chosen path must be the named one; without them,
++// the named stat must be the highest of Strength, Agility, Intellect and Spirit.
++bool WcmePrimaryStatMet(Unit const* unit, uint32 path, Stats stat)
++{
++    if (!sConfigMgr->GetOption<bool>("Wildcard.EnchantPrimaryStat", true))
++        return true;
++    Player const* player = unit->ToPlayer();
++    if (!player)
++        return true;
++    for (uint32 known : { 84864u, 84865u, 84866u, 84867u, 129243u })
++        if (player->HasSpell(known))
++            return player->HasSpell(path);
++    float const wanted = player->GetStat(stat);
++    for (Stats other : { STAT_STRENGTH, STAT_AGILITY, STAT_INTELLECT, STAT_SPIRIT })
++        if (player->GetStat(other) > wanted)
++            return false;
++    return true;
++}
++
 +// A Hunter "shot": any ranged Hunter ability, or a Hunter spell with "Shot" in its name.
 +bool WcmeIsHunterShot(SpellInfo const* spell)
 +{
@@ -8112,7 +8133,8 @@ index 0000000..c5956e0
 +    }
 +};
 +
-+// Grove Ranger (997124), as the in-game description has it: Arcane Shot shows as Blooming Shot (92726-92736) and
++// Grove Ranger (997124), with the healing path or Spirit as your primary stat (WcmePrimaryStatMet), as the in-game
++// description has it: Arcane Shot shows as Blooming Shot (92726-92736) and
 +// Serpent Sting as Medicinal Sting (92737-92748), each at the rank your level allows (WcmeSyncSwapRanked); Grover's Touch
 +// (985610) and Grove Shot (985601, 985625-985632, by level) are taught; Grove
 +// Ranger's Agility (997563) is kept on you (its healing-power effect named no stat; Validate makes it Agility). Hunter
@@ -8145,6 +8167,7 @@ index 0000000..c5956e0
 +    void Sync(bool active)
 +    {
 +        Unit* owner = GetTarget();
++        active = active && WcmePrimaryStatMet(owner, 84867, STAT_SPIRIT);
 +        WcmeSyncSwapRanked(owner, "Arcane Shot", SPELLFAMILY_HUNTER, BLOOMING_SHOT, active);
 +        WcmeSyncSwapRanked(owner, "Serpent Sting", SPELLFAMILY_HUNTER, MEDICINAL_STING, active);
 +        WcmeSyncTaughtRank(owner, GROVE_SHOT, active);
@@ -8168,7 +8191,7 @@ index 0000000..c5956e0
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
 +        SpellInfo const* spell = eventInfo.GetSpellInfo();
-+        if (!spell)
++        if (!spell || !WcmePrimaryStatMet(GetTarget(), 84867, STAT_SPIRIT))
 +            return false;
 +        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
 +            return (spell->SpellFamilyName == SPELLFAMILY_HUNTER && WcmeNamedAny(spell, { "Steady Shot", "Blooming Shot" })) ||
@@ -8947,6 +8970,7 @@ index 0000000..c5956e0
 +std::unordered_map<ObjectGuid, uint32> WcmeDeliriumDrained;              // mana Delirium has drained so far
 +std::unordered_set<ObjectGuid> WcmeManaFiendArmed;                       // the next auto attack is a Manacharged Strike
 +std::unordered_map<ObjectGuid, uint64> WcmeTimeBindDamage;               // damage each Time-bind has absorbed
++std::unordered_map<ObjectGuid, TimePoint> WcmeBlurredBladeEnd;           // when each Blurred Blade cast should end
 +constexpr std::array<uint32, 8> HATEFUL_STRIKE_RANKS = { 984226, 984649, 984650, 984651, 984652, 984653, 984654, 984655 };
 +constexpr std::array<uint32, 5> GROUND_SLAM_RANKS = { 984201, 984456, 984457, 984458, 984459 };
 +constexpr std::array<uint32, 8> UPHEAVAL_RANKS = { 984202, 984232, 984233, 984234, 984235, 984236, 984237, 984238 };
@@ -9286,7 +9310,7 @@ index 0000000..c5956e0
 +    }
 +};
 +
-+// Son of Gruul (984200): Mortal Strike shows as Hateful Strike (984226 ranks), Sundering as Ground Slam (984201 ranks)
++// Son of Gruul (984200), with Strength as your primary stat (WcmePrimaryStatMet): Mortal Strike shows as Hateful Strike (984226 ranks), Sundering as Ground Slam (984201 ranks)
 +// and Lava Lash as Upheaval (984202 ranks), each at your level's rank. Physical Warrior ability hits have a 25% chance to
 +// add a Hate charge (984211, up to 6); Ground Slam and Upheaval add 2 per cast and, if you know Rockbiter Weapon, a
 +// Petrification stack (984212) on each target hit. Each Hate charge adds Seething Growth (984215, up to 10; at 10 it is
@@ -9304,6 +9328,7 @@ index 0000000..c5956e0
 +    void Sync(bool active)
 +    {
 +        Unit* owner = GetTarget();
++        active = active && WcmePrimaryStatMet(owner, 84864, STAT_STRENGTH);
 +        WcmeSyncSwapRanked(owner, "Mortal Strike", SPELLFAMILY_WARRIOR, HATEFUL_STRIKE_RANKS, active);
 +        WcmeSyncSwapRanked(owner, "Sundering", SPELLFAMILY_SHAMAN, GROUND_SLAM_RANKS, active);
 +        WcmeSyncSwapRanked(owner, "Lava Lash", SPELLFAMILY_SHAMAN, UPHEAVAL_RANKS, active);
@@ -9353,7 +9378,7 @@ index 0000000..c5956e0
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
 +        SpellInfo const* spell = eventInfo.GetSpellInfo();
-+        if (!spell || !eventInfo.GetActionTarget() || !WcmeDealtDamage(eventInfo))
++        if (!spell || !eventInfo.GetActionTarget() || !WcmeDealtDamage(eventInfo) || !WcmePrimaryStatMet(GetTarget(), 84864, STAT_STRENGTH))
 +            return false;
 +        if (IsSlam(spell))
 +            return true;
@@ -9466,9 +9491,11 @@ index 0000000..c5956e0
 +
 +// Steward of Eternity (986162): Moonfire shows as Align (986163), Renew as Time-bind (986164) and Arcane Missiles as
 +// Synchronize (986165). Each of them drains energy (Align 5, Time-bind 30, Synchronize 70, the amounts in their data)
-+// and triggers Borrowed Time if you know its final rank; Align and Time-bind add Temporal Distortion (986166, up to 20;
-+// Align on a Time-bound target adds one more). Synchronize uses Missile Barrage through its data. When one of them empties your energy, the distortion is released: Eternity's healing wave
-+// (986173, 13% stronger per stack released) and Eternity (986167), which lasts until your energy is full again.
++// and triggers Borrowed Time if you know its final rank, and adds Temporal Distortion (986166, up to 20; Align on a
++// Time-bound target adds one more), as the enchant and its class version (276361) say. Synchronize uses Missile Barrage
++// through its data. Your heals on an Aligned target heal 10% more (wcme_kit5_hooks). When one of them empties your energy, the distortion is released: Eternity's healing wave
++// (986173, 13% stronger per stack released) and Eternity (986167) for 2 sec plus 0.6 sec per stack released (its
++// duration as the class version gives it, 276347 and 276373).
 +class spell_wcme_steward_of_eternity : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_steward_of_eternity);
@@ -9479,12 +9506,6 @@ index 0000000..c5956e0
 +    static constexpr uint32 DISTORTION = 986166;
 +    static constexpr uint32 ETERNITY = 986167;
 +    static constexpr uint32 ETERNITY_WAVE = 986173;
-+
-+    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
-+    {
-+        isPeriodic = true;
-+        amplitude = 1000;
-+    }
 +
 +    void Sync(bool active)
 +    {
@@ -9502,13 +9523,6 @@ index 0000000..c5956e0
 +    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
 +    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
 +
-+    void HandleTick(AuraEffect const* /*aurEff*/)
-+    {
-+        Unit* owner = GetTarget();
-+        if (owner->HasAura(ETERNITY) && owner->GetPower(POWER_ENERGY) >= owner->GetMaxPower(POWER_ENERGY))
-+            owner->RemoveAurasDueToSpell(ETERNITY);
-+    }
-+
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
 +        SpellInfo const* spell = eventInfo.GetSpellInfo();
@@ -9523,7 +9537,7 @@ index 0000000..c5956e0
 +        if (Player* player = owner->ToPlayer())
 +            if (player->HasSpell(52800))
 +                owner->CastSpell(owner, 59891, true);
-+        uint8 add = spell->Id == SYNCHRONIZE ? 0 : 1;
++        uint8 add = 1;
 +        if (spell->Id == ALIGN)
 +            if (Unit* target = eventInfo.GetActionTarget())
 +                if (WcmeHasAnyAuraFrom(target, owner, { TIME_BIND, 986161 }))
@@ -9541,14 +9555,17 @@ index 0000000..c5956e0
 +        if (SpellInfo const* wave = sSpellMgr->GetSpellInfo(ETERNITY_WAVE))
 +            owner->CastCustomSpell(ETERNITY_WAVE, SPELLVALUE_BASE_POINT0, wave->Effects[EFFECT_0].CalcValue(owner) * (100 + 13 * released) / 100, owner, true);
 +        owner->CastSpell(owner, ETERNITY, true);
++        if (Aura* eternity = owner->GetAura(ETERNITY))
++        {
++            eternity->SetMaxDuration(2000 + 600 * released);
++            eternity->SetDuration(eternity->GetMaxDuration());
++        }
 +    }
 +
 +    void Register() override
 +    {
-+        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_steward_of_eternity::CalcPeriod, EFFECT_0, SPELL_AURA_DUMMY);
 +        AfterEffectApply += AuraEffectApplyFn(spell_wcme_steward_of_eternity::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
 +        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_steward_of_eternity::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
-+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_steward_of_eternity::HandleTick, EFFECT_0, SPELL_AURA_DUMMY);
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_steward_of_eternity::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_steward_of_eternity::HandleProc);
 +    }
@@ -9635,7 +9652,9 @@ index 0000000..c5956e0
 +// Swashbuckler: Bloodsail Captain (997127): Devastate shows as Hammer the Gap (92786 ranks), Eviscerate as Panache
 +// (92789 ranks) and Slice and Dice as Blurred Blade (92787 ranks), each at your level's rank. Mocking Blow grants En
 +// Garde! (92785). Captain's Resolve (300110) is kept on you while Swashbuckling (a single one-handed weapon and an
-+// empty off-hand) in Defensive Stance, checked every second.
++// empty off-hand) in Defensive Stance, checked every quarter second. Blurred Blade is not refreshed by effects that refresh
++// Slice and Dice (they find it by its Slice and Dice flag): if its time goes up without a cast of its own, it is put back
++// within a quarter second (spell_wcme_blurred_blade_cast records each cast).
 +class spell_wcme_swashbuckler : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_swashbuckler);
@@ -9648,7 +9667,7 @@ index 0000000..c5956e0
 +    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
 +    {
 +        isPeriodic = true;
-+        amplitude = 1000;
++        amplitude = 250;
 +    }
 +
 +    static bool Swashbuckling(Unit const* unit)
@@ -9677,6 +9696,21 @@ index 0000000..c5956e0
 +    void HandleTick(AuraEffect const* /*aurEff*/)
 +    {
 +        Unit* owner = GetTarget();
++        if (auto end = WcmeBlurredBladeEnd.find(owner->GetGUID()); end != WcmeBlurredBladeEnd.end())
++        {
++            Aura* blade = nullptr;
++            for (uint32 rank : BLURRED)
++                if ((blade = owner->GetAura(rank)))
++                    break;
++            if (!blade)
++                WcmeBlurredBladeEnd.erase(end);
++            else
++            {
++                int32 const left = int32(std::chrono::duration_cast<Milliseconds>(end->second - GameTime::Now()).count());
++                if (blade->GetDuration() > left + 300)
++                    blade->SetDuration(std::max(1, left));
++            }
++        }
 +        bool const wanted = Swashbuckling(owner) && owner->GetShapeshiftForm() == FORM_DEFENSIVESTANCE;
 +        if (wanted && !owner->HasAura(RESOLVE))
 +            owner->AddAura(RESOLVE, owner);
@@ -9780,6 +9814,8 @@ index 0000000..c5956e0
 +                aura->GetDuration() > 0)
 +            {
 +                aura->SetDuration(std::max(1, aura->GetDuration() - 1000));
++                if (auto end = WcmeBlurredBladeEnd.find(owner->GetGUID()); end != WcmeBlurredBladeEnd.end())
++                    end->second -= Seconds(1);
 +                return;
 +            }
 +        }
@@ -9791,13 +9827,38 @@ index 0000000..c5956e0
 +    }
 +};
 +
-+// Batch 5 damage hooks: a target bound by Time-bind has part of each hit absorbed for its heal, and Mana Fiend's
++// Blurred Blade (92787 ranks): records when this cast should end, for spell_wcme_swashbuckler.
++class spell_wcme_blurred_blade_cast : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_blurred_blade_cast);
++
++    void HandleAfterHit()
++    {
++        Unit* caster = GetCaster();
++        if (Aura const* blade = caster->GetAura(GetSpellInfo()->Id))
++            WcmeBlurredBladeEnd[caster->GetGUID()] = GameTime::Now() + Milliseconds(blade->GetDuration());
++    }
++
++    void Register() override
++    {
++        AfterHit += SpellHitFn(spell_wcme_blurred_blade_cast::HandleAfterHit);
++    }
++};
++
++// Batch 5 hooks: heals on a target Aligned by the healer (986160) heal 10% more; a target bound by Time-bind has part of
++// each hit absorbed for its heal, and Mana Fiend's
 +// armed auto attack is replaced by a Manacharged Strike (the auto attack itself deals nothing).
 +class wcme_kit5_hooks : public UnitScript
 +{
 +public:
 +    wcme_kit5_hooks() : UnitScript("wcme_kit5_hooks", true, { UNITHOOK_MODIFY_MELEE_DAMAGE, UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN,
-+        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK }) { }
++        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK, UNITHOOK_MODIFY_HEAL_RECEIVED }) { }
++
++    void ModifyHealReceived(Unit* target, Unit* healer, uint32& heal, SpellInfo const* /*spellInfo*/) override
++    {
++        if (target && healer && heal && target->HasAura(986160, healer->GetGUID()))
++            heal = heal * 110 / 100;
++    }
 +
 +    void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage) override
 +    {
@@ -10023,5 +10084,6 @@ index 0000000..c5956e0
 +    RegisterSpellScript(spell_wcme_panache);
 +    RegisterSpellScript(spell_wcme_blurred_blade);
 +    RegisterSpellScript(spell_wcme_blurred_blade_counter);
++    RegisterSpellScript(spell_wcme_blurred_blade_cast);
 +    RegisterSpellScript(spell_wcme_medicinal_sting);
 +}
