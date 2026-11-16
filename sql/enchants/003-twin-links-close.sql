@@ -51,7 +51,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (916187, 1316206, 2, 'WCME: Restorative Totems uses twin 1316206 (standard, tooltip 0.12 alike)'),
 (272816, 1571172, 2, 'WCME: Shadow of Death uses twin 1571172 (scripted, tooltip 0.12 alike)'),
 (1318095, 918094, 2, 'WCME: Nightfall uses twin 918094 (standard, tooltip 0.11 alike)'),
-(977710, 1571951, 2, 'WCME: Overflow uses twin 1571951 (standard, tooltip 0.10 alike)'),
 (1358425, 914179, 2, 'WCME: Relentless Strikes uses twin 914179 (standard, tooltip 0.09 alike)'),
 (978232, 274814, 2, 'WCME: Wind Rager uses twin 274814 (standard, tooltip 0.07 alike)'),
 (913715, 1313852, 2, 'WCME: Dual Wield Specialization uses twin 1313852 (standard, tooltip 0.07 alike)'),

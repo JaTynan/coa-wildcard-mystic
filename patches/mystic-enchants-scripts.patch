@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..584b6c3
+index 0000000..ce99cc7
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,5591 @@
+@@ -0,0 +1,5689 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -5492,6 +5492,103 @@ index 0000000..584b6c3
 +    }
 +};
 +
++// Overflow (977710): its own design instead of twin 1571951 (003 no longer links them). Healing Touch also heals the
++// most injured other ally within 12 yards for 50% of the amount healed (954283), always plants Living Seed (48504: 30%
++// of the heal) if you know Living Seed, and gives a stack of Flowing (986112); the third stack becomes Overflowing
++// (986113): the next Chain Heal heals 50% more (the data's own spell mod), plants Living Seed on each target and grants
++// Nature's Grace (16886) if you know it or are in Random mode (973827). Living Seed blooming restores 1% of your base
++// mana, and each Chain Heal target healed takes 1 sec off Tranquility.
++class spell_wcme_overflow : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_overflow);
++
++    static constexpr uint32 OVERFLOW_HEAL = 954283;
++    static constexpr uint32 FLOWING = 986112;
++    static constexpr uint32 OVERFLOWING = 986113;
++    static constexpr uint32 SEED = 48504;
++    static constexpr uint32 NATURES_GRACE = 16886;
++    bool _overflowingChain = false;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return heal && heal->GetHeal() && spell && eventInfo.GetActionTarget() && spell->Id != OVERFLOW_HEAL &&
++            !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamedAny(spell, { "Healing Touch", "Chain Heal", "Living Seed" });
++    }
++
++    void PlantSeed(Unit* owner, Unit* target, uint32 healed)
++    {
++        if (WcmeHasAnyAura(owner, { 48496, 48499, 48500 }))
++            owner->CastCustomSpell(SEED, SPELLVALUE_BASE_POINT0, int32(healed * 30 / 100), target, true);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        uint32 const healed = eventInfo.GetHealInfo()->GetHeal();
++        if (WcmeNamed(spell, "Living Seed"))
++        {
++            owner->ModifyPower(POWER_MANA, int32(owner->GetCreateMana() / 100));
++            return;
++        }
++        if (WcmeNamed(spell, "Chain Heal"))
++        {
++            WcmeCutCooldownByName(owner, "Tranquility", 1000);
++            if (_overflowingChain && !owner->HasAura(OVERFLOWING))
++                _overflowingChain = false;
++            if (owner->HasAura(OVERFLOWING) && !_overflowingChain)
++            {
++                _overflowingChain = true;
++                if (WcmeHasAnyAura(owner, { 16880, 61345, 61346, 973827 }))
++                    owner->CastSpell(owner, NATURES_GRACE, true);
++                owner->m_Events.AddEventAtOffset([owner]() { owner->RemoveAurasDueToSpell(OVERFLOWING); }, 1500ms);
++            }
++            if (_overflowingChain)
++                PlantSeed(owner, target, healed);
++            return;
++        }
++        _overflowingChain = false;
++        if (SpellInfo const* overflow = sSpellMgr->GetSpellInfo(OVERFLOW_HEAL))
++        {
++            Unit* other = nullptr;
++            for (Unit* ally : WcmeAlliesNear(owner, target, 12.0f, 40))
++                if (ally != target && ally->IsInRaidWith(owner) && (!other || ally->GetHealthPct() < other->GetHealthPct()))
++                    other = ally;
++            if (other)
++            {
++                HealInfo extra(owner, other, healed / 2, overflow, overflow->GetSchoolMask());
++                owner->HealBySpell(extra);
++            }
++        }
++        PlantSeed(owner, target, healed);
++        Aura* flowing = owner->GetAura(FLOWING);
++        uint8 const stacks = (flowing ? flowing->GetStackAmount() : 0) + 1;
++        if (stacks >= 3)
++        {
++            owner->RemoveAurasDueToSpell(FLOWING);
++            owner->AddAura(OVERFLOWING, owner);
++        }
++        else if (!flowing)
++            owner->AddAura(FLOWING, owner);
++        else
++        {
++            flowing->SetStackAmount(stacks);
++            flowing->RefreshDuration();
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_overflow::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_overflow::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -5594,4 +5691,5 @@ index 0000000..584b6c3
 +    RegisterSpellScript(spell_wcme_resonating_power);
 +    RegisterSpellScript(spell_wcme_oracle_of_the_eclipse);
 +    RegisterSpellScript(spell_wcme_oracles_blessing);
++    RegisterSpellScript(spell_wcme_overflow);
 +}

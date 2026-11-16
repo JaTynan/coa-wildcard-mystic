@@ -62,7 +62,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 978228,Midnight Flames,Legendary,1178693,needs-code,modifier on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",274642,004-twin-links-dedup.sql,,
 84583,Naturally Strong,Epic,1176164,needs-code,modifier on a placeholder,live,school-pair proc (spell_dbc + spell_proc),,002-school-pairs.sql,,
 273415,Overflow,Epic,200953,needs-code,modifier on a placeholder,live,linked to working twin,1571951,003-twin-links-close.sql,,
-977710,Overflow,Legendary,1178608,needs-code,modifier on a placeholder,live,linked to working twin,1571951,003-twin-links-close.sql,,
+977710,Overflow,Legendary,1178608,needs-code,modifier on a placeholder,live,own design scripted (spell_wcme_overflow; no longer linked to twin 1571951),,032-overflow.sql,,
 281402,Pack Alpha,Epic,201920,needs-code,modifier on a placeholder,live,linked to working twin,1579878,003-twin-links-close.sql,,
 1180200,Precision Impact,Epic,200725,needs-code,modifier on a placeholder,live,linked to working twin,290200,003-twin-links-close.sql,,
 84585,Prepare for Shatter,Epic,1176165,needs-code,modifier on a placeholder,live,school-pair proc (spell_dbc + spell_proc),,002-school-pairs.sql,,
