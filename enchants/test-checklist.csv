@@ -437,5 +437,5 @@ audit,919572,Improved Mend Pet,1175790,probably already works,.aura 919572; chec
 047,81453,Group Think,0,hook,.aura 81453 with a pet; Berserk,"Pet deals 20% more while Berserk lasts (also 282009, 1581626)"
 047,1180420,Elemental Torrent,0,hook,.aura 1180420; Water Elemental attacks,Spell haste stacks (1180423) from each Waterbolt
 047,81521,Dancer in the Dark,0,periodic,.aura 81521; Shadow Dance; Stealth,Shadow Dance cooldown runs twice as fast in Stealth (also 282118)
-047,84381,Soul Restoration,0,proc,.aura 84381; Power Word: Shield an ally; Greater Heal them,"Weakened Soul 2 sec shorter (282213: 4 sec; 1181290: Flash Heal or Greater Heal, 2 sec)"
+047,84381,Soul Restoration,0,proc,.aura 84381; Power Word: Shield an ally; Greater Heal them,"Weakened Soul 2 sec shorter (also 282213; 1181290: Flash Heal or Greater Heal)"
 047,272814,Swift Shadows,0,proc,.aura 272814 and 965334; Shadow Dance; Ambush a marked target,Shadowstep cooldown finished

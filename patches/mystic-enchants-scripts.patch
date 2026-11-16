@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..0cc2008
+index 0000000..0e165c3
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,11782 @@
+@@ -0,0 +1,11777 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -11350,17 +11350,12 @@ index 0000000..0cc2008
 +    }
 +};
 +
-+// Soul Restoration: your heals shorten Weakened Soul on the ally you heal.
-+// 84381: Holy Light, Greater Heal, Healing Wave or Healing Touch, 2 sec. 282213: the same heals, 4 sec (its own value).
-+// 1181290: Flash Heal or Greater Heal, 2 sec.
++// Soul Restoration: your heals shorten Weakened Soul on the ally you heal by 2 sec.
++// 84381 and 282213: Holy Light, Greater Heal, Healing Wave or Healing Touch (282213's data says 4 sec; 2 sec by James's
++// decision, so every copy matches). 1181290: Flash Heal or Greater Heal.
 +class spell_wcme_soul_restoration : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_soul_restoration);
-+
-+    int32 Seconds() const
-+    {
-+        return GetId() == 282213 ? 4 : 2;
-+    }
 +
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
@@ -11381,7 +11376,7 @@ index 0000000..0cc2008
 +            Aura* aura = app->GetBase();
 +            if (std::strcmp(aura->GetSpellInfo()->SpellName[0], "Weakened Soul") != 0)
 +                continue;
-+            int32 const left = aura->GetDuration() - Seconds() * IN_MILLISECONDS;
++            int32 const left = aura->GetDuration() - 2 * IN_MILLISECONDS;
 +            if (left <= 0)
 +                aura->SetDuration(1);
 +            else

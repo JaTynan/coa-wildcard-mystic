@@ -69,7 +69,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 997047 | Defias Gunslinger | yes | 997047: changed, awaiting in-game test (#175) |
 | 977864 | Demolisher |  | 977864: changed, awaiting in-game test (#20 #175) |
 | 965313 | Demonic Influence |  | 965313: handled (PvE by its data, PvP part by patch 65) |
-| 990130 | Demonic Persistence |  | 990130: changed, awaiting in-game test (#173) |
+| 990130 | Demonic Persistence |  | 990130: changed, awaiting in-game test (#173 #177) |
 | 84531 | Deranged Druid |  | 84531: changed, awaiting in-game test (#167)<br>1568216: changed, awaiting in-game test (#167) |
 | 982980 | Disciple of Arugal | yes | 982980: changed, awaiting in-game test (#175) |
 | 978234 | Disciple of the Tides |  | 978234: changed, awaiting in-game test (#23 #175) |
@@ -80,7 +80,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 84533 | Eccentric Elementalist |  | 84533: changed, awaiting in-game test (#167)<br>1568237: changed, awaiting in-game test (#167) |
 | 986234 | Edge of Fury | yes | 986234: changed, awaiting in-game test (#175) |
 | 81116 | Eldritch Knight |  | 81116: changed, awaiting in-game test (#165 #166) |
-| 978229 | Elemental Assassin |  | 978229: changed, awaiting in-game test (#23 #171) |
+| 978229 | Elemental Assassin |  | 978229: changed, awaiting in-game test (#23 #171 #177) |
 | 978231 | Elemental Destruction |  | 978231: changed, awaiting in-game test (#23) |
 | 990200 | Elemental Lord |  | 990200: changed, awaiting in-game test (#173) |
 | 965311 | Endless Agony |  | 965311: changed, awaiting in-game test (#23)<br>1570908: changed, awaiting in-game test (#164) |
@@ -101,18 +101,18 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 977810 | Fury of the Titans |  | 977810: changed, awaiting in-game test (#175) |
 | 997124 | Grove Ranger | yes | 997124: changed, awaiting in-game test (#175) |
 | 81520 | Growing Light |  | 81520: changed, awaiting in-game test (#175) |
-| 81467 | Guardians of the Grove |  | 81467: changed, awaiting in-game test (#26)<br>1567585: handled by the core (checked 2026-11-16) |
+| 81467 | Guardians of the Grove |  | 81467: changed, awaiting in-game test (#26)<br>1567585: handled by the core (checked 2026-11-16) (#177) |
 | 954077 | Guerilla Trapper |  | 954077: unchanged: working (audit) |
 | 983135 | Gurubashi Berserker | yes | 983135: changed, awaiting in-game test (#173) |
 | 965505 | Harbinger of Flame |  | 965505: changed, awaiting in-game test (#164) |
-| 990020 | Harbinger of Pestilence |  | 990020: changed, awaiting in-game test |
+| 990020 | Harbinger of Pestilence |  | 990020: changed, awaiting in-game test (#177) |
 | 977700 | Heavyweight |  | 977700: changed, awaiting in-game test (#172)<br>1571904: unchanged: working (audit) |
 | 965858 | Holy Ascension |  | 965858: unchanged: working (audit)<br>1571664: unchanged: working (audit) |
 | 965473 | Holy Radiance |  | 965473: unchanged: working (audit)<br>1571400: unchanged: working (audit) |
 | 977921 | Holy Spirit |  | 977921: changed, awaiting in-game test (#165) |
 | 81190 | Holy Supernova |  | 81190: changed, awaiting in-game test (#26) |
 | 978217 | Hoplite |  | 978217: changed, awaiting in-game test (#175) |
-| 979765 | Hot Hands |  | 979765: changed, awaiting in-game test (#174)<br>1575104: changed, awaiting in-game test (#174) |
+| 979765 | Hot Hands |  | 979765: changed, awaiting in-game test (#174 #177)<br>1575104: changed, awaiting in-game test (#174 #177) |
 | 954359 | Hydromancer |  | 954359: changed, awaiting in-game test (#20) |
 | 965294 | Ice Barrage |  | 965294: changed, awaiting in-game test (#20)<br>1570523: changed, awaiting in-game test (#20) |
 | 977764 | Ice Lash |  | 977764: changed, awaiting in-game test (#165 #166) |
@@ -120,7 +120,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 417700 | Lava Sweep |  | 417700: changed, awaiting in-game test (#26 #175)<br>1590905: changed, awaiting in-game test (#26) |
 | 984117 | Legacy of the Arcanist | yes | 984117: changed, awaiting in-game test (#175) |
 | 997129 | Lei Shen's Legacy | yes | 997129: changed, awaiting in-game test (#175) |
-| 954044 | Locust Ranger |  | 954044: changed, awaiting in-game test (#175) |
+| 954044 | Locust Ranger |  | 954044: changed, awaiting in-game test (#175 #177) |
 | 81404 | Low Tide |  | 81404: changed, awaiting in-game test (#172) |
 | 978218 | Lucifur |  | 978218: unchanged: working (audit) |
 | 977870 | Mana Fiend |  | 977870: changed, awaiting in-game test (#175) |
@@ -153,7 +153,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 977967 | Shadow Counter |  | 977967: changed, awaiting in-game test (#26) |
 | 965299 | Shadow Visions |  | 965299: changed, awaiting in-game test (#167)<br>1570700: changed, awaiting in-game test (#18 #167) |
 | 990055 | Snowblind |  | 990055: changed, awaiting in-game test (#174) |
-| 81102 | Social Distancing |  | 81102: changed, awaiting in-game test |
+| 81102 | Social Distancing |  | 81102: changed, awaiting in-game test (#177) |
 | 984200 | Son of Gruul | yes | 984200: changed, awaiting in-game test (#175) |
 | 81168 | Soul of The Warden |  | 81168: unchanged: working (audit) |
 | 978233 | Spell Shredder |  | 978233: changed, awaiting in-game test (#173) |
@@ -206,7 +206,7 @@ text in our client is the only record.
 | 1100170 | Arcane Reverberation | changed, awaiting in-game test (#175) |
 | 1582341 | Armor of Faith | changed, awaiting in-game test (#20) |
 | 1134995 | Arms Mastery | unchanged: working (audit) |
-| 1143164 | Aspect of the Fox | changed, awaiting in-game test |
+| 1143164 | Aspect of the Fox | changed, awaiting in-game test (#177) |
 | 1134972 | Assassination Mastery | unchanged: working (audit) |
 | 1134979 | Balance Mastery | unchanged: working (audit) |
 | 1180019 | Bane of Havoc | changed, awaiting in-game test (#174) |
@@ -225,10 +225,10 @@ text in our client is the only record.
 | 1573649 | Cremation | tested (see test notes) (#26) |
 | 1572131 | Crimson Defense | changed, awaiting in-game test (#172) |
 | 1398214 | Crimson Hunger | unchanged: working (audit) |
-| 1570995 | Demonic Reoccurence | changed, awaiting in-game test (#18) |
+| 1570995 | Demonic Reoccurence | changed, awaiting in-game test (#18 #177) |
 | 1134965 | Demonology Mastery | changed, awaiting in-game test (#171) |
 | 1134964 | Destruction Mastery | unchanged: working (audit) |
-| 1134969 | Discipline Mastery | works from its data (checked in #171 and again 2026-11-16) |
+| 1134969 | Discipline Mastery | works from its data (checked in #171 and again 2026-11-16) (#177) |
 | 1398178 | Divine Star | unchanged: working (audit) |
 | 1590910 | Dragon Roar | changed, awaiting in-game test (#26 #175) |
 | 1134980 | Earthen Guardian Mastery | unchanged: working (audit) |
@@ -238,18 +238,18 @@ text in our client is the only record.
 | 1134983 | Enhancement Mastery | unchanged: working (audit) |
 | 1398164 | Enslave Demon | changed, awaiting in-game test (#26) |
 | 1398216 | Execution Sentence | unchanged: working (audit) |
-| 1568152 | Explosive Charge | changed, awaiting in-game test |
+| 1568152 | Explosive Charge | changed, awaiting in-game test (#177) |
 | 1584001 | Expunge | unchanged: working (audit) |
 | 1154364 | Feeding the Abyss | changed, awaiting in-game test (#175) |
 | 1180240 | Feral Frenzy | changed, awaiting in-game test (#26) |
 | 1134976 | Feral Mastery | unchanged: working (audit) |
 | 1134960 | Fire Mastery | unchanged: working (audit) |
-| 1398169 | Flame Ascendance | changed, awaiting in-game test |
+| 1398169 | Flame Ascendance | changed, awaiting in-game test (#177) |
 | 1591051 | Flare Strike | changed, awaiting in-game test (#26) |
 | 1586133 | Flow of Life | unchanged: working (audit) |
 | 1134961 | Frost Mastery | changed, awaiting in-game test (#171) |
 | 1398171 | Frozen Orb | unchanged: working (audit) |
-| 1134994 | Fury Mastery | works from its data (checked 2026-11-16) |
+| 1134994 | Fury Mastery | works from its data (checked 2026-11-16) (#177) |
 | 1181280 | Fury Unleashed | unchanged: working (audit) |
 | 1277670 | Gift of Light | changed, awaiting in-game test (#175) |
 | 1180850 | Gladiator Stance | unchanged: working (audit) |
@@ -258,7 +258,7 @@ text in our client is the only record.
 | 1180100 | Guardian of Ancient Kings | unchanged: working (audit) |
 | 1398211 | Halo | unchanged: working (audit) |
 | 1591108 | Hammerstorm | unchanged: working (audit) |
-| 1398206 | Hand of Gul'dan | works from its data (checked 2026-11-16) |
+| 1398206 | Hand of Gul'dan | works from its data (checked 2026-11-16) (#177) |
 | 1398222 | Healing Rain | changed, awaiting in-game test (#26) |
 | 1134968 | Holy Mastery | unchanged: working (audit) |
 | 1134990 | Holy Mastery | unchanged: working (audit) |
@@ -272,7 +272,7 @@ text in our client is the only record.
 | 1398172 | Meteor | unchanged: working (audit) |
 | 1180440 | Nether Portal | changed, awaiting in-game test (#175) |
 | 1133070 | Powershot | unchanged: working (audit) |
-| 1572260 | Predator's Wrath: Wrathful Strikes | handled by the core (checked 2026-11-16) |
+| 1572260 | Predator's Wrath: Wrathful Strikes | handled by the core (checked 2026-11-16) (#177) |
 | 1134989 | Protection Mastery | unchanged: working (audit) |
 | 1134996 | Protection Mastery | unchanged: working (audit) |
 | 1398220 | Raging Blow | tested (see test notes) (#26) |
