@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..119c4e7
+index 0000000..dbe2636
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,8493 @@
+@@ -0,0 +1,9084 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -8344,11 +8344,592 @@ index 0000000..119c4e7
 +    }
 +};
 +
++namespace
++{
++bool WcmeHasAuraNamed(Unit const* unit, char const* name, uint32 family)
++{
++    for (auto const& [id, application] : unit->GetAppliedAuras())
++        if (SpellInfo const* info = application->GetBase()->GetSpellInfo())
++            if (info->SpellFamilyName == family && WcmeNamed(info, name))
++                return true;
++    return false;
++}
++
++bool WcmeHasAuraNamedFrom(Unit const* unit, Unit const* caster, char const* name)
++{
++    for (auto const& [id, application] : unit->GetAppliedAuras())
++        if (application->GetBase()->GetCasterGUID() == caster->GetGUID() && WcmeNamed(application->GetBase()->GetSpellInfo(), name))
++            return true;
++    return false;
++}
++
++bool WcmeInBearForm(Unit const* unit)
++{
++    return unit->GetShapeshiftForm() == FORM_BEAR || unit->GetShapeshiftForm() == FORM_DIREBEAR;
++}
++
++void WcmeCastAtSpot(Unit* caster, Unit* where, uint32 spellId, int32 bp0, int32 bp1)
++{
++    SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId);
++    if (!info)
++        return;
++    SpellCastTargets targets;
++    targets.SetDst(*where);
++    CustomSpellValues values;
++    values.AddSpellMod(SPELLVALUE_BASE_POINT0, bp0);
++    values.AddSpellMod(SPELLVALUE_BASE_POINT1, bp1);
++    caster->CastSpell(targets, info, &values, TRIGGERED_FULL_MASK);
++}
++
++std::unordered_map<ObjectGuid, uint8> WcmeFlurryCombo;          // combo points each Flurry of Spears was cast with
++}
++
++// Holy Templar (1554908): Templar's Verdict (1554911) and Word of Glory (1554912) are taught. Holy Power (1554910) is
++// gained through the core's own proc rows; here the "3 Holy Power" marker (1554919, which both abilities need) is kept
++// on you only while you have 3 or more, checked every quarter second. spell_wcme_holy_power_spender spends 3.
++class spell_wcme_holy_templar : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_holy_templar);
++
++    static constexpr uint32 HOLY_POWER = 1554910;
++    static constexpr uint32 MARKER = 1554919;
++    static constexpr std::array<uint32, 1> VERDICT = { 1554911 };
++    static constexpr std::array<uint32, 1> GLORY = { 1554912 };
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 250;
++    }
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncTaughtRank(owner, VERDICT, active);
++        WcmeSyncTaughtRank(owner, GLORY, active);
++        if (!active)
++        {
++            owner->RemoveAurasDueToSpell(HOLY_POWER);
++            owner->RemoveAurasDueToSpell(MARKER);
++        }
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    void HandleTick(AuraEffect const* /*aurEff*/)
++    {
++        Unit* owner = GetTarget();
++        bool const ready = owner->GetAuraCount(HOLY_POWER) >= 3;
++        if (ready && !owner->HasAura(MARKER))
++            owner->AddAura(MARKER, owner);
++        else if (!ready && owner->HasAura(MARKER))
++            owner->RemoveAurasDueToSpell(MARKER);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_holy_templar::CalcPeriod, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_holy_templar::HandleApply, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_holy_templar::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_holy_templar::HandleTick, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
++    }
++};
++
++// Templar's Verdict (1554911) and Word of Glory (1554912): need 3 Holy Power and spend 3.
++class spell_wcme_holy_power_spender : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_holy_power_spender);
++
++    static constexpr uint32 HOLY_POWER = 1554910;
++    static constexpr uint32 MARKER = 1554919;
++
++    SpellCastResult CheckCast()
++    {
++        return GetCaster()->GetAuraCount(HOLY_POWER) >= 3 ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void HandleAfterCast()
++    {
++        Unit* caster = GetCaster();
++        if (Aura* power = caster->GetAura(HOLY_POWER))
++            power->ModStackAmount(-3);
++        if (caster->GetAuraCount(HOLY_POWER) < 3)
++            caster->RemoveAurasDueToSpell(MARKER);
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_holy_power_spender::CheckCast);
++        AfterCast += SpellCastFn(spell_wcme_holy_power_spender::HandleAfterCast);
++    }
++};
++
++// Hoplite (978217): Shield Slam shows as Shield Strike (978533), Sinister Strike as Thrust (978569) and Heroic Strike
++// as Javelin (982250) (WcmeSyncSwap); Flurry of Spears (901200) is taught while you know Siegebreaker. Phalanx Stance
++// (997743) is kept on you while you are in Battle Stance (wcme_kit_target_mods follows stance changes) and the Hoplite
++// abilities need it (spell_wcme_hoplite_ability). Polearm with a shield is allowed by 67-hoplite-polearm-shield.ps1.
++// Thrust hits during Bloodrage add Phalanx Strike (978539 and 978537); casting Bloodrage resets them. Colossus Smash on
++// a target Impaled by you (982251) finishes Javelin's cooldown and rips the Javelin out (Impaled and Skewered end).
++class spell_wcme_hoplite : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_hoplite);
++
++    static constexpr uint32 SHIELD_STRIKE = 978533;
++    static constexpr uint32 THRUST = 978569;
++    static constexpr uint32 JAVELIN = 982250;
++    static constexpr uint32 PHALANX_STANCE = 997743;
++    static constexpr uint32 PHALANX_THRUST = 978539;
++    static constexpr uint32 PHALANX_SHIELD = 978537;
++    static constexpr uint32 IMPALED = 982251;
++    static constexpr uint32 SKEWERED = 982252;
++    static constexpr std::array<uint32, 1> FLURRY = { 901200 };
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncSwap(owner, "Shield Slam", SPELLFAMILY_WARRIOR, SHIELD_STRIKE, active);
++        WcmeSyncSwap(owner, "Sinister Strike", SPELLFAMILY_ROGUE, THRUST, active);
++        WcmeSyncSwap(owner, "Heroic Strike", SPELLFAMILY_WARRIOR, JAVELIN, active);
++        WcmeSyncTaughtRank(owner, FLURRY, active && WcmeKnowsPassive(owner, "Siegebreaker", SPELLFAMILY_WARRIOR));
++        if (active && owner->GetShapeshiftForm() == FORM_BATTLESTANCE && !owner->HasAura(PHALANX_STANCE))
++            owner->AddAura(PHALANX_STANCE, owner);
++        if (!active)
++        {
++            owner->RemoveAurasDueToSpell(PHALANX_STANCE);
++            owner->RemoveAurasDueToSpell(PHALANX_THRUST);
++            owner->RemoveAurasDueToSpell(PHALANX_SHIELD);
++            if (Player* player = owner->ToPlayer())
++                player->AutoUnequipOffhandIfNeed();
++        }
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (spell->SpellFamilyName != SPELLFAMILY_WARRIOR && spell->Id != THRUST))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return WcmeNamed(spell, "Bloodrage");
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target || !WcmeDealtDamage(eventInfo))
++            return false;
++        if (spell->Id == THRUST)
++            return WcmeHasAuraNamed(GetTarget(), "Bloodrage", SPELLFAMILY_WARRIOR);
++        return WcmeNamed(spell, "Colossus Smash") && target->HasAura(IMPALED, GetTarget()->GetGUID());
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            owner->RemoveAurasDueToSpell(PHALANX_THRUST);
++            owner->RemoveAurasDueToSpell(PHALANX_SHIELD);
++            return;
++        }
++        if (spell->Id == THRUST)
++        {
++            WcmeAddStackOn(owner, owner, PHALANX_THRUST);
++            WcmeAddStackOn(owner, owner, PHALANX_SHIELD);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        WcmeCutCooldownByName(owner, "Javelin", 3600000);
++        target->RemoveAurasDueToSpell(IMPALED, owner->GetGUID());
++        target->RemoveAurasDueToSpell(SKEWERED, owner->GetGUID());
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_hoplite::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_hoplite::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_hoplite::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_hoplite::HandleProc);
++    }
++};
++
++// Thrust (978569), Shield Strike (978533), Javelin (982250) and Flurry of Spears (901200): need Phalanx Stance (997743).
++// Shield Strike also takes 2 sec per combo point off Bloodrage and has a 15% chance to grant Spear Mastery (901203).
++// Flurry of Spears remembers its combo points for its strikes (spell_wcme_flurry_of_spears_strike).
++class spell_wcme_hoplite_ability : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_hoplite_ability);
++
++    uint8 _combo = 0;
++
++    SpellCastResult CheckCast()
++    {
++        Unit* caster = GetCaster();
++        return !caster->HasAura(978217) || caster->HasAura(997743) ? SPELL_CAST_OK : SPELL_FAILED_ONLY_SHAPESHIFT;
++    }
++
++    void HandleBeforeCast()
++    {
++        Player* player = GetCaster()->ToPlayer();
++        _combo = player ? player->GetComboPoints() : 0;
++        if (GetSpellInfo()->Id == 901200)
++            WcmeFlurryCombo[GetCaster()->GetGUID()] = std::max<uint8>(1, _combo);
++    }
++
++    void HandleAfterCast()
++    {
++        Unit* caster = GetCaster();
++        if (GetSpellInfo()->Id != 978533)
++            return;
++        if (_combo)
++            WcmeCutCooldownByName(caster, "Bloodrage", 2000 * _combo);
++        if (roll_chance_i(15))
++            caster->CastSpell(caster, 901203, true);
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_hoplite_ability::CheckCast);
++        BeforeCast += SpellCastFn(spell_wcme_hoplite_ability::HandleBeforeCast);
++        AfterCast += SpellCastFn(spell_wcme_hoplite_ability::HandleAfterCast);
++    }
++};
++
++// Flurry of Spears strikes (901201): each deals the tooltip's per-point damage for the combo points Flurry of Spears
++// was cast with, ((level - 40) x 3 + 80 x points + (AP + SP) x (7% + 1.7% x points squared)), before modifiers.
++class spell_wcme_flurry_of_spears_strike : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_flurry_of_spears_strike);
++
++    void HandleDamage(SpellEffIndex /*effIndex*/)
++    {
++        Unit* caster = GetCaster();
++        auto combo = WcmeFlurryCombo.find(caster->GetGUID());
++        int32 const points = combo == WcmeFlurryCombo.end() ? 1 : combo->second;
++        float const power = caster->GetTotalAttackPowerValue(BASE_ATTACK) + float(caster->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_ALL));
++        int32 const base = std::max(0, (int32(caster->GetLevel()) - 40) * 3) + 80 * points;
++        SetEffectValue(base + int32(power * (0.07f + 0.017f * points * points)));
++    }
++
++    void Register() override
++    {
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_flurry_of_spears_strike::HandleDamage, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
++    }
++};
++
++// Flurry of Spears (901200): when it ends, Spear Mastery (901203, "your next Flurry of Spears") is spent.
++class spell_wcme_flurry_of_spears : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_flurry_of_spears);
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->RemoveAurasDueToSpell(901203);
++        WcmeFlurryCombo.erase(GetTarget()->GetGUID());
++    }
++
++    void Register() override
++    {
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_flurry_of_spears::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Lei Shen's Legacy (997129): Thunder Clap shows as Storm Smash (92806), Lightning Shield as Thunder Hide (92815) and
++// Stormstrike as Voltaic Bite (92826) (WcmeSyncSwap). Damaging Bear abilities in Bear Form add Volatile Discharge
++// (92832, up to 6). A Voltaic Bite hit at 3 or more stacks discharges Chain Lightning (if known, with the stacks' +10%)
++// at the target, then the stacks become charges of your Thunder Hide (if it is up) and end.
++class spell_wcme_lei_shens_legacy : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_lei_shens_legacy);
++
++    static constexpr uint32 STORM_SMASH = 92806;
++    static constexpr uint32 THUNDER_HIDE = 92815;
++    static constexpr uint32 VOLTAIC_BITE = 92826;
++    static constexpr uint32 VOLTAIC_BITE_HIT = 92830;
++    static constexpr uint32 DISCHARGE = 92832;
++
++    void Sync(bool active)
++    {
++        Unit* owner = GetTarget();
++        WcmeSyncSwap(owner, "Thunder Clap", SPELLFAMILY_WARRIOR, STORM_SMASH, active);
++        WcmeSyncSwap(owner, "Lightning Shield", SPELLFAMILY_SHAMAN, THUNDER_HIDE, active);
++        WcmeSyncSwap(owner, "Stormstrike", SPELLFAMILY_SHAMAN, VOLTAIC_BITE, active);
++        if (!active)
++            owner->RemoveAurasDueToSpell(DISCHARGE);
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || !eventInfo.GetActionTarget() || !WcmeDealtDamage(eventInfo) || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (spell->Id == VOLTAIC_BITE_HIT)
++            return GetTarget()->GetAuraCount(DISCHARGE) >= 3;
++        return spell->SpellFamilyName == SPELLFAMILY_DRUID && WcmeInBearForm(GetTarget());
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetSpellInfo()->Id != VOLTAIC_BITE_HIT)
++        {
++            WcmeAddStackOn(owner, owner, DISCHARGE);
++            return;
++        }
++        uint8 const stacks = owner->GetAuraCount(DISCHARGE);
++        if (uint32 const chain = WcmeKnownByName(owner, "Chain Lightning", SPELLFAMILY_SHAMAN))
++            owner->CastSpell(eventInfo.GetActionTarget(), chain, true);
++        if (Aura* hide = owner->GetAura(THUNDER_HIDE))
++            hide->SetCharges(uint8(std::min<uint32>(255, hide->GetCharges() + stacks)));
++        owner->RemoveAurasDueToSpell(DISCHARGE);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_lei_shens_legacy::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_lei_shens_legacy::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_lei_shens_legacy::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_lei_shens_legacy::HandleProc);
++    }
++};
++
++// Thunder Hide (92815): only usable in Bear Form.
++class spell_wcme_thunder_hide_cast : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_thunder_hide_cast);
++
++    SpellCastResult CheckCast()
++    {
++        return WcmeInBearForm(GetCaster()) ? SPELL_CAST_OK : SPELL_FAILED_ONLY_SHAPESHIFT;
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_thunder_hide_cast::CheckCast);
++    }
++};
++
++// Storm Smash (92806): causes additional threat (75% of its damage on top, like Thunder Clap's own threat bonus).
++class spell_wcme_storm_smash : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_storm_smash);
++
++    void HandleAfterHit()
++    {
++        if (Unit* target = GetHitUnit())
++            if (GetHitDamage() > 0)
++                target->AddThreat(GetCaster(), GetHitDamage() * 0.75f);
++    }
++
++    void Register() override
++    {
++        AfterHit += SpellHitFn(spell_wcme_storm_smash::HandleAfterHit);
++    }
++};
++
++// Locust Ranger (954044), while you know Wild Quiver at rank 3: Steady Shot shows as Locust Shot (954052,
++// WcmeSyncSwap). Locust Shot or Toxic Surge (984674) hits on a target with your Serpent Sting take 2 sec off Chimera
++// Shot. Chimera Shot and Toxic Surge hits can trigger Wild Quiver (your rank's chance). Wild Quiver Shot hits on a
++// target with your Insect Swarm send Wild Locust Swarm (853254) into nearby enemies, 15% stronger if the target has your
++// Serpent Sting. Toxic Surge: Scorpid Sting or Rapid Fire grants Toxic Ammo (984673); while it lasts your Instant Poison
++// also applies Deadly Poison (your level's rank) and a Toxic Surge dose (984670); Viper Sting consumes them for Toxic
++// Surge damage, 80% more per dose (60% against players). Toxic Surge effects need you more than 5 yards from the target.
++class spell_wcme_locust_ranger : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_locust_ranger);
++
++    static constexpr uint32 LOCUST_SHOT = 954052;
++    static constexpr uint32 TOXIC_SURGE_HIT = 984674;
++    static constexpr uint32 TOXIC_AMMO = 984673;
++    static constexpr uint32 DOSE = 984670;
++    static constexpr uint32 WILD_QUIVER_SHOT = 53254;
++    static constexpr uint32 LOCUST_SWARM = 853254;
++    static constexpr std::array<uint32, 9> DEADLY_POISON = { 2818, 2819, 11353, 11354, 25349, 26968, 27187, 57969, 57970 };
++
++    static bool KnowsQuiver(Unit const* unit)
++    {
++        Player const* player = unit->ToPlayer();
++        return player && (player->HasSpell(53217) || player->HasSpell(1153217));
++    }
++
++    void Sync(bool active) { WcmeSyncSwap(GetTarget(), "Steady Shot", SPELLFAMILY_HUNTER, LOCUST_SHOT, active && KnowsQuiver(GetTarget())); }
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    bool Far(Unit const* target) const { return target && GetTarget()->GetDistance(target) > 5.0f; }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || !KnowsQuiver(GetTarget()))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return spell->SpellFamilyName == SPELLFAMILY_HUNTER && WcmeNamedAny(spell, { "Scorpid Sting", "Rapid Fire" });
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target || target == GetTarget() || !WcmeDealtDamage(eventInfo) || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (spell->Id == LOCUST_SHOT || spell->Id == TOXIC_SURGE_HIT || spell->Id == WILD_QUIVER_SHOT)
++            return true;
++        if (spell->SpellFamilyName == SPELLFAMILY_HUNTER && WcmeNamedAny(spell, { "Chimera Shot", "Viper Sting" }))
++            return true;
++        return spell->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(spell, "Instant Poison") && GetTarget()->HasAura(TOXIC_AMMO);
++    }
++
++    void WildQuiver(Unit* owner, Unit* target)
++    {
++        for (AuraEffect const* effect : owner->GetAuraEffectsByType(SPELL_AURA_PROC_TRIGGER_SPELL))
++            if (effect->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_HUNTER && WcmeNamed(effect->GetSpellInfo(), "Wild Quiver"))
++            {
++                if (roll_chance_i(int32(effect->GetSpellInfo()->ProcChance)))
++                    owner->CastSpell(target, WILD_QUIVER_SHOT, true);
++                return;
++            }
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            owner->CastSpell(owner, TOXIC_AMMO, true);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        bool const stung = WcmeHasAuraNamedFrom(target, owner, "Serpent Sting");
++        if (spell->Id == LOCUST_SHOT || spell->Id == TOXIC_SURGE_HIT)
++        {
++            if (stung)
++                WcmeCutCooldownByName(owner, "Chimera Shot", 2000);
++            if (spell->Id == TOXIC_SURGE_HIT)
++                WildQuiver(owner, target);
++            return;
++        }
++        if (WcmeNamed(spell, "Chimera Shot"))
++        {
++            WildQuiver(owner, target);
++            return;
++        }
++        if (spell->Id == WILD_QUIVER_SHOT)
++        {
++            if (!WcmeHasAuraNamedFrom(target, owner, "Insect Swarm"))
++                return;
++            SpellInfo const* swarm = sSpellMgr->GetSpellInfo(LOCUST_SWARM);
++            if (!swarm)
++                return;
++            int32 const pct = stung ? 115 : 100;
++            WcmeCastAtSpot(owner, target, LOCUST_SWARM, swarm->Effects[EFFECT_0].CalcValue(owner) * pct / 100,
++                swarm->Effects[EFFECT_1].CalcValue(owner) * pct / 100);
++            return;
++        }
++        if (!Far(target))
++            return;
++        if (WcmeNamed(spell, "Instant Poison"))
++        {
++            owner->CastSpell(target, WcmeRankFor(owner, DEADLY_POISON), true);
++            owner->CastSpell(target, DOSE, true);
++            return;
++        }
++        Aura const* dose = target->GetAura(DOSE, owner->GetGUID());
++        uint8 const doses = dose ? dose->GetStackAmount() : 0;
++        if (!doses)
++            return;
++        target->RemoveAurasDueToSpell(DOSE, owner->GetGUID());
++        for (uint32 rank : DEADLY_POISON)
++            target->RemoveAurasDueToSpell(rank, owner->GetGUID());
++        float const base = 16.0f + std::max(0, int32(owner->GetLevel()) - 20) + 0.4f * owner->GetTotalAttackPowerValue(RANGED_ATTACK) +
++            0.2f * WcmeSpellPower(owner);
++        float const perDose = target->IsControlledByPlayer() ? 0.6f : 0.8f;
++        owner->CastCustomSpell(TOXIC_SURGE_HIT, SPELLVALUE_BASE_POINT0, int32(base * (1.0f + perDose * doses)), target, true);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_locust_ranger::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_locust_ranger::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_locust_ranger::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_locust_ranger::HandleProc);
++    }
++};
++
++// Batch 4 damage rules no aura script can reach:
++// - Ascension's "against monsters" (modifier type 38) and "against players" (36) bonuses, which our core does not
++//   know, for the kit buffs that use them: Phalanx Strike (978539 Thrust +20% / +7% vs players, 978537 Shield Strike
++//   +10%) and Locust Ranger's Wild Quiver Shot (-10% against players).
++// - Skewered (982252): Colossus Smash +5% per stack against players instead of the data's 20%.
++// - Spear Mastery (901203): Flurry of Spears +50% only against monsters.
++// - Thunder Hide (92815): its 5% damage reduction only against creatures.
++// - Hoplite's Phalanx Stance follows Battle Stance.
++class wcme_kit_target_mods : public UnitScript
++{
++public:
++    wcme_kit_target_mods() : UnitScript("wcme_kit_target_mods", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN,
++        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK, UNITHOOK_MODIFY_MELEE_DAMAGE, UNITHOOK_ON_UNIT_SET_SHAPESHIFT_FORM }) { }
++
++    static int64 Scaled(int64 damage, Unit* target, Unit* attacker, SpellInfo const* spellInfo)
++    {
++        bool const versusPlayer = target->IsControlledByPlayer();
++        if (spellInfo)
++        {
++            for (AuraEffect const* effect : attacker->GetAuraEffectsByType(SPELL_AURA_ADD_PCT_MODIFIER))
++            {
++                uint32 const id = effect->GetId();
++                if ((id == 978539 || id == 978537 || id == 954044) &&
++                    effect->GetMiscValue() == (versusPlayer ? 36 : 38) && effect->IsAffectedOnSpell(spellInfo))
++                    damage = damage * (100 + effect->GetAmount()) / 100;
++            }
++            if (versusPlayer && WcmeNamed(spellInfo, "Colossus Smash"))
++                if (Aura const* skewered = target->GetAura(982252, attacker->GetGUID()))
++                    damage = damage * (100 + 5 * skewered->GetStackAmount()) / (100 + 20 * skewered->GetStackAmount());
++            if (versusPlayer && spellInfo->Id == 901201 && attacker->HasAura(901203))
++                damage = damage * 100 / 150;
++        }
++        if (attacker->IsControlledByPlayer() && target->HasAura(92815))
++            damage = damage * 100 / 95;
++        return damage;
++    }
++
++    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
++    {
++        if (target && attacker && damage > 0 && target != attacker)
++            damage = int32(std::min<int64>(INT32_MAX, Scaled(damage, target, attacker, spellInfo)));
++    }
++
++    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override
++    {
++        if (target && attacker && damage && target != attacker)
++            damage = uint32(std::min<int64>(UINT32_MAX, Scaled(damage, target, attacker, spellInfo)));
++    }
++
++    void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage) override
++    {
++        if (target && attacker && damage && attacker->IsControlledByPlayer() && target->HasAura(92815))
++            damage = damage * 100 / 95;
++    }
++
++    void OnUnitSetShapeshiftForm(Unit* unit, uint8 form) override
++    {
++        if (!unit || !unit->IsPlayer() || !unit->HasAura(978217))
++            return;
++        if (form == FORM_BATTLESTANCE && !unit->HasAura(997743))
++            unit->AddAura(997743, unit);
++        else if (form != FORM_BATTLESTANCE)
++            unit->RemoveAurasDueToSpell(997743);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    new wcme_kit_damage_hooks();
 +    new wcme_rage_cap();
 +    new wcme_blooming_mods();
++    new wcme_kit_target_mods();
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
 +    RegisterSpellScript(spell_wcme_unique_physical_stacks);
 +    RegisterSpellScript(spell_wcme_curse_of_arugal);
@@ -8495,5 +9076,15 @@ index 0000000..119c4e7
 +    RegisterSpellScript(spell_wcme_blooming_shot);
 +    RegisterSpellScript(spell_wcme_blooming_heal);
 +    RegisterSpellScript(spell_wcme_blooming);
++    RegisterSpellScript(spell_wcme_holy_templar);
++    RegisterSpellScript(spell_wcme_holy_power_spender);
++    RegisterSpellScript(spell_wcme_hoplite);
++    RegisterSpellScript(spell_wcme_hoplite_ability);
++    RegisterSpellScript(spell_wcme_flurry_of_spears_strike);
++    RegisterSpellScript(spell_wcme_flurry_of_spears);
++    RegisterSpellScript(spell_wcme_lei_shens_legacy);
++    RegisterSpellScript(spell_wcme_thunder_hide_cast);
++    RegisterSpellScript(spell_wcme_storm_smash);
++    RegisterSpellScript(spell_wcme_locust_ranger);
 +    RegisterSpellScript(spell_wcme_medicinal_sting);
 +}
