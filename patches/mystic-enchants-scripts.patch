@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..9fa2ab9
+index 0000000..628f2f4
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,11053 @@
+@@ -0,0 +1,11288 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -10855,8 +10855,243 @@ index 0000000..9fa2ab9
 +    }
 +};
 +
++// Social Distancing (81102): 20% resistance to diseases (the chance a disease fails to land) while no other player is
++// within 6 yards. Its only effect (a proc with nothing to trigger) becomes that resistance in Validate; it is checked
++// every second.
++class spell_wcme_social_distancing : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_social_distancing);
++
++    static constexpr int32 RESIST = 20;
++    static constexpr float RANGE = 6.0f;
++
++    bool Validate(SpellInfo const* spellInfo) override
++    {
++        SpellEffectInfo& effect = const_cast<SpellInfo*>(spellInfo)->Effects[EFFECT_0];
++        effect.ApplyAuraName = SPELL_AURA_MOD_DEBUFF_RESISTANCE;
++        effect.MiscValue = DISPEL_DISEASE;
++        effect.BasePoints = -1;
++        effect.DieSides = 1;
++        effect.TriggerSpell = 0;
++        const_cast<SpellInfo*>(spellInfo)->ProcFlags = 0;
++        return true;
++    }
++
++    static bool Alone(Unit* owner)
++    {
++        std::list<Player*> players;
++        Acore::AnyPlayerInObjectRangeCheck check(owner, RANGE);
++        Acore::PlayerListSearcher<Acore::AnyPlayerInObjectRangeCheck> searcher(owner, players, check);
++        Cell::VisitObjects(owner, searcher, RANGE);
++        for (Player* player : players)
++            if (player != owner)
++                return false;
++        return true;
++    }
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void Check(AuraEffect const* aurEff)
++    {
++        int32 const wanted = Alone(GetTarget()) ? RESIST : 0;
++        if (aurEff->GetAmount() != wanted)
++            const_cast<AuraEffect*>(aurEff)->ChangeAmount(wanted);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_social_distancing::CalcPeriod, EFFECT_0,
++            SPELL_AURA_MOD_DEBUFF_RESISTANCE);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_social_distancing::Check, EFFECT_0,
++            SPELL_AURA_MOD_DEBUFF_RESISTANCE);
++    }
++};
++
++// Harbinger of Pestilence (990020): Insect Swarm becomes Insect Swarm (Plague) (the core's transform rule). Wrath and
++// Haunt hits give Harbinger of Pestilence (990022, up to 5; 2 stacks when the target is a player). Wrath has a 20%
++// chance to trigger Nightfall (Shadow Trance, 17941) if you know Nightfall. Haunt cast while you have stacks: Harbinger's
++// Bile (990024) on up to 5 enemies near the target, its damage times your stacks; each stack also takes 0.2 sec off
++// that Haunt's cooldown. The stacks' +22% disease damage (misc 38, "versus creatures") is applied in
++// wcme_kit_target_mods to diseases and Insect Swarm (Plague).
++class spell_wcme_harbinger_of_pestilence : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_harbinger_of_pestilence);
++
++    static constexpr uint32 STACKS = 990022;
++    static constexpr uint32 BILE = 990024;
++    static constexpr uint32 SHADOW_TRANCE = 17941;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) || spell->Id == BILE)
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return WcmeNamed(spell, "Haunt");
++        return WcmeNamedAny(spell, { "Wrath", "Haunt" }) && eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            Aura const* stacks = owner->GetAura(STACKS);
++            Unit* target = eventInfo.GetActionTarget();
++            if (!stacks || !target)
++                return;
++            uint8 const count = stacks->GetStackAmount();
++            if (SpellInfo const* bile = sSpellMgr->GetSpellInfo(BILE))
++            {
++                int32 const damage = bile->Effects[EFFECT_0].CalcValue(owner) * count;
++                for (Unit* enemy : WcmeEnemiesNear(owner, target, 8.0f, 5))
++                    owner->CastCustomSpell(BILE, SPELLVALUE_BASE_POINT0, damage, enemy, true);
++            }
++            uint32 const haunt = spell->Id;
++            owner->m_Events.AddEventAtOffset([owner, haunt, count]()
++            {
++                if (Player* player = owner->ToPlayer())
++                    player->ModifySpellCooldown(haunt, -200 * int32(count));
++            }, 1ms);
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        uint8 const add = target->IsControlledByPlayer() ? 2 : 1;
++        for (uint8 i = 0; i < add; ++i)
++            owner->CastSpell(owner, STACKS, true);
++        if (WcmeNamed(spell, "Wrath") && roll_chance_i(20) && owner->ToPlayer() &&
++            (owner->ToPlayer()->HasSpell(18094) || owner->ToPlayer()->HasSpell(18095)))
++            owner->CastSpell(owner, SHADOW_TRANCE, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_harbinger_of_pestilence::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_harbinger_of_pestilence::HandleProc);
++    }
++};
++
++// Flame Ascendance (1398169): teaches Flame Ascendance (2110000: form, Chain Lightning as Lava Beam and Lava Burst's
++// cooldown halved are its own data). While in the form, casting Flame Shock finishes the cooldowns of Lava Burst and
++// Lava Beam (2110123, 2110124). Lava Burst's critical chance above 100% is added to its critical damage (in
++// wcme_kit6_hooks).
++class spell_wcme_flame_ascendance : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_flame_ascendance);
++
++    static constexpr uint32 FORM = 2110000;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeNamed(eventInfo.GetSpellInfo(), "Flame Shock") && GetTarget()->HasAura(FORM);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        WcmeCutCooldownByName(owner, "Lava Burst", 600000);
++        if (Player* player = owner->ToPlayer())
++            for (uint32 beam : { 2110123u, 2110124u })
++                player->RemoveSpellCooldown(beam, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_flame_ascendance::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_flame_ascendance::HandleProc);
++    }
++};
++
++// Damage parts of the last legendaries:
++// - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered
++//   casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every
++//   other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for
++//   this enchant.
++// - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the
++//   excess is added to its critical damage bonus (+1% of the hit per 1% excess).
++// - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures
++//   (its misc 38, which the core ignores).
++class wcme_last_legendary_hooks : public UnitScript
++{
++public:
++    wcme_last_legendary_hooks() : UnitScript("wcme_last_legendary_hooks", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN,
++        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK }) { }
++
++    static bool IsDisease(SpellInfo const* spell)
++    {
++        return spell->Dispel == DISPEL_DISEASE || spell->Id == 990021;
++    }
++
++    static int64 Harbinger(int64 damage, Unit* target, Unit* attacker, SpellInfo const* spell)
++    {
++        if (target->IsControlledByPlayer() || !IsDisease(spell))
++            return damage;
++        if (AuraEffect const* stacks = attacker->GetAuraEffect(990022, EFFECT_0))
++            damage = damage * (100 + stacks->GetAmount()) / 100;
++        return damage;
++    }
++
++    static void ExplosiveCharge(Unit* attacker, Unit* target, int64 share)
++    {
++        if (share <= 0)
++            return;
++        ObjectGuid const targetGuid = target->GetGUID();
++        attacker->m_Events.AddEventAtOffset([attacker, targetGuid, share]()
++        {
++            SpellInfo const* splash = sSpellMgr->GetSpellInfo(1568153);
++            Unit* center = ObjectAccessor::GetUnit(*attacker, targetGuid);
++            if (!splash || !center || !attacker->IsAlive())
++                return;
++            for (Unit* enemy : WcmeEnemiesNear(attacker, center, 5.0f, 20))
++                if (enemy != center)
++                    WcmeExtraDamage(attacker, enemy, splash, share);
++        }, 1ms);
++    }
++
++    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
++    {
++        if (!target || !attacker || !spellInfo || damage <= 0 || target == attacker)
++            return;
++        int64 value = Harbinger(damage, target, attacker, spellInfo);
++        if (spellInfo->SpellFamilyName == SPELLFAMILY_HUNTER && spellInfo->SpellName[0] &&
++            std::strncmp(spellInfo->SpellName[0], "Explosive Shot", 14) == 0)
++            if (AuraEffect const* charge = attacker->GetAuraEffect(1568152, EFFECT_0))
++                ExplosiveCharge(attacker, target, value * charge->GetAmount() / 100);
++        if (WcmeNamed(spellInfo, "Lava Burst") && attacker->HasAura(1398169))
++        {
++            SpellSchoolMask const school = spellInfo->GetSchoolMask();
++            float const done = attacker->SpellDoneCritChance(target, spellInfo, school, BASE_ATTACK, true);
++            float const chance = target->SpellTakenCritChance(attacker, spellInfo, school, done, BASE_ATTACK, true);
++            if (chance > 100.0f)
++            {
++                int64 const multiplier = Unit::SpellCriticalDamageBonus(attacker, spellInfo, 100, target);
++                if (multiplier > 0)
++                    value = value * (multiplier + int64(chance - 100.0f)) / multiplier;
++            }
++        }
++        damage = int32(std::min<int64>(INT32_MAX, value));
++    }
++
++    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override
++    {
++        if (target && attacker && spellInfo && damage && target != attacker)
++            damage = uint32(std::min<int64>(UINT32_MAX, Harbinger(damage, target, attacker, spellInfo)));
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
++    new wcme_last_legendary_hooks();
++    RegisterSpellScript(spell_wcme_social_distancing);
++    RegisterSpellScript(spell_wcme_harbinger_of_pestilence);
++    RegisterSpellScript(spell_wcme_flame_ascendance);
 +    new wcme_kit_damage_hooks();
 +    new wcme_rage_cap();
 +    new wcme_blooming_mods();
