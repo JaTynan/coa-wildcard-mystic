@@ -9503,7 +9503,7 @@ index 0000000..9fa2ab9
 +
 +    static constexpr uint32 ALIGN = 986163;
 +    static constexpr uint32 TIME_BIND = 986164;
-+    static constexpr uint32 SYNCHRONIZE = 986165;
++    static constexpr uint32 SYNCHRONIZE_SPELL = 986165;
 +    static constexpr uint32 DISTORTION = 986166;
 +    static constexpr uint32 ETERNITY = 986167;
 +    static constexpr uint32 ETERNITY_WAVE = 986173;
@@ -9513,7 +9513,7 @@ index 0000000..9fa2ab9
 +        Unit* owner = GetTarget();
 +        WcmeSyncSwap(owner, "Moonfire", SPELLFAMILY_DRUID, ALIGN, active);
 +        WcmeSyncSwap(owner, "Renew", SPELLFAMILY_PRIEST, TIME_BIND, active);
-+        WcmeSyncSwap(owner, "Arcane Missiles", SPELLFAMILY_MAGE, SYNCHRONIZE, active);
++        WcmeSyncSwap(owner, "Arcane Missiles", SPELLFAMILY_MAGE, SYNCHRONIZE_SPELL, active);
 +        if (!active)
 +        {
 +            owner->RemoveAurasDueToSpell(DISTORTION);
@@ -9527,7 +9527,7 @@ index 0000000..9fa2ab9
 +    bool CheckProc(ProcEventInfo& eventInfo)
 +    {
 +        SpellInfo const* spell = eventInfo.GetSpellInfo();
-+        return spell && (spell->Id == ALIGN || spell->Id == TIME_BIND || spell->Id == SYNCHRONIZE);
++        return spell && (spell->Id == ALIGN || spell->Id == TIME_BIND || spell->Id == SYNCHRONIZE_SPELL);
 +    }
 +
 +    void HandleProc(ProcEventInfo& eventInfo)
