@@ -7,8 +7,8 @@
 -- point scaling for Serpent Venom and Venomous Fury.
 -- Son of Gruul (984200): Hateful Strike, Ground Slam and Upheaval (by level rank), Hate charges, Seething Growth,
 -- Petrification, Petrified and Shatter (with Lava Flows).
--- Steward of Eternity (986162): Align, Time-bind and Synchronize, energy drain, Temporal Distortion, Eternity, Time-bound
--- from the damage taken during Time-bind, Synchronize healing only Aligned or Time-bound targets and holding Align.
+-- Steward of Eternity (986162): Align, Time-bind and Synchronize, energy drain, Temporal Distortion, Eternity, Time-bind
+-- absorbing part of each hit and healing it back as Time-bound, Synchronize healing only Aligned or Time-bound targets and holding Align.
 -- Swashbuckler: Bloodsail Captain (997127): Hammer the Gap, Panache and Blurred Blade (by level rank), En Garde! from
 -- Mocking Blow, Captain's Resolve while Swashbuckling in Defensive Stance, Panache shortening Stagger, Blurred Blade's
 -- counter-attack on dodge or parry (92802, once every 0.5 sec).

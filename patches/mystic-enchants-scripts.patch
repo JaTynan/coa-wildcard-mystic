@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..c79e173
+index 0000000..c5956e0
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,10000 @@
+@@ -0,0 +1,10021 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -8946,7 +8946,7 @@ index 0000000..c79e173
 +std::unordered_map<ObjectGuid, uint32> WcmeDeliriumMana;                 // mana before each player update in Delirium
 +std::unordered_map<ObjectGuid, uint32> WcmeDeliriumDrained;              // mana Delirium has drained so far
 +std::unordered_set<ObjectGuid> WcmeManaFiendArmed;                       // the next auto attack is a Manacharged Strike
-+std::unordered_map<ObjectGuid, uint64> WcmeTimeBindDamage;               // damage taken during each Time-bind
++std::unordered_map<ObjectGuid, uint64> WcmeTimeBindDamage;               // damage each Time-bind has absorbed
 +constexpr std::array<uint32, 8> HATEFUL_STRIKE_RANKS = { 984226, 984649, 984650, 984651, 984652, 984653, 984654, 984655 };
 +constexpr std::array<uint32, 5> GROUND_SLAM_RANKS = { 984201, 984456, 984457, 984458, 984459 };
 +constexpr std::array<uint32, 8> UPHEAVAL_RANKS = { 984202, 984232, 984233, 984234, 984235, 984236, 984237, 984238 };
@@ -9466,8 +9466,8 @@ index 0000000..c79e173
 +
 +// Steward of Eternity (986162): Moonfire shows as Align (986163), Renew as Time-bind (986164) and Arcane Missiles as
 +// Synchronize (986165). Each of them drains energy (Align 5, Time-bind 30, Synchronize 70, the amounts in their data)
-+// and adds Temporal Distortion (986166, up to 20; Align on a Time-bound target adds one more), and triggers Borrowed Time
-+// if you know its final rank. When one of them empties your energy, the distortion is released: Eternity's healing wave
++// and triggers Borrowed Time if you know its final rank; Align and Time-bind add Temporal Distortion (986166, up to 20;
++// Align on a Time-bound target adds one more). Synchronize uses Missile Barrage through its data. When one of them empties your energy, the distortion is released: Eternity's healing wave
 +// (986173, 13% stronger per stack released) and Eternity (986167), which lasts until your energy is full again.
 +class spell_wcme_steward_of_eternity : public AuraScript
 +{
@@ -9523,7 +9523,7 @@ index 0000000..c79e173
 +        if (Player* player = owner->ToPlayer())
 +            if (player->HasSpell(52800))
 +                owner->CastSpell(owner, 59891, true);
-+        uint8 add = 1;
++        uint8 add = spell->Id == SYNCHRONIZE ? 0 : 1;
 +        if (spell->Id == ALIGN)
 +            if (Unit* target = eventInfo.GetActionTarget())
 +                if (WcmeHasAnyAuraFrom(target, owner, { TIME_BIND, 986161 }))
@@ -9569,8 +9569,9 @@ index 0000000..c79e173
 +    }
 +};
 +
-+// Time-bind (986164): when the bond ends (after 6 sec) the target gets Time-bound (986161), a heal over time restoring
-+// 30% (15% for player targets) of the damage it took during the bond, plus healing power.
++// Time-bind (986164): during the bond 30% of each hit the target takes (15% of hits from players) is absorbed
++// (wcme_kit5_hooks); when the bond ends (after 6 sec) Time-bound (986161) heals the absorbed amount back over time,
++// plus healing power.
 +class spell_wcme_time_bind : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_time_bind);
@@ -9588,9 +9589,10 @@ index 0000000..c79e173
 +        SpellInfo const* bound = sSpellMgr->GetSpellInfo(986161);
 +        if (!caster || !bound || !target->IsAlive() || GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE)
 +            return;
++        if (!damage)
++            return;
 +        uint32 const ticks = std::max<uint32>(1, bound->GetMaxTicks());
-+        int64 const total = int64(damage) * (target->IsControlledByPlayer() ? 15 : 30) / 100;
-+        caster->CastCustomSpell(986161, SPELLVALUE_BASE_POINT0, int32(std::max<int64>(1, total / ticks)), target, true);
++        caster->CastCustomSpell(986161, SPELLVALUE_BASE_POINT0, int32(std::max<uint64>(1, damage / ticks)), target, true);
 +    }
 +
 +    void Register() override
@@ -9789,15 +9791,17 @@ index 0000000..c79e173
 +    }
 +};
 +
-+// Batch 5 damage bookkeeping: damage taken by a target bound by Time-bind is counted for its heal, and Mana Fiend's
++// Batch 5 damage hooks: a target bound by Time-bind has part of each hit absorbed for its heal, and Mana Fiend's
 +// armed auto attack is replaced by a Manacharged Strike (the auto attack itself deals nothing).
 +class wcme_kit5_hooks : public UnitScript
 +{
 +public:
-+    wcme_kit5_hooks() : UnitScript("wcme_kit5_hooks", true, { UNITHOOK_ON_DAMAGE, UNITHOOK_MODIFY_MELEE_DAMAGE }) { }
++    wcme_kit5_hooks() : UnitScript("wcme_kit5_hooks", true, { UNITHOOK_MODIFY_MELEE_DAMAGE, UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN,
++        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK }) { }
 +
 +    void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage) override
 +    {
++        TimeBindAbsorb(target, attacker, damage);
 +        if (!target || !attacker || WcmeManaFiendArmed.erase(attacker->GetGUID()) == 0 || !attacker->HasAura(MANA_FIEND))
 +            return;
 +        damage = 0;
@@ -9809,13 +9813,30 @@ index 0000000..c79e173
 +        }, 1ms);
 +    }
 +
-+    void OnDamage(Unit* /*attacker*/, Unit* victim, uint32& damage) override
++    static void TimeBindAbsorb(Unit* victim, Unit* attacker, uint32& damage)
 +    {
 +        if (!victim || !damage)
 +            return;
 +        auto bound = WcmeTimeBindDamage.find(victim->GetGUID());
-+        if (bound != WcmeTimeBindDamage.end())
-+            bound->second += damage;
++        if (bound == WcmeTimeBindDamage.end() || !victim->HasAura(986164))
++            return;
++        uint32 const absorbed = damage * (attacker && attacker->IsControlledByPlayer() ? 15 : 30) / 100;
++        damage -= absorbed;
++        bound->second += absorbed;
++    }
++
++    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* /*spellInfo*/) override
++    {
++        if (damage <= 0)
++            return;
++        uint32 value = uint32(damage);
++        TimeBindAbsorb(target, attacker, value);
++        damage = int32(value);
++    }
++
++    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* /*spellInfo*/) override
++    {
++        TimeBindAbsorb(target, attacker, damage);
 +    }
 +};
 +
