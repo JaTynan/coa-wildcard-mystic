@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..02d533d
+index 0000000..011e172
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,6250 @@
+@@ -0,0 +1,6360 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13,6 +13,7 @@ index 0000000..02d533d
 +// on that spell says which events reach it (sql/enchants/017-enchant-scripts.sql). Every handler prevents the
 +// enchant's own (blanked) trigger effects and does exactly what the tooltip says instead.
 +
++#include "Battleground.h"
 +#include "CellImpl.h"
 +#include "Containers.h"
 +#include "Creature.h"
@@ -5813,7 +5814,15 @@ index 0000000..02d533d
 +// (985977 and 985978: the next Promise heals less) and takes 1 sec off Divine Storm; Divine Storm spends the stacks.
 +// Crusader's Justice (985972, spell_wcme_crusaders_justice) on an ally heals it (985974: 1 + weapon speed x (12% AP +
 +// 8% healing power)) and bonds you to it; on an enemy it strikes for 60% weapon damage (985973), and that damage also
-+// heals your bonded ally (985998) and restores 10% of your base mana.
++// heals your bonded ally (985998) and restores 10% of your base mana. In a 1v1 arena these heals are halved.
++// In a 1v1 arena, Champion of Justice's healing is halved ("significantly decreased in 1v1 arena").
++uint32 WcmeSoloArenaHeal(Unit* healer, uint32 amount)
++{
++    Player* player = healer->ToPlayer();
++    Battleground* bg = player ? player->GetBattleground() : nullptr;
++    return bg && bg->isArena() && bg->GetArenaType() == ARENA_TYPE_1v1 ? amount / 2 : amount;
++}
++
 +// Crusader Strike shows as Crusader's Justice (985972) only while Righteous Justice is up (the core's enchant replacement
 +// would otherwise swap it for as long as Champion of Justice is worn).
 +void WcmeSyncCrusadersJustice(Unit* unit)
@@ -5900,7 +5909,7 @@ index 0000000..02d533d
 +            if (ally && heal && ally->IsAlive() && owner->IsWithinDistInMap(ally, 40.0f))
 +            {
 +                DamageInfo const* damage = eventInfo.GetDamageInfo();
-+                HealInfo healInfo(owner, ally, damage->GetDamage() + damage->GetAbsorb(), heal, heal->GetSchoolMask());
++                HealInfo healInfo(owner, ally, WcmeSoloArenaHeal(owner, damage->GetDamage() + damage->GetAbsorb()), heal, heal->GetSchoolMask());
 +                owner->HealBySpell(healInfo);
 +            }
 +            return;
@@ -5930,7 +5939,7 @@ index 0000000..02d533d
 +                continue;
 +            if (Aura* hot = owner->AddAura(DIVINE_JUSTICE, ally))
 +                if (AuraEffect* tick = hot->GetEffect(EFFECT_0))
-+                    tick->ChangeAmount(int32(owner->SpellHealingBonusDone(ally, justice, base, DOT, EFFECT_0)));
++                    tick->ChangeAmount(int32(WcmeSoloArenaHeal(owner, owner->SpellHealingBonusDone(ally, justice, base, DOT, EFFECT_0))));
 +            ++healed;
 +        }
 +    }
@@ -5997,7 +6006,7 @@ index 0000000..02d533d
 +            float const speed = caster->GetAttackTime(BASE_ATTACK) / 1000.0f;
 +            int32 const amount = int32(1 + speed * (0.12f * WcmeAttackPower(caster) +
 +                0.08f * caster->SpellBaseHealingBonusDone(SPELL_SCHOOL_MASK_ALL)));
-+            caster->CastCustomSpell(HEAL, SPELLVALUE_BASE_POINT0, amount, target, true);
++            caster->CastCustomSpell(HEAL, SPELLVALUE_BASE_POINT0, int32(WcmeSoloArenaHeal(caster, uint32(std::max(1, amount)))), target, true);
 +            WcmeJusticeBonds[caster->GetGUID()] = target->GetGUID();
 +        }
 +        else
@@ -6034,7 +6043,7 @@ index 0000000..02d533d
 +// off Felblade; Fire and Shadow spell casts take 2 sec off Fel Cleave (984180). Fel Cleave grants Fel Infused Flames
 +// (984170, 12 sec) if you know Emberstorm at its final rank: your melee ability hits deal 265 (at level 60) + 47% AP +
 +// 47% SP Shadowflame damage (984171), and your melee ability casts trigger the Emberstorm capstone (411119) and add a
-+// stack of Rising Chaos (984162, up to 3).
++// stack of Rising Chaos (984162, up to 3). The Shadowflame damage does not stack with another temporary weapon enchant.
 +class spell_wcme_fel_corruption : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_fel_corruption);
@@ -6049,6 +6058,14 @@ index 0000000..02d533d
 +    static constexpr uint32 FEL_FLAMES_HIT = 984171;
 +    static constexpr uint32 RISING_CHAOS = 984162;
 +    static constexpr uint32 EMBERSTORM_CDR = 411119;
++
++    // Fel Infused Flames does not stack with another temporary weapon enchant (poisons, imbues) on the main hand.
++    static bool OtherWeaponEnchant(Unit* owner)
++    {
++        Player* player = owner->ToPlayer();
++        Item* weapon = player ? player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) : nullptr;
++        return weapon && weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT);
++    }
 +
 +    static bool IsChaosBolt(SpellInfo const* spell)
 +    {
@@ -6125,7 +6142,7 @@ index 0000000..02d533d
 +            return;
 +        }
 +        Unit* target = eventInfo.GetActionTarget();
-+        if (owner->HasAura(FEL_FLAMES))
++        if (owner->HasAura(FEL_FLAMES) && !OtherWeaponEnchant(owner))
 +            if (SpellInfo const* flames = sSpellMgr->GetSpellInfo(FEL_FLAMES_HIT))
 +                WcmeExtraDamage(owner, target, flames, int64(265.0f * owner->GetLevel() / 60.0f +
 +                    0.47f * WcmeAttackPower(owner) + 0.47f * WcmeSpellPower(owner)));
@@ -6140,6 +6157,97 @@ index 0000000..02d533d
 +    {
 +        DoCheckProc += AuraCheckProcFn(spell_wcme_fel_corruption::CheckProc);
 +        OnProc += AuraProcFn(spell_wcme_fel_corruption::HandleProc);
++    }
++};
++
++// Overflow (enchant 1571951, whose Regrowth and Nourish casts already give Overflow stacks 1571954 through the core's
++// enchant procs): your next Healing Touch spends the stacks. It always plants Living Seed (48504: 30% of the heal) if
++// you know Living Seed, and heals one more ally within 12 yards per stack for 30% of the amount healed (1571952), the
++// most injured first. The stacks' cast time and mana cut is the data's own spell mod.
++class spell_wcme_overflow_stacks : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_overflow_stacks);
++
++    static constexpr uint32 OVERFLOW_HEAL = 1571952;
++    static constexpr uint32 SEED = 48504;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        HealInfo const* heal = eventInfo.GetHealInfo();
++        return heal && heal->GetHeal() && eventInfo.GetActionTarget() && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamed(eventInfo.GetSpellInfo(), "Healing Touch");
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        uint32 const healed = eventInfo.GetHealInfo()->GetHeal();
++        uint8 const stacks = GetStackAmount();
++        if (WcmeHasAnyAura(owner, { 48496, 48499, 48500 }))
++            owner->CastCustomSpell(SEED, SPELLVALUE_BASE_POINT0, int32(healed * 30 / 100), target, true);
++        if (SpellInfo const* overflow = sSpellMgr->GetSpellInfo(OVERFLOW_HEAL))
++        {
++            std::list<Unit*> allies = WcmeAlliesNear(owner, target, 12.0f, 40);
++            allies.remove_if([owner, target](Unit* ally) { return ally == target || (!ally->IsInRaidWith(owner) && ally != owner); });
++            allies.sort([](Unit* first, Unit* second) { return first->GetHealthPct() < second->GetHealthPct(); });
++            uint8 healedAllies = 0;
++            for (Unit* ally : allies)
++            {
++                if (healedAllies++ >= stacks)
++                    break;
++                HealInfo extra(owner, ally, healed * 30 / 100, overflow, overflow->GetSchoolMask());
++                owner->HealBySpell(extra);
++            }
++        }
++        Remove();
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_overflow_stacks::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_overflow_stacks::HandleProc);
++    }
++};
++
++// Astral Storm (832617): its data procs on every damaging spell (the core builds a proc from the spell's own flags),
++// which would send any target into the Astral Realm. Only Astral Storm hits count now: on a monster they restore 10% of
++// your maximum mana; on a player with your Unrelenting Storm (412000) they send the target and you into the Astral
++// Realm (832618) for 8 sec.
++class spell_wcme_astral_storm : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_astral_storm);
++
++    static constexpr uint32 ASTRAL_REALM = 832618;
++    static constexpr uint32 UNRELENTING_STORM = 412000;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo) && !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            WcmeNamed(eventInfo.GetSpellInfo(), "Astral Storm");
++    }
++
++    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Unit* target = eventInfo.GetActionTarget();
++        if (!target->IsPlayer())
++        {
++            owner->ModifyPower(POWER_MANA, int32(owner->GetMaxPower(POWER_MANA) / 10));
++            return;
++        }
++        if (!target->HasAura(UNRELENTING_STORM, owner->GetGUID()))
++            return;
++        owner->CastSpell(target, ASTRAL_REALM, true);
++        owner->AddAura(ASTRAL_REALM, owner);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_astral_storm::CheckProc);
++        OnEffectProc += AuraEffectProcFn(spell_wcme_astral_storm::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
 +    }
 +};
 +
@@ -6253,4 +6361,6 @@ index 0000000..02d533d
 +    RegisterSpellScript(spell_wcme_crusaders_justice);
 +    RegisterSpellScript(spell_wcme_crusaders_promise);
 +    RegisterSpellScript(spell_wcme_fel_corruption);
++    RegisterSpellScript(spell_wcme_overflow_stacks);
++    RegisterSpellScript(spell_wcme_astral_storm);
 +}
