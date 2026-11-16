@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..8f1d038
+index 0000000..02d533d
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,6132 @@
+@@ -0,0 +1,6250 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -6026,6 +6026,123 @@ index 0000000..8f1d038
 +    }
 +};
 +
++// Fel Corruption (984165): the core's replacements give Felblade (984168, for Bloodthirst) and Fel Cleave (984167, for
++// Cleave). Chaos Bolt and Felblade casts add a stack of Corrupted Core (984462, up to 10); with Molten Core known, each
++// stack gives your Corruption ticks a 3% chance to grant Molten Core (71162). While Molten Core is up, Chaos Bolt and
++// Felblade use it too: Molten Core (984181: +15% damage and +10% crit for Chaos Bolt; Felblade gets the +15% against
++// monsters as extra damage) and each such cast spends a Molten Core charge. Fel Cleave and Chaos Bolt casts take 4 sec
++// off Felblade; Fire and Shadow spell casts take 2 sec off Fel Cleave (984180). Fel Cleave grants Fel Infused Flames
++// (984170, 12 sec) if you know Emberstorm at its final rank: your melee ability hits deal 265 (at level 60) + 47% AP +
++// 47% SP Shadowflame damage (984171), and your melee ability casts trigger the Emberstorm capstone (411119) and add a
++// stack of Rising Chaos (984162, up to 3).
++class spell_wcme_fel_corruption : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_fel_corruption);
++
++    static constexpr uint32 FELBLADE = 984168;
++    static constexpr uint32 FEL_CLEAVE = 984167;
++    static constexpr uint32 FEL_CLEAVE_CDR = 984180;
++    static constexpr uint32 CORRUPTED_CORE = 984462;
++    static constexpr uint32 MOLTEN_CORE = 71162;
++    static constexpr uint32 MOLTEN_CORE_CHAOS = 984181;
++    static constexpr uint32 FEL_FLAMES = 984170;
++    static constexpr uint32 FEL_FLAMES_HIT = 984171;
++    static constexpr uint32 RISING_CHAOS = 984162;
++    static constexpr uint32 EMBERSTORM_CDR = 411119;
++
++    static bool IsChaosBolt(SpellInfo const* spell)
++    {
++        return WcmeNamed(spell, "Chaos Bolt") && spell->SpellFamilyName == SPELLFAMILY_WARLOCK;
++    }
++
++    static void AddStack(Unit* owner, uint32 spellId)
++    {
++        Aura* aura = owner->GetAura(spellId);
++        if (!aura)
++        {
++            owner->AddAura(spellId, owner);
++            return;
++        }
++        if (aura->GetStackAmount() < aura->GetSpellInfo()->StackAmount)
++            aura->SetStackAmount(aura->GetStackAmount() + 1);
++        aura->RefreshDuration();
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell)
++            return false;
++        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
++            return WcmeNamed(spell, "Corruption") && GetTarget()->HasAura(CORRUPTED_CORE) &&
++                WcmeHasAnyAura(GetTarget(), { 47246, 47247, 1147246, 1147247 });
++        if (spell->Id == FEL_FLAMES_HIT || spell->Id == EMBERSTORM_CDR)
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return true;
++        return eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo) && spell->DmgClass == SPELL_DAMAGE_CLASS_MELEE;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
++        {
++            if (roll_chance_i(3 * owner->GetAuraCount(CORRUPTED_CORE)))
++            {
++                owner->CastSpell(owner, MOLTEN_CORE, true);
++                owner->AddAura(MOLTEN_CORE_CHAOS, owner);
++            }
++            return;
++        }
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            bool const chaosBolt = IsChaosBolt(spell);
++            if (chaosBolt || spell->Id == FELBLADE)
++            {
++                AddStack(owner, CORRUPTED_CORE);
++                if (Aura* molten = owner->GetAura(MOLTEN_CORE))
++                {
++                    if (!owner->HasAura(MOLTEN_CORE_CHAOS))
++                        owner->AddAura(MOLTEN_CORE_CHAOS, owner);
++                    if (molten->DropCharge())
++                        owner->m_Events.AddEventAtOffset([owner]() { owner->RemoveAurasDueToSpell(MOLTEN_CORE_CHAOS); }, 1s);
++                }
++            }
++            if (chaosBolt || spell->Id == FEL_CLEAVE)
++                WcmeCutCooldownByName(owner, "Felblade", 4000);
++            if (spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && (spell->GetSchoolMask() & (SPELL_SCHOOL_MASK_FIRE | SPELL_SCHOOL_MASK_SHADOW)))
++                owner->CastSpell(owner, FEL_CLEAVE_CDR, true);
++            if (spell->Id == FEL_CLEAVE && WcmeHasAnyAura(owner, { 17958, 1117958, 1217958 }))
++                owner->CastSpell(owner, FEL_FLAMES, true);
++            if (spell->DmgClass == SPELL_DAMAGE_CLASS_MELEE && owner->HasAura(FEL_FLAMES))
++            {
++                owner->CastSpell(owner, EMBERSTORM_CDR, true);
++                AddStack(owner, RISING_CHAOS);
++            }
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        if (owner->HasAura(FEL_FLAMES))
++            if (SpellInfo const* flames = sSpellMgr->GetSpellInfo(FEL_FLAMES_HIT))
++                WcmeExtraDamage(owner, target, flames, int64(265.0f * owner->GetLevel() / 60.0f +
++                    0.47f * WcmeAttackPower(owner) + 0.47f * WcmeSpellPower(owner)));
++        if (spell->Id == FELBLADE && owner->HasAura(MOLTEN_CORE_CHAOS) && !target->IsPlayer())
++        {
++            DamageInfo const* damage = eventInfo.GetDamageInfo();
++            WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * 15 / 100);
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_fel_corruption::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_fel_corruption::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -6135,4 +6252,5 @@ index 0000000..8f1d038
 +    RegisterSpellScript(spell_wcme_righteous_justice);
 +    RegisterSpellScript(spell_wcme_crusaders_justice);
 +    RegisterSpellScript(spell_wcme_crusaders_promise);
++    RegisterSpellScript(spell_wcme_fel_corruption);
 +}
