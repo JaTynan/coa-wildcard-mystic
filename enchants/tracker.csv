@@ -20,7 +20,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 977782,Critical Cycles,Epic,1178627,needs-code,modifier on a placeholder,live,linked to working twin,1585634,003-twin-links-close.sql,,
 283770,Critical Cycles,Epic,201872,needs-code,modifier on a placeholder,live,linked to working twin,1585634,003-twin-links-close.sql,,
 86576,Cryotherapist,Legendary,134879,needs-code,modifier on a placeholder,live,linked to working twin,271313,003-twin-links-close.sql,,
-978209,Dark Surgeon,Legendary,1178679,needs-code,modifier on a placeholder,live,linked to working twin,1573136,003-twin-links-close.sql,,
+978209,Dark Surgeon,Legendary,1178679,needs-code,modifier on a placeholder,live,own design scripted (spell_wcme_dark_surgeon; no longer linked to twin 1573136),,027-medium-legendaries-4.sql,,
 955076,Deadly Leap,Epic,1234935,needs-code,modifier on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",283483,004-twin-links-dedup.sql,,
 81503,Desperation,Epic,1176057,needs-code,modifier on a placeholder,live,linked to working twin,1581832,003-twin-links-close.sql,,
 978234,Disciple of the Tides,Legendary,1178699,needs-code,modifier on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",274918,004-twin-links-dedup.sql,,

@@ -48,7 +48,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (1355340, 955339, 2, 'WCME: Torment the Weak uses twin 955339 (standard, tooltip 0.15 alike)'),
 (272427, 1570523, 2, 'WCME: Ice Barrage uses twin 1570523 (scripted, tooltip 0.14 alike)'),
 (954424, 272101, 2, 'WCME: Templar of Flame uses twin 272101 (standard, tooltip 0.13 alike)'),
-(978209, 1573136, 2, 'WCME: Dark Surgeon uses twin 1573136 (standard, tooltip 0.13 alike)'),
 (965354, 1585225, 2, 'WCME: Blazing Determination uses twin 1585225 (standard, tooltip 0.12 alike)'),
 (916187, 1316206, 2, 'WCME: Restorative Totems uses twin 1316206 (standard, tooltip 0.12 alike)'),
 (272816, 1571172, 2, 'WCME: Shadow of Death uses twin 1571172 (scripted, tooltip 0.12 alike)'),

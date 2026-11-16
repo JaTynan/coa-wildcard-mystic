@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..950d5ab
+index 0000000..3f3f39f
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,3871 @@
+@@ -0,0 +1,4258 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -3797,6 +3797,388 @@ index 0000000..950d5ab
 +    }
 +};
 +
++// Gift of Light (1277670): Light's Grace is renewed every 15 sec with a stronger cast time cut (the data's own periodic
++// effect). Each renewal also gives a stack of Gift of Light (1277671, up to 3) and finishes Divine Favor's cooldown.
++// Divine Favor spends a stack and has no cooldown while stacks are left; spending the last stack leaves it on cooldown
++// until the next renewal. The data's own no-cooldown buff (1277674) is not used: it would ignore the stacks.
++class spell_wcme_gift_of_light : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_gift_of_light);
++
++    static constexpr uint32 GIFT = 1277671;
++    static constexpr uint8 MAX_GIFTS = 3;
++
++    void Renew(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Aura* gift = owner->GetAura(GIFT);
++        if (!gift)
++        {
++            owner->AddAura(GIFT, owner);
++            gift = owner->GetAura(GIFT);
++        }
++        else if (gift->GetStackAmount() < MAX_GIFTS)
++            gift->SetStackAmount(gift->GetStackAmount() + 1);
++        if (gift)
++            gift->RefreshDuration();
++        WcmeCutCooldownByName(owner, "Divine Favor", 3600000);
++    }
++
++    void Skip(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return WcmeNamed(eventInfo.GetSpellInfo(), "Divine Favor") && (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        Unit* owner = GetTarget();
++        Aura* gift = owner->GetAura(GIFT);
++        if (!gift)
++            return;
++        if (gift->ModStackAmount(-1, AURA_REMOVE_BY_EXPIRE))
++            return;
++        if (owner->HasAura(GIFT))
++            WcmeCutCooldownByName(owner, "Divine Favor", 3600000);
++    }
++
++    void Register() override
++    {
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_gift_of_light::Renew, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_gift_of_light::Skip, EFFECT_2, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_gift_of_light::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_gift_of_light::HandleProc);
++    }
++};
++
++// Stormbound Instinct (1181360): Shocks deal double threat (the data's own spell mod), give a stack of Maelstrom Weapon
++// (53817) if you have the talent, and Stormbound Reflexes (1181363: +20% dodge until the next attack against you).
++// 30% of the damage your Shocks deal also hits every other enemy within 10 yards of the target (1181365). Primal
++// Strike, Lightning Bolt and Chain Lightning make your next Shock trigger no cooldown (2414024, removed by that Shock).
++class spell_wcme_stormbound_instinct : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_stormbound_instinct);
++
++    static constexpr uint32 NO_COOLDOWN = 2414024;
++    static constexpr uint32 REFLEXES = 1181363;
++    static constexpr uint32 SPREAD = 1181365;
++    static constexpr uint32 MAELSTROM = 53817;
++
++    static bool IsShock(SpellInfo const* spell)
++    {
++        return WcmeNamedAny(spell, { "Earth Shock", "Flame Shock", "Frost Shock" });
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        if (eventInfo.GetTypeMask() & (PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS))
++            return GetTarget()->HasAura(REFLEXES);
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) || spell->Id == SPREAD)
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return IsShock(spell) || WcmeNamedAny(spell, { "Primal Strike", "Lightning Bolt", "Chain Lightning" });
++        return IsShock(spell) && eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo);
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetTypeMask() & (PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK | PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS))
++        {
++            owner->RemoveAurasDueToSpell(REFLEXES);
++            return;
++        }
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            if (!IsShock(spell))
++            {
++                owner->AddAura(NO_COOLDOWN, owner);
++                return;
++            }
++            owner->RemoveAurasDueToSpell(NO_COOLDOWN);
++            owner->AddAura(REFLEXES, owner);
++            if (WcmeHasAnyAura(owner, { 51528, 51529, 51530, 51531, 51532 }))
++            {
++                Aura* maelstrom = owner->GetAura(MAELSTROM);
++                if (!maelstrom)
++                    owner->AddAura(MAELSTROM, owner);
++                else
++                {
++                    if (maelstrom->GetStackAmount() < maelstrom->GetSpellInfo()->StackAmount)
++                        maelstrom->SetStackAmount(maelstrom->GetStackAmount() + 1);
++                    maelstrom->RefreshDuration();
++                }
++            }
++            return;
++        }
++        Unit* target = eventInfo.GetActionTarget();
++        SpellInfo const* spread = sSpellMgr->GetSpellInfo(SPREAD);
++        if (!spread)
++            return;
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        int64 const share = int64(damage->GetDamage() + damage->GetAbsorb()) * 30 / 100;
++        for (Unit* enemy : WcmeEnemiesNear(owner, target, 10.0f, 20))
++            if (enemy != target)
++                WcmeExtraDamage(owner, enemy, spread, share);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_stormbound_instinct::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_stormbound_instinct::HandleProc);
++    }
++};
++
++// Feeding the Abyss (1154364): your dodge is gone (the data's own -100% dodge). While the enchant is on, Abyssal Hunger
++// (9990020, hidden) has a chance equal to 10% plus your spell critical strike chance to absorb a physical hit fully,
++// storing the damage. Once the oldest stored damage is 10 sec old, your next Life Tap spends the store as Shadow
++// damage (1154363) split between up to 5 enemies within 10 yards, and heals you and your pet for half of the damage it
++// dealt each.
++class spell_wcme_feeding_the_abyss : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_feeding_the_abyss);
++
++    static constexpr uint32 HUNGER = 9990020;
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (!GetTarget()->HasAura(HUNGER))
++            GetTarget()->AddAura(HUNGER, GetTarget());
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->RemoveAurasDueToSpell(HUNGER);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_feeding_the_abyss::HandleApply, EFFECT_2, SPELL_AURA_MOD_DODGE_PERCENT, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_feeding_the_abyss::HandleRemove, EFFECT_2, SPELL_AURA_MOD_DODGE_PERCENT, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++class spell_wcme_abyssal_hunger : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_abyssal_hunger);
++
++    static constexpr uint32 FEED = 1154363;
++    static constexpr Seconds DIGEST{10};
++    int64 _stored = 0;
++    TimePoint _since{};
++
++    void CalcAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
++    {
++        amount = -1;
++    }
++
++    void Absorb(AuraEffect* /*aurEff*/, DamageInfo& dmgInfo, uint32& absorbAmount)
++    {
++        Unit* owner = GetTarget();
++        float chance = 10.0f;
++        if (Player* player = owner->ToPlayer())
++            chance += player->GetFloatValue(uint16(PLAYER_SPELL_CRIT_PERCENTAGE1) + uint16(SPELL_SCHOOL_SHADOW));
++        if (!dmgInfo.GetDamage() || !roll_chance_f(chance))
++        {
++            absorbAmount = 0;
++            return;
++        }
++        absorbAmount = dmgInfo.GetDamage();
++        if (!_stored)
++            _since = GameTime::Now();
++        _stored += absorbAmount;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        return _stored > 0 && GameTime::Now() - _since >= DIGEST && WcmeNamed(eventInfo.GetSpellInfo(), "Life Tap") &&
++            (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        Unit* owner = GetTarget();
++        SpellInfo const* feed = sSpellMgr->GetSpellInfo(FEED);
++        int64 const stored = _stored;
++        _stored = 0;
++        if (!feed)
++            return;
++        std::list<Unit*> enemies = WcmeEnemiesNear(owner, owner, 10.0f, 5);
++        if (enemies.empty())
++            return;
++        int64 dealt = 0;
++        int32 const share = int32(std::min<int64>(stored / int64(enemies.size()), INT32_MAX));
++        for (Unit* enemy : enemies)
++        {
++            SpellNonMeleeDamage log(owner, enemy, feed, feed->GetSchoolMask());
++            owner->CalculateSpellDamageTaken(&log, share, feed);
++            dealt += log.damage;
++            owner->SendSpellNonMeleeDamageLog(&log);
++            owner->DealSpellDamage(&log, false);
++        }
++        uint32 const heal = uint32(std::min<int64>(dealt / 2, INT32_MAX));
++        if (!heal)
++            return;
++        HealInfo self(owner, owner, heal, feed, feed->GetSchoolMask());
++        owner->HealBySpell(self);
++        if (Pet* pet = owner->ToPlayer() ? owner->ToPlayer()->GetPet() : nullptr)
++            if (pet->IsAlive())
++            {
++                HealInfo petHeal(owner, pet, heal, feed, feed->GetSchoolMask());
++                owner->HealBySpell(petHeal);
++            }
++    }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_abyssal_hunger::CalcAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
++        OnEffectAbsorb += AuraEffectAbsorbFn(spell_wcme_abyssal_hunger::Absorb, EFFECT_0);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_abyssal_hunger::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_abyssal_hunger::HandleProc);
++    }
++};
++
++// Dark Surgeon (978209): teaches Hippocratic Oath (978430: healing power from 20% of attack power) and, if you know Holy
++// Nova, Dark Transfusion (978640). Mutilate damage gives a stack of Dark Surgeon (978429, up to 2, with its Circle of
++// Healing bonus 978856). Damaging Rogue finishing moves then have a 10% chance per stack per combo point to spend it on
++// a Lesser Circle of Healing (978855): up to 5 allies within 30 yards (6 with Glyph of Circle of Healing) are healed
++// for 3.575 x level + 9 + 15.6% SP + 7.8% AP, and as much as half that again over 3 sec. Damaging finishing moves also
++// have a 20% chance per combo point to give a stack of Trauma Care (979021, up to 2).
++class spell_wcme_dark_surgeon : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_dark_surgeon);
++
++    static constexpr uint32 SURGEON = 978429;
++    static constexpr uint32 SURGEON_COH = 978856;
++    static constexpr uint32 LESSER_COH = 978855;
++    static constexpr uint32 TRAUMA_CARE = 979021;
++    static constexpr std::array<uint32, 1> OATH = { 978430 };
++    static constexpr std::array<uint32, 1> TRANSFUSION = { 978640 };
++
++    static bool KnowsHolyNova(Player* player)
++    {
++        for (auto const& [spellId, known] : player->GetSpellMap())
++            if (known->State != PLAYERSPELL_REMOVED && spellId != TRANSFUSION[0] &&
++                WcmeNamed(sSpellMgr->GetSpellInfo(spellId), "Holy Nova"))
++                return true;
++        return false;
++    }
++
++    void Sync(bool keep)
++    {
++        WcmeSyncTaughtRank(GetTarget(), OATH, keep);
++        Player* player = GetTarget()->ToPlayer();
++        WcmeSyncTaughtRank(GetTarget(), TRANSFUSION, keep && player && KnowsHolyNova(player));
++    }
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(true); }
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/) { Sync(false); }
++
++    static void AddCappedStack(Unit* owner, uint32 spellId)
++    {
++        Aura* aura = owner->GetAura(spellId);
++        if (!aura)
++        {
++            owner->AddAura(spellId, owner);
++            return;
++        }
++        if (aura->GetStackAmount() < aura->GetSpellInfo()->StackAmount)
++            aura->SetStackAmount(aura->GetStackAmount() + 1);
++        aura->RefreshDuration();
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || spell->SpellFamilyName != SPELLFAMILY_ROGUE || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return spell->NeedsComboPoints() && WcmeDealsAnyDamage(spell);
++        return WcmeNamed(spell, "Mutilate") && WcmeDealtDamage(eventInfo);
++    }
++
++    static uint32 Healed(Unit* caster, Unit* ally, SpellInfo const* heal, uint32 base)
++    {
++        uint32 amount = caster->SpellHealingBonusDone(ally, heal, base, ::HEAL, EFFECT_0);
++        return ally->SpellHealingBonusTaken(caster, heal, amount, ::HEAL);
++    }
++
++    void LesserCircle(Unit* owner)
++    {
++        SpellInfo const* heal = sSpellMgr->GetSpellInfo(LESSER_COH);
++        if (!heal)
++            return;
++        float const level = float(owner->GetLevel());
++        float const sp = float(owner->SpellBaseHealingBonusDone(SPELL_SCHOOL_MASK_ALL));
++        float const ap = WcmeAttackPower(owner);
++        uint32 const direct = uint32(3.575f * level + 9 + 0.156f * sp + 0.078f * ap);
++        uint32 const overTime = uint32(1.7875f * level + 9 + 0.078f * sp + 0.039f * ap);
++        for (Unit* ally : WcmeAlliesNear(owner, owner, 30.0f, owner->HasAura(55675) ? 6 : 5))
++        {
++            uint32 amount = Healed(owner, ally, heal, direct);
++            float chance = owner->SpellDoneCritChance(ally, heal, heal->GetSchoolMask(), BASE_ATTACK, false);
++            chance = ally->SpellTakenCritChance(owner, heal, heal->GetSchoolMask(), chance, BASE_ATTACK, false);
++            bool const crit = roll_chance_f(chance);
++            if (crit)
++                amount = Unit::SpellCriticalHealingBonus(owner, heal, amount, ally);
++            HealInfo healInfo(owner, ally, amount, heal, heal->GetSchoolMask());
++            owner->HealBySpell(healInfo, crit);
++            ObjectGuid const allyGuid = ally->GetGUID();
++            for (uint32 tick = 1; tick <= 3; ++tick)
++                owner->m_Events.AddEventAtOffset([owner, allyGuid, overTime]()
++                {
++                    SpellInfo const* tickHeal = sSpellMgr->GetSpellInfo(LESSER_COH);
++                    Unit* target = ObjectAccessor::GetUnit(*owner, allyGuid);
++                    if (!tickHeal || !target || !target->IsAlive() || !owner->IsInWorld())
++                        return;
++                    HealInfo tickInfo(owner, target, Healed(owner, target, tickHeal, overTime / 3), tickHeal, tickHeal->GetSchoolMask());
++                    owner->HealBySpell(tickInfo);
++                }, Seconds(tick));
++        }
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (!(eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST))
++        {
++            AddCappedStack(owner, SURGEON);
++            AddCappedStack(owner, SURGEON_COH);
++            return;
++        }
++        // combo points are still on the caster during the cast phase
++        uint8 const points = owner->GetComboPoints();
++        if (!points)
++            return;
++        if (roll_chance_i(std::min(100, 20 * points)))
++            AddCappedStack(owner, TRAUMA_CARE);
++        Aura* surgeon = owner->GetAura(SURGEON);
++        if (surgeon && roll_chance_i(std::min(100, 10 * surgeon->GetStackAmount() * points)))
++        {
++            owner->RemoveAurasDueToSpell(SURGEON);
++            owner->RemoveAurasDueToSpell(SURGEON_COH);
++            LesserCircle(owner);
++        }
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_dark_surgeon::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_dark_surgeon::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_dark_surgeon::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_dark_surgeon::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -3874,4 +4256,9 @@ index 0000000..950d5ab
 +    RegisterSpellScript(spell_wcme_hot_hands);
 +    RegisterSpellScript(spell_wcme_predators_wrath);
 +    RegisterSpellScript(spell_wcme_predators_wrath_buff);
++    RegisterSpellScript(spell_wcme_gift_of_light);
++    RegisterSpellScript(spell_wcme_stormbound_instinct);
++    RegisterSpellScript(spell_wcme_feeding_the_abyss);
++    RegisterSpellScript(spell_wcme_abyssal_hunger);
++    RegisterSpellScript(spell_wcme_dark_surgeon);
 +}

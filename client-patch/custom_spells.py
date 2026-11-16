@@ -30,8 +30,10 @@ BOOK_RADIANT = 9990017
 # Mystic Enchant helpers (sql/enchants/150 carries the server rows; scripts in mystic-enchants-scripts.patch)
 TEMPORAL_STORE = 9990018    # Temporal Shift: a cancelled Temporal Blast's cast time, taken off the next one
 HOT_HANDS_MARK = 9990019    # Hot Hands: +8% spell crit for the Mage whose Living Bomb is on the target
+ABYSSAL_HUNGER = 9990020    # Feeding the Abyss: the hidden physical absorb that stores damage for Life Tap
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
+SCHOOL_ABSORB, PHYSICAL = 69, 1
 MOD_THREAT, PERIODIC_ENERGIZE, EFFECT_IMMUNITY, MANA_SHIELD, MOD_ATTACKER_MELEE_CRIT_CHANCE = 10, 24, 37, 97, 187
 DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
     MOD_HEALTH_REGEN_PERCENT, MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 87, 88, 136, 193  # aura types
@@ -177,12 +179,17 @@ SPELLS = {
                      'on it.',
                      'Your Living Bomb\'s Mage has 8% more spell critical strike chance against you.',
                      3000, 0, [(MOD_CRIT_CHANCE_AGAINST_TARGET, 8, ALL_SCHOOLS)], {86: 6}),  # on the enemy; lasts as long as Living Bomb
+    ABYSSAL_HUNGER: ('Abyssal Hunger',
+                     'A chance equal to 10% plus your spell critical strike chance to fully absorb a physical hit and '
+                     'store it for your next Life Tap.',
+                     '', 4828, 0, [(SCHOOL_ABSORB, -1, PHYSICAL)], {4: PASSIVE}),  # hidden; the script decides each absorb
 }
 RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT)}
 
 # spell_script_names rows: id -> script (in the server patch named next to the spell)
 SCRIPTS = {
     BARRIER_SHIELD: 'spell_wcme_manaforged_barrier',  # patches/60-manaforged-barrier.ps1
+    ABYSSAL_HUNGER: 'spell_wcme_abyssal_hunger',  # mystic-enchants-scripts.patch
 }
 
 # spell_proc rows (charges used up by the next ability): id -> (ProcFlags, SpellTypeMask, SpellPhaseMask, Charges)
@@ -190,6 +197,7 @@ PROCS = {
     # Used by the next ability that lands, whatever it does: damage and heals, and also spells that only apply an aura
     # (Renew, Corruption: they would otherwise keep the +50% on every cast, and buffs can't be told apart from them).
     AMBUSH: (NEXT_ABILITY, 7, 2, 1),
+    ABYSSAL_HUNGER: (0x400 | 0x4000, 0, 1, 0),  # Life Tap casts: spends the stored damage
 }
 
 STRINGS = {136: 0, 170: 1, 187: 2}  # enUS name, description, aura text (index into the tuple above)
