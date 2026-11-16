@@ -92,6 +92,21 @@ def first_build(commit, build_list, cache):
     return cache[commit]
 
 
+def first_install(commit, build_list, installed, cache):
+    """Date patch night first installed a build that contains the commit."""
+    key = ('live', commit)
+    if key in cache:
+        return cache[key]
+    cache[key] = ''
+    for date, tag in sorted((d, t) for t, d in installed.items()):
+        target = next((b[3] for b in build_list if b[1] == tag), None)
+        if target and subprocess.run(['git', 'merge-base', '--is-ancestor', commit, target], cwd=ROOT,
+                                     capture_output=True).returncode == 0:
+            cache[key] = date
+            break
+    return cache[key]
+
+
 def installs(log_path):
     """Build tag -> first date patch night installed it."""
     if not log_path or not Path(log_path).exists():
@@ -248,7 +263,7 @@ def main():
                 'pr': pr[0] if pr else None, 'pr_title': pr[1] if pr else '',
                 'build': build[0] if build else None, 'build_tag': build[1] if build else '',
                 'build_date': build[2] if build else '',
-                'live': installed.get(build[1], '') if build else '',
+                'live': first_install(merge or sha, build_list, installed, build_cache) if build else '',
             })
         note = notes.get(sid, {})
         pr_list = sorted({c['pr'] for c in changes if c['pr']})

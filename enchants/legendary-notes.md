@@ -58,8 +58,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -78,7 +78,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Assumptions:** Its spread is already coded in Hand of the Adorned.
 
@@ -136,7 +136,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | - |
+| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
 | 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -160,7 +160,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -208,7 +208,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -282,7 +282,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -302,8 +302,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -322,7 +322,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -350,7 +350,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -360,7 +360,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -414,8 +414,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -435,7 +435,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -449,8 +449,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -499,7 +499,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -537,7 +537,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -572,7 +572,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -582,7 +582,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -607,7 +607,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -617,7 +617,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -673,7 +673,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -683,7 +683,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 
@@ -699,7 +699,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -709,8 +709,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
-| 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -795,8 +795,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -810,8 +810,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -825,7 +825,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** pass (with Living Bomb) | 2026-11-03
 
@@ -835,7 +835,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** pass (duel) | 2026-11-03
 
@@ -845,8 +845,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 1f22010 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | - |
-| 2026-11-16 | 19c2a77 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | - |
+| 2026-11-16 | 1f22010 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | 19c2a77 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -864,7 +864,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -879,7 +879,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | - |
+| 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -924,7 +924,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 | 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
@@ -972,12 +972,12 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | - |
+| 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1043,7 +1043,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 | 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
@@ -1091,7 +1091,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | - |
+| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -1101,7 +1101,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1119,8 +1119,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -1134,8 +1134,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -1174,7 +1174,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -1239,7 +1239,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -1264,7 +1264,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -1286,7 +1286,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -1307,8 +1307,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -1322,8 +1322,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -1383,8 +1383,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
-| 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1402,7 +1402,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -1448,7 +1448,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -1458,7 +1458,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -1468,7 +1468,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
@@ -1531,8 +1531,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -1563,9 +1563,9 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1585,8 +1585,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1605,7 +1605,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -1630,8 +1630,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
-| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1669,7 +1669,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1683,7 +1683,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -1708,8 +1708,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -1735,7 +1735,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 8d8e256 | #165 Bring 33 dead Legendary enchants to life | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | bbb213c | #165 Bring 33 dead Legendary enchants to life | build45 (2026-11-15) | 2026-11-16 |
 
@@ -1752,7 +1752,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 8d8e256 | #165 Bring 33 dead Legendary enchants to life | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | bbb213c | #165 Bring 33 dead Legendary enchants to life | build45 (2026-11-15) | 2026-11-16 |
 
@@ -1785,7 +1785,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1803,8 +1803,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
-| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1885,7 +1885,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | - |
+| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -1961,8 +1961,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2048,7 +2048,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2058,8 +2058,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 1f22010 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | - |
-| 2026-11-16 | 19c2a77 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | - |
+| 2026-11-16 | 1f22010 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | 19c2a77 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2092,7 +2092,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2190,7 +2190,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2200,8 +2200,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
-| 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2219,7 +2219,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2229,7 +2229,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2274,7 +2274,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2284,7 +2284,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2294,7 +2294,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | e093e44 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -2356,7 +2356,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2391,8 +2391,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 1f22010 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | - |
-| 2026-11-16 | 19c2a77 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | - |
+| 2026-11-16 | 1f22010 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | 19c2a77 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2503,7 +2503,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2513,7 +2513,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 
@@ -2578,7 +2578,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 |---|---|---|---|---|
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-16 | 0ecfed7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 0ecfed7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -2593,7 +2593,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 0ecfed7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 0ecfed7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -2626,7 +2626,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 | 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
@@ -2651,7 +2651,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -2673,7 +2673,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2691,8 +2691,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2710,7 +2710,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -2823,7 +2823,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2855,7 +2855,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** instant damage works; no attack animation | 2026-11-03
 
@@ -2958,7 +2958,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -3006,8 +3006,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
-| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -3021,7 +3021,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -3031,7 +3031,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -3041,9 +3041,9 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | - |
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3062,8 +3062,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3082,7 +3082,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -3159,7 +3159,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -3215,7 +3215,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 
@@ -3233,7 +3233,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -3270,7 +3270,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3322,7 +3322,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Assumptions:** Its flagged modifier is 0%, so nothing is missing.
 
@@ -3360,7 +3360,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** pass: call, dismiss, revive | 2026-11-03
 
@@ -3370,8 +3370,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
-| 2026-11-16 | 19c2a77 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-16 | 19c2a77 | #172 Medium legendary fixes (builds on #171) | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3411,7 +3411,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** pass: raise, revive, dismiss | 2026-11-03
 
@@ -3421,8 +3421,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
-| 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | - |
+| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -3466,7 +3466,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | aa93499 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | 388c179 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
 
@@ -3534,7 +3534,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 388c179 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
@@ -3568,7 +3568,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -3634,7 +3634,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 
@@ -3652,7 +3652,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -3677,8 +3677,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3722,7 +3722,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | - |
+| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
 | 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -3773,8 +3773,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -3788,8 +3788,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -3803,7 +3803,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | - |
+| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 
@@ -3843,8 +3843,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | - |
-| 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | - |
+| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | 2026-11-16 |
 
 **Testing:** nothing recorded yet
 
@@ -3899,7 +3899,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | - |
+| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** nothing recorded yet
 
@@ -3952,7 +3952,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | - |
+| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
 | 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -3976,8 +3976,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
@@ -3991,8 +3991,8 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
-| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | - |
+| 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 
 **What the pull requests said:**
 
