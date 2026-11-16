@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..45ed0d8
+index 0000000..8f1d038
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,5907 @@
+@@ -0,0 +1,6132 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -5805,6 +5805,227 @@ index 0000000..45ed0d8
 +    }
 +};
 +
++// Champion of Justice (986000): teaches Righteous Justice (985957, wcme_enchant_teach) and Crusader's Promise (985993).
++// While Righteous Justice is up you gain healing power from 20% of your attack power (985994) and Crusader's Justice
++// crits 20% more often (Righteous Justice's own spell mod); Crusader's Justice and Crusader's Promise need it.
++// Divine Storm then heals 2 allies within 40 yards over time with Divine Justice (985976: 4% AP + 3% SP + 1 per tick,
++// +30% Holy healing taken), 1 more per Debt of Justice stack. Each Crusader's Promise adds a Debt of Justice stack
++// (985977 and 985978: the next Promise heals less) and takes 1 sec off Divine Storm; Divine Storm spends the stacks.
++// Crusader's Justice (985972, spell_wcme_crusaders_justice) on an ally heals it (985974: 1 + weapon speed x (12% AP +
++// 8% healing power)) and bonds you to it; on an enemy it strikes for 60% weapon damage (985973), and that damage also
++// heals your bonded ally (985998) and restores 10% of your base mana.
++// Crusader Strike shows as Crusader's Justice (985972) only while Righteous Justice is up (the core's enchant replacement
++// would otherwise swap it for as long as Champion of Justice is worn).
++void WcmeSyncCrusadersJustice(Unit* unit)
++{
++    Player* player = unit->ToPlayer();
++    if (!player)
++        return;
++    bool const active = player->HasAura(985957) && player->HasAura(986000);
++    for (SpellInfo const* rank = sSpellMgr->GetSpellInfo(sSpellMgr->GetFirstSpellInChain(35395)); rank; rank = rank->GetNextRankSpell())
++    {
++        if (!player->HasActiveSpell(rank->Id))
++            continue;
++        if (active)
++            player->SetTemporarySpellReplacement(rank->Id, 985972);
++        else if (player->GetTemporarySpellReplacement(rank->Id) == 985972)
++            player->SetTemporarySpellReplacement(rank->Id, 0);
++    }
++}
++
++std::unordered_map<ObjectGuid, ObjectGuid> WcmeJusticeBonds;
++
++class spell_wcme_champion_of_justice : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_champion_of_justice);
++
++    static constexpr uint32 RIGHTEOUS_JUSTICE = 985957;
++    static constexpr uint32 DIVINE_JUSTICE = 985976;
++    static constexpr uint32 DEBT = 985977;
++    static constexpr uint32 DEBT_PENALTY = 985978;
++    static constexpr uint32 STRIKE = 985973;
++    static constexpr uint32 BOND_HEAL = 985998;
++    static constexpr std::array<uint32, 1> PROMISE = { 985993 };
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncTaughtRank(GetTarget(), PROMISE, true);
++        Unit* owner = GetTarget();
++        owner->m_Events.AddEventAtOffset([owner]() { WcmeSyncCrusadersJustice(owner); }, 1s);
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncTaughtRank(GetTarget(), PROMISE, false);
++        GetTarget()->RemoveAurasDueToSpell(RIGHTEOUS_JUSTICE);
++        WcmeSyncCrusadersJustice(GetTarget());
++        WcmeJusticeBonds.erase(GetTarget()->GetGUID());
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return GetTarget()->HasAura(RIGHTEOUS_JUSTICE) &&
++                ((WcmeNamed(spell, "Divine Storm") && spell->SpellFamilyName == SPELLFAMILY_PALADIN) || spell->Id == PROMISE[0]);
++        return spell->Id == STRIKE && eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo);
++    }
++
++    static void AddStack(Unit* owner, uint32 spellId)
++    {
++        Aura* aura = owner->GetAura(spellId);
++        if (!aura)
++        {
++            owner->AddAura(spellId, owner);
++            return;
++        }
++        if (aura->GetStackAmount() < aura->GetSpellInfo()->StackAmount)
++            aura->SetStackAmount(aura->GetStackAmount() + 1);
++        aura->RefreshDuration();
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (spell->Id == STRIKE)
++        {
++            owner->ModifyPower(POWER_MANA, int32(owner->GetCreateMana() / 10));
++            auto bond = WcmeJusticeBonds.find(owner->GetGUID());
++            Unit* ally = bond == WcmeJusticeBonds.end() ? nullptr : ObjectAccessor::GetUnit(*owner, bond->second);
++            SpellInfo const* heal = sSpellMgr->GetSpellInfo(BOND_HEAL);
++            if (ally && heal && ally->IsAlive() && owner->IsWithinDistInMap(ally, 40.0f))
++            {
++                DamageInfo const* damage = eventInfo.GetDamageInfo();
++                HealInfo healInfo(owner, ally, damage->GetDamage() + damage->GetAbsorb(), heal, heal->GetSchoolMask());
++                owner->HealBySpell(healInfo);
++            }
++            return;
++        }
++        if (spell->Id == PROMISE[0])
++        {
++            AddStack(owner, DEBT);
++            AddStack(owner, DEBT_PENALTY);
++            WcmeCutCooldownByName(owner, "Divine Storm", 1000);
++            return;
++        }
++        SpellInfo const* justice = sSpellMgr->GetSpellInfo(DIVINE_JUSTICE);
++        if (!justice)
++            return;
++        size_t const allies = 2 + owner->GetAuraCount(DEBT);
++        owner->RemoveAurasDueToSpell(DEBT);
++        owner->RemoveAurasDueToSpell(DEBT_PENALTY);
++        uint32 const base = uint32(1 + 0.04f * WcmeAttackPower(owner) + 0.03f * WcmeSpellPower(owner));
++        std::list<Unit*> wounded = WcmeAlliesNear(owner, owner, 40.0f, 40);
++        wounded.sort([](Unit* first, Unit* second) { return first->GetHealthPct() < second->GetHealthPct(); });
++        size_t healed = 0;
++        for (Unit* ally : wounded)
++        {
++            if (healed >= allies)
++                break;
++            if (!ally->IsInRaidWith(owner) && ally != owner)
++                continue;
++            if (Aura* hot = owner->AddAura(DIVINE_JUSTICE, ally))
++                if (AuraEffect* tick = hot->GetEffect(EFFECT_0))
++                    tick->ChangeAmount(int32(owner->SpellHealingBonusDone(ally, justice, base, DOT, EFFECT_0)));
++            ++healed;
++        }
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_champion_of_justice::HandleApply, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_champion_of_justice::HandleRemove, EFFECT_0, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
++        DoCheckProc += AuraCheckProcFn(spell_wcme_champion_of_justice::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_champion_of_justice::HandleProc);
++    }
++};
++
++// Righteous Justice (985957): while it is up you have Champion of Justice's healing power (985994) and Crusader's Justice.
++class spell_wcme_righteous_justice : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_righteous_justice);
++
++    static constexpr uint32 HEALING_POWER = 985994;
++
++    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (!GetTarget()->HasAura(HEALING_POWER))
++            GetTarget()->AddAura(HEALING_POWER, GetTarget());
++        WcmeSyncCrusadersJustice(GetTarget());
++    }
++
++    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        GetTarget()->RemoveAurasDueToSpell(HEALING_POWER);
++        WcmeSyncCrusadersJustice(GetTarget());
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_righteous_justice::HandleApply, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_righteous_justice::HandleRemove, EFFECT_0, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Crusader's Justice (985972) and Crusader's Promise (985993) need Righteous Justice; Crusader's Justice heals and bonds
++// an ally, or strikes an enemy (see spell_wcme_champion_of_justice).
++class spell_wcme_crusaders_justice : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_crusaders_justice);
++
++    static constexpr uint32 RIGHTEOUS_JUSTICE = 985957;
++    static constexpr uint32 STRIKE = 985973;
++    static constexpr uint32 HEAL = 985974;
++
++    SpellCastResult CheckCast()
++    {
++        return GetCaster()->HasAura(RIGHTEOUS_JUSTICE) ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void HandleHit(SpellEffIndex /*effIndex*/)
++    {
++        Unit* caster = GetCaster();
++        Unit* target = GetHitUnit();
++        if (!target)
++            return;
++        if (caster->IsFriendlyTo(target))
++        {
++            float const speed = caster->GetAttackTime(BASE_ATTACK) / 1000.0f;
++            int32 const amount = int32(1 + speed * (0.12f * WcmeAttackPower(caster) +
++                0.08f * caster->SpellBaseHealingBonusDone(SPELL_SCHOOL_MASK_ALL)));
++            caster->CastCustomSpell(HEAL, SPELLVALUE_BASE_POINT0, amount, target, true);
++            WcmeJusticeBonds[caster->GetGUID()] = target->GetGUID();
++        }
++        else
++            caster->CastSpell(target, STRIKE, true);
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_crusaders_justice::CheckCast);
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_crusaders_justice::HandleHit, EFFECT_0, SPELL_EFFECT_DUMMY);
++    }
++};
++
++class spell_wcme_crusaders_promise : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_crusaders_promise);
++
++    SpellCastResult CheckCast()
++    {
++        return GetCaster()->HasAura(985957) ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_crusaders_promise::CheckCast);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -5910,4 +6131,8 @@ index 0000000..45ed0d8
 +    RegisterSpellScript(spell_wcme_overflow);
 +    RegisterSpellScript(spell_wcme_legacy_of_the_arcanist);
 +    RegisterSpellScript(spell_wcme_lava_sweep);
++    RegisterSpellScript(spell_wcme_champion_of_justice);
++    RegisterSpellScript(spell_wcme_righteous_justice);
++    RegisterSpellScript(spell_wcme_crusaders_justice);
++    RegisterSpellScript(spell_wcme_crusaders_promise);
 +}
