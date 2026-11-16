@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..ce99cc7
+index 0000000..f47cfdc
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,5689 @@
+@@ -0,0 +1,5796 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -5589,6 +5589,112 @@ index 0000000..ce99cc7
 +    }
 +};
 +
++// Legacy of the Arcanist (984117): your Fire, Nature, Frost and Arcane spell hits summon an Arcanist's Meteor of that
++// element on the target (984118, 984130, 984122, 984126: damage split between the target and enemies within 8 yards,
++// and a stack of Potential, 984138), each element at most once every 8 sec; a spell of several schools uses the first
++// of Fire, Nature, Frost, Arcane. A Meteor also gives you the next Elemental Mote in the cycle Arcane, Fire, Frost,
++// Nature (984141, 984139, 984140, 984142) if you have none. At 4 Potential stacks they are spent with your Mote for
++// that element's Resonance (984408, 984406, 984407, 984409: school damage and 10% crit, 10 sec), which also lowers your
++// damage with the other three elements by 30% (9990022 to 9990025); when it ends, that element's Meteor is ready again.
++class spell_wcme_legacy_of_the_arcanist : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_legacy_of_the_arcanist);
++
++    struct Element
++    {
++        SpellSchoolMask School;
++        uint32 Meteor;
++        uint32 Mote;
++        uint32 Resonance;
++        uint32 Penalty;
++    };
++
++    static constexpr uint32 POTENTIAL = 984138;
++    static constexpr Seconds METEOR_COOLDOWN{8};
++    // trigger priority: Fire, Nature, Frost, Arcane
++    static constexpr std::array<Element, 4> ELEMENTS = { {
++        { SPELL_SCHOOL_MASK_FIRE, 984118, 984139, 984406, 9990023 },
++        { SPELL_SCHOOL_MASK_NATURE, 984130, 984142, 984409, 9990025 },
++        { SPELL_SCHOOL_MASK_FROST, 984122, 984140, 984407, 9990024 },
++        { SPELL_SCHOOL_MASK_ARCANE, 984126, 984141, 984408, 9990022 } } };
++    // mote cycle: Arcane, Fire, Frost, Nature (indexes into ELEMENTS)
++    static constexpr std::array<uint8, 4> MOTE_CYCLE = { 3, 0, 2, 1 };
++    std::array<TimePoint, 4> _ready{};
++    uint8 _nextMote = 0;
++
++    static bool IsMeteor(uint32 spellId)
++    {
++        for (Element const& element : ELEMENTS)
++            if (element.Meteor == spellId)
++                return true;
++        return false;
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && !IsMeteor(spell->Id) && eventInfo.GetActionTarget() && WcmeDealtDamage(eventInfo) &&
++            !(eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK) &&
++            (spell->GetSchoolMask() & (SPELL_SCHOOL_MASK_FIRE | SPELL_SCHOOL_MASK_NATURE | SPELL_SCHOOL_MASK_FROST | SPELL_SCHOOL_MASK_ARCANE));
++    }
++
++    void Resonate(Unit* owner)
++    {
++        owner->RemoveAurasDueToSpell(POTENTIAL);
++        for (uint8 index = 0; index < ELEMENTS.size(); ++index)
++        {
++            Element const& element = ELEMENTS[index];
++            if (!owner->HasAura(element.Mote))
++                continue;
++            owner->RemoveAurasDueToSpell(element.Mote);
++            Aura* resonance = owner->AddAura(element.Resonance, owner);
++            int32 const duration = resonance ? resonance->GetDuration() : 10000;
++            if (Aura* penalty = owner->AddAura(element.Penalty, owner))
++            {
++                penalty->SetMaxDuration(duration);
++                penalty->SetDuration(duration);
++            }
++            _ready[index] = std::min(_ready[index], GameTime::Now() + Milliseconds(duration));
++            return;
++        }
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellSchoolMask const schools = eventInfo.GetSpellInfo()->GetSchoolMask();
++        for (uint8 index = 0; index < ELEMENTS.size(); ++index)
++        {
++            Element const& element = ELEMENTS[index];
++            if (!(schools & element.School))
++                continue;
++            if (GameTime::Now() < _ready[index])
++                return;
++            _ready[index] = GameTime::Now() + METEOR_COOLDOWN;
++            owner->CastSpell(eventInfo.GetActionTarget(), element.Meteor, true);
++            bool hasMote = false;
++            for (Element const& other : ELEMENTS)
++                hasMote = hasMote || owner->HasAura(other.Mote);
++            if (!hasMote)
++            {
++                owner->AddAura(ELEMENTS[MOTE_CYCLE[_nextMote]].Mote, owner);
++                _nextMote = uint8((_nextMote + 1) % MOTE_CYCLE.size());
++            }
++            if (Aura* potential = owner->GetAura(POTENTIAL))
++                if (potential->GetStackAmount() >= potential->GetSpellInfo()->StackAmount)
++                    Resonate(owner);
++            return;
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_legacy_of_the_arcanist::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_legacy_of_the_arcanist::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -5692,4 +5798,5 @@ index 0000000..ce99cc7
 +    RegisterSpellScript(spell_wcme_oracle_of_the_eclipse);
 +    RegisterSpellScript(spell_wcme_oracles_blessing);
 +    RegisterSpellScript(spell_wcme_overflow);
++    RegisterSpellScript(spell_wcme_legacy_of_the_arcanist);
 +}

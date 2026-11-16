@@ -32,6 +32,9 @@ TEMPORAL_STORE = 9990018    # Temporal Shift: a cancelled Temporal Blast's cast 
 HOT_HANDS_MARK = 9990019    # Hot Hands: +8% spell crit for the Mage whose Living Bomb is on the target
 ABYSSAL_HUNGER = 9990020    # Feeding the Abyss: the hidden physical absorb that stores damage for Life Tap
 SURGEONS_OATH = 9990021     # Dark Surgeon: 30% less healing taken
+RESONANCE_PENALTY = {9990022: 28, 9990023: 88, 9990024: 76, 9990025: 84}  # Legacy of the Arcanist: Arcane, Fire,
+# Frost and Nature Resonance lower the other three elements' damage by 30% (school masks of those three)
+HIDDEN = 0x80000080  # can't be cancelled, and not shown on the buff bar
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
@@ -189,6 +192,9 @@ SPELLS = {
                     'Healing taken reduced by 30%.',
                     3836, 0, [(MOD_HEALING_PCT, -30, 0)], {4: PASSIVE}),  # hidden like a passive
 }
+for _spell, _schools in RESONANCE_PENALTY.items():
+    SPELLS[_spell] = ('Resonance', 'Damage with the other elements reduced by 30%.', '', 4828, 0,
+                      [(MOD_DAMAGE_PERCENT_DONE, -30, _schools)], {4: HIDDEN})
 
 # Spell charge categories the client shows for spells whose charges the server changes:
 # category -> (maximum, recovery ms), and spell -> category (SpellChargesCategory.dbc / SpellCharges.dbc).
