@@ -1194,7 +1194,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 ### Discipline Mastery (1134969)
 
-**Status:** works from its data (checked in #171 and again 2026-11-17)
+**Status:** works from its data (checked in #171 and again 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -1202,7 +1202,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 **What the server does (from the code and SQL comments):**
 
-- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendaries.md.
+- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
 
 **Assumptions:** Its mana cost cut (Power Word: Shield, Flash Heal, Penance) and Divine Aegis +5 points are ordinary spell modifiers the core applies; the core recalculates the Divine Aegis talent when the modifier arrives. Only its placeholder dummy does nothing.
 
@@ -1818,7 +1818,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 ### Fury Mastery (1134994)
 
-**Status:** works from its data (checked 2026-11-17)
+**Status:** works from its data (checked 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -1826,7 +1826,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 **What the server does (from the code and SQL comments):**
 
-- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendaries.md.
+- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
 
 **Assumptions:** Off-hand hit chance (aura 356) is handled in Unit::MeleeSpellMissChance and crit chance (aura 290) by the core.
 
@@ -1939,7 +1939,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 ### Guardians of the Grove (1567585)
 
-**Status:** handled by the core (checked 2026-11-17)
+**Status:** handled by the core (checked 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -1947,7 +1947,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 **What the server does (from the code and SQL comments):**
 
-- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendaries.md.
+- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
 
 **Assumptions:** AscensionMysticEnchantMechanics.cpp handles this copy (Treants heal).
 
@@ -1990,7 +1990,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 ### Hand of Gul'dan (1398206)
 
-**Status:** works from its data (checked 2026-11-17)
+**Status:** works from its data (checked 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -1998,7 +1998,7 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 **What the server does (from the code and SQL comments):**
 
-- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendaries.md.
+- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
 
 **Assumptions:** The taught Hand of Gul'dan (2304611) uses effects the core handles (delayed trigger 183, damage, summon of 4 Wild Imps 855352). The enchant's three modifiers name no target spell, so they do nothing; treated as placeholders. Needs an in-game check that the Wild Imps appear.
 
@@ -2772,15 +2772,16 @@ decisions, checked verdicts) or the test results, then run it again. The table o
 
 ### Predator's Wrath: Wrathful Strikes (1572260)
 
-**Status:** handled by the core (checked 2026-11-17)
+**Status:** handled by the core (checked 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 6976f48 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendaries.md.
+- 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
 
 **Assumptions:** AscensionMysticEnchantMechanics.cpp handles this copy (Wrath in Cat Form from Predator's Swiftness).
 

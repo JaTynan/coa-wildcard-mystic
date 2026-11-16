@@ -101,7 +101,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 977810 | Fury of the Titans |  | 977810: changed, awaiting in-game test (#175) |
 | 997124 | Grove Ranger | yes | 997124: changed, awaiting in-game test (#175) |
 | 81520 | Growing Light |  | 81520: changed, awaiting in-game test (#175) |
-| 81467 | Guardians of the Grove |  | 81467: changed, awaiting in-game test (#26)<br>1567585: handled by the core (checked 2026-11-17) |
+| 81467 | Guardians of the Grove |  | 81467: changed, awaiting in-game test (#26)<br>1567585: handled by the core (checked 2026-11-16) |
 | 954077 | Guerilla Trapper |  | 954077: unchanged: working (audit) |
 | 983135 | Gurubashi Berserker | yes | 983135: changed, awaiting in-game test (#173) |
 | 965505 | Harbinger of Flame |  | 965505: changed, awaiting in-game test (#164) |
@@ -228,7 +228,7 @@ text in our client is the only record.
 | 1570995 | Demonic Reoccurence | changed, awaiting in-game test (#18) |
 | 1134965 | Demonology Mastery | changed, awaiting in-game test (#171) |
 | 1134964 | Destruction Mastery | unchanged: working (audit) |
-| 1134969 | Discipline Mastery | works from its data (checked in #171 and again 2026-11-17) |
+| 1134969 | Discipline Mastery | works from its data (checked in #171 and again 2026-11-16) |
 | 1398178 | Divine Star | unchanged: working (audit) |
 | 1590910 | Dragon Roar | changed, awaiting in-game test (#26 #175) |
 | 1134980 | Earthen Guardian Mastery | unchanged: working (audit) |
@@ -249,7 +249,7 @@ text in our client is the only record.
 | 1586133 | Flow of Life | unchanged: working (audit) |
 | 1134961 | Frost Mastery | changed, awaiting in-game test (#171) |
 | 1398171 | Frozen Orb | unchanged: working (audit) |
-| 1134994 | Fury Mastery | works from its data (checked 2026-11-17) |
+| 1134994 | Fury Mastery | works from its data (checked 2026-11-16) |
 | 1181280 | Fury Unleashed | unchanged: working (audit) |
 | 1277670 | Gift of Light | changed, awaiting in-game test (#175) |
 | 1180850 | Gladiator Stance | unchanged: working (audit) |
@@ -258,7 +258,7 @@ text in our client is the only record.
 | 1180100 | Guardian of Ancient Kings | unchanged: working (audit) |
 | 1398211 | Halo | unchanged: working (audit) |
 | 1591108 | Hammerstorm | unchanged: working (audit) |
-| 1398206 | Hand of Gul'dan | works from its data (checked 2026-11-17) |
+| 1398206 | Hand of Gul'dan | works from its data (checked 2026-11-16) |
 | 1398222 | Healing Rain | changed, awaiting in-game test (#26) |
 | 1134968 | Holy Mastery | unchanged: working (audit) |
 | 1134990 | Holy Mastery | unchanged: working (audit) |
@@ -272,7 +272,7 @@ text in our client is the only record.
 | 1398172 | Meteor | unchanged: working (audit) |
 | 1180440 | Nether Portal | changed, awaiting in-game test (#175) |
 | 1133070 | Powershot | unchanged: working (audit) |
-| 1572260 | Predator's Wrath: Wrathful Strikes | handled by the core (checked 2026-11-17) |
+| 1572260 | Predator's Wrath: Wrathful Strikes | handled by the core (checked 2026-11-16) |
 | 1134989 | Protection Mastery | unchanged: working (audit) |
 | 1134996 | Protection Mastery | unchanged: working (audit) |
 | 1398220 | Raging Blow | tested (see test notes) (#26) |
