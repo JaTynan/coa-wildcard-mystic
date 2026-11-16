@@ -87,7 +87,6 @@ INSERT INTO `wcme_enchant_teach` (`enchant_spell`, `taught_spell`, `comment`) VA
 (965337, 1571219, 'Warcry teaches Warcry, as twin 1590923 does'),
 (1398174, 278075, 'Chosen of Elune teaches Chosen of Elune, as twin 852305 does'),
 (1573649, 278067, 'Cremation teaches Cremation, as twin 852304 does'),
-(1590910, 271895, 'Dragon Roar teaches Dragon Roar, as twin 852205 does'),
 (1180002, 277847, 'Shadow Blades teaches Shadow Blades, as twin 852294 does'),
 (977967, 911800, 'Shadow Counter teaches Shadow Counter, as twin 852138 does'),
 (852264, 1576573, 'Carnage Incarnate teaches Carnage Incarnate, as twin 1590982 does'),

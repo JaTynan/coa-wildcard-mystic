@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..011e172
+index 0000000..0a3e623
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,6360 @@
+@@ -0,0 +1,6558 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -6251,6 +6251,199 @@ index 0000000..011e172
 +    }
 +};
 +
++// Wraithweaver: Shadow Orbs (1544910; its own orb effects use effect 188, which the core does not handle): each tick of
++// your Shadow Word: Pain, Devouring Plague or Vampiric Touch has a 20% chance to give a Shadow Orb (1544913, up to 3:
++// Mind Blast +10% per orb, the data's own spell mod). A Mind Blast hit with 3 orbs spends them and sends a Shadowy
++// Apparition (1544915) that reaches the target 1 sec later and deals 320 (at level 60) + 32% SP Shadow damage to every
++// enemy within 5 yards of it.
++class spell_wcme_shadow_orbs : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_shadow_orbs);
++
++    static constexpr uint32 ORB = 1544913;
++    static constexpr uint32 APPARITION = 1544915;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || !eventInfo.GetActionTarget() || !WcmeDealtDamage(eventInfo))
++            return false;
++        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
++            return WcmeNamedAny(spell, { "Shadow Word: Pain", "Devouring Plague", "Vampiric Touch" });
++        return WcmeNamed(spell, "Mind Blast") && GetTarget()->GetAuraCount(ORB) >= 3;
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
++        {
++            if (!roll_chance_i(20))
++                return;
++            if (Aura* orb = owner->GetAura(ORB))
++            {
++                if (orb->GetStackAmount() < orb->GetSpellInfo()->StackAmount)
++                    orb->SetStackAmount(orb->GetStackAmount() + 1);
++                orb->RefreshDuration();
++            }
++            else
++                owner->AddAura(ORB, owner);
++            return;
++        }
++        owner->RemoveAurasDueToSpell(ORB);
++        ObjectGuid const targetGuid = eventInfo.GetActionTarget()->GetGUID();
++        int64 const damage = int64(320.0f * owner->GetLevel() / 60.0f + 0.32f * WcmeSpellPower(owner));
++        owner->m_Events.AddEventAtOffset([owner, targetGuid, damage]()
++        {
++            SpellInfo const* apparition = sSpellMgr->GetSpellInfo(APPARITION);
++            Unit* target = ObjectAccessor::GetUnit(*owner, targetGuid);
++            if (!apparition || !target || !owner->IsInWorld())
++                return;
++            for (Unit* enemy : WcmeEnemiesNear(owner, target, 5.0f, 50))
++                WcmeExtraDamage(owner, enemy, apparition, damage);
++        }, 1s);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_shadow_orbs::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_shadow_orbs::HandleProc);
++    }
++};
++
++// Dragon Roar (1569444, taught by enchant 1590910): using it finishes Whirlwind's cooldown. Its roar visual is the
++// spell's own (visual kit 30115, played by the core).
++class spell_wcme_dragon_roar_whirlwind : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_dragon_roar_whirlwind);
++
++    void HandleAfterCast()
++    {
++        WcmeCutCooldownByName(GetCaster(), "Whirlwind", 3600000);
++    }
++
++    void Register() override
++    {
++        AfterCast += SpellCastFn(spell_wcme_dragon_roar_whirlwind::HandleAfterCast);
++    }
++};
++
++// Dragon Warrior (954252): its own design instead of twin 271907 (004 no longer links them). Bloodthirst and Execute
++// hits give Draconic Slam (954261: the next Slam is instant, the data's own spell mod); that Slam deals 50% more as
++// extra damage and grants a stack of Dragon Fury (954253, up to 3, with its Dragon Fury Visual 954254): each stack takes
++// 5 sec off Dragon Roar and makes it deal 50% more (the data's own mod). The core's replacement turns Death Wish into
++// Dragon Roar (954250) and Intercept into Dragon Charge (954256). Dragon Roar spends the stacks and stuns (954255) only
++// with 3 of them (spell_wcme_dragon_roar_stun).
++class spell_wcme_dragon_warrior : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_dragon_warrior);
++
++    static constexpr uint32 DRACONIC_SLAM = 954261;
++    static constexpr uint32 DRAGON_FURY = 954253;
++    static constexpr uint32 DRAGON_ROAR = 954250;
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (!spell || !eventInfo.GetActionTarget() || (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK))
++            return false;
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++            return spell->Id == DRAGON_ROAR;
++        return WcmeDealtDamage(eventInfo) && (WcmeNamedAny(spell, { "Bloodthirst", "Execute" }) ||
++            (WcmeNamed(spell, "Slam") && GetTarget()->HasAura(DRACONIC_SLAM)));
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        if (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST)
++        {
++            owner->m_Events.AddEventAtOffset([owner]() { owner->RemoveAurasDueToSpell(DRAGON_FURY); }, 500ms);
++            return;
++        }
++        if (!WcmeNamed(spell, "Slam"))
++        {
++            owner->AddAura(DRACONIC_SLAM, owner);
++            return;
++        }
++        owner->RemoveAurasDueToSpell(DRACONIC_SLAM);
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        WcmeExtraDamage(owner, eventInfo.GetActionTarget(), spell, int64(damage->GetDamage() + damage->GetAbsorb()) / 2);
++        Aura* fury = owner->GetAura(DRAGON_FURY);
++        if (fury && fury->GetStackAmount() >= fury->GetSpellInfo()->StackAmount)
++        {
++            fury->RefreshDuration();
++            return;
++        }
++        owner->CastSpell(owner, DRAGON_FURY, true);
++        WcmeCutCooldownByName(owner, "Dragon Roar", 5000);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_dragon_warrior::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_dragon_warrior::HandleProc);
++    }
++};
++
++// Dragon Roar Dummy (954251, from Dragon Warrior's Dragon Roar): the stun (954255) only with 3 Dragon Fury stacks.
++class spell_wcme_dragon_roar_stun : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_dragon_roar_stun);
++
++    void HandleStun(SpellEffIndex effIndex)
++    {
++        if (GetCaster()->GetAuraCount(954253) < 3)
++            PreventHitDefaultEffect(effIndex);
++    }
++
++    void Register() override
++    {
++        OnEffectHit += SpellEffectFn(spell_wcme_dragon_roar_stun::HandleStun, EFFECT_1, SPELL_EFFECT_TRIGGER_SPELL);
++    }
++};
++
++// Wind Lash (1760200 teaches Wind Lash 1760201): its strikes (1760202, 1760204) deal 25% more when your main-hand weapon
++// carries Windfury (the data's own Windfury bonus names no spell, so it never applied).
++class spell_wcme_wind_lash : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_wind_lash);
++
++    static bool Windfury(Unit* owner)
++    {
++        Player* player = owner->ToPlayer();
++        Item* weapon = player ? player->GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND) : nullptr;
++        if (!weapon)
++            return false;
++        SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
++        return enchant && enchant->description[LOCALE_enUS] && std::strstr(enchant->description[LOCALE_enUS], "Windfury");
++    }
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && (spell->Id == 1760202 || spell->Id == 1760204) && eventInfo.GetActionTarget() &&
++            WcmeDealtDamage(eventInfo) && Windfury(GetTarget());
++    }
++
++    void HandleProc(ProcEventInfo& eventInfo)
++    {
++        PreventDefaultAction();
++        DamageInfo const* damage = eventInfo.GetDamageInfo();
++        WcmeExtraDamage(GetTarget(), eventInfo.GetActionTarget(), eventInfo.GetSpellInfo(),
++            int64(damage->GetDamage() + damage->GetAbsorb()) / 4);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_wind_lash::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_wind_lash::HandleProc);
++    }
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
 +    RegisterSpellScript(spell_wcme_rush_of_blood);
@@ -6363,4 +6556,9 @@ index 0000000..011e172
 +    RegisterSpellScript(spell_wcme_fel_corruption);
 +    RegisterSpellScript(spell_wcme_overflow_stacks);
 +    RegisterSpellScript(spell_wcme_astral_storm);
++    RegisterSpellScript(spell_wcme_shadow_orbs);
++    RegisterSpellScript(spell_wcme_dragon_roar_whirlwind);
++    RegisterSpellScript(spell_wcme_dragon_warrior);
++    RegisterSpellScript(spell_wcme_dragon_roar_stun);
++    RegisterSpellScript(spell_wcme_wind_lash);
 +}

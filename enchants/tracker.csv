@@ -25,7 +25,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 81503,Desperation,Epic,1176057,needs-code,modifier on a placeholder,live,linked to working twin,1581832,003-twin-links-close.sql,,
 978234,Disciple of the Tides,Legendary,1178699,needs-code,modifier on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",274918,004-twin-links-dedup.sql,,
 81472,Dominant Word: Shield,Legendary,1176049,needs-code,modifier on a placeholder,live,linked to working twin,270561,003-twin-links-close.sql,,
-954252,Dragon Warrior,Legendary,1178447,needs-code,modifier on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",271907,004-twin-links-dedup.sql,,
+954252,Dragon Warrior,Legendary,1178447,needs-code,modifier on a placeholder,live,own design scripted (spell_wcme_dragon_warrior; no longer linked to twin 271907),,038-core-handlers-and-visuals.sql,,
 978229,Elemental Assassin,Legendary,1178694,needs-code,modifier on a placeholder,live,"linked to working twin, own duplicate effect removed (spell_dbc)",274673,004-twin-links-dedup.sql,,
 983228,Elemental Equilibrium,Epic,132654,needs-code,modifier on a placeholder,live,linked to working twin,1589159,003-twin-links-close.sql,,
 285174,Elemental Equilibrium,Epic,202198,needs-code,modifier on a placeholder,live,linked to working twin,1589159,001-twin-links.sql,,
@@ -285,7 +285,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 991022,Divine Steed,Artifact,201131,teaches-needs-code,teaches a broken spell,verified,the taught Divine Steed now mounts you and raises speed (effects of its buff spell),,013-action-fixes.sql,2026-11-02,"pass after 013: mount, speed and buff (2 Nov)"
 852442,Divine Steed,Rare,404902,teaches-needs-code,teaches a broken spell,live (after restart),the taught Divine Steed now mounts you and raises speed (effects of its buff spell),,013-action-fixes.sql,,"2 Nov: taught spell was a placeholder (buff icon, no speed, no mount)"
 852206,Dragon Charge,Rare,404666,teaches-needs-code,teaches a broken spell,live,teaches working Dragon Charge (271902) instead (teaches),,008-teach-namesakes.sql,,
-1590910,Dragon Roar,Legendary,200179,teaches-needs-code,teaches a broken spell,live,"teaches spell 271895, as its twin does (wcme_enchant_teach)",852205,006-teach-twins.sql,,
+1590910,Dragon Roar,Legendary,200179,teaches-needs-code,teaches a broken spell,live,teaches its own Dragon Roar 1569444 (Whirlwind reset scripted),,038-core-handlers-and-visuals.sql,,
 1398164,Enslave Demon,Legendary,200131,teaches-needs-code,teaches a broken spell,live,teaches working Enslave Demon (886) instead (teaches),,008-teach-namesakes.sql,,
 850143,Entropic Singularity,Epic,405003,teaches-needs-code,teaches a broken spell,live,teaches working Entropic Singularity (280791) instead (teaches),,008-teach-namesakes.sql,,
 1180240,Feral Frenzy,Legendary,200846,teaches-needs-code,teaches a broken spell,live,teaches working Feral Frenzy (1180242) instead (teaches),,008-teach-namesakes.sql,,
