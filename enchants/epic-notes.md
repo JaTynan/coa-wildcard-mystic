@@ -79,6 +79,11 @@ Enchants through their data; they still need a look.
 spell (a CoA Beacon of Light or Living Bomb, say) never sets the rule off (found while reviewing Pyroclasmic Ignition).
 Where we cover a gap, ours runs only when the core's own test fails.
 
+Checked against the server's own CharacterAdvancement.dbc (the "hero" catalog): on this realm a character can learn
+either the stock or the CoA version of most abilities (Shadow Bolt 686 or 1100686, Living Bomb 44457 or 1144457, and so
+on). `enchants/core-rule-version-gaps.csv` lists the 263 core enchant rules whose spell lists leave out a version a
+player here can learn, so that version never sets the enchant off; they still need a look.
+
 Aura links (`coa_mystic_enchant_aura_link`) must watch the proc buff only, never the talent that procs it: a talent is a
 passive aura you always have, so the grant becomes permanent (found while reviewing Decimation by Pyro).
 
@@ -1901,6 +1906,10 @@ patch or the mechanic when there is a chance.
 
 - #175: Dragon Warrior (954252):** its own design instead of twin 271907 (004 override and link removed, addon tooltip twin removed): Bloodthirst/Execute give Draconic Slam (instant Slam that deals 50% more and grants Dragon Fury); Dragon Fury stacks (up to 3) cut Dragon Roar's cooldown by 5 sec each and use their own visual; Dragon Roar's stun only happens at 3 stacks, and it spends them.
 - #175: Ability swaps (affects earlier batches too):** the core only swaps an enchant's ability when the new name contains the old one, or the description says "transform". A new helper (`WcmeSyncSwap`) now does the swap for Champion of Justice (Crusader Strike → Crusader's Justice, only while Righteous Justice is up), Demolisher (Mortal Strike → Demolishing Strike), Dragon Warrior (Death Wish → Dragon Roar, Intercept → Dragon Charge), Astral Bomber, Cauterizing Flames and Dark Ranger. Fel Corruption now teaches Felblade alongside Bloodthirst.
+
+**Assumptions:** Review 2026-11-18: no overlap. The core handles this enchant on its own (a cast rule: Slam gives Dragon Fury 271896). Our script is for a different enchant with the same name (954252) with its own helpers (954253, 954261), and nothing of ours touches 271907 or 271896.
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
@@ -4971,11 +4980,21 @@ patch or the mechanic when there is a chance.
 
 ### Shadow Crash (273458, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 1789a56 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Shadow Crash (273458) for the Shadowfury versions the core misses. The core (AscensionShadowfuryShadowCrash) calls down Shadow Crash (273455) at Shadowfury's target spot while Pure Shadow (273456) is at full stacks, but it spots Shadowfury by its third effect launching 273459, which only the stock ranks (30283 ... 47847) do; the CoA Warlock Shadowfury ranks (1130283 and the rest) never set it off. This copies the core's rule for any other Warlock Shadowfury, so the two never both fire.
+- 006-teach-twins.sql: Shadow Crash (273458) was removed in review 2026-11-18: the core already does its own effect (AscensionShadowfuryShadowCrash), and the twin's spell (1572039) is a different ability the enchant's text never mentions.
+
+**Assumptions:** The core already does this enchant (AscensionShadowfuryShadowCrash): while Pure Shadow (273456, built by the separate Pure Shadow enchant 273453) is at full stacks, Shadowfury calls down Shadow Crash (273455) at its target spot. The core spots Shadowfury by a missile only the stock ranks carry, so the CoA Warlock Shadowfury ranks (1130283 and the rest, also learnable here) never set it off; wcme_shadow_crash_versions copies the core's rule for those and runs only when the core's test fails. Review 2026-11-18: file 006 also taught the twin's Shadow Crash (1572039), a different ability the text never mentions; removed. Note: the core's Pure Shadow rule lists only stock Shadow Bolt, Shadowburn, Shadow Word: Death and Chaos Bolt, so CoA versions don't build Pure Shadow (see core-rule-version-gaps.csv).
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
