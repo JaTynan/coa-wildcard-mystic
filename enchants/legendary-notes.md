@@ -159,7 +159,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -192,7 +192,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 29253a1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 29253a1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -275,7 +275,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -294,7 +294,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -317,7 +317,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -534,7 +534,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -572,7 +572,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -677,7 +677,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -701,8 +701,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | d5ec19a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | d5ec19a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -825,7 +825,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -950,7 +950,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -975,8 +975,8 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -996,7 +996,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1068,7 +1068,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1094,8 +1094,8 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1225,7 +1225,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1251,7 +1251,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1345,7 +1345,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1367,7 +1367,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1417,7 +1417,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1606,8 +1606,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1637,8 +1637,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 89a6e34 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 89a6e34 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1809,7 +1809,7 @@ patch or the mechanic when there is a chance.
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1943,9 +1943,9 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1968,8 +1968,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1998,10 +1998,10 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2027,7 +2027,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2218,7 +2218,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2241,7 +2241,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2433,7 +2433,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | e093e44 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | e093e44 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2452,7 +2452,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 809628e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 809628e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2471,7 +2471,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2504,7 +2504,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 | 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
@@ -2549,9 +2549,9 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 2029a99 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 2029a99 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2697,8 +2697,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2748,7 +2748,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b67659e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | b67659e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2768,8 +2768,8 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 | 2026-11-17 | 2a15355 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -2795,7 +2795,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 | 2026-11-17 | 2a15355 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -2881,7 +2881,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3047,7 +3047,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3131,8 +3131,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3285,9 +3285,9 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3327,7 +3327,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3397,9 +3397,9 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 3b4a34a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 3b4a34a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3442,8 +3442,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3488,8 +3488,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3735,7 +3735,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3865,7 +3865,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3889,7 +3889,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3912,7 +3912,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3985,8 +3985,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4020,8 +4020,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4046,7 +4046,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4099,7 +4099,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4119,7 +4119,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
