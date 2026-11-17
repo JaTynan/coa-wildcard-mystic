@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..ef0694a
+index 0000000..da53c96
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14605 @@
+@@ -0,0 +1,14564 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -11641,8 +11641,6 @@ index 0000000..ef0694a
 +// - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2).
 +// - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned
 +//   Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
-+// - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges;
-+//   a new one starts with 1.
 +// - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 +class spell_wcme_finisher_combo : public AuraScript
 +{
@@ -11774,15 +11772,6 @@ index 0000000..ef0694a
 +                break;
 +            case 285111:
 +                owner->CastSpell(owner, 285115, true);
-+                break;
-+            case 274205:
-+                if (Aura* care = owner->GetAura(274211))
-+                {
-+                    care->SetCharges(std::min<uint8>(2, care->GetCharges() + 1));
-+                    care->RefreshDuration();
-+                }
-+                else if (Aura* first = owner->AddAura(274211, owner))
-+                    first->SetCharges(1);
 +                break;
 +            case 983475:
 +                if (Aura* tankard = owner->GetAura(983476))
@@ -13721,9 +13710,8 @@ index 0000000..ef0694a
 +
 +// Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical
 +// Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy
-+// Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc).
-+// - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within
-+//   40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc.
++// Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care
++// (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts).
 +// - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed
 +//   of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be
 +//   refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within
@@ -13779,8 +13767,6 @@ index 0000000..ef0694a
 +    {
 +        if (!spell || !caster || !info)
 +            return;
-+        if (caster->HasAura(274205) && caster->HasAura(274211) && WcmeNamed(info, "Greater Heal"))
-+            WcmeMarkCast(caster, info->Id);
 +        if (caster->HasAura(81439) && info->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(info, "Ambush"))
 +        {
 +            Unit* target = spell->m_targets.GetUnitTarget();
@@ -13934,7 +13920,6 @@ index 0000000..ef0694a
 +        if (!caster || !target || missInfo != SPELL_MISS_NONE)
 +            return;
 +        SpellInfo const* info = spell->GetSpellInfo();
-+        Player* player = caster->ToPlayer();
 +
 +        if (critical && caster->HasAura(1180644) && WcmeNamed(info, "Firebolt"))
 +            caster->RemoveAurasDueToSpell(1180644);
@@ -13942,21 +13927,6 @@ index 0000000..ef0694a
 +        if (damage && info->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && WcmeNamed(info, "Grave Coil") &&
 +            target->HasAura(288824, caster->GetGUID()))
 +            target->RemoveAurasDueToSpell(288824, caster->GetGUID());
-+
-+        if (healing && player && WcmeNamed(info, "Greater Heal") && WcmeTakeMark(caster, info->Id))
-+            if (Unit* ally = WcmeLowestAlly(player, target, 40.0f))
-+            {
-+                ObjectGuid const guid = ally->GetGUID();
-+                uint32 const id = info->Id;
-+                player->m_Events.AddEventAtOffset([player, guid, healing, id]()
-+                {
-+                    if (Unit* other = ObjectAccessor::GetUnit(*player, guid); other && other->IsAlive())
-+                    {
-+                        HealInfo healInfo(player, other, healing, sSpellMgr->GetSpellInfo(id), SPELL_SCHOOL_MASK_HOLY);
-+                        player->HealBySpell(healInfo);
-+                    }
-+                }, 1ms);
-+            }
 +
 +        if (healing && caster->HasAura(273422) && WcmeNamed(info, "Chain Heal"))
 +        {
@@ -14032,8 +14002,6 @@ index 0000000..ef0694a
 +// Epic batches 6 and 7, unit side:
 +// - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core
 +//   takes the target's stealth off before the damage is worked out). Its stealth detection is its data.
-+// - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus
-+//   (15% of it against players).
 +// - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast.
 +// - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own
 +//   value); the Gouge then breaks as usual.
@@ -14061,7 +14029,7 @@ index 0000000..ef0694a
 +//   (1180902) around it. The no-threat part is its data.
 +// - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout
 +//   (299161) is on you; Mana Shield running out or breaking sets it off again.
-+// - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
++// - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 +class wcme_epic_batch67_hooks : public UnitScript
 +{
 +public:
@@ -14082,7 +14050,6 @@ index 0000000..ef0694a
 +
 +    static int64 Direct(Unit* target, Unit* attacker, SpellInfo const* spell, int64 value)
 +    {
-+        bool const versusPlayer = target->IsControlledByPlayer();
 +        if (attacker->HasAura(81439) && spell->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(spell, "Ambush"))
 +        {
 +            auto stealthed = WcmeAmbushStealthed.find(attacker->GetGUID());
@@ -14093,14 +14060,6 @@ index 0000000..ef0694a
 +                WcmeAmbushStealthed.erase(stealthed);
 +            }
 +        }
-+        if (attacker->HasAura(277460) && WcmeNamedAny(spell, { "Deadly Throw", "Shuriken Toss" }))
-+            for (AuraEffect const* effect : attacker->GetAuraEffectsByType(SPELL_AURA_MOD_INCREASE_SPEED))
-+                if (effect->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(effect->GetSpellInfo(), "Sprint"))
-+                {
-+                    int32 const bonus = std::max(0, effect->GetAmount());
-+                    value = value * (versusPlayer ? 10000 + 15 * bonus : 10000 + 100 * bonus) / 10000;
-+                    break;
-+                }
 +        if (attacker->HasAura(1180750) && spell->SpellFamilyName == SPELLFAMILY_ROGUE && !WcmeNamed(spell, "Gouge") &&
 +            WcmeAuraFromNamed(target, attacker, "Gouge"))
 +        {
