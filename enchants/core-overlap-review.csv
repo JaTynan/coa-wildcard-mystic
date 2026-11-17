@@ -11,7 +11,7 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 95654,Hardy Water Shield,Uncommon,,firework_show_Orgrimmar.h,to review,
 96765,Concentrated Avenger's Shield,Uncommon,,firework_show_Undercity.h,to review,
 97364,Brutal Mangle (Cat),Uncommon,,firework_show_Orgrimmar.h,to review,
-270661,Growing Light,Epic,,AscensionWildcardReconstruction.cpp,to review,
+270661,Growing Light,Epic,,AscensionWildcardReconstruction.cpp,resolved,ours removed (core wildcard_growing_light does the 20% splash; ours doubled it)
 271125,Pyroclasmic Ignition,Epic,,Unit.cpp,to review,
 271547,Decimation by Pyro,Epic,,AscensionWildcardReconstruction.cpp,to review,
 271907,Dragon Warrior,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
@@ -40,7 +40,7 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1181400,Blazing Flame,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 1544910,Wraithweaver: Shadow Orbs,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 1554908,Holy Templar,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,noted earlier as handled by the core; no code of ours
-1556008,Savage Momentum,Epic,coa_mystic_enchant_minion_aura,,to review,
+1556008,Savage Momentum,Epic,coa_mystic_enchant_minion_aura,,resolved,ours trimmed to the shot versions the core misses; Stampede extension fixed to add 2 sec (core's refresh effect would set it to 2 sec)
 1568152,Explosive Charge,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed in #178 (core enchant rule); doubled until then
 1570700,Shadow Visions,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 1571951,Overflow,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,

@@ -5,8 +5,9 @@
 -- Twilight (84471).
 -- With rows: Sniper (81166) and Ready, Set, Go! (81128) (standing still), Lone Wolf (1180030: no pet, enemies around you;
 -- its buff 1180031 gives only the armour penetration, since the core's own enchant bonus gives the +10% damage).
--- The same build also fixes the order of the two units in the core's heal hook for direct heals (Growing Light 270661,
--- Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before).
+-- The same build also fixes the order of the two units in the core's heal hook for direct heals (Holy Ground 81315 /
+-- 281788 and the Align heal bonus 986160 read them the wrong way round before; Growing Light 270661 did too, but is now
+-- left to the core).
 DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (81166, 81128, 1180030);
 DELETE FROM `spell_script_names` WHERE `spell_id` IN (81166, 81128, 1180030, 1180031) AND `ScriptName` LIKE 'spell\_wcme\_%';
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES

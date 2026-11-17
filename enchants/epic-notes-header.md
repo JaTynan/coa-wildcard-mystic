@@ -53,8 +53,9 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 The core calls the heal hook (`UnitScript::ModifyHealReceived`) with its two units in a different order for direct
 heals (healer first) than for heal-over-time ticks (target first). Batch 5 (`sql/enchants/051-epics-5.sql`) added
-`WcmeHealParties` to the enchant scripts to put them in the right order, and fixed the three rules that had read them
-the wrong way round: Growing Light (270661), Holy Ground (81315 / 281788) and the Align heal bonus (986160). Any new
+`WcmeHealParties` to the enchant scripts to put them in the right order, and fixed the rules that had read them
+the wrong way round: Holy Ground (81315 / 281788) and the Align heal bonus (986160). (Growing Light, 270661, was the third;
+review found the core already does it, so ours is gone.) Any new
 heal rule should call `WcmeHealParties` first.
 
 ## Overlaps with the core's own enchant code
@@ -67,5 +68,10 @@ and its C++ in `src/server` (search for the enchant's spell id).
 
 `enchants/core-rule-gaps.csv` lists enchants the core handles where one trigger effect has no core rule, so that effect
 never fires (found while reviewing Searing Flames); most still need a look.
+
+`enchants/core-refresh-aura-review.csv` lists the spells whose "refresh aura" effect (173) carries a time but no "add"
+flag. The core then sets the aura's time left to that value instead of adding it, though most of these spells are named
+as extensions (found while reviewing Savage Momentum, whose Stampede would drop to 2 sec). 13 are reached by Mystic
+Enchants through their data; they still need a look.
 
 ## Enchants

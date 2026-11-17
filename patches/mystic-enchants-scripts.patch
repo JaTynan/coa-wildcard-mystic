@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..784efa0
+index 0000000..eaaaaba
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14568 @@
+@@ -0,0 +1,14599 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -12599,8 +12599,11 @@ index 0000000..784efa0
 +// - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside
 +//   Stealth once within 10 sec; that Garrote doesn't silence.
 +// - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data).
-+// - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and
-+//   Multi-Shot and extend your Stampede on the target (1556022).
++// - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special
++//   crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot
++//   1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now
++//   ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches
++//   them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension.
 +// - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning
 +//   Overload included) may strike the same target again for half the damage; the echo can't echo again.
 +// - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals
@@ -12675,13 +12678,15 @@ index 0000000..784efa0
 +                    player->CastSpell(target, swarm, true);
 +        if (damage && caster->HasAura(278033) && WcmeNamed(info, "Elemental Blast"))
 +            caster->CastSpell(caster, 278035, true);
-+        if (critical && damage && caster->IsPet() && info->DmgClass != SPELL_DAMAGE_CLASS_NONE)
-+            if (Unit* owner = caster->GetOwner(); owner && owner->HasAura(1556008))
-+            {
-+                for (char const* shot : { "Quick Shot", "Arcane Shot", "Aimed Shot", "Multi-Shot" })
-+                    WcmeCutCooldownByName(owner, shot, 2000);
-+                owner->CastSpell(target, 1556022, true);
-+            }
++        if (critical && damage && caster->IsPet() && info->DmgClass == SPELL_DAMAGE_CLASS_MELEE)
++            if (Player* owner = caster->GetCharmerOrOwnerPlayerOrPlayerItself(); owner && owner != caster &&
++                owner->HasAura(1556008))
++                for (auto const& [spellId, known] : owner->GetSpellMap())
++                    if (known->State != PLAYERSPELL_REMOVED && owner->HasSpellCooldown(spellId) &&
++                        spellId != 1119434 && spellId != 1469434 && spellId != 1102643 && spellId != 1103044 &&
++                        spellId != 1121004 && WcmeNamedAny(sSpellMgr->GetSpellInfo(spellId),
++                            { "Quick Shot", "Arcane Shot", "Aimed Shot", "Multi-Shot" }))
++                        owner->ModifySpellCooldown(spellId, -2000);
 +        if (damage && !WcmeInLightningEcho && WcmeNamedAny(info, { "Lightning Bolt", "Chain Lightning" }) &&
 +            info->SpellFamilyName == SPELLFAMILY_SHAMAN)
 +        {
@@ -12747,8 +12752,8 @@ index 0000000..784efa0
 +// - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb.
 +// - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's
 +//   silence is removed.
-+// - Growing Light (270661): your Holy heals on your Beacon of Light target also heal 3 allies within 8 yards of it for
-+//   20% of the heal.
++// - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in
++//   AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash.
 +// - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8
 +//   yards for 5%.
 +class wcme_epic_batch4_hooks : public UnitScript
@@ -12815,11 +12820,6 @@ index 0000000..784efa0
 +        if (!player)
 +            return;
 +        std::vector<std::pair<Unit*, uint32>> splashes;
-+        if (player->HasAura(270661) && (spellInfo->SchoolMask & SPELL_SCHOOL_MASK_HOLY) &&
-+            WcmeAuraFromNamed(target, player, "Beacon of Light"))
-+            for (Unit* ally : WcmeAlliesNear(player, target, 8.0f, 4))
-+                if (ally != target)
-+                    splashes.emplace_back(ally, heal * 20 / 100);
 +        if (WcmeHasAnyAura(player, { 81315, 281788 }))
 +            for (DynamicObject* consecration : WcmeDynObjectsNamed(player, "Consecration", SPELLFAMILY_PALADIN))
 +                if (target->IsWithinDist(consecration, consecration->GetRadius()))
@@ -13012,6 +13012,36 @@ index 0000000..784efa0
 +        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_lone_wolf::Grant, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
 +        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_lone_wolf::Surrounded, EFFECT_2, SPELL_AURA_ANY);
 +        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_lone_wolf::Remove, EFFECT_2, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Savage Momentum's Stampede extension (1556022, cast by the pet through the core's listener): its data says "extend
++// Stampede by 2 sec", but its refresh-aura effect has no "add" flag, so the core would set the debuff's time left to
++// 2 sec (cutting a 20 sec Stampede short). This adds the 2 sec instead.
++class spell_wcme_stampede_extension : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_stampede_extension);
++
++    void Extend(SpellEffIndex effIndex)
++    {
++        PreventHitDefaultEffect(effIndex);
++        Unit* target = GetHitUnit();
++        int32 const extra = GetEffectValue() / 1000 * 1000;
++        if (!target || extra <= 0)
++            return;
++        if (Aura* stampede = target->GetAura(1180068))
++        {
++            int32 const duration = stampede->GetDuration() + extra;
++            if (duration > stampede->GetMaxDuration())
++                stampede->SetMaxDuration(duration);
++            stampede->SetDuration(duration);
++        }
++    }
++
++    void Register() override
++    {
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_stampede_extension::Extend, EFFECT_0,
++            SPELL_EFFECT_ASCENSION_REFRESH_AURA);
 +    }
 +};
 +
@@ -14348,6 +14378,7 @@ index 0000000..784efa0
 +    RegisterSpellScript(spell_wcme_stand_still);
 +    RegisterSpellScript(spell_wcme_lone_wolf);
 +    RegisterSpellScript(spell_wcme_lone_wolf_buff);
++    RegisterSpellScript(spell_wcme_stampede_extension);
 +    new wcme_epic_batch4_spells();
 +    new wcme_epic_batch4_hooks();
 +    RegisterSpellScript(spell_wcme_area_keeper);
