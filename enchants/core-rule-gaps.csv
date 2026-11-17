@@ -6,5 +6,5 @@ spell,name,effect_without_rule,effects_with_rules,status
 283499,Whirling Bladestorm,1,0,to review: that effect may never fire
 1118810,Searing Brand,1,0,to review: that effect may never fire
 1180640,Searing Flames,0,1,our scripts do effect 0 (the splash)
-1571951,Overflow,0,1 2,replaced by our own design (spell_wcme_overflow)
+1571951,Overflow,0,1 2,"our scripts do its job: effect 0 would give 1571953 (extra ally heal); spell_wcme_overflow_stacks heals one more ally per stack (1571952) when Healing Touch spends them"
 1590568,Blades of Blood,1,0,to review: that effect may never fire
