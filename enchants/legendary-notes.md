@@ -149,7 +149,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -182,7 +182,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 29253a1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 29253a1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -228,6 +228,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Status:** changed, awaiting in-game test
 
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
+
+**What the pull requests said:**
+
+- #177: Aspect of the Fox:** Auto Shot keeps firing while moving (core patch 68; Steady Shot already worked). Reverses the earlier "leave it" decision. If the game client itself refuses Auto Shot while moving, the server can't fix that.
+
 **Assumptions:** Steady Shot already worked while moving through the aspect's own aura. Auto Shot needed a core change (patch 68). If the game client itself refuses Auto Shot while moving, the server cannot fix that; test it in game.
 
 **Sources:** our client spell data (Spell.dbc); core Unit::CanCastSpellWhileMoving
@@ -257,7 +265,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -276,7 +284,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -299,7 +307,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -516,7 +524,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -554,7 +562,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -643,7 +651,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -667,8 +675,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | d5ec19a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | d5ec19a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -791,7 +799,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -916,7 +924,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -941,8 +949,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -962,7 +970,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1034,7 +1042,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1060,8 +1068,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1089,6 +1097,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 |---|---|---|---|---|
 | 2026-11-16 | ead73f1 | #173 Medium legendary fixes, batch 2 | build47 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | b01de40 | #173 Medium legendary fixes, batch 2 | build47 (2026-11-15) | 2026-11-16 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1100,6 +1109,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 - #173: `65-enchant-tuning-auras.ps1` (core):** the core only applies Ascension's PvE and PvP damage auras (341 and 322) to an allowlist of spells. This adds Pack Tactics, Demonic Persistence, Demonic Influence and Gurubashi Berserker. That fully fixes Demonic Influence; the others still need their scripts.
 - #173: Demonic Persistence:** Incinerate or Mind Blast sacrifices your weakest Wild Imp. It explodes for Fire damage and empowers your demon (+20% damage against creatures, up to 4 stacks).
+- #177: Demonic Persistence (990130):** Wild Imps get the client's own pet aura (990131). Their critical strikes take 1 sec off Hand of Gul'dan and restore 3% of your demon's mana, at most once a second.
 
 **Assumptions:** Imp crits: 1 sec off Hand of Gul'dan and 3% of your demon's mana, at most once a second (tooltip numbers), through the client's own pet aura 990131. The tooltip's "deteriorate over time" gives no rate, so it is taken to be the imps' summon duration.
 
@@ -1116,11 +1126,16 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Demonic Reoccurence (1570995): Metamorphosis' cooldown cut and its smaller armor bonus are the enchant's own data. In exchange, Metamorphosis no longer lowers your chance to be critically hit or the duration of stuns and snares: those parts of the form (54879 / 1154879 and 54817 / 1154817) are removed while you have the enchant, checked every 0.25 sec.
 - 046-legendary-gaps.sql: Demonic Reoccurence (1570995): Metamorphosis no longer lowers critical hit chance taken or stun / snare duration.
+
+**What the pull requests said:**
+
+- #177: Demonic Reoccurence (1570995):** its cooldown cut and smaller armor bonus already worked from data. The trade-off was missing: Metamorphosis no longer lowers your chance to be critically hit or stun / snare duration.
 
 **Assumptions:** The cooldown cut and smaller armor bonus already worked from its data (they target the Wildcard Metamorphosis 1147241). Only the trade-off was missing: the form's crit-taken and stun / snare parts (54879 / 1154879, 54817 / 1154817) are now removed. Your talent test of the epic copy 272730 (issue #148) found it doing nothing; that copy's modifiers name no spell and are not fixed here.
 
@@ -1184,7 +1199,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1210,7 +1225,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1233,11 +1248,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
 
 **Assumptions:** Its mana cost cut (Power Word: Shield, Flash Heal, Penance) and Divine Aegis +5 points are ordinary spell modifiers the core applies; the core recalculates the Divine Aegis talent when the modifier arrives. Only its placeholder dummy does nothing.
 
@@ -1300,7 +1319,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1322,7 +1341,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1372,7 +1391,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1420,6 +1439,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1430,6 +1450,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 **What the pull requests said:**
 
 - #171: Elemental Assassin:** Backstab stacks it (up to 2). The next Flame or Earth Shock deals 110% more and Ice Shock 70% more, and spending a stack takes 5 sec off Stormstrike.
+- #177: Elemental Assassin (978229):** the earlier note was wrong: the Elemental Blades do exist in our client (978644 / 978646 / 978648).
 
 **Assumptions:** Blade per Shock: Flame Shock gives Fire, Frost Shock and Ice Shock give Ice, Earth Shock gives Earth. Backstab +33% per unique blade (the tooltip's number) and 12% against players (taken from the standard Elemental Blade 274678, since this version's player value is level-scaled data we cannot read). The all-three burst (40% within 5 yards) applies to Backstab and Stormstrike. Reverberation's next-Shock bonus becomes 60% and Booming Echoes' school bonus 15%, from the data's +40 / +10. The earlier note that the blades had no spells in our client was wrong: 978644, 978646 and 978648 are there.
 
@@ -1535,12 +1556,17 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 - 045-last-legendaries.sql: Explosive Charge (1568152): 25% of Explosive Shot's damage to other enemies within 5 yards (its aura 354 had no handler for this enchant; done in the damage hook wcme_last_legendary_hooks, so it needs no rows here).
+
+**What the pull requests said:**
+
+- #177: Explosive Charge (1568152):** every Explosive Shot hit (its ticks included) also deals 25% of its damage to other enemies within 5 yards. Its aura 354 had no handler. Explosive Shot's ticks are triggered casts that raise no procs, so this runs in a damage hook.
+- #177: Assumptions for these four are in `enchants/legendary-notes.csv`: Bile doesn't spend stacks; the disease bonus applies per stack to diseases and Insect Swarm (Plague); the Explosive Charge share is taken before crits and mitigation; only other players count for Social Distancing.
 
 **Assumptions:** Explosive Shot's ticks are triggered casts that raise no procs, so the splash is done in a damage hook on every Explosive Shot hit; the 25% is taken from the hit before critical strikes and mitigation.
 
@@ -1554,8 +1580,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1585,8 +1611,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 89a6e34 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 89a6e34 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1692,13 +1718,17 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Flame Ascendance (1398169): teaches Flame Ascendance (2110000: form, Chain Lightning as Lava Beam and Lava Burst's cooldown halved are its own data). While in the form, casting Flame Shock finishes the cooldowns of Lava Burst and Lava Beam (2110123, 2110124). Lava Burst's critical chance above 100% is added to its critical damage (in wcme_kit6_hooks).
 - Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 - 045-last-legendaries.sql: Flame Ascendance (1398169): Flame Shock in the form finishes Lava Burst and Lava Beam;
+
+**What the pull requests said:**
+
+- #177: Flame Ascendance (1398169):** in the form, Flame Shock finishes Lava Burst and Lava Beam; Lava Burst's critical chance above 100% adds to its critical damage.
 
 **Assumptions:** Excess critical chance above 100% adds the same percentage of the hit to the critical damage; Lava Beam cooldowns finished by spell id (2110123, 2110124).
 
@@ -1753,7 +1783,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1865,11 +1895,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
 
 **Assumptions:** Off-hand hit chance (aura 356) is handled in Unit::MeleeSpellMissChance and crit chance (aura 290) by the core.
 
@@ -1883,9 +1917,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1908,8 +1942,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1938,10 +1972,10 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1967,7 +2001,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1986,11 +2020,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
 
 **Assumptions:** AscensionMysticEnchantMechanics.cpp handles this copy (Treants heal).
 
@@ -2037,11 +2075,16 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
+- #177: Demonic Persistence (990130):** Wild Imps get the client's own pet aura (990131). Their critical strikes take 1 sec off Hand of Gul'dan and restore 3% of your demon's mana, at most once a second.
 
 **Assumptions:** The taught Hand of Gul'dan (2304611) uses effects the core handles (delayed trigger 183, damage, summon of 4 Wild Imps 855352). The enchant's three modifiers name no target spell, so they do nothing; treated as placeholders. Needs an in-game check that the Wild Imps appear.
 
@@ -2072,12 +2115,16 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Harbinger of Pestilence (990020): Insect Swarm becomes Insect Swarm (Plague) (the core's transform rule). Wrath and Haunt hits give Harbinger of Pestilence (990022, up to 5; 2 stacks when the target is a player). Wrath has a 20% chance to trigger Nightfall (Shadow Trance, 17941) if you know Nightfall. Haunt cast while you have stacks: Harbinger's Bile (990024) on up to 5 enemies near the target, its damage times your stacks; each stack also takes 0.2 sec off that Haunt's cooldown. The stacks' +22% disease damage (misc 38, "versus creatures") is applied in wcme_kit_target_mods to diseases and Insect Swarm (Plague).
 - 045-last-legendaries.sql: Harbinger of Pestilence (990020): Wrath / Haunt stacks, Nightfall from Wrath, Harbinger's Bile on Haunt, Haunt cooldown per stack, disease damage per stack against creatures (its proc had no proc flags).
+
+**What the pull requests said:**
+
+- #177: Harbinger of Pestilence (990020):** Wrath and Haunt hits give Harbinger stacks (2 against players), Wrath has 20% to trigger Nightfall if you know it, and Haunt with stacks casts Harbinger's Bile on up to 5 enemies (damage times stacks) and takes 0.2 sec per stack off Haunt's cooldown. The stacks' +22% disease damage applies against creatures. Its proc had no proc flags.
 
 **Assumptions:** Harbinger's Bile deals its damage times your stacks and does not spend them; the +22% disease damage applies per stack against creatures only (misc 38) to diseases and Insect Swarm (Plague); Haunt cooldown -0.2 sec per stack at cast.
 
@@ -2145,7 +2192,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2168,7 +2215,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2192,6 +2239,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 1d8de01 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2204,6 +2252,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 - #174: Hot Hands (979765 / 1575104)**:
 - #174: Pyroblast counts toward Hot Streak. The core already supported this for a different Hot Hands spell; patch 66 adds ours, and `026` adds Pyroblast to Hot Streak's proc mask. For anyone without Hot Hands, the core's own check still ignores Pyroblast, so nothing changes for them.
 - #174: Targets with your Living Bomb get a new mark, Hot Hands (9990019): +8% spell crit for you, lasting as long as the bomb.
+- #177: Hot Hands:** a Hot Streak Pyroblast deals 35% more to monsters, none to players. Our Hot Streak has no Pyroblast bonus of its own, so this is the tooltip's number applied as a bonus.
 
 **Assumptions:** Our Hot Streak gives Pyroblast no damage bonus, so the tooltip's "only 35% against monsters" is applied as +35% against monsters (none against players) to the first Pyroblast hit within 5 sec of a Hot Streak cast.
 
@@ -2220,6 +2269,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 1d8de01 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2232,6 +2282,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 - #174: Hot Hands (979765 / 1575104)**:
 - #174: Pyroblast counts toward Hot Streak. The core already supported this for a different Hot Hands spell; patch 66 adds ours, and `026` adds Pyroblast to Hot Streak's proc mask. For anyone without Hot Hands, the core's own check still ignores Pyroblast, so nothing changes for them.
 - #174: Targets with your Living Bomb get a new mark, Hot Hands (9990019): +8% spell crit for you, lasting as long as the bomb.
+- #177: Hot Hands:** a Hot Streak Pyroblast deals 35% more to monsters, none to players. Our Hot Streak has no Pyroblast bonus of its own, so this is the tooltip's number applied as a bonus.
 
 **Assumptions:** Our Hot Streak gives Pyroblast no damage bonus, so the tooltip's "only 35% against monsters" is applied as +35% against monsters (none against players) to the first Pyroblast hit within 5 sec of a Hot Streak cast.
 
@@ -2352,7 +2403,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | e093e44 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | e093e44 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2371,7 +2422,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 809628e | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 809628e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2390,7 +2441,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2423,7 +2474,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2467,9 +2519,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 2029a99 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 2029a99 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2613,8 +2665,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2664,7 +2716,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b67659e | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b67659e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2684,8 +2736,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2709,7 +2761,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2793,7 +2845,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2833,12 +2885,16 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
-| 2026-11-16 | 6976f48 | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
+| 2026-11-16 | 6976f48 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
 
 **Assumptions:** AscensionMysticEnchantMechanics.cpp handles this copy (Wrath in Cat Form from Predator's Swiftness).
 
@@ -2955,7 +3011,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3039,8 +3095,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3169,12 +3225,17 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Social Distancing (81102): 20% resistance to diseases (the chance a disease fails to land) while no other player is within 6 yards. Its only effect (a proc with nothing to trigger) becomes that resistance in Validate; it is checked every second.
 - 045-last-legendaries.sql: Social Distancing (81102): 20% disease resistance while no other player is within 6 yards (its proc had nothing to trigger).
+
+**What the pull requests said:**
+
+- #177: Social Distancing (81102):** 20% disease resistance (the chance a disease fails to land) while no other player is within 6 yards; checked every second. Its proc had nothing to trigger.
+- #177: Assumptions for these four are in `enchants/legendary-notes.csv`: Bile doesn't spend stacks; the disease bonus applies per stack to diseases and Insect Swarm (Plague); the Explosive Charge share is taken before crits and mitigation; only other players count for Social Distancing.
 
 **Assumptions:** "Disease resistance" means the chance that a disease fails to land (debuff resistance against diseases); only other players count, not pets or NPCs.
 
@@ -3188,9 +3249,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3230,7 +3291,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3300,9 +3361,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 3b4a34a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 3b4a34a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3345,8 +3406,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3391,8 +3452,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3632,7 +3693,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3762,7 +3823,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3786,7 +3847,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3809,7 +3870,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3882,8 +3943,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3917,8 +3978,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3943,7 +4004,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3996,7 +4057,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4016,7 +4077,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
