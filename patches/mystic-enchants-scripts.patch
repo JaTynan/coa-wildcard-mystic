@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..e3a8da6
+index 0000000..ef0694a
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14641 @@
+@@ -0,0 +1,14605 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13719,13 +13719,9 @@ index 0000000..e3a8da6
 +    }
 +};
 +
-+// Epic batches 6 and 7, spell side:
-+// - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20)
-+//   as Nature damage (277083) to each enemy within 10 yards of you, the Mangle target included (its helper is an area
-+//   around you).
-+// - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage
-+//   (1581627) to each enemy within 5 yards of the target, the target included (its helper explodes from the target);
-+//   each cast restores 5% of your base mana.
++// Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical
++// Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy
++// Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc).
 +// - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within
 +//   40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc.
 +// - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed
@@ -13861,10 +13857,6 @@ index 0000000..e3a8da6
 +        if (caster->HasAura(273420) && info->SpellFamilyName == SPELLFAMILY_SHAMAN && WcmeNamed(info, "Chain Heal"))
 +            caster->m_Events.AddEventAtOffset([caster]() { caster->RemoveAurasDueToSpell(273420); }, 500ms);
 +
-+        if (caster->HasAura(1581647) && info->SpellFamilyName == SPELLFAMILY_PALADIN &&
-+            WcmeNamedAny(info, { "Crusader Strike", "Avenger's Shield" }))
-+            caster->EnergizeBySpell(caster, 1581627, caster->GetCreateMana() * 5 / 100, POWER_MANA);
-+
 +        if (caster->HasAura(272317) && info->SpellFamilyName == SPELLFAMILY_HUNTER && !spell->IsTriggered() &&
 +            !info->IsAutoRepeatRangedSpell() && DirectDamage(info))
 +        {
@@ -13981,17 +13973,6 @@ index 0000000..e3a8da6
 +        if (!damage)
 +            return;
 +
-+        if (caster->HasAura(277082) && WcmeNamed(info, "Mangle (Bear)") && roll_chance_i(15))
-+            if (SpellInfo const* discharge = sSpellMgr->GetSpellInfo(277083))
-+                for (Unit* enemy : WcmeEnemiesNear(caster, caster, 10.0f, 10))
-+                    WcmeExtraDamage(caster, enemy, discharge, int64(damage) * 60 / 100);
-+
-+        if (caster->HasAura(1581647) && info->SpellFamilyName == SPELLFAMILY_PALADIN &&
-+            WcmeNamedAny(info, { "Crusader Strike", "Avenger's Shield" }))
-+            if (SpellInfo const* light = sSpellMgr->GetSpellInfo(1581627))
-+                for (Unit* enemy : WcmeEnemiesNear(caster, target, 5.0f, 10))
-+                    WcmeExtraDamage(caster, enemy, light, int64(damage) * 10 / 100);
-+
 +        if (caster->HasAura(984696) && WcmeNamed(info, "Swipe (Cat)") && !target->HasAura(984698, caster->GetGUID()))
 +        {
 +            Aura const* counter = target->GetAura(984697, caster->GetGUID());
@@ -14067,8 +14048,6 @@ index 0000000..e3a8da6
 +// - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same
 +//   damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet.
 +// - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass.
-+// - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks;
-+//   each stack ticks for the latest Greater Heal's share). The heal over time doesn't add your spell power again.
 +// - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of
 +//   Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack.
 +// - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on
@@ -14294,21 +14273,6 @@ index 0000000..e3a8da6
 +                _inner = false;
 +            }, 1ms);
 +            return;
-+        }
-+
-+        if (!periodic && player->HasAura(1584997) && spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && WcmeNamed(spellInfo, "Greater Heal"))
-+        {
-+            int32 const tick = int32(uint64(heal) * 12 / 100 / 4);
-+            ObjectGuid const guid = target->GetGUID();
-+            if (tick > 0)
-+                player->m_Events.AddEventAtOffset([player, guid, tick]()
-+                {
-+                    if (Unit* ally = ObjectAccessor::GetUnit(*player, guid); ally && ally->IsAlive())
-+                    {
-+                        WcmeNoSecondBonus(1584998);
-+                        player->CastCustomSpell(ally, 1584998, &tick, nullptr, nullptr, true);
-+                    }
-+                }, 1ms);
 +        }
 +
 +        if (!periodic && spellInfo->Id == 983524 && player->HasAura(983523) && target->GetHealth() < target->GetMaxHealth())

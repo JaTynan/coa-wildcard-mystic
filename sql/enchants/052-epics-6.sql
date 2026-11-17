@@ -1,8 +1,10 @@
 -- Epic enchants, batch 6 (needs the build with this version of mystic-enchants-scripts.patch; no client patch change).
--- Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082),
--- Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity
--- (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void
--- Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+-- Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Physics in Practice
+-- (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963),
+-- Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows
+-- (997217).
+-- Electrical Discharge (277082), Holy Servitude (1584997) and Pious Strikes (1581647) were dropped in review: the core
+-- already does them (no rows were ever added for them).
 -- With rows: Trauma Care (274205: finisher proc, spell_wcme_finisher_combo, 20% per combo point) and Bestial Assault
 -- (272317: its own data procs are switched off, the script gives the stacks instead).
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
