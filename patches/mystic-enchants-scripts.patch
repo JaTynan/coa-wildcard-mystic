@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..32e16ec
+index 0000000..c05bc81
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,12156 @@
+@@ -0,0 +1,12693 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -11614,6 +11614,9 @@ index 0000000..32e16ec
 +//   (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113
 +//   (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while
 +//   Swashbuckling give 285115 (crit, up to 5).
++// - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2).
++// - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned
++//   Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 +class spell_wcme_finisher_combo : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_finisher_combo);
@@ -11642,6 +11645,10 @@ index 0000000..32e16ec
 +            case 954436:
 +                return spell->SpellFamilyName == SPELLFAMILY_ROGUE && GetTarget()->ToPlayer() &&
 +                    GetTarget()->ToPlayer()->CanTitanGrip();
++            case 979113:
++                return WcmeNamedAny(spell, { "Envenom", "Eviscerate" });
++            case 979080:
++                return Damaging(spell);
 +            default:
 +                return true;
 +        }
@@ -11678,11 +11685,23 @@ index 0000000..32e16ec
 +        PreventDefaultAction();
 +        Unit* owner = GetTarget();
 +        uint8 const points = owner->GetComboPoints();
-+        if (!roll_chance_i(20 * points))
++        if (!roll_chance_i((GetId() == 979080 ? 10 : 20) * points))
 +            return;
 +        Player* player = owner->ToPlayer();
 +        switch (GetId())
 +        {
++            case 979113:
++                WcmeCutCooldownByName(owner, "Poison Bomb", 4000);
++                break;
++            case 979080:
++                if (Aura* charges = owner->GetAura(979082))
++                {
++                    charges->SetCharges(std::min<uint8>(3, charges->GetCharges() + 1));
++                    charges->RefreshDuration();
++                }
++                else if (Aura* first = owner->AddAura(979082, owner))
++                    first->SetCharges(1);
++                break;
 +            case 979106:
 +            case 284148:
 +                if (player && player->GetPet())
@@ -11942,8 +11961,526 @@ index 0000000..32e16ec
 +    }
 +};
 +
++// ===== Epic batch 3 and the held-back epics =====
++
++static bool WcmeAuraFromNamed(Unit* target, Unit* caster, char const* name)
++{
++    for (auto const& [id, app] : target->GetAppliedAuras())
++        if (app->GetBase()->GetCasterGUID() == caster->GetGUID() && WcmeNamed(app->GetBase()->GetSpellInfo(), name))
++            return true;
++    return false;
++}
++
++static bool WcmeIncapacitatedOrImmobilized(Unit* unit)
++{
++    return unit->HasAuraType(SPELL_AURA_MOD_ROOT) || unit->HasAuraType(SPELL_AURA_MOD_STUN) ||
++        unit->HasAuraWithMechanic((1ULL << MECHANIC_SAPPED) | (1ULL << MECHANIC_POLYMORPH) | (1ULL << MECHANIC_KNOCKOUT) |
++            (1ULL << MECHANIC_SLEEP) | (1ULL << MECHANIC_ROOT) | (1ULL << MECHANIC_FREEZE) | (1ULL << MECHANIC_STUN) |
++            (1ULL << MECHANIC_HORROR) | (1ULL << MECHANIC_BANISH));
++}
++
++// Swashbuckler: Flurry of Blows (81221, +20% melee haste) and Swashbuckler: Matched Blows (81219, +5% parry) while
++// Swashbuckling (one one-handed weapon, empty off hand, not shapeshifted). The enchant's own effect becomes that bonus
++// in Validate and is switched on or off every second. Swashbuckler: Shocktrooper 281944 keeps 281945 (its own -2 sec
++// on Shaman Shocks) on you the same way.
++class spell_wcme_swashbuckling_bonus : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_swashbuckling_bonus);
++
++    bool Validate(SpellInfo const* spellInfo) override
++    {
++        SpellEffectInfo& effect = const_cast<SpellInfo*>(spellInfo)->Effects[EFFECT_0];
++        if (spellInfo->Id == 81221)
++            effect.ApplyAuraName = SPELL_AURA_MOD_MELEE_HASTE;
++        else if (spellInfo->Id == 81219)
++            effect.ApplyAuraName = SPELL_AURA_MOD_PARRY_PERCENT;
++        else
++            return true;
++        effect.BasePoints = -1;
++        effect.DieSides = 1;
++        return true;
++    }
++
++    int32 Wanted() const
++    {
++        return GetId() == 81221 ? 20 : 5;
++    }
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void Tick(AuraEffect const* aurEff)
++    {
++        Unit* owner = GetTarget();
++        bool const on = WcmeSwashbuckling(owner);
++        if (GetId() == 281944)
++        {
++            if (on && !owner->HasAura(281945))
++                owner->AddAura(281945, owner);
++            else if (!on)
++                owner->RemoveAurasDueToSpell(281945);
++            return;
++        }
++        int32 const amount = on ? Wanted() : 0;
++        if (aurEff->GetAmount() != amount)
++            const_cast<AuraEffect*>(aurEff)->ChangeAmount(amount);
++    }
++
++    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        if (GetId() == 281944)
++            GetTarget()->RemoveAurasDueToSpell(281945);
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_swashbuckling_bonus::CalcPeriod, EFFECT_0, SPELL_AURA_ANY);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_swashbuckling_bonus::Tick, EFFECT_0, SPELL_AURA_ANY);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_swashbuckling_bonus::Remove, EFFECT_0, SPELL_AURA_ANY,
++            AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Controlled Aggression (1181300): keeps its helper 1181301 on you (Shield Slam's cooldown 50% longer, so 3 sec, from its
++// data); the attack power part and the doubled Sword and Board chance are in wcme_epic_batch3_hooks.
++// Deadly Follow-up (979080): teaches Deadly Follow-up (979081) for as long as you know Shiv and have the enchant.
++class spell_wcme_keep_helper : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_keep_helper);
++
++    void Apply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* owner = GetTarget();
++        if (GetId() == 1181300)
++            owner->AddAura(1181301, owner);
++        else if (Player* player = owner->ToPlayer(); player && WcmeKnowsPassive(player, "Shiv", SPELLFAMILY_ROGUE) &&
++            !player->HasSpell(979081))
++            player->learnSpell(979081, true);
++    }
++
++    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        Unit* owner = GetTarget();
++        if (GetId() == 1181300)
++            owner->RemoveAurasDueToSpell(1181301);
++        else if (Player* player = owner->ToPlayer())
++        {
++            player->removeSpell(979081, SPEC_MASK_ALL, true);
++            player->RemoveAurasDueToSpell(979082);
++        }
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_keep_helper::Apply, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_keep_helper::Remove, EFFECT_0, SPELL_AURA_ANY,
++            AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Deadly Follow-up (979081, the ability): needs a charge of Poisoned Shiv (979082) and spends one; the hit applies the
++// poison on each of your weapons twice (its dummy effect).
++class spell_wcme_deadly_follow_up : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_deadly_follow_up);
++
++    SpellCastResult CheckCast()
++    {
++        return GetCaster()->HasAura(979082) ? SPELL_CAST_OK : SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void HandleCast()
++    {
++        if (Aura* charges = GetCaster()->GetAura(979082))
++        {
++            if (charges->GetCharges() > 1)
++                charges->SetCharges(charges->GetCharges() - 1);
++            else
++                charges->Remove();
++        }
++    }
++
++    void HandlePoisons(SpellEffIndex /*effIndex*/)
++    {
++        Player* player = GetCaster()->ToPlayer();
++        Unit* target = GetHitUnit();
++        if (!player || !target)
++            return;
++        for (uint8 slot : { EQUIPMENT_SLOT_MAINHAND, EQUIPMENT_SLOT_OFFHAND })
++        {
++            Item* weapon = player->GetItemByPos(INVENTORY_SLOT_BAG_0, slot);
++            uint32 const enchantId = weapon ? weapon->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT) : 0;
++            SpellItemEnchantmentEntry const* enchant = enchantId ? sSpellItemEnchantmentStore.LookupEntry(enchantId) : nullptr;
++            if (!enchant)
++                continue;
++            for (uint32 poison : enchant->spellid)
++                if (SpellInfo const* info = poison ? sSpellMgr->GetSpellInfo(poison) : nullptr; info &&
++                    info->Dispel == DISPEL_POISON)
++                    for (uint8 i = 0; i < 2; ++i)
++                        player->CastSpell(target, poison, true);
++        }
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_deadly_follow_up::CheckCast);
++        OnCast += SpellCastFn(spell_wcme_deadly_follow_up::HandleCast);
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_deadly_follow_up::HandlePoisons, EFFECT_0, SPELL_EFFECT_DUMMY);
++    }
++};
++
++// Spell-side parts (casts and critical strike chance):
++// - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire.
++// - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb.
++// - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target.
++// - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value).
++// - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you
++//   cast adds half its cast time to Starfall.
++// - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner.
++// - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal).
++// - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops
++//   when yours ends (wcme_epic_batch3_hooks).
++// - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma
++//   cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's,
++//   aura if you know that totem (the aura comes from that totem's creature).
++// - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of
++//   your attack power (no amount in the data; based on Bloodthirst's own small heal).
++// - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo
++//   point (in spell_wcme_finisher_combo).
++class wcme_epic_batch3_spells : public AllSpellScript
++{
++public:
++    wcme_epic_batch3_spells() : AllSpellScript("wcme_epic_batch3_spells", { ALLSPELLHOOK_ON_CRIT_CHANCE, ALLSPELLHOOK_ON_CAST })
++    { }
++
++    void OnSpellCritChance(Spell* spell, Unit* target, float& chance) override
++    {
++        Unit* caster = spell ? spell->GetCaster() : nullptr;
++        SpellInfo const* info = spell ? spell->GetSpellInfo() : nullptr;
++        if (!caster || !target || !info || caster == target)
++            return;
++        if (caster->HasAura(1180590) && WcmeNamedAny(info, { "Wrath", "Starsurge" }) && WcmeAuraFromNamed(target, caster, "Moonfire"))
++            chance += 8.0f;
++        if (caster->HasAura(1575124) && WcmeAuraFromNamed(target, caster, "Living Bomb"))
++            chance += 5.0f;
++        if (caster->HasAura(911167) && WcmeNamed(info, "Slam") && WcmeIncapacitatedOrImmobilized(target))
++            chance = 100.0f;
++        if (caster->HasAura(1577402) && WcmeNamed(info, "Shadow Bolt") && WcmeHasAuraNamed(caster, "Pyroclasm", SPELLFAMILY_WARLOCK))
++            chance += 20.0f;
++        if (caster->HasAura(81181) && info->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && WcmeHasAuraNamed(caster, "Starfall", SPELLFAMILY_DRUID))
++            chance += 5.0f;
++    }
++
++    static void TotemMaster(Player* player)
++    {
++        Creature* totem = player->GetMap()->GetCreature(player->m_SummonSlot[SUMMON_SLOT_TOTEM_FIRE]);
++        if (!totem)
++            return;
++        if (player->HasAura(81445))
++        {
++            uint32 const health = std::max<uint32>(1, player->GetMaxHealth() * 15 / 100);
++            totem->SetMaxHealth(health);
++            totem->SetHealth(health);
++        }
++        if (player->HasAura(1581586))
++            for (char const* name : { "Totem of Wrath", "Flametongue Totem" })
++            {
++                uint32 best = 0;
++                for (auto const& [id, known] : player->GetSpellMap())
++                    if (known->State != PLAYERSPELL_REMOVED)
++                        if (SpellInfo const* info = sSpellMgr->GetSpellInfo(id); info && WcmeNamed(info, name) &&
++                            info->Effects[EFFECT_0].Effect == SPELL_EFFECT_SUMMON && info->SpellLevel >= (best ?
++                            sSpellMgr->GetSpellInfo(best)->SpellLevel : 0))
++                            best = id;
++                if (!best)
++                    continue;
++                CreatureTemplate const* tmpl = sObjectMgr->GetCreatureTemplate(sSpellMgr->GetSpellInfo(best)->Effects[EFFECT_0].MiscValue);
++                if (tmpl && tmpl->spells[0] && totem->GetEntry() != tmpl->Entry)
++                    totem->CastSpell(totem, tmpl->spells[0], true);
++                break;
++            }
++    }
++
++    void OnSpellCast(Spell* spell, Unit* caster, SpellInfo const* info, bool /*skipCheck*/) override
++    {
++        if (!spell || !caster || !info)
++            return;
++        Player* player = caster->ToPlayer();
++        if (caster->HasAura(81181) && !spell->IsTriggered() && (info->SchoolMask & SPELL_SCHOOL_MASK_ARCANE) &&
++            !info->IsChanneled() && spell->GetCastTime() > 0)
++            for (auto const& [id, app] : caster->GetAppliedAuras())
++            {
++                Aura* aura = app->GetBase();
++                if (aura->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_DRUID && WcmeNamed(aura->GetSpellInfo(), "Starfall") &&
++                    aura->GetCasterGUID() == caster->GetGUID())
++                {
++                    int32 const extra = spell->GetCastTime() / 2;
++                    aura->SetMaxDuration(aura->GetMaxDuration() + extra);
++                    aura->SetDuration(aura->GetDuration() + extra);
++                }
++            }
++        if (caster->HasAura(81415) && info->SpellFamilyName == SPELLFAMILY_SHAMAN && info->SpellName[0] &&
++            std::strstr(info->SpellName[0], "Shock") && WcmeSwashbuckling(caster) && player)
++        {
++            uint32 const id = info->Id;
++            caster->m_Events.AddEventAtOffset([player, id]() { player->ModifySpellCooldown(id, -10500); }, 1ms);
++        }
++        if (caster->HasAura(1556015) && WcmeNamed(info, "Arcane Blast") && !spell->IsTriggered())
++        {
++            uint8 const before = [caster]()
++            {
++                for (auto const& [id, app] : caster->GetAppliedAuras())
++                    if (WcmeNamed(app->GetBase()->GetSpellInfo(), "Arcane Blast") && app->GetBase()->GetSpellInfo()->StackAmount)
++                        return app->GetBase()->GetStackAmount();
++                return uint8(0);
++            }();
++            if (before >= 4)
++                caster->m_Events.AddEventAtOffset([caster]()
++                {
++                    for (auto const& [id, app] : caster->GetAppliedAuras())
++                    {
++                        Aura* aura = app->GetBase();
++                        if (WcmeNamed(aura->GetSpellInfo(), "Arcane Blast") && aura->GetSpellInfo()->StackAmount == 4 &&
++                            aura->GetStackAmount() == 4)
++                            aura->SetStackAmount(5);
++                    }
++                }, 1ms);
++        }
++        if (WcmeHasAnyAura(caster, { 81096, 281336 }) && info->SpellFamilyName == SPELLFAMILY_WARLOCK &&
++            WcmeNamed(info, "Hellfire") && !spell->IsTriggered() && player)
++            if (Pet* demon = player->GetPet(); demon && demon->IsAlive() && demon->GetName() != "Infernal")
++                demon->CastSpell(demon, info->Id, true);
++        if (WcmeHasAnyAura(caster, { 81445, 1581586 }) && info->SpellFamilyName == SPELLFAMILY_SHAMAN && player &&
++            info->Effects[EFFECT_0].Effect == SPELL_EFFECT_SUMMON && info->SpellName[0] && std::strstr(info->SpellName[0], "Totem"))
++            caster->m_Events.AddEventAtOffset([player]() { TotemMaster(player); }, 100ms);
++        if (caster->HasAura(965389) && WcmeNamed(info, "Bloodthirst") && !spell->IsTriggered())
++            for (auto const& [id, app] : caster->GetAppliedAuras())
++            {
++                Aura* aura = app->GetBase();
++                if (aura->GetSpellInfo()->SpellFamilyName != SPELLFAMILY_WARRIOR || !WcmeNamed(aura->GetSpellInfo(), "Taste for Blood") ||
++                    aura->GetSpellInfo()->IsPassive())
++                    continue;
++                int32 const heal = int32(caster->CountPctFromMaxHealth(3) + caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.25f);
++                aura->Remove();
++                caster->m_Events.AddEventAtOffset([caster, heal]()
++                {
++                    HealInfo healInfo(caster, caster, heal, nullptr, SPELL_SCHOOL_MASK_NORMAL);
++                    caster->HealBySpell(healInfo);
++                }, 1ms);
++                break;
++            }
++    }
++};
++
++// Unit-side parts:
++// - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric
++//   Power (1556016).
++// - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee
++//   crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8
++//   yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654),
++//   spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players.
++// - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec).
++// - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun).
++// - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it
++//   trigger Thawed Flesh (944831) and spend a charge.
++// - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining
++//   Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits
++//   give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar
++//   Flames (275002, Fireball / Pyroblast damage), as the enchant's text says.
++// - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second
++//   roll at your Sword and Board talent's chance (10% per rank).
++// - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in
++//   spell_wcme_finisher_combo).
++// - Raising Hell: your demon's Hellfire stops when yours does.
++class wcme_epic_batch3_hooks : public UnitScript
++{
++public:
++    wcme_epic_batch3_hooks() : UnitScript("wcme_epic_batch3_hooks", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN,
++        UNITHOOK_MODIFY_MELEE_DAMAGE, UNITHOOK_ON_AURA_APPLY, UNITHOOK_ON_AURA_REMOVE }) { }
++
++    static bool IsSweeping(SpellInfo const* info)
++    {
++        return info->SpellFamilyName == SPELLFAMILY_WARRIOR && WcmeNamed(info, "Sweeping Strikes");
++    }
++
++    void OnAuraApply(Unit* unit, Aura* aura) override
++    {
++        if (!unit || !aura)
++            return;
++        SpellInfo const* info = aura->GetSpellInfo();
++        if (IsSweeping(info) && aura->GetDuration() > 0 && unit->HasAura(912326))
++            if (Aura* crit = unit->AddAura(912328, unit))
++            {
++                crit->SetMaxDuration(aura->GetMaxDuration());
++                crit->SetDuration(aura->GetDuration());
++            }
++        if (unit->HasAura(275014) && (info->Id == 48517 || info->Id == 1148517))
++        {
++            unit->RemoveAurasDueToSpell(274983);
++            unit->AddAura(274981, unit);
++        }
++        if (unit->HasAura(275014) && (info->Id == 48518 || info->Id == 1148518))
++        {
++            unit->RemoveAurasDueToSpell(275002);
++            unit->AddAura(274982, unit);
++        }
++        if (info->SpellFamilyName == SPELLFAMILY_MAGE && WcmeNamed(info, "Deep Freeze") && info->HasAura(SPELL_AURA_MOD_STUN))
++            if (Unit* caster = aura->GetCaster(); caster && caster->HasAura(84382))
++                if (Aura* flesh = caster->AddAura(944829, unit))
++                    flesh->SetCharges(3);
++    }
++
++    void OnAuraRemove(Unit* unit, AuraApplication* aurApp, AuraRemoveMode mode) override
++    {
++        if (!unit || !aurApp)
++            return;
++        Aura* aura = aurApp->GetBase();
++        SpellInfo const* info = aura->GetSpellInfo();
++        if (IsSweeping(info))
++            unit->RemoveAurasDueToSpell(912328);
++        if (info->SpellFamilyName == SPELLFAMILY_DRUID && WcmeNamed(info, "Cyclone") && mode != AURA_REMOVE_BY_DEATH)
++            if (Unit* caster = aura->GetCaster(); caster && caster->HasAura(954126) && caster != unit)
++            {
++                ObjectGuid const guid = unit->GetGUID();
++                caster->m_Events.AddEventAtOffset([caster, guid]()
++                {
++                    if (Unit* victim = ObjectAccessor::GetUnit(*caster, guid); victim && victim->IsAlive())
++                        caster->CastSpell(victim, 954127, true);
++                }, 1ms);
++            }
++        if (info->SpellFamilyName == SPELLFAMILY_MAGE && WcmeNamed(info, "Alter Time") && info->HasAura(SPELL_AURA_ASCENSION_OVERRIDE_SPELL) &&
++            mode != AURA_REMOVE_BY_DEATH && unit->HasAura(954636))
++            unit->m_Events.AddEventAtOffset([unit]() { if (unit->IsAlive()) unit->CastSpell(unit, 954637, true); }, 1ms);
++        if (info->SpellFamilyName == SPELLFAMILY_WARLOCK && WcmeNamed(info, "Hellfire") && WcmeHasAnyAura(unit, { 81096, 281336 }))
++            if (Player* player = unit->ToPlayer())
++                if (Pet* demon = player->GetPet())
++                    demon->RemoveAurasDueToSpell(info->Id);
++    }
++
++    void Sweep(Unit* target, Unit* attacker, int64 value, bool ability)
++    {
++        if (!attacker->HasAura(912326))
++            return;
++        Aura* sweeping = nullptr;
++        for (auto const& [id, app] : attacker->GetAppliedAuras())
++            if (IsSweeping(app->GetBase()->GetSpellInfo()) && app->GetBase()->GetDuration() > 0)
++                sweeping = app->GetBase();
++        if (ability)
++        {
++            TimePoint const now = GameTime::Now();
++            auto& next = _nextCut[attacker->GetGUID()];
++            if (now >= next)
++            {
++                next = now + 1s;
++                WcmeCutCooldownByName(attacker, "Sweeping Strikes", 1000);
++            }
++        }
++        if (!sweeping)
++            return;
++        for (Unit* enemy : WcmeEnemiesNear(attacker, target, 8.0f, 4))
++            if (enemy != target)
++                return;
++        SpellInfo const* strike = sSpellMgr->GetSpellInfo(26654);
++        if (!strike || value <= 0)
++            return;
++        if (sweeping->GetCharges() > 1)
++            sweeping->SetCharges(sweeping->GetCharges() - 1);
++        else if (sweeping->GetCharges() == 1)
++            sweeping->Remove();
++        ObjectGuid const guid = target->GetGUID();
++        attacker->m_Events.AddEventAtOffset([attacker, guid, value, strike]()
++        {
++            if (Unit* victim = ObjectAccessor::GetUnit(*attacker, guid))
++                WcmeExtraDamage(attacker, victim, strike, value);
++        }, 1ms);
++    }
++
++    void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage) override
++    {
++        if (target && attacker && damage && target != attacker)
++            Sweep(target, attacker, damage, false);
++    }
++
++    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
++    {
++        if (!target || !attacker || !spellInfo || damage <= 0 || target == attacker)
++            return;
++        int64 value = damage;
++        if (IsSweeping(spellInfo))
++        {
++            if (attacker->HasAura(912326) && target->IsControlledByPlayer())
++                value = value * 75 / 100;
++        }
++        else if (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MELEE)
++            Sweep(target, attacker, value, true);
++        if (attacker->HasAura(1556015) && WcmeNamed(spellInfo, "Arcane Blast"))
++        {
++            uint8 stacks = 0;
++            for (auto const& [id, app] : attacker->GetAppliedAuras())
++                if (WcmeNamed(app->GetBase()->GetSpellInfo(), "Arcane Blast") && app->GetBase()->GetSpellInfo()->StackAmount)
++                    stacks = app->GetBase()->GetStackAmount();
++            if (stacks && roll_chance_i(10 * stacks))
++            {
++                int64 const bonus = value * 15 / 100;
++                ObjectGuid const guid = target->GetGUID();
++                attacker->m_Events.AddEventAtOffset([attacker, guid, bonus]()
++                {
++                    SpellInfo const* power = sSpellMgr->GetSpellInfo(1556016);
++                    if (Unit* victim = ObjectAccessor::GetUnit(*attacker, guid); victim && power)
++                        WcmeExtraDamage(attacker, victim, power, bonus);
++                }, 1ms);
++            }
++        }
++        if ((spellInfo->SchoolMask & SPELL_SCHOOL_MASK_FIRE) && spellInfo->Id != 944831)
++            if (Aura* flesh = target->GetAura(944829, attacker->GetGUID()))
++            {
++                ObjectGuid const guid = target->GetGUID();
++                attacker->m_Events.AddEventAtOffset([attacker, guid]()
++                {
++                    if (Unit* victim = ObjectAccessor::GetUnit(*attacker, guid))
++                        attacker->CastSpell(victim, 944831, true);
++                }, 1ms);
++                if (flesh->GetCharges() > 1)
++                    flesh->SetCharges(flesh->GetCharges() - 1);
++                else
++                    flesh->Remove();
++            }
++        if (attacker->HasAura(274981) && WcmeNamedAny(spellInfo, { "Fireball", "Pyroblast" }))
++            attacker->m_Events.AddEventAtOffset([attacker]() { attacker->CastSpell(attacker, 274983, true); }, 1ms);
++        if (attacker->HasAura(274982) && WcmeNamedAny(spellInfo, { "Starfire", "Starsurge" }))
++            attacker->m_Events.AddEventAtOffset([attacker]() { attacker->CastSpell(attacker, 275002, true); }, 1ms);
++        if (attacker->HasAura(1181300))
++        {
++            if (WcmeNamed(spellInfo, "Shield Slam"))
++                value += int64(attacker->GetTotalAttackPowerValue(BASE_ATTACK) * 0.25f);
++            if (WcmeNamedAny(spellInfo, { "Devastate", "Revenge" }) && attacker->ToPlayer())
++            {
++                int32 rank = 0;
++                for (uint32 talent : { 46951u, 46952u, 46953u, 1146951u, 1146952u, 1146953u, 1246951u, 1246952u, 1246953u })
++                    if (attacker->ToPlayer()->HasSpell(talent))
++                        rank = std::max<int32>(rank, int32(talent % 10));
++                int32 const chance = 10 * rank;
++                if (chance && roll_chance_i(chance))
++                    attacker->m_Events.AddEventAtOffset([attacker]() { attacker->CastSpell(attacker, 50227, true); }, 1ms);
++            }
++        }
++        damage = int32(std::min<int64>(INT32_MAX, value));
++    }
++
++private:
++    std::unordered_map<ObjectGuid, TimePoint> _nextCut;
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
++    new wcme_epic_batch3_spells();
++    new wcme_epic_batch3_hooks();
++    RegisterSpellScript(spell_wcme_swashbuckling_bonus);
++    RegisterSpellScript(spell_wcme_keep_helper);
++    RegisterSpellScript(spell_wcme_deadly_follow_up);
 +    new wcme_epic_batch2_hooks();
 +    RegisterSpellScript(spell_wcme_finisher_combo);
 +    RegisterSpellScript(spell_wcme_bloodsail_rage);

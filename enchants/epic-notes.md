@@ -182,11 +182,15 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Adrenaline Junkie (1589466, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** 12 sec (1589467's value) taken off any Adrenaline Rush you know. The GCD removal was already its data.
@@ -197,7 +201,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Adumbral Companion (81422, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -593,6 +601,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Blood Drinker (965389, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** Heal of 3% maximum health plus 25% attack power, chosen because the data has no amount and the text says small and attack-power based (Bloodthirst's own heal is a small percentage of health). Spends the whole Taste for Blood buff.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Blood and Guts (273885, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -887,11 +912,15 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Cobra Combo (284148, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** As 979106; the newer text says Tamed Pet of any kind, done as your active pet.
@@ -902,11 +931,15 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Cobra Combo (979106, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** The crit buff goes to your active pet (979105 targets the pet).
@@ -922,6 +955,24 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Controlled Aggression (1181300, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Controlled Aggression (1181300): keeps its helper 1181301 on you (Shield Slam's cooldown 50% longer, so 3 sec, from its data); the attack power part and the doubled Sword and Board chance are in wcme_epic_batch3_hooks. Deadly Follow-up (979080): teaches Deadly Follow-up (979081) for as long as you know Shiv and have the enchant.
+- Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second roll at your Sword and Board talent's chance (10% per rank). - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
+- 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**Assumptions:** Its helper 1181301 (kept on you) supplies the longer Shield Slam cooldown. "Chance doubled" is done as a second roll at the talent's 10% per rank on Devastate and Revenge.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -993,6 +1044,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Critical Time (1575124, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** Every spell of yours gets +5% crit on a target with your Living Bomb.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -1105,11 +1173,15 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Deadly Combo (283833, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Sudden Death only (283835); needs the talent unless you have 973827, as its text says.
@@ -1120,16 +1192,39 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Deadly Combo (977856, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Needs the Sudden Death talent known (any rank); triggers through its own 977858 (Sudden Death 52437 and Deadly Combo 954353).
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Deadly Follow-up (979080, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Controlled Aggression (1181300): keeps its helper 1181301 on you (Shield Slam's cooldown 50% longer, so 3 sec, from its data); the attack power part and the doubled Sword and Board chance are in wcme_epic_batch3_hooks. Deadly Follow-up (979080): teaches Deadly Follow-up (979081) for as long as you know Shiv and have the enchant.
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**Assumptions:** Deadly Follow-up is taught while you know Shiv; charges last 979082's own duration and stop at 3; the dagger requirement is the ability's own.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -1378,11 +1473,15 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Double Team (275094, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Sources:** our client spell data (Spell.dbc)
@@ -1494,6 +1593,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Eclipse Bomber (275014, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second roll at your Sword and Board talent's chance (10% per rank). - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** The Bomber buffs' data points at the opposite Flames spells from the text; we follow the text (Fireball/Pyroblast give Lunar Flames, Starfire/Starsurge give Solar Flames).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -1655,11 +1771,15 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Enraging Finale (283405, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Casts your known Bloodrage; without it, only with 973827 (then the Bloodrage buff 29131). The 20 sec limit starts on every successful roll.
@@ -1675,6 +1795,24 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Esoteric Power (1556015, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second roll at your Sword and Board talent's chance (10% per rank). - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** Arcane Blast's buff (normally 4 stacks) goes to 5; each hit has 10% per stack to add 15% as Esoteric Power (1556016). The chance per stack is the text's; 15% is its own value.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -1821,6 +1959,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Fire and Ice (84382, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second roll at your Sword and Board talent's chance (10% per rank). - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** Frozen Flesh has 3 charges ("up to 3 times"); every Fire spell hit on it triggers Thawed Flesh and spends one.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -2167,7 +2322,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Glacial Companion (81420, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2377,6 +2536,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### High Winds (954126, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second roll at your Sword and Board talent's chance (10% per rank). - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** Also after a Cyclone that breaks early (any end but the target's death).
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Hoarfrost (92260, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -2455,7 +2631,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### I Have The High Ground (81090, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2557,6 +2737,22 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Iron Guard (1181340, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- 049-epics-3.sql: Core patch 69: Iron Guard (1181340).
+
+**Assumptions:** 15% of the damage left after the block is blocked too; spells that can be blocked included. Needs core patch 69.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -2780,9 +2976,30 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Moon's Wrath (1180590, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** "Your Moonfire" means one you cast; +8% from its own value.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Mystic Companion (81418, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3010,6 +3227,24 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Poison Bomb (979113, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second roll at your Sword and Board talent's chance (10% per rank). - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
+- 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**Assumptions:** 4 sec from its text (its helper says 2).
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Poison Rain (982506, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3122,6 +3357,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Pyroclasmic Shadows (1577402, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** Pyroclasm buff means any Warlock aura named Pyroclasm on you; +20% is 1577382's value.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Pyroclasmic Shadows (276551, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3203,6 +3455,40 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
 **Testing:** would not cast, tooltip numbers broken; retest with a ranged weapon equipped (tooltip requires one) | 2026-11-03
+
+### Raising Hell (281336, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** As 81096.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Raising Hell (81096, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** Your demon casts the same Hellfire rank and takes Hellfire's self-damage like you do; an Infernal is excluded; the demon's Hellfire stops when yours ends.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
 
 ### Razorlash (982448, Epic)
 
@@ -3504,6 +3790,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Shooting Stars (81181, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** Arcane spells are any with the Arcane school (Starfire is Arcane); the +5% crit applies to magic spells only.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Sinister Flurry (283559, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3526,7 +3829,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Smoldering Companion (81419, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3720,11 +4027,15 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Swashbuckler: Bloodsail (285111, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Gives 285115 (crit, up to 5) with the same Swashbuckling check; the Defias Gunslinger helper 285113 is not used.
@@ -3735,11 +4046,15 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Swashbuckler: Bloodsail (983110, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Swashbuckling means one one-handed weapon in the main hand, nothing in the off hand, not shapeshifted (the same check Swashbuckler: Bloodsail Captain uses). New stacks do not refresh the 18 sec timer. The rage is 1 per stack per main-hand auto attack hit (983113, kept at the same stacks).
@@ -3759,6 +4074,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Swashbuckler: Flurry of Blows (81221, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Swashbuckler: Flurry of Blows (81221, +20% melee haste) and Swashbuckler: Matched Blows (81219, +5% parry) while Swashbuckling (one one-handed weapon, empty off hand, not shapeshifted). The enchant's own effect becomes that bonus in Validate and is switched on or off every second. Swashbuckler: Shocktrooper 281944 keeps 281945 (its own -2 sec on Shaman Shocks) on you the same way.
+- 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**Assumptions:** Its dummy becomes +20% melee haste, on only while Swashbuckling.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Swashbuckler: Matched Blows (281597, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3767,6 +4099,74 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Swashbuckler: Matched Blows (81219, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Swashbuckler: Flurry of Blows (81221, +20% melee haste) and Swashbuckler: Matched Blows (81219, +5% parry) while Swashbuckling (one one-handed weapon, empty off hand, not shapeshifted). The enchant's own effect becomes that bonus in Validate and is switched on or off every second. Swashbuckler: Shocktrooper 281944 keeps 281945 (its own -2 sec on Shaman Shocks) on you the same way.
+- 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**Assumptions:** Its dummy becomes +5% parry, on only while Swashbuckling.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Swashbuckler: Shocktrooper (281944, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Swashbuckler: Flurry of Blows (81221, +20% melee haste) and Swashbuckler: Matched Blows (81219, +5% parry) while Swashbuckling (one one-handed weapon, empty off hand, not shapeshifted). The enchant's own effect becomes that bonus in Validate and is switched on or off every second. Swashbuckler: Shocktrooper 281944 keeps 281945 (its own -2 sec on Shaman Shocks) on you the same way.
+- 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**Assumptions:** Keeps its own 281945 (-2 sec on Shocks, -15% Shock damage against players) on you while Swashbuckling.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Swashbuckler: Shocktrooper (81415, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** 10.5 sec from its text, taken off after the Shock is cast while Swashbuckling.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Sweeping Swings (912326, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second roll at your Sword and Board talent's chance (10% per rank). - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** "Can hit your primary target": with no other enemy within 8 yards, your hits during Sweeping Strikes strike the target again for the same damage and spend a Sweeping Strikes charge. The 1 sec cooldown cut is the text's (its helper says 2). -25% against players from the text.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -3932,13 +4332,34 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
-### Titanic Finale (954436, Epic)
+### Timed Charge (954636, Epic)
 
 **Status:** unchanged: broken
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5).
+- Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second roll at your Sword and Board talent's chance (10% per rank). - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** "Return" means the Alter Time aura ending (expiry or recast), not death.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Titanic Finale (954436, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
 - Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
@@ -3967,6 +4388,40 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Totem Master: Fire (1581586, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** The extra aura is the one the Totem of Wrath creature casts (or Flametongue Totem's if you don't know Totem of Wrath), from the highest rank you know.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Totem Master: Fire (81445, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** The health is set 0.1 sec after the totem appears, on the totem in your Fire slot.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -4060,6 +4515,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Unstoppable Force (911167, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
+- 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**Assumptions:** Incapacitated or immobilized means rooted, stunned, sapped, polymorphed, knocked out, asleep, frozen, horrified or banished. The Thunder Slam exclusion is not checked.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Valkyr's Calling (850128, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -4113,7 +4585,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Voltaic Companion (81421, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4190,7 +4666,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Weapon Command (283338, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4205,7 +4685,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Weapon Command (954057, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
