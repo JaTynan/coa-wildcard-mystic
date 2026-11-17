@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..97aa662
+index 0000000..dc2764e
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14446 @@
+@@ -0,0 +1,14494 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13641,8 +13641,8 @@ index 0000000..97aa662
 +// - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the
 +//   stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL).
 +// - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347).
-+// - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins
-+//   (997193) for 6 sec.
++// - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost
++//   damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec).
 +// - Void Teleportation (954626): Void Shift also swaps your position with the target's.
 +// - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on
 +//   each ally it heals, for 30% of the heal (its own value).
@@ -13691,6 +13691,23 @@ index 0000000..97aa662
 +            if (caster->HasAura(273420))
 +                WcmeMarkCast(caster, info->Id);
 +        }
++    }
++
++    // Arngrim's Greeting: the Heroic Leap damage spell (86359) lands with the leap's missile, which can be a moment ahead
++    // of the warrior. Blizzard (997194) is placed at the caster, so wait (up to 2 sec) until they are on the ground near
++    // the landing point, then start Blizzard and Icy Veins (997193).
++    static void ArngrimLanding(Unit* caster, Position landing, uint8 tries)
++    {
++        bool const landed = !caster->IsFalling() && caster->GetExactDist2d(landing.GetPositionX(), landing.GetPositionY()) <= 4.0f;
++        if (landed || tries >= 20)
++        {
++            if (!caster->IsAlive())
++                return;
++            caster->CastSpell(caster, 997194, true);
++            caster->CastSpell(caster, 997193, true);
++            return;
++        }
++        caster->m_Events.AddEventAtOffset([caster, landing, tries]() { ArngrimLanding(caster, landing, tries + 1); }, 100ms);
 +    }
 +
 +    static bool DirectDamage(SpellInfo const* info)
@@ -13743,8 +13760,8 @@ index 0000000..97aa662
 +        if (caster->HasAura(997188) && info->SpellFamilyName == SPELLFAMILY_WARRIOR && WcmeNamed(info, "Heroic Leap") &&
 +            DirectDamage(info))
 +        {
-+            caster->CastSpell(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), 997194, true);
-+            caster->CastSpell(caster, 997193, true);
++            Position const landing = spell->m_targets.HasDst() ? spell->m_targets.GetDstPos()->GetPosition() : caster->GetPosition();
++            ArngrimLanding(caster, landing, 0);
 +        }
 +
 +        if (caster->HasAura(954626) && target && target != caster && WcmeNamed(info, "Void Shift"))
@@ -13798,6 +13815,10 @@ index 0000000..97aa662
 +
 +        if (critical && caster->HasAura(1180644) && WcmeNamed(info, "Firebolt"))
 +            caster->RemoveAurasDueToSpell(1180644);
++
++        if (damage && info->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && WcmeNamed(info, "Grave Coil") &&
++            target->HasAura(288824, caster->GetGUID()))
++            target->RemoveAurasDueToSpell(288824, caster->GetGUID());
 +
 +        if (healing && player && WcmeNamed(info, "Greater Heal") && WcmeTakeMark(caster, info->Id))
 +            if (Unit* ally = WcmeLowestAlly(player, target, 40.0f))
@@ -13908,8 +13929,9 @@ index 0000000..97aa662
 +//   (within 15 sec).
 +// - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving
 +//   Stealth puts you in Shadowform if you know it.
-+// - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of
-+//   yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target.
++// - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add
++//   a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see
++//   NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks.
 +// - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same
 +//   damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet.
 +// - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass.
@@ -13997,8 +14019,11 @@ index 0000000..97aa662
 +
 +    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
 +    {
-+        if (target && attacker && spellInfo && damage > 0 && target != attacker)
-+            damage = int32(std::min<int64>(INT32_MAX, Any(target, attacker, spellInfo, Direct(target, attacker, spellInfo, damage))));
++        if (!target || !attacker || !spellInfo || damage <= 0 || target == attacker)
++            return;
++        damage = int32(std::min<int64>(INT32_MAX, Any(target, attacker, spellInfo, Direct(target, attacker, spellInfo, damage))));
++        if (!attacker->IsPlayer())
++            NecromancersTouch(attacker->GetCharmerOrOwner(), attacker, target);
 +    }
 +
 +    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override
@@ -14046,17 +14071,40 @@ index 0000000..97aa662
 +            if (Spell const* channel = owner->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
 +                channel && WcmeNamed(channel->GetSpellInfo(), "Health Funnel"))
 +                attacker->m_Events.AddEventAtOffset([attacker]() { if (attacker->IsAlive()) attacker->CastSpell(attacker, 1180902, true); }, 1ms);
-+        if (!owner->HasAura(275963))
-+            return;
++        NecromancersTouch(owner, attacker, target);
++    }
++
++    // Necromancer's Touch (275963): a pet made by Dominate Undead or Enslave Demon (in our data these tame the creature,
++    // so it is a pet, not a charm), a ghoul from Raise Dead or Summon Ghoul, or a demon or undead you are charming.
++    static bool NecromancerPet(Unit* owner, Unit* attacker)
++    {
++        Creature* creature = attacker->ToCreature();
++        if (!creature || attacker->GetCharmerOrOwner() != owner)
++            return false;
++        if (SpellInfo const* made = sSpellMgr->GetSpellInfo(attacker->GetUInt32Value(UNIT_CREATED_BY_SPELL)))
++            if (WcmeNamedAny(made, { "Dominate Undead", "Enslave Demon", "Raise Dead", "Summon Ghoul" }))
++                return true;
++        if (creature->GetEntry() == 26125)
++            return true;
 +        uint32 const type = creature->GetCreatureType();
-+        bool const enslaved = attacker->IsCharmed() && (type == CREATURE_TYPE_DEMON || type == CREATURE_TYPE_UNDEAD);
-+        if (!enslaved && type != CREATURE_TYPE_UNDEAD)
++        return attacker->IsCharmed() && attacker->GetCharmerGUID() == owner->GetGUID() &&
++            (type == CREATURE_TYPE_DEMON || type == CREATURE_TYPE_UNDEAD);
++    }
++
++    // Each hit from such a pet adds a stack of Necromancer's Touch (275966: +5% damage per stack from your Drain Life and
++    // Drain Soul, up to 10, 8 sec) and of its Grave Coil part (288824: +5% from your next Grave Coil per stack, up to 10).
++    static void NecromancersTouch(Unit* owner, Unit* attacker, Unit* target)
++    {
++        if (!owner || !target || !owner->HasAura(275963) || !NecromancerPet(owner, attacker))
 +            return;
 +        ObjectGuid const guid = target->GetGUID();
 +        owner->m_Events.AddEventAtOffset([owner, guid]()
 +        {
 +            if (Unit* victim = ObjectAccessor::GetUnit(*owner, guid); victim && victim->IsAlive())
++            {
 +                WcmeAddStack(victim, 275966, owner);
++                WcmeAddStack(victim, 288824, owner);
++            }
 +        }, 1ms);
 +    }
 +
