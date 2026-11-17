@@ -49,4 +49,12 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
    against the core release the build uses (also with the Windows header macros defined) and its SQL loaded twice
    into a scratch database. None of that replaces in-game testing, which is recorded per enchant below.
 
+## Known core quirk
+
+The core calls the heal hook (`UnitScript::ModifyHealReceived`) with its two units in a different order for direct
+heals (healer first) than for heal-over-time ticks (target first). Batch 5 (`sql/enchants/051-epics-5.sql`) added
+`WcmeHealParties` to the enchant scripts to put them in the right order, and fixed the three rules that had read them
+the wrong way round: Growing Light (270661), Holy Ground (81315 / 281788) and the Align heal bonus (986160). Any new
+heal rule should call `WcmeHealParties` first.
+
 ## Enchants
