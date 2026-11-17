@@ -303,6 +303,7 @@ def main():
             'assumptions': note.get('assumptions', ''),
             'sources': note.get('sources', ''),
             'decisions': note.get('decisions', ''),
+            'tooltip differs (review)': note.get('tooltip_review', ''),
         })
         if not changes and not note:
             continue
@@ -322,7 +323,8 @@ def main():
         if said:
             lines += ['', '**What the pull requests said:**', '']
             lines += [f'- #{n}: {l}' for n, l in said[:12]]
-        for label, key in (('Assumptions', 'assumptions'), ('Sources', 'sources'), ('Decisions', 'decisions')):
+        for label, key in (('Assumptions', 'assumptions'), ('Sources', 'sources'), ('Decisions', 'decisions'),
+                           ('Tooltip differs from what the server does (review)', 'tooltip_review')):
             if note.get(key):
                 lines += ['', f'**{label}:** {note[key]}']
         lines += ['', f'**Testing:** {" | ".join(tests[sid]) if tests.get(sid) else "nothing recorded yet"}', '']
@@ -335,6 +337,13 @@ def main():
         writer.writeheader()
         writer.writerows(rows)
     header = (ROOT / f'enchants/{tier}-notes-header.md').read_text(encoding='utf-8')
+    flagged = [r for r in rows if r['tooltip differs (review)']]
+    review = ['## Tooltip differences to review', '',
+              'Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate',
+              'call (see its Decisions and Assumptions); check them again at every review, and fix the tooltip in the client',
+              'patch or the mechanic when there is a chance.', '']
+    review += [f'- {r["name"]} ({r["spell"]}): {r["tooltip differs (review)"]}' for r in flagged] or ['- None.']
+    header = header.rstrip().replace('\n## Enchants', '\n' + '\n'.join(review) + '\n\n## Enchants')
     (ROOT / f'enchants/{tier}-notes.md').write_text(header.rstrip() + '\n\n' + '\n'.join(sections), encoding='utf-8')
     print(f'{len(rows)} {tier} copies, {len(sections)} with notes')
 

@@ -62,6 +62,16 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 - Epic copies reported broken in talent testing (Demonic Reoccurence 272730, issue #148; Demonic Persistence 276506,
   issue #149) are separate enchants and are not covered here.
 
+## Tooltip differences to review
+
+Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate
+call (see its Decisions and Assumptions); check them again at every review, and fix the tooltip in the client
+patch or the mechanic when there is a chance.
+
+- Hot Hands (1575104): Our Hot Streak has no Pyroblast bonus, so "only 35% against monsters" is applied as a +35% bonus against monsters.
+- Hot Hands (979765): Our Hot Streak has no Pyroblast bonus, so "only 35% against monsters" is applied as a +35% bonus against monsters.
+- Mana Fiend (977870): The client tooltip says Delirium is 5% of Intellect and restores 14% base mana per stack; the server follows the player descriptions (10% of Intellect, drained mana back over 12 sec) and uses +25% Intellect.
+
 ## Enchants
 
 ### Abiding Fel Energy (84805, Legendary)
@@ -230,7 +240,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the pull requests said:**
 
@@ -1097,7 +1107,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 |---|---|---|---|---|
 | 2026-11-16 | ead73f1 | #173 Medium legendary fixes, batch 2 | build47 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | b01de40 | #173 Medium legendary fixes, batch 2 | build47 (2026-11-15) | 2026-11-16 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1126,7 +1136,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1248,7 +1258,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1439,7 +1449,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1556,7 +1566,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1718,7 +1728,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1895,7 +1905,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2020,7 +2030,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2075,7 +2085,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2115,7 +2125,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2239,7 +2249,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 1d8de01 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2259,6 +2269,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
 **Decisions:** 2026-11-17 James: fix every known gap.
+
+**Tooltip differs from what the server does (review):** Our Hot Streak has no Pyroblast bonus, so "only 35% against monsters" is applied as a +35% bonus against monsters.
 
 **Testing:** nothing recorded yet
 
@@ -2269,7 +2281,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 1d8de01 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2289,6 +2301,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
 **Decisions:** 2026-11-17 James: fix every known gap.
+
+**Tooltip differs from what the server does (review):** Our Hot Streak has no Pyroblast bonus, so "only 35% against monsters" is applied as a +35% bonus against monsters.
 
 **Testing:** nothing recorded yet
 
@@ -2475,7 +2489,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2537,6 +2551,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 **Sources:** our client spell data (Spell.dbc); two player descriptions supplied by James (2026-11-16); Project Ascension wiki, Enchant Collection page (+25% Intellect, 50% Delirium chance, 10% of Intellect per stack, ends below 20% mana, mana back over 12 sec); Ascension forum thread "Mana fiend"
 
 **Decisions:** 2026-11-16 James: rework to the player descriptions. 2026-11-16 James: Intellect bonus 25% (was 30%) to match the wiki.
+
+**Tooltip differs from what the server does (review):** The client tooltip says Delirium is 5% of Intellect and restores 14% base mana per stack; the server follows the player descriptions (10% of Intellect, drained mana back over 12 sec) and uses +25% Intellect.
 
 **Testing:** nothing recorded yet
 
@@ -2885,8 +2901,8 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
-| 2026-11-16 | 6976f48 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 6976f48 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3225,7 +3241,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
 
 **What the server does (from the code and SQL comments):**
 

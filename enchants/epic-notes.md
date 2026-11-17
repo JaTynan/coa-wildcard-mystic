@@ -49,6 +49,20 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
    against the core release the build uses (also with the Windows header macros defined) and its SQL loaded twice
    into a scratch database. None of that replaces in-game testing, which is recorded per enchant below.
 
+## Tooltip differences to review
+
+Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate
+call (see its Decisions and Assumptions); check them again at every review, and fix the tooltip in the client
+patch or the mechanic when there is a chance.
+
+- Chilling Blows (81213): The tooltip can be read as 10.5 sec per Frostbrand hit on a stun-immune target; the server gives it once per Deep Freeze.
+- Eclipse Bomber (275014): The Bomber buffs' own tooltips name the opposite Flames (data) from the enchant text; the server follows the enchant text.
+- Poison Bomb (979113): Its helper spell 979165 says 2 sec; the enchant tooltip and the server use 4 sec.
+- Soul Restoration (282213): Its tooltip says Weakened Soul is shortened by 4 sec; the server uses 2 sec so every copy matches (James, 17 Nov).
+- Sweeping Swings (912326): Its helper spell 912327 says 2 sec; the enchant tooltip and the server use 1 sec.
+- Weapon Command (283338): The Ascension builder says +10% attack speed; our client tooltip and the server use +10% Physical damage.
+- Weapon Command (954057): The Ascension builder says +10% attack speed; our client tooltip and the server use +10% Physical damage.
+
 ## Enchants
 
 ### A Quick Death (283565, Epic)
@@ -603,7 +617,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Blood Drinker (965389, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -634,6 +652,24 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 **What the pull requests said:**
 
 - #175: Blood and Guts (977906):** Mutilate on a Disemboweled target adds Mutilating Disembowel; Execute consumes Disembowel (after the twin's explosion), and Remorseless only stays if you know Remorseless Attacks.
+
+**Testing:** nothing recorded yet
+
+### Blood-Soaked Mutilation (1590974, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661): your Holy heals on your Beacon of Light target also heal 3 allies within 8 yards of it for 20% of the heal. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** The out-of-Stealth Garrote is allowed once within 10 sec of the Crimson Tempest proc (10 sec is our choice); its silence is removed right after it lands. "Your bleeds" are bleeds you applied.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -839,6 +875,25 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Chilling Blows (81213, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** The 10.5 sec cooldown cut happens once per Deep Freeze that deals damage (a stun-immune target), not per Frostbrand hit, because per hit would remove the cooldown entirely.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** The tooltip can be read as 10.5 sec per Frostbrand hit on a stun-immune target; the server gives it once per Deep Freeze.
+
+**Testing:** nothing recorded yet
+
 ### Circle of Life (1568799, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -960,7 +1015,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Controlled Aggression (1181300, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1049,7 +1108,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Critical Time (1575124, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1211,7 +1274,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Deadly Follow-up (979080, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1598,7 +1665,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Eclipse Bomber (275014, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1610,6 +1681,8 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 **Sources:** our client spell data (Spell.dbc)
 
 **Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** The Bomber buffs' own tooltips name the opposite Flames (data) from the enchant text; the server follows the enchant text.
 
 **Testing:** nothing recorded yet
 
@@ -1640,6 +1713,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Elemental Burst (278033, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** 278035 slows nothing itself; its data shortens your Searing Totem's attack (your spell modifiers apply to your totems).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -1800,7 +1890,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Esoteric Power (1556015, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1843,6 +1937,40 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Faerie Swarm (281916, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** As 81402.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Faerie Swarm (81402, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** Casts your highest known Insect Swarm on the target when Faerie Fire (Feral) lands.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -1929,6 +2057,58 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Fire Walk With Me (1584166, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
+
+**Assumptions:** Speed field 1584167 (+40%); Scorch while moving and 10 yards less range come from its helper 1584168, kept on you.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Fire Walk With Me (283296, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** As 952120.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Fire Walk With Me (952120, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** The speed field is the client's own 411155 cast at Flamestrike's target point; "does not work with Flameburst" is not checked.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Fire Watch (274470, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -1964,7 +2144,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Fire and Ice (84382, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2446,6 +2630,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Growing Light (270661, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661): your Holy heals on your Beacon of Light target also heal 3 allies within 8 yards of it for 20% of the heal. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** Holy means a heal with the Holy school; 3 allies within 8 yards of the Beacon target; heal-over-time ticks don't count.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Hailstorm (1591029, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -2538,7 +2739,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### High Winds (954126, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2560,6 +2765,42 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Holy Ground (281788, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661): your Holy heals on your Beacon of Light target also heal 3 allies within 8 yards of it for 20% of the heal. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
+
+**Assumptions:** As 81315.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Holy Ground (81315, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661): your Holy heals on your Beacon of Light target also heal 3 allies within 8 yards of it for 20% of the heal. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
+
+**Assumptions:** 983813 is put on allies inside your Consecration every second. The 5% splash goes to up to 5 allies within 8 yards of the healed ally; heal-over-time ticks don't count. The Purification by Light and Consecrated Strikes exclusion is not checked.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -2742,7 +2983,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Iron Guard (1181340, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2815,6 +3060,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Lightning Mastery (81140, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** 11% (its own chance). The echo is a second hit of the same spell for half the damage; it cannot echo again.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -2920,6 +3182,38 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Mastery of the Tide (1574368, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- 050-epics-4.sql: Core patch 70: Mastery of the Tide (1574368, 274948).
+
+**Assumptions:** Chain Heal still gets the 25% Riptide bonus but leaves Riptide on. Needs core patch 70. Its cast time cut is its data.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Mastery of the Tide (274948, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- 050-epics-4.sql: Core patch 70: Mastery of the Tide (1574368, 274948).
+
+**Assumptions:** As 1574368 (its text says Riptide is no longer consumed; Chain Heal is the only thing that consumes it).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Mayhem (982940, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -2937,6 +3231,40 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Mending Hands (281724, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** As 81297 (1.5 sec cast from its data).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Mending Hands (81297, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** Every other ally within 8 yards of the target is healed for the same amount as the target.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -2978,7 +3306,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Moon's Wrath (1180590, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3117,6 +3449,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Overload Mastery (281411, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** 22% (its own chance), otherwise as 81140.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Pack Alpha (1579878, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3229,7 +3578,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Poison Bomb (979113, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3242,6 +3595,8 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
 **Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** Its helper spell 979165 says 2 sec; the enchant tooltip and the server use 4 sec.
 
 **Testing:** nothing recorded yet
 
@@ -3357,9 +3712,30 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
+### Pyroclasmic Ignition (271125, Epic)
+
+**Status:** unchanged: partly working
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661): your Holy heals on your Beacon of Light target also heal 3 allies within 8 yards of it for 20% of the heal. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** "Your Living Bomb" means one you cast.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Pyroclasmic Shadows (1577402, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3458,7 +3834,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Raising Hell (281336, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3475,7 +3855,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Raising Hell (81096, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3568,6 +3952,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Savage Momentum (1556008, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot (the text's four; the helper only covers some ranks); the Stampede extension is its own 1556022.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -3790,9 +4191,30 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Testing:** nothing recorded yet
 
-### Shooting Stars (81181, Epic)
+### Shooting Stars (281485, Epic)
 
 **Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** Every non-channelled spell with a cast time counts (81181 counts Arcane only).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Shooting Stars (81181, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3894,6 +4316,8 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 **Sources:** our client spell data (Spell.dbc)
 
 **Decisions:** 2026-11-17 James: 2 sec is fine for Soul Restoration.
+
+**Tooltip differs from what the server does (review):** Its tooltip says Weakened Soul is shortened by 4 sec; the server uses 2 sec so every copy matches (James, 17 Nov).
 
 **Testing:** nothing recorded yet
 
@@ -4076,7 +4500,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Swashbuckler: Flurry of Blows (81221, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4104,7 +4532,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Swashbuckler: Matched Blows (81219, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4121,7 +4553,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Swashbuckler: Shocktrooper (281944, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4138,7 +4574,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Swashbuckler: Shocktrooper (81415, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4155,7 +4595,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Sweeping Swings (912326, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4167,6 +4611,8 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
 **Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** Its helper spell 912327 says 2 sec; the enchant tooltip and the server use 1 sec.
 
 **Testing:** nothing recorded yet
 
@@ -4207,6 +4653,23 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Tempered by Chaos (299180, Epic)
+
+**Status:** unchanged: broken
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): your pet's special attack crits take 2 sec off Quick Shot, Arcane Shot, Aimed Shot and Multi-Shot and extend your Stampede on the target (1556022). - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
+- 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+
+**Assumptions:** "Consuming Molten Core" is taken as casting Incinerate or Chaos Bolt while Molten Core is up; Tempered Cleave's own effects reset Fel Cleave.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -4334,7 +4797,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Timed Charge (954636, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4393,7 +4860,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Totem Master: Fire (1581586, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4410,7 +4881,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Totem Master: Fire (81445, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4517,7 +4992,11 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 ### Unstoppable Force (911167, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4681,6 +5160,8 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 
 **Sources:** our client spell data (Spell.dbc)
 
+**Tooltip differs from what the server does (review):** The Ascension builder says +10% attack speed; our client tooltip and the server use +10% Physical damage.
+
 **Testing:** nothing recorded yet
 
 ### Weapon Command (954057, Epic)
@@ -4699,6 +5180,8 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
 **Assumptions:** Our client's buff 954058 gives +10% Physical damage and +4% melee crit. The builder archive says +10% melee attack speed instead; we follow the client, which is what players see.
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026) (disagrees on the first bonus); our client spell data (Spell.dbc)
+
+**Tooltip differs from what the server does (review):** The Ascension builder says +10% attack speed; our client tooltip and the server use +10% Physical damage.
 
 **Testing:** nothing recorded yet
 
