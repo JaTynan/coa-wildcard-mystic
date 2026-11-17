@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..cdbf337
+index 0000000..97aa662
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14432 @@
+@@ -0,0 +1,14446 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13638,7 +13638,7 @@ index 0000000..cdbf337
 +//   of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be
 +//   refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within
 +//   8 yards that have your Saber Fangs.
-+// - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the
++// - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the
 +//   stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL).
 +// - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347).
 +// - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins
@@ -13723,7 +13723,7 @@ index 0000000..cdbf337
 +            caster->EnergizeBySpell(caster, 1581627, caster->GetCreateMana() * 5 / 100, POWER_MANA);
 +
 +        if (caster->HasAura(272317) && info->SpellFamilyName == SPELLFAMILY_HUNTER && !spell->IsTriggered() &&
-+            DirectDamage(info))
++            !info->IsAutoRepeatRangedSpell() && DirectDamage(info))
 +        {
 +            WcmeAddStack(caster, 272319);
 +            if (Aura const* stacks = caster->GetAura(272319); stacks && stacks->GetStackAmount() >= 5)
@@ -13847,7 +13847,7 @@ index 0000000..cdbf337
 +            {
 +                target->RemoveAurasDueToSpell(984697, caster->GetGUID());
 +                int32 const tick = int32(caster->GetLevel() +
-+                    (caster->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_ALL) + caster->GetTotalAttackPowerValue(BASE_ATTACK)) * 0.06f);
++                    (caster->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_MAGIC) + caster->GetTotalAttackPowerValue(BASE_ATTACK)) * 0.06f);
 +                WcmeNoSecondBonus(984698);
 +                caster->CastCustomSpell(target, 984698, &tick, nullptr, nullptr, true);
 +            }
@@ -13922,8 +13922,8 @@ index 0000000..cdbf337
 +// - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes
 +//   instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your
 +//   maximum health per heal.
-+// - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you
-+//   for 3 more sec.
++// - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's
++//   passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec.
 +// - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova
 +//   (1180902) around it. The no-threat part is its data.
 +// - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout
@@ -13934,7 +13934,18 @@ index 0000000..cdbf337
 +public:
 +    wcme_epic_batch67_hooks() : UnitScript("wcme_epic_batch67_hooks", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN,
 +        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK, UNITHOOK_MODIFY_MELEE_DAMAGE, UNITHOOK_MODIFY_HEAL_RECEIVED,
-+        UNITHOOK_ON_AURA_APPLY, UNITHOOK_ON_AURA_REMOVE }) { }
++        UNITHOOK_ON_AURA_APPLY, UNITHOOK_ON_AURA_REMOVE, UNITHOOK_ON_UNIT_SET_SHAPESHIFT_FORM }) { }
++
++    // Ursoc's Blessing: going back into a bear form drops the 3 sec copies first, so the form's own passives (applied
++    // just after this) are fresh and don't inherit the 3 sec timer.
++    void OnUnitSetShapeshiftForm(Unit* unit, uint8 form) override
++    {
++        if (!unit || (form != FORM_BEAR && form != FORM_DIREBEAR) || !WcmeHasAnyAura(unit, { 81446, 282004 }))
++            return;
++        for (uint32 id : { 1178u, 1101178u, 9635u, 1109635u })
++            if (Aura* kept = unit->GetAura(id, unit->GetGUID()); kept && kept->GetMaxDuration() == 3000)
++                kept->Remove();
++    }
 +
 +    static int64 Direct(Unit* target, Unit* attacker, SpellInfo const* spell, int64 value)
 +    {
@@ -14144,8 +14155,7 @@ index 0000000..cdbf337
 +
 +    static bool BearStats(SpellInfo const* info)
 +    {
-+        return info->SpellFamilyName == SPELLFAMILY_DRUID &&
-+            WcmeNamedAny(info, { "Bear Form (Passive)", "Bear Form (Passive2)", "Dire Bear Form (Passive)" });
++        return info->SpellFamilyName == SPELLFAMILY_DRUID && WcmeNamedAny(info, { "Bear Form (Passive)", "Dire Bear Form (Passive)" });
 +    }
 +
 +    void OnAuraApply(Unit* unit, Aura* aura) override
@@ -14183,12 +14193,16 @@ index 0000000..cdbf337
 +        if (WcmeHasAnyAura(unit, { 81446, 282004 }) && BearStats(info) && mode == AURA_REMOVE_BY_DEFAULT && unit->IsAlive())
 +            unit->m_Events.AddEventAtOffset([unit, id]()
 +            {
-+                if (unit->IsAlive() && !unit->HasAura(id))
-+                    if (Aura* kept = unit->AddAura(id, unit))
-+                    {
-+                        kept->SetMaxDuration(3000);
-+                        kept->SetDuration(3000);
-+                    }
++                ShapeshiftForm const form = unit->GetShapeshiftForm();
++                SpellInfo const* info = sSpellMgr->GetSpellInfo(id);
++                if (!info || !unit->IsAlive() || unit->HasAura(id) || form == FORM_BEAR || form == FORM_DIREBEAR)
++                    return;
++                // Effects 0 and 1 only: armour and Stamina, not the form's attack power.
++                if (Aura* kept = unit->AddAura(info, (1 << EFFECT_0) | (1 << EFFECT_1), unit))
++                {
++                    kept->SetMaxDuration(3000);
++                    kept->SetDuration(3000);
++                }
 +            }, 1ms);
 +
 +        if (unit->HasAura(299160) && aura->GetCasterGUID() == unit->GetGUID() && WcmeNamed(info, "Mana Shield") &&
