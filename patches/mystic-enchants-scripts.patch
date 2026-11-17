@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..dc2764e
+index 0000000..a5e5a60
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14494 @@
+@@ -0,0 +1,14501 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13643,8 +13643,10 @@ index 0000000..dc2764e
 +// - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347).
 +// - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost
 +//   damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec).
-+// - Void Teleportation (954626): Void Shift also swaps your position with the target's.
-+// - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on
++// - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when
++//   you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path.
++// - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow
++//   1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on
 +//   each ally it heals, for 30% of the heal (its own value).
 +// - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each
 +//   other bleed of yours on the target when cast, up to 40%, for its whole duration.
@@ -13688,7 +13690,7 @@ index 0000000..dc2764e
 +        if (caster->HasAura(273422) && WcmeNamed(info, "Chain Heal"))
 +        {
 +            WcmeMarkedCast.erase(caster->GetGUID());
-+            if (caster->HasAura(273420))
++            if (WcmeHasAnyAura(caster, { 273420, 1571973 }))
 +                WcmeMarkCast(caster, info->Id);
 +        }
 +    }
@@ -13764,7 +13766,8 @@ index 0000000..dc2764e
 +            ArngrimLanding(caster, landing, 0);
 +        }
 +
-+        if (caster->HasAura(954626) && target && target != caster && WcmeNamed(info, "Void Shift"))
++        if (caster->HasAura(954626) && target && target != caster && info->SpellFamilyName == SPELLFAMILY_PRIEST &&
++            WcmeNamed(info, "Void Shift"))
 +        {
 +            Position const mine = caster->GetPosition();
 +            Position const theirs = target->GetPosition();
@@ -13774,6 +13777,10 @@ index 0000000..dc2764e
 +                Unit* ally = ObjectAccessor::GetUnit(*caster, guid);
 +                if (!ally || !ally->IsAlive() || !caster->IsAlive() || ally->GetMapId() != caster->GetMapId())
 +                    return;
++                // Not on a boat or zeppelin, in a vehicle or on a flight path: a teleport there could strand someone.
++                for (Unit* who : { caster, ally })
++                    if (who->GetTransport() || who->GetVehicle() || who->IsInFlight())
++                        return;
 +                caster->NearTeleportTo(theirs.GetPositionX(), theirs.GetPositionY(), theirs.GetPositionZ(), caster->GetOrientation());
 +                ally->NearTeleportTo(mine.GetPositionX(), mine.GetPositionY(), mine.GetPositionZ(), ally->GetOrientation());
 +            }, 1ms);
