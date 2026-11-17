@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..df3fbfe
+index 0000000..abbdd49
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14539 @@
+@@ -0,0 +1,14533 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13989,7 +13989,8 @@ index 0000000..df3fbfe
 +//   a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see
 +//   NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks.
 +// - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same
-+//   damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet.
++//   damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has
++//   no rule for this splash (effect 0), so it is done here.
 +// - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass.
 +// - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of
 +//   Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack.
@@ -14000,8 +14001,8 @@ index 0000000..df3fbfe
 +//   maximum health per heal.
 +// - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's
 +//   passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec.
-+// - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova
-+//   (1180902) around it. The no-threat part is its data.
++// Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets
++// 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova.
 +// - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout
 +//   (299161) is on you; Mana Shield running out or breaking sets it off again.
 +// - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
@@ -14103,9 +14104,6 @@ index 0000000..df3fbfe
 +                    for (Unit* enemy : WcmeEnemiesNear(attacker, center, 8.0f, 11))
 +                        if (enemy != center)
 +                            WcmeExtraDamage(attacker, enemy, splash, amount);
-+                if (Player* player = attacker->ToPlayer())
-+                    if (Pet* pet = player->GetPet(); pet && pet->IsAlive())
-+                        WcmeAddStack(pet, 1180644, attacker);
 +            }, 1ms);
 +        }
 +    }
@@ -14118,10 +14116,6 @@ index 0000000..df3fbfe
 +        Creature* creature = attacker->ToCreature();
 +        if (!owner || !creature)
 +            return;
-+        if (owner->HasAura(1180900) && creature->GetCreatureTemplate()->Name == "Voidwalker")
-+            if (Spell const* channel = owner->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
-+                channel && WcmeNamed(channel->GetSpellInfo(), "Health Funnel"))
-+                attacker->m_Events.AddEventAtOffset([attacker]() { if (attacker->IsAlive()) attacker->CastSpell(attacker, 1180902, true); }, 1ms);
 +        NecromancersTouch(owner, attacker, target);
 +    }
 +

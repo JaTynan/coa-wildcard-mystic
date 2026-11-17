@@ -32,8 +32,8 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1180420,Elemental Torrent,Epic,coa_mystic_enchant_minion_aura,,resolved,ours removed (core minion listener)
 1180480,Soul Erosion,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 1180590,Moon's Wrath,Epic,coa_mystic_enchant_bonus,,to review,
-1180640,Searing Flames,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
-1180900,Shadow Funnel,Epic,,AscensionMysticEnchantScripts.cpp,to review,
+1180640,Searing Flames,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,"ours trimmed: core's rule only covers effect 1 (pet crit stacks), so our splash, one-target rule and crit-stack use-up stay; our duplicate pet stacks removed"
+1180900,Shadow Funnel,Epic,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core gives the Voidwalker 1180901 while Health Funnelled; Void Nova on auto attacks)
 1181300,Controlled Aggression,Epic,coa_mystic_enchant_aura_link,,to review,
 1181340,Iron Guard,Epic,,Unit.cpp,resolved,core patch 69 trimmed to blocked spells (core does melee/ranged)
 1181360,Stormbound Instinct,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,

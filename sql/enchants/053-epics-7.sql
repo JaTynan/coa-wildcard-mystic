@@ -1,6 +1,7 @@
 -- Epic enchants, batch 7 (needs the build with this version of mystic-enchants-scripts.patch; no client patch change).
 -- Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600),
--- Photosynthesis (287852), Lingering Death (81506), Vampirism (277003), Shadow Funnel (1180900).
+-- Photosynthesis (287852), Lingering Death (81506), Vampirism (277003). Shadow Funnel (1180900) was
+-- dropped in review 2026-11-18: the core already does it.
 -- Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383),
 -- You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour
 -- (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).

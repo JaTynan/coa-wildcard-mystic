@@ -65,4 +65,7 @@ and some enchants written into its C++). Where we also scripted an enchant it al
 Before scripting any enchant, check that file's sources first: the core's tables in `data/sql/updates/pending_db_world`
 and its C++ in `src/server` (search for the enchant's spell id).
 
+`enchants/core-rule-gaps.csv` lists enchants the core handles where one trigger effect has no core rule, so that effect
+never fires (found while reviewing Searing Flames); most still need a look.
+
 ## Enchants
