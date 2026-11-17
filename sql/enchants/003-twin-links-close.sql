@@ -1,5 +1,8 @@
 -- Batch 3: broken enchants whose working twin is a redesigned version (its tooltip differs from ours).
 -- The WildcardEnchants addon shows the twin's tooltip for these, so the text matches what they do.
+-- Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our
+-- scripts do their own text in full, and the twins' core rules doubled it (two more combo points; Frozen Chaos back to 4
+-- charges on every crit, since re-applying an aura with charges resets them).
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (283140, 1583677, 2, 'WCME: Mass Killing Spree uses twin 1583677 (standard, tooltip 0.69 alike)'),
 (118123, 55440, 2, 'WCME: Glyph of Healing Wave uses twin 55440 (scripted, tooltip 0.68 alike)'),
@@ -9,7 +12,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (118033, 54824, 2, 'WCME: Glyph of Swiftmend uses twin 54824 (standard, tooltip 0.62 alike)'),
 (281402, 1579878, 2, 'WCME: Pack Alpha uses twin 1579878 (standard, tooltip 0.61 alike)'),
 (282093, 1581956, 2, 'WCME: Frugal Disposition uses twin 1581956 (scripted, tooltip 0.56 alike)'),
-(980673, 275614, 2, 'WCME: Frozen Chaos uses twin 275614 (standard, tooltip 0.56 alike)'),
 (283541, 1584951, 2, 'WCME: Primal Frenzy uses twin 1584951 (scripted, tooltip 0.53 alike)'),
 (81139, 1579878, 2, 'WCME: Pack Alpha uses twin 1579878 (standard, tooltip 0.51 alike)'),
 (81472, 270561, 2, 'WCME: Dominant Word: Shield uses twin 270561 (standard, tooltip 0.51 alike)'),
@@ -33,7 +35,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (81497, 270631, 2, 'WCME: Atonement uses twin 270631 (scripted, tooltip 0.33 alike)'),
 (81503, 1581832, 2, 'WCME: Desperation uses twin 1581832 (standard, tooltip 0.32 alike)'),
 (851989, 982145, 2, 'WCME: Frost Shot uses twin 982145 (standard, tooltip 0.32 alike)'),
-(979740, 275317, 2, 'WCME: Compound Power uses twin 275317 (standard, tooltip 0.30 alike)'),
 (274209, 1573136, 2, 'WCME: Dark Surgeon uses twin 1573136 (standard, tooltip 0.28 alike)'),
 (277049, 1578501, 2, 'WCME: En Garde! uses twin 1578501 (standard, tooltip 0.28 alike)'),
 (954359, 272057, 2, 'WCME: Hydromancer uses twin 272057 (standard, tooltip 0.28 alike)'),

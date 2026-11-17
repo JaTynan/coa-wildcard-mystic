@@ -87,4 +87,8 @@ player here can learn, so that version never sets the enchant off; they still ne
 Aura links (`coa_mystic_enchant_aura_link`) must watch the proc buff only, never the talent that procs it: a talent is a
 passive aura you always have, so the grant becomes permanent (found while reviewing Decimation by Pyro).
 
+Twin links (`spell_linked_spell` rows in files 001-005) put a twin's aura on you, and with it the twin's core rules.
+Where we later wrote our own script for the enchant's text, the link has to go, or both run (found while reviewing
+Blood and Guts: Compound Power, Frozen Chaos and Elemental Assassin were doubled; Blood and Guts keeps its link on purpose).
+
 ## Enchants

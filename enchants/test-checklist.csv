@@ -537,3 +537,7 @@ audit,919572,Improved Mend Pet,1175790,probably already works,.aura 919572; chec
 007,283042,Mind Core / Pyroclasmic Shadows / Fingers of Death (link fix),0,link,".aura 283042 (or 276551, 274179) with the matching talent but no proc yet","their bonus only appears while the proc buff (Molten Core, Pyroclasm, Fingers of Frost) is up, not all the time",
 050,270661,Growing Light (other Beacon versions),0,hook,.aura 270661; Beacon of Light from a non-stock version (1153563); Holy Light the Beacon target,"3 allies near them healed once each for 20% (270665)",
 053,273458,Shadow Crash,0,core,".aura 273458 and 273453; build 5 Pure Shadow with Shadow Bolt; Shadowfury (stock rank, then CoA rank 1130283)","Shadow Crash lands at the Shadowfury spot once with either rank; no extra Shadow Crash spell in the spellbook"
+003,979740,Compound Power (link fix),0,proc,.aura 979740; Steady Shot and Arcane Shot a dummy,"exactly 2 combo points per shot (not 4); .list auras no longer shows 275317; tooltip is the enchant's own"
+003,980673,Frozen Chaos (link fix),0,proc,".aura 980673; crit with Frostbolt several times","one charge of Frozen Chaos per crit, up to 4 (not straight to 4); Frostfire Bolt crits give nothing; Frost Shock crits do"
+004,978229,Elemental Assassin (link fix),0,proc,.aura 978229; Backstab; then Flame Shock,"only Elemental Assassin 978642 appears (not 274679); Flame Shock +110%"
+015,301000,Circle of Life (Halo cuts),0,action,".aura 301000; use Halo (Circle of Life); cast Flash Heal, then Circle of Healing","Halo's cooldown drops 4 sec, then 3 sec"

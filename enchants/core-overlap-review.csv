@@ -17,8 +17,8 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 271907,Dragon Warrior,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no overlap: ours is the same-named enchant 954252 with its own helpers
 273418,Flowing,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours trimmed to the 3rd-stack Overflowing only (core builds the stacks)
 273458,Shadow Crash,Epic,,AscensionShadowfuryShadowCrash.cpp,resolved,our teach row removed (an unrelated ability); gap-filler for the CoA Shadowfury ranks the core can't see
-273786,Demolisher,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
-273885,Blood and Guts,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+273786,Demolisher,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no overlap: ours is the same-named enchant 977864
+273885,Blood and Guts,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling: our 977906 links it on purpose and only adds what the core lacks
 274205,Trauma Care,Epic,script aura_wildcard_trauma_care,AscensionWildcardReconstruction.cpp,resolved,ours removed (core script; buff data gives the extra target)
 274918,Disciple of the Tides,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 276302,Relentless Reflexes,Uncommon,script aura_wildcard_relentless_reflexes,,to review,

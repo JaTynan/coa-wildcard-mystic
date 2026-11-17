@@ -1,5 +1,7 @@
 -- Batch 4: broken enchants whose working twin carries an effect our spell also has. Our copy of that effect
 -- becomes a placeholder (spell_dbc), so the bonus is not doubled, and the twin is linked as in batches 1 and 3.
+-- Review 2026-11-18: Elemental Assassin (978229) no longer links twin 274673; file 046's scripts give its own Backstab
+-- buff (978642), and the twin's 274679 doubled the next Shock's bonus. Its placeholder stays.
 INSERT INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_dbc', 118252),
 ('spell_dbc', 118030),
@@ -95,7 +97,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (979172, 284252, 2, 'WCME: Bloody Maelstrom uses twin 284252 (scripted), own copy of the effect removed'),
 (965503, 270804, 2, 'WCME: Spell Slinger uses twin 270804 (standard), own copy of the effect removed'),
 (977745, 283730, 2, 'WCME: Harnessed Energy uses twin 283730 (scripted), own copy of the effect removed'),
-(978229, 274673, 2, 'WCME: Elemental Assassin uses twin 274673 (standard), own copy of the effect removed'),
 (965311, 272691, 2, 'WCME: Endless Agony  uses twin 272691 (standard), own copy of the effect removed'),
 (84510, 1568060, 2, 'WCME: Unbounded Spell Slinger uses twin 1568060 (standard), own copy of the effect removed'),
 (978231, 274730, 2, 'WCME: Elemental Destruction uses twin 274730 (standard), own copy of the effect removed'),
