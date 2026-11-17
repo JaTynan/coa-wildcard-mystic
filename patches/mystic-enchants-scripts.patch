@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..a5e5a60
+index 0000000..5e71489
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14501 @@
+@@ -0,0 +1,14519 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13671,6 +13671,10 @@ index 0000000..a5e5a60
 +        Unit* caster = spell ? spell->GetCaster() : nullptr;
 +        if (caster && res == SPELL_CAST_OK && spell->GetSpellInfo()->Id == 983478 && !caster->HasAura(983476))
 +            res = SPELL_FAILED_CASTER_AURASTATE;
++        // Unbounded Mind Flay (81370) teaches 81371 outright; it is only usable if you know Mind Flay, as its text says.
++        if (caster && res == SPELL_CAST_OK && spell->GetSpellInfo()->Id == 81371 &&
++            !WcmeKnownByName(caster, "Mind Flay", SPELLFAMILY_PRIEST))
++            res = SPELL_FAILED_NOT_KNOWN;
 +    }
 +
 +    void OnSpellPrepare(Spell* spell, Unit* caster, SpellInfo const* info) override
@@ -13934,8 +13938,9 @@ index 0000000..a5e5a60
 +//   value); the Gouge then breaks as usual.
 +// - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more
 +//   (within 15 sec).
-+// - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving
-+//   Stealth puts you in Shadowform if you know it.
++// - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value,
++//   12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into
++//   another form, are mounted, or are stealthed again.
 +// - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add
 +//   a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see
 +//   NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks.
@@ -14018,9 +14023,15 @@ index 0000000..a5e5a60
 +
 +    static int64 Any(Unit* /*target*/, Unit* attacker, SpellInfo const* spell, int64 value)
 +    {
++        // Master of Subtlety's damage buff is 31665 or a twin of it (the core picks the twin of the talent you have).
 +        if (attacker->HasAura(997217) && (spell->SchoolMask & SPELL_SCHOOL_MASK_SHADOW))
-+            if (AuraEffect const* subtlety = attacker->GetAuraEffect(31665, EFFECT_0))
-+                value = value * (100 + std::max(0, subtlety->GetAmount())) / 100;
++            for (AuraEffect const* subtlety : attacker->GetAuraEffectsByType(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE))
++                if (subtlety->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_ROGUE &&
++                    WcmeNamed(subtlety->GetSpellInfo(), "Master of Subtlety") && !(subtlety->GetMiscValue() & SPELL_SCHOOL_MASK_SHADOW))
++                {
++                    value = value * (100 + std::max(0, subtlety->GetAmount())) / 100;
++                    break;
++                }
 +        return value;
 +    }
 +
@@ -14243,7 +14254,14 @@ index 0000000..a5e5a60
 +            mode != AURA_REMOVE_BY_DEATH && unit->IsAlive())
 +            if (uint32 shadowform = WcmeKnownByName(unit, "Shadowform", SPELLFAMILY_PRIEST); shadowform &&
 +                !WcmeHasAuraNamed(unit, "Shadowform", SPELLFAMILY_PRIEST))
-+                unit->m_Events.AddEventAtOffset([unit, shadowform]() { if (unit->IsAlive()) unit->CastSpell(unit, shadowform, true); }, 1ms);
++                unit->m_Events.AddEventAtOffset([unit, shadowform]()
++                {
++                    // Only out of every form: not if Stealth ended because you shifted into another form (cat, bear),
++                    // not when mounted, and not if Stealth came straight back (Vanish).
++                    if (unit->IsAlive() && unit->GetShapeshiftForm() == FORM_NONE && !unit->IsMounted() &&
++                        !unit->HasAuraType(SPELL_AURA_MOD_STEALTH) && !WcmeHasAuraNamed(unit, "Shadowform", SPELLFAMILY_PRIEST))
++                        unit->CastSpell(unit, shadowform, true);
++                }, 1ms);
 +
 +        if (WcmeHasAnyAura(unit, { 81446, 282004 }) && BearStats(info) && mode == AURA_REMOVE_BY_DEFAULT && unit->IsAlive())
 +            unit->m_Events.AddEventAtOffset([unit, id]()
