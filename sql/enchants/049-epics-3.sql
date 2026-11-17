@@ -6,7 +6,8 @@
 -- Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
 -- Core patch 69: Iron Guard (1181340).
 -- With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression
--- (1181300), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+-- (1181300: no rows since review 2026-11-18, the core's aura link keeps its helpers; the script hook stays),
+-- Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 979113),
 ('spell_proc', 979080);
@@ -20,7 +21,6 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (81221, 'spell_wcme_swashbuckling_bonus'),
 (81219, 'spell_wcme_swashbuckling_bonus'),
 (281944, 'spell_wcme_swashbuckling_bonus'),
-(1181300, 'spell_wcme_keep_helper'),
 (979080, 'spell_wcme_keep_helper'),
 (979080, 'spell_wcme_finisher_combo'),
 (979113, 'spell_wcme_finisher_combo'),

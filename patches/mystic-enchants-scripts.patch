@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..abbdd49
+index 0000000..784efa0
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14533 @@
+@@ -0,0 +1,14568 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -12053,8 +12053,9 @@ index 0000000..abbdd49
 +    }
 +};
 +
-+// Controlled Aggression (1181300): keeps its helper 1181301 on you (Shield Slam's cooldown 50% longer, so 3 sec, from its
-+// data); the attack power part and the doubled Sword and Board chance are in wcme_epic_batch3_hooks.
++// Controlled Aggression (1181300) used to keep its helper 1181301 here; review 2026-11-18 found the core's own aura link
++// already grants 1181301 (Shield Slam cooldown) and 1181302 while you have the enchant. Its attack power part and the
++// doubled Sword and Board chance are in wcme_epic_batch3_hooks.
 +// Deadly Follow-up (979080): teaches Deadly Follow-up (979081) for as long as you know Shiv and have the enchant.
 +class spell_wcme_keep_helper : public AuraScript
 +{
@@ -12063,19 +12064,14 @@ index 0000000..abbdd49
 +    void Apply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
 +        Unit* owner = GetTarget();
-+        if (GetId() == 1181300)
-+            owner->AddAura(1181301, owner);
-+        else if (Player* player = owner->ToPlayer(); player && WcmeKnowsPassive(player, "Shiv", SPELLFAMILY_ROGUE) &&
++        if (Player* player = owner->ToPlayer(); player && WcmeKnowsPassive(player, "Shiv", SPELLFAMILY_ROGUE) &&
 +            !player->HasSpell(979081))
 +            player->learnSpell(979081, true);
 +    }
 +
 +    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
-+        Unit* owner = GetTarget();
-+        if (GetId() == 1181300)
-+            owner->RemoveAurasDueToSpell(1181301);
-+        else if (Player* player = owner->ToPlayer())
++        if (Player* player = GetTarget()->ToPlayer())
 +        {
 +            player->removeSpell(979081, SPEC_MASK_ALL, true);
 +            player->RemoveAurasDueToSpell(979082);
@@ -12299,8 +12295,12 @@ index 0000000..abbdd49
 +//   Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits
 +//   give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar
 +//   Flames (275002, Fireball / Pyroblast damage), as the enchant's text says.
-+// - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second
-+//   roll at your Sword and Board talent's chance (10% per rank).
++// - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit).
++//   Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second
++//   roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc
++//   does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff
++//   (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has
++//   no spell class mask, so it changes nothing by itself.
 +// - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in
 +//   spell_wcme_finisher_combo).
 +// - Raising Hell: your demon's Hellfire stops when yours does.
@@ -12467,13 +12467,28 @@ index 0000000..abbdd49
 +                value += int64(attacker->GetTotalAttackPowerValue(BASE_ATTACK) * 0.25f);
 +            if (WcmeNamedAny(spellInfo, { "Devastate", "Revenge" }) && attacker->ToPlayer())
 +            {
-+                int32 rank = 0;
-+                for (uint32 talent : { 46951u, 46952u, 46953u, 1146951u, 1146952u, 1146953u, 1246951u, 1246952u, 1246953u })
-+                    if (attacker->ToPlayer()->HasSpell(talent))
-+                        rank = std::max<int32>(rank, int32(talent % 10));
-+                int32 const chance = 10 * rank;
-+                if (chance && roll_chance_i(chance))
-+                    attacker->m_Events.AddEventAtOffset([attacker]() { attacker->CastSpell(attacker, 50227, true); }, 1ms);
++                uint32 talent = 0;
++                for (uint32 id : { 46953u, 46952u, 46951u, 1146953u, 1146952u, 1146951u, 1246953u, 1246952u, 1246951u })
++                    if (attacker->ToPlayer()->HasSpell(id) && (!talent || id % 10 > talent % 10))
++                        talent = id;
++                SpellInfo const* talentInfo = talent ? sSpellMgr->GetSpellInfo(talent) : nullptr;
++                if (talentInfo && talentInfo->Effects[EFFECT_0].TriggerSpell)
++                {
++                    uint32 const buff = talentInfo->Effects[EFFECT_0].TriggerSpell;
++                    float const p = 10.0f * float(talent % 10);
++                    attacker->m_Events.AddEventAtOffset([attacker, buff, p]()
++                    {
++                        // The talent's own proc has been handled by now; it just procced if its buff is fresh.
++                        if (Aura const* fresh = attacker->GetAura(buff))
++                            if (fresh->GetMaxDuration() > 0 && fresh->GetDuration() >= fresh->GetMaxDuration() - 250)
++                                return;
++                        if (!roll_chance_f(100.0f * p / (100.0f - p)))
++                            return;
++                        if (Player* player = attacker->ToPlayer())
++                            player->RemoveCategoryCooldown(1209);
++                        attacker->CastSpell(attacker, buff, true);
++                    }, 1ms);
++                }
 +            }
 +        }
 +        damage = int32(std::min<int64>(INT32_MAX, value));
@@ -12942,7 +12957,9 @@ index 0000000..abbdd49
 +};
 +
 +// Lone Wolf (1180030): its own data already gives 1180031 (+10% damage and armour penetration) every second; that is
-+// now held back while you have a pet out. Every second, each enemy in combat with you within 8 yards adds a stack of
++// now held back while you have a living pet out (the same test as the core's no_pet condition). The +10% damage itself
++// is the core's own enchant bonus (coa_mystic_enchant_bonus, no_pet), so spell_wcme_lone_wolf_buff zeroes 1180031's
++// damage effect and it gives only the armour penetration (review 2026-11-18: before, no pet meant +21% damage). Every second, each enemy in combat with you within 8 yards adds a stack of
 +// 1101498 (+3% damage and attack speed, up to 5, its own data).
 +class spell_wcme_lone_wolf : public AuraScript
 +{
@@ -12951,7 +12968,7 @@ index 0000000..abbdd49
 +    void Grant(AuraEffect const* /*aurEff*/)
 +    {
 +        Player* player = GetTarget()->ToPlayer();
-+        if (player && !player->GetPetGUID().IsEmpty())
++        if (player && player->GetPet() && player->GetPet()->IsAlive())
 +        {
 +            PreventDefaultAction();
 +            player->RemoveAurasDueToSpell(1180031);
@@ -12995,6 +13012,23 @@ index 0000000..abbdd49
 +        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_lone_wolf::Grant, EFFECT_1, SPELL_AURA_PERIODIC_TRIGGER_SPELL);
 +        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_lone_wolf::Surrounded, EFFECT_2, SPELL_AURA_ANY);
 +        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_lone_wolf::Remove, EFFECT_2, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++class spell_wcme_lone_wolf_buff : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_lone_wolf_buff);
++
++    void NoDamage(AuraEffect const* /*aurEff*/, int32& amount, bool& canBeRecalculated)
++    {
++        amount = 0;
++        canBeRecalculated = false;
++    }
++
++    void Register() override
++    {
++        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_lone_wolf_buff::NoDamage, EFFECT_0,
++            SPELL_AURA_MOD_DAMAGE_PERCENT_DONE);
 +    }
 +};
 +
@@ -14313,6 +14347,7 @@ index 0000000..abbdd49
 +    new wcme_epic_batch5_hooks();
 +    RegisterSpellScript(spell_wcme_stand_still);
 +    RegisterSpellScript(spell_wcme_lone_wolf);
++    RegisterSpellScript(spell_wcme_lone_wolf_buff);
 +    new wcme_epic_batch4_spells();
 +    new wcme_epic_batch4_hooks();
 +    RegisterSpellScript(spell_wcme_area_keeper);
