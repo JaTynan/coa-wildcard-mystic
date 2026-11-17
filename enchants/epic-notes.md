@@ -87,6 +87,10 @@ player here can learn, so that version never sets the enchant off; they still ne
 Aura links (`coa_mystic_enchant_aura_link`) must watch the proc buff only, never the talent that procs it: a talent is a
 passive aura you always have, so the grant becomes permanent (found while reviewing Decimation by Pyro).
 
+Twin links (`spell_linked_spell` rows in files 001-005) put a twin's aura on you, and with it the twin's core rules.
+Where we later wrote our own script for the enchant's text, the link has to go, or both run (found while reviewing
+Blood and Guts: Compound Power, Frozen Chaos and Elemental Assassin were doubled; Blood and Guts keeps its link on purpose).
+
 ## Tooltip differences to review
 
 Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate
@@ -820,6 +824,10 @@ patch or the mechanic when there is a chance.
 
 - #175: Blood and Guts (977906):** Mutilate on a Disemboweled target adds Mutilating Disembowel; Execute consumes Disembowel (after the twin's explosion), and Remorseless only stays if you know Remorseless Attacks.
 
+**Assumptions:** Review 2026-11-18: no doubling. The core does this enchant (Execute on a target with your Disembowel explodes, 273886); its rule covers all 23 Execute and 39 Disembowel versions. Our legendary Blood and Guts (977906) links this enchant on purpose for that explosion and only adds what the core lacks (Mutilating Disembowel, Disembowel used up just after the explosion, Remorseless only if known).
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
 ### Blood-Soaked Mutilation (1590974, Epic)
@@ -1181,11 +1189,16 @@ patch or the mechanic when there is a chance.
 
 ### Compound Power (275317, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 003-twin-links-close.sql: Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our scripts do their own text in full, and the twins' core rules doubled it (two more combo points;
 
 **Testing:** nothing recorded yet
 
@@ -1594,6 +1607,10 @@ patch or the mechanic when there is a chance.
 
 - #175: Demolisher (977864):** its own design instead of twin 273786 (link and addon tooltip twin removed). Demolishing Strike applies Demolish; melee crits stack it; at 6 stacks your next Expose Armor (35% armor penetration), Riposte (+2 combo points, 10% more attack speed slow) or Mongoose Bite (no cooldown, crit-level damage +100%, 50% vs players) is empowered.
 - #175: Ability swaps (affects earlier batches too):** the core only swaps an enchant's ability when the new name contains the old one, or the description says "transform". A new helper (`WcmeSyncSwap`) now does the swap for Champion of Justice (Crusader Strike → Crusader's Justice, only while Righteous Justice is up), Demolisher (Mortal Strike → Demolishing Strike), Dragon Warrior (Death Wish → Dragon Roar, Intercept → Dragon Charge), Astral Bomber, Cauterizing Flames and Dark Ranger. Fel Corruption now teaches Felblade alongside Bloodthirst.
+
+**Assumptions:** Review 2026-11-18: no overlap. The core handles this enchant on its own (a cast rule: Mortal Strike applies Demolish 273795). Our script is for the same-named enchant 977864 with its own Demolishing Strike. The core's rule lists only the stock Mortal Strike, so the CoA Mortal Strike (1112294), which is also learnable here, never applies Demolish (see core-rule-version-gaps.csv). The enchant's dummy effect names Overwhelm (273787) but the core does not swap it in (the names differ and the text doesn't say transform).
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
@@ -2019,11 +2036,16 @@ patch or the mechanic when there is a chance.
 
 ### Elemental Assassin (274673, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 004-twin-links-dedup.sql: Review 2026-11-18: Elemental Assassin (978229) no longer links twin 274673; file 046's scripts give its own Backstab buff (978642), and the twin's 274679 doubled the next Shock's bonus.
 
 **Testing:** nothing recorded yet
 
@@ -2926,11 +2948,16 @@ patch or the mechanic when there is a chance.
 
 ### Frozen Chaos (275614, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 003-twin-links-close.sql: Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our scripts do their own text in full, and the twins' core rules doubled it (two more combo points;
 
 **Testing:** nothing recorded yet
 

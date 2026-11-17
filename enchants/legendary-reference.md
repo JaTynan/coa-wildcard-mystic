@@ -50,8 +50,8 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 986008 | Carnage Incarnate |  | 986008: changed, awaiting in-game test (#26)<br>1590982: changed, awaiting in-game test (#26) |
 | 86460 | Cauterizing Flames |  | 86460: changed, awaiting in-game test (#175) |
 | 986000 | Champion of Justice |  | 986000: changed, awaiting in-game test (#175) |
-| 301000 | Circle of Life | yes | 301000: changed, awaiting in-game test (#23 #164) |
-| 979740 | Compound Power |  | 979740: changed, awaiting in-game test (#20 #171) |
+| 301000 | Circle of Life | yes | 301000: changed on an unmerged branch (#23 #164) |
+| 979740 | Compound Power |  | 979740: changed on an unmerged branch (#20 #171) |
 | 965295 | Consecrated Strikes |  | 965295: changed, awaiting in-game test (#166) |
 | 414080 | Consumed by Fire |  | 414080: unchanged: working (audit) |
 | 81407 | Controlled Burn |  | 81407: changed, awaiting in-game test (#165 #166) |
@@ -80,7 +80,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 84533 | Eccentric Elementalist |  | 84533: changed, awaiting in-game test (#167)<br>1568237: changed, awaiting in-game test (#167) |
 | 986234 | Edge of Fury | yes | 986234: changed, awaiting in-game test (#175) |
 | 81116 | Eldritch Knight |  | 81116: changed, awaiting in-game test (#165 #166) |
-| 978229 | Elemental Assassin |  | 978229: changed, awaiting in-game test (#23 #171 #177) |
+| 978229 | Elemental Assassin |  | 978229: changed on an unmerged branch (#23 #171 #177) |
 | 978231 | Elemental Destruction |  | 978231: changed, awaiting in-game test (#23) |
 | 990200 | Elemental Lord |  | 990200: changed, awaiting in-game test (#173) |
 | 965311 | Endless Agony |  | 965311: changed, awaiting in-game test (#23)<br>1570908: changed, awaiting in-game test (#164) |
@@ -97,7 +97,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 954326 | Forbidden Technique |  | 954326: changed, awaiting in-game test (#26 #175) |
 | 954262 | Frost Bomb |  | 954262: changed, awaiting in-game test (#26 #165)<br>1590912: changed, awaiting in-game test (#26 #165) |
 | 965504 | Frost Lich |  | 965504: changed, awaiting in-game test (#164) |
-| 980673 | Frozen Chaos |  | 980673: changed, awaiting in-game test (#20 #171) |
+| 980673 | Frozen Chaos |  | 980673: changed on an unmerged branch (#20 #171) |
 | 977810 | Fury of the Titans |  | 977810: changed, awaiting in-game test (#175) |
 | 997124 | Grove Ranger | yes | 997124: changed, awaiting in-game test (#175) |
 | 81520 | Growing Light |  | 81520: changed, awaiting in-game test (#175) |
@@ -306,4 +306,4 @@ text in our client is the only record.
 | 1760200 | Wind Lash | changed, awaiting in-game test (#175) |
 | 1544910 | Wraithweaver: Shadow Orbs | changed, awaiting in-game test (#175) |
 
-Copy totals (all 305): changed, awaiting in-game test: 207, unchanged: working: 81, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed on an unmerged branch: 2, changed after its last test: 1, handled: 1.
+Copy totals (all 305): changed, awaiting in-game test: 203, unchanged: working: 81, changed on an unmerged branch: 6, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.

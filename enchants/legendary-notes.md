@@ -730,17 +730,26 @@ patch or the mechanic when there is a chance.
 
 ### Circle of Life (301000, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 015-runaway-procs.sql: Review 2026-11-18: Circle of Life (301000) also gets its own Halo (Circle of Life) cooldown cuts (rules 1 and 2): its twin's core rule only cuts a different Halo (2304803), so nothing did them before.
 
 **What the pull requests said:**
 
 - #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
+
+**Assumptions:** Review 2026-11-18: the Halo (Circle of Life) cooldown cuts (4 sec from Flash Heal or Greater Heal, 3 sec from Circle of Healing or Prayer of Mending) were done by nobody: the linked twin 1568799's core rule cuts a different Halo (2304803). Two action rows (015, rules 1 and 2) now do them. The twin link stays (harmless).
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
@@ -756,20 +765,26 @@ patch or the mechanic when there is a chance.
 
 ### Compound Power (979740, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Compound Power (979740): successful Steady Shots and Arcane Shots award 2 combo points (the data's own trigger gave 1).
+- 003-twin-links-close.sql: Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our scripts do their own text in full, and the twins' core rules doubled it (two more combo points;
 
 **What the pull requests said:**
 
 - #171: Compound Power:** Steady Shot and Arcane Shot award 2 combo points.
+
+**Assumptions:** Review 2026-11-18: our script gives the 2 combo points on each damaging Steady Shot or Arcane Shot; file 003 also linked twin 275317, whose core rules give 2 more, so each shot gave 4. The link is removed (and the addon now shows this enchant's own tooltip).
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
@@ -1460,18 +1475,20 @@ patch or the mechanic when there is a chance.
 
 ### Elemental Assassin (978229, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
 | 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Elemental Assassin (978229): Backstab grants Elemental Assassin (978642, up to 2 stacks; its bonus is a dummy in the data). A stack makes your next Flame Shock or Earth Shock deal 110% more direct damage, or Ice Shock 70% more (the builder tooltip's numbers), and spending it takes 5 sec off Stormstrike's cooldown. Shaman Shocks grant the Elemental Blade of their element: Flame Shock the Fire blade (978646), Frost Shock and Ice Shock the Ice blade (978648), Earth Shock the Earth blade (978644). Each blade carries a hidden helper (978844 / 978845 / 978651) that lets Backstab be used from any side (aura 334, handled by the core); the blades' Stormstrike bonus is their own data (misc 38 / 36, applied in wcme_kit_target_mods). Each unique blade adds 33% to Backstab (12% against players) and, with all three, Backstab and Stormstrike hits deal 40% more as Elemental damage (985319) within 5 yards (wcme_last_legendary_hooks). Reverberation's Echoes of Earth gives +40 (60% in all) and Booming Echoes' capstone buff +10 (15%) while the enchant is on.
 - Damage parts of the last legendaries. Explosive Charge (1568152) used to be here; review 2026-11-18 found the core already does it (coa_mystic_enchant_proc rule on every Explosive Shot version, ticks included, run by spell_ascension_mystic_enchant_proc), so ours made its splash happen twice and was removed. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
+- 004-twin-links-dedup.sql: Review 2026-11-18: Elemental Assassin (978229) no longer links twin 274673; file 046's scripts give its own Backstab buff (978642), and the twin's 274679 doubled the next Shock's bonus.
 - 046-legendary-gaps.sql: Elemental Assassin (978229): Shocks grant the Elemental Blade of their element (978644 / 978646 / 978648), each with its Backstab-from-any-side helper;
 
 **What the pull requests said:**
@@ -1479,7 +1496,7 @@ patch or the mechanic when there is a chance.
 - #171: Elemental Assassin:** Backstab stacks it (up to 2). The next Flame or Earth Shock deals 110% more and Ice Shock 70% more, and spending a stack takes 5 sec off Stormstrike.
 - #177: Elemental Assassin (978229):** the earlier note was wrong: the Elemental Blades do exist in our client (978644 / 978646 / 978648).
 
-**Assumptions:** Blade per Shock: Flame Shock gives Fire, Frost Shock and Ice Shock give Ice, Earth Shock gives Earth. Backstab +33% per unique blade (the tooltip's number) and 12% against players (taken from the standard Elemental Blade 274678, since this version's player value is level-scaled data we cannot read). The all-three burst (40% within 5 yards) applies to Backstab and Stormstrike. Reverberation's next-Shock bonus becomes 60% and Booming Echoes' school bonus 15%, from the data's +40 / +10. The earlier note that the blades had no spells in our client was wrong: 978644, 978646 and 978648 are there.
+**Assumptions:** Blade per Shock: Flame Shock gives Fire, Frost Shock and Ice Shock give Ice, Earth Shock gives Earth. Backstab +33% per unique blade (the tooltip's number) and 12% against players (taken from the standard Elemental Blade 274678, since this version's player value is level-scaled data we cannot read). The all-three burst (40% within 5 yards) applies to Backstab and Stormstrike. Reverberation's next-Shock bonus becomes 60% and Booming Echoes' school bonus 15%, from the data's +40 / +10. The earlier note that the blades had no spells in our client was wrong: 978644, 978646 and 978648 are there. Review 2026-11-18: file 004 linked twin 274673, whose core rule gives 274679 (+130% to your next Shaman Shock) on Backstab and Ambush, on top of our own Backstab buff 978642 (+110% Flame/Earth Shock, +70% Ice Shock), so the next Shock got both. The link is removed; 004's placeholder (the enchant's own trigger) stays, since our script gives 978642.
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc) (Elemental Blade 300010 text; blades 978644 / 978646 / 978648; helpers 978651 / 978844 / 978845; 985318 / 985319 / 985325 / 985326); standard version 274673-274678
 
@@ -1902,20 +1919,26 @@ patch or the mechanic when there is a chance.
 
 ### Frozen Chaos (980673, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Frozen Chaos (980673): Frostbolt, Ice Lance, Cone of Cold and Frost Shock critical hits give a charge of Frozen Chaos (275616: next Chaos Bolt has no cooldown and deals more damage; up to 4 charges) and reset Chaos Bolt's cooldown. Casting Conflagrate grants Splintered Chaos (980678) and, if you know Fingers of Frost, Fingers of Frost.
+- 003-twin-links-close.sql: Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our scripts do their own text in full, and the twins' core rules doubled it (two more combo points;
 
 **What the pull requests said:**
 
 - #171: Frozen Chaos:** frost crits give Frozen Chaos charges (up to 4) and reset Chaos Bolt. Conflagrate gives Splintered Chaos, and Fingers of Frost if known.
+
+**Assumptions:** Review 2026-11-18: our script gives one charge of Frozen Chaos per crit (up to 4) and resets Chaos Bolt; file 003 also linked twin 275614, whose core rules cast 275616 again on Frostbolt, Frostfire Bolt, Ice Lance and Cone of Cold crits, which put it back to 4 charges every time (re-applying an aura with charges resets them) and added Frostfire Bolt, which this text doesn't name. The link is removed (and the addon now shows this enchant's own tooltip).
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
@@ -3538,6 +3561,10 @@ patch or the mechanic when there is a chance.
 **What the pull requests said:**
 
 - #172: Templar of Flame:** while Seal of Fervor is active, direct Holy or Fire damage has a 30% chance to grant Fiery Fervor (8% less damage taken). The 30% is borrowed from its sister enchant, Fiery Fervor. Judgements open the 6 sec window where Flamestrike cuts Blast Wave and Dragon's Breath.
+
+**Assumptions:** Review 2026-11-18: twin 272101 (linked in 003) also gives 272095 on Judgement through its core rule; ours does too, but it is the same aura refreshed, so nothing doubles, and ours covers Judgement versions the core's list lacks. No change.
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
