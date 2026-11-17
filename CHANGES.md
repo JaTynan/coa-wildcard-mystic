@@ -27,6 +27,7 @@ for good by deleting its part from the script.
 | `68-aspect-of-the-fox-auto-shot.ps1` | Aspect of the Fox (Mystic Enchant) keeps Auto Shot firing while you move, as its tooltip says; the core only let Steady Shot through. | — |
 | `69-iron-guard-block.ps1` | Iron Guard (Mystic Enchant) makes a successful block also take 15% off the damage that gets through, for melee, ranged and blocked spells. | — |
 | `70-mastery-of-the-tide-riptide.ps1` | Mastery of the Tide (Mystic Enchant) stops Chain Heal from using up your Riptide; the Riptide bonus still applies. | — |
+| `71-jump-multiplier-points.ps1` | Spells that make Chain Heal or Chain Lightning "lose X% less per jump" (Tidal Force, Overflowing, Transcendental Embrace, Booming Thunder, The Water Duke's Stolen Totem) now do that; the core had been adding the X straight onto the multiplier, so each jump healed or hit many times harder than the last. | — |
 | `10-mod-ollama-chat-fit.ps1` | Makes the AI chat module compile on the CoA core | always on |
 | | Less bot chat in raids and dungeons (direct answers to players kept) | `OllamaChat.RaidChatterPct`, `OllamaChat.DungeonChatterPct` |
 | `20-bots.ps1` | Bots level near real players | `AiPlayerbot.WildcardLevelNearPlayersPct` |

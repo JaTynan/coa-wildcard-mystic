@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..5e71489
+index 0000000..886ff36
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14519 @@
+@@ -0,0 +1,14624 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13541,6 +13541,104 @@ index 0000000..5e71489
 +    return best;
 +}
 +
++// Void Shift (954522, the Priest spell; 2304522, the Artifact copy taught by 1398201): the spell is a plain dummy and the
++// core has no script for it. You and the targeted party or raid member swap health percentages, each raised to at least
++// 25% (10% for 2304522, its text). 954522 also puts Void Instability (956037, 1 min) on both of you, and neither can
++// cast it or be its target while that is up; 2304522's text has no lockout, so none is added for it.
++class spell_wcme_void_shift : public SpellScript
++{
++    PrepareSpellScript(spell_wcme_void_shift);
++
++    uint32 Lockout()
++    {
++        return GetSpellInfo()->Id == 954522 ? 956037 : 0;
++    }
++
++    SpellCastResult CheckCast()
++    {
++        Unit* caster = GetCaster();
++        Unit* target = GetExplTargetUnit();
++        if (!target || target == caster)
++            return SPELL_FAILED_BAD_TARGETS;
++        if (uint32 lockout = Lockout())
++        {
++            if (caster->HasAura(lockout))
++                return SPELL_FAILED_CASTER_AURASTATE;
++            if (target->HasAura(lockout))
++                return SPELL_FAILED_TARGET_AURASTATE;
++        }
++        return SPELL_CAST_OK;
++    }
++
++    void HandleSwap(SpellEffIndex /*effIndex*/)
++    {
++        Unit* caster = GetCaster();
++        Unit* target = GetHitUnit();
++        if (!caster || !target || target == caster || !caster->IsAlive() || !target->IsAlive())
++            return;
++        float const floor = GetSpellInfo()->Id == 2304522 ? 10.0f : 25.0f;
++        float const mine = caster->GetHealthPct();
++        float const theirs = target->GetHealthPct();
++        auto setPct = [](Unit* unit, float pct)
++        {
++            uint32 const health = uint32(double(unit->GetMaxHealth()) * pct / 100.0);
++            unit->SetHealth(std::clamp<uint32>(health, 1, unit->GetMaxHealth()));
++        };
++        setPct(caster, std::max(theirs, floor));
++        setPct(target, std::max(mine, floor));
++        if (uint32 lockout = Lockout())
++            for (Unit* who : { caster, target })
++                if (!who->HasAura(lockout))
++                    caster->AddAura(lockout, who);
++    }
++
++    void Register() override
++    {
++        OnCheckCast += SpellCheckCastFn(spell_wcme_void_shift::CheckCast);
++        OnEffectHitTarget += SpellEffectFn(spell_wcme_void_shift::HandleSwap, EFFECT_0, SPELL_EFFECT_DUMMY);
++    }
++};
++
++// Flowing (273418): its data has no proc flags, so it never fired. Each Healing Touch you cast adds a stack of Flowing
++// (273419, 15 sec); the third stack becomes Overflowing (273420: the next Chain Heal heals 50% more and loses nothing per
++// jump, its data with core patch 71). The enchant's text says 3 stacks; the buff's own text says 2.
++class spell_wcme_flowing : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_flowing);
++
++    bool CheckProc(ProcEventInfo& eventInfo)
++    {
++        SpellInfo const* spell = eventInfo.GetSpellInfo();
++        return spell && spell->SpellFamilyName == SPELLFAMILY_DRUID && WcmeNamed(spell, "Healing Touch");
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        Aura* flowing = owner->GetAura(273419);
++        uint8 const stacks = (flowing ? flowing->GetStackAmount() : 0) + 1;
++        if (stacks >= 3)
++        {
++            owner->RemoveAurasDueToSpell(273419);
++            owner->AddAura(273420, owner);
++        }
++        else if (!flowing)
++            owner->AddAura(273419, owner);
++        else
++        {
++            flowing->SetStackAmount(stacks);
++            flowing->RefreshDuration();
++        }
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_flowing::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_flowing::HandleProc);
++    }
++};
++
 +// Shows Twisted Mind (978703) in place of Fel Armor while Twisted Mind (979779) is active.
 +class spell_wcme_twisted_mind : public AuraScript
 +{
@@ -13740,6 +13838,11 @@ index 0000000..5e71489
 +                else
 +                    tankard->Remove();
 +            }
++
++        // Overflowing (273420, from Flowing): its data never removes it (its "removal delay" helper has nothing to set it
++        // off), so the Chain Heal it empowers takes it off once all its jumps have landed.
++        if (caster->HasAura(273420) && info->SpellFamilyName == SPELLFAMILY_SHAMAN && WcmeNamed(info, "Chain Heal"))
++            caster->m_Events.AddEventAtOffset([caster]() { caster->RemoveAurasDueToSpell(273420); }, 500ms);
 +
 +        if (caster->HasAura(1581647) && info->SpellFamilyName == SPELLFAMILY_PALADIN &&
 +            WcmeNamedAny(info, { "Crusader Strike", "Avenger's Shield" }))
@@ -14292,6 +14395,8 @@ index 0000000..5e71489
 +    new wcme_epic_batch67_spells();
 +    new wcme_epic_batch67_hooks();
 +    RegisterSpellScript(spell_wcme_twisted_mind);
++    RegisterSpellScript(spell_wcme_void_shift);
++    RegisterSpellScript(spell_wcme_flowing);
 +    RegisterSpellScript(spell_wcme_energy_surge);
 +    RegisterSpellScript(spell_wcme_aegis_overdrive);
 +    new wcme_heal_order();
