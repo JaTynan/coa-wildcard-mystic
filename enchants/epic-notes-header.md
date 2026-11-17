@@ -79,6 +79,11 @@ Enchants through their data; they still need a look.
 spell (a CoA Beacon of Light or Living Bomb, say) never sets the rule off (found while reviewing Pyroclasmic Ignition).
 Where we cover a gap, ours runs only when the core's own test fails.
 
+Checked against the server's own CharacterAdvancement.dbc (the "hero" catalog): on this realm a character can learn
+either the stock or the CoA version of most abilities (Shadow Bolt 686 or 1100686, Living Bomb 44457 or 1144457, and so
+on). `enchants/core-rule-version-gaps.csv` lists the 263 core enchant rules whose spell lists leave out a version a
+player here can learn, so that version never sets the enchant off; they still need a look.
+
 Aura links (`coa_mystic_enchant_aura_link`) must watch the proc buff only, never the talent that procs it: a talent is a
 passive aura you always have, so the grant becomes permanent (found while reviewing Decimation by Pyro).
 

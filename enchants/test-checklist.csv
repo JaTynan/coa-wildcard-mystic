@@ -231,7 +231,6 @@ file,spell,name,scroll item,test type,commands,expected,result
 006,1180002,Shadow Blades,201118,teach,".aura 1180002, open your spellbook (once per family: .additem 201118 and use the altar instead)",the taught spell is in your spellbook and works,
 006,977967,Shadow Counter,1178665,teach,".aura 977967, open your spellbook (once per family: .additem 1178665 and use the altar instead)",the taught spell is in your spellbook and works,
 006,852225,Shadow Counter,404685,teach,".aura 852225, open your spellbook (once per family: .additem 404685 and use the altar instead)",the taught spell is in your spellbook and works,
-006,273458,Shadow Crash,200963,teach,".aura 273458, open your spellbook (once per family: .additem 200963 and use the altar instead)",the taught spell is in your spellbook and works,
 006,982330,Shadow Waste Bolt,132417,teach,".aura 982330, open your spellbook (once per family: .additem 132417 and use the altar instead)",the taught spell is in your spellbook and works,
 006,982534,Shadowfall,132575,teach,".aura 982534, open your spellbook (once per family: .additem 132575 and use the altar instead)",the taught spell is in your spellbook and works,
 006,977807,Spirit of the Forest,1178634,teach,".aura 977807, open your spellbook (once per family: .additem 1178634 and use the altar instead)",the taught spell is in your spellbook and works,
@@ -537,3 +536,4 @@ audit,919572,Improved Mend Pet,1175790,probably already works,.aura 919572; chec
 007,271547,Decimation by Pyro,0,core,.aura 271547 as a warlock with the Decimation talent; hit a target above 35%; then below,"no Pyroblast/Meteor bonus (271542) until Decimation procs; 271542 lasts exactly as long as Decimation",
 007,283042,Mind Core / Pyroclasmic Shadows / Fingers of Death (link fix),0,link,".aura 283042 (or 276551, 274179) with the matching talent but no proc yet","their bonus only appears while the proc buff (Molten Core, Pyroclasm, Fingers of Frost) is up, not all the time",
 050,270661,Growing Light (other Beacon versions),0,hook,.aura 270661; Beacon of Light from a non-stock version (1153563); Holy Light the Beacon target,"3 allies near them healed once each for 20% (270665)",
+053,273458,Shadow Crash,0,core,".aura 273458 and 273453; build 5 Pure Shadow with Shadow Bolt; Shadowfury (stock rank, then CoA rank 1130283)","Shadow Crash lands at the Shadowfury spot once with either rank; no extra Shadow Crash spell in the spellbook"

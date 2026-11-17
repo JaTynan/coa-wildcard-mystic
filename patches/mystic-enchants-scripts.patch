@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..d401d15
+index 0000000..5cffe39
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14644 @@
+@@ -0,0 +1,14670 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -12747,6 +12747,31 @@ index 0000000..d401d15
 +    static inline std::unordered_map<ObjectGuid, TimePoint> _quietGarrote;
 +    bool _inMending = false;
 +};
++// Shadow Crash (273458) for the Shadowfury versions the core misses. The core (AscensionShadowfuryShadowCrash) calls
++// down Shadow Crash (273455) at Shadowfury's target spot while Pure Shadow (273456) is at full stacks, but it spots
++// Shadowfury by its third effect launching 273459, which only the stock ranks (30283 ... 47847) do; the CoA Warlock
++// Shadowfury ranks (1130283 and the rest) never set it off. This copies the core's rule for any other Warlock
++// Shadowfury, so the two never both fire.
++class wcme_shadow_crash_versions : public AllSpellScript
++{
++public:
++    wcme_shadow_crash_versions() : AllSpellScript("wcme_shadow_crash_versions", { ALLSPELLHOOK_ON_CAST }) { }
++
++    void OnSpellCast(Spell* spell, Unit* caster, SpellInfo const* info, bool) override
++    {
++        if (!caster || !caster->IsPlayer() || !info || info->SpellFamilyName != SPELLFAMILY_WARLOCK ||
++            !WcmeNamed(info, "Shadowfury") || info->Effects[EFFECT_2].TriggerSpell == 273459 ||
++            !spell->m_targets.HasDst() || !caster->HasAura(273458))
++            return;
++        Aura* pure = caster->GetAura(273456);
++        if (!pure || pure->GetStackAmount() < pure->GetSpellInfo()->StackAmount)
++            return;
++        SpellCastTargets targets;
++        targets.SetDst(*spell->m_targets.GetDstPos());
++        caster->CastSpell(targets, sSpellMgr->GetSpellInfo(273455), nullptr, TRIGGERED_FULL_MASK);
++    }
++};
++
 +// Growing Light (270661) for the Beacon of Light versions the core misses. The core's wildcard_growing_light only
 +// finds your Beacon through GetAuraOfRankedSpellOrTwin(53563); on this server's "hero" class model that is the stock
 +// Beacon alone, so a Beacon from 1153563, 1253563 or 1567798 never sets it off. This copies the core's rule (any Holy
@@ -14424,6 +14449,7 @@ index 0000000..d401d15
 +    RegisterSpellScript(spell_wcme_lone_wolf_buff);
 +    RegisterSpellScript(spell_wcme_stampede_extension);
 +    new wcme_growing_light_versions();
++    new wcme_shadow_crash_versions();
 +    new wcme_epic_batch4_spells();
 +    new wcme_epic_batch4_hooks();
 +    RegisterSpellScript(spell_wcme_area_keeper);

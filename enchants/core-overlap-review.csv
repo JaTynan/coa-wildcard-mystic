@@ -14,9 +14,9 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 270661,Growing Light,Epic,,AscensionWildcardReconstruction.cpp,resolved,ours removed (core wildcard_growing_light does the 20% splash; ours doubled it)
 271125,Pyroclasmic Ignition,Epic,,Unit.cpp,resolved,ours now runs only when the core's test fails (other Living Bomb versions on the hero class model); was +69%
 271547,Decimation by Pyro,Epic,,AscensionWildcardReconstruction.cpp,resolved,"our aura link removed (core does it; ours watched the talent too, so it was permanent)"
-271907,Dragon Warrior,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+271907,Dragon Warrior,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no overlap: ours is the same-named enchant 954252 with its own helpers
 273418,Flowing,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours trimmed to the 3rd-stack Overflowing only (core builds the stacks)
-273458,Shadow Crash,Epic,,AscensionShadowfuryShadowCrash.cpp,to review,
+273458,Shadow Crash,Epic,,AscensionShadowfuryShadowCrash.cpp,resolved,our teach row removed (an unrelated ability); gap-filler for the CoA Shadowfury ranks the core can't see
 273786,Demolisher,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 273885,Blood and Guts,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 274205,Trauma Care,Epic,script aura_wildcard_trauma_care,AscensionWildcardReconstruction.cpp,resolved,ours removed (core script; buff data gives the extra target)

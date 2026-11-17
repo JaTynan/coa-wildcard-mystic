@@ -4,3 +4,4 @@ spell,name,core_code,looks_up,status
 270426,Infinite Burn,AscensionWildcardReconstruction.cpp aura_wildcard_burn_restoration,Immolate 348 chain and Ignite 11119 chain only,to review
 278016,Big Flaming Grimfire,AscensionWildcardReconstruction.cpp wildcard_grimfire_casts,Living Bomb 44457 chain only,to review
 271489,Light of Life,AscensionWildcardReconstruction.cpp spell_wildcard_light_of_life_renew,Renew 139 chain only,to review
+273458,Shadow Crash,AscensionShadowfuryShadowCrash.cpp shadowfury_shadow_crash,"Shadowfury by its 273459 missile, which only the stock ranks carry",covered: wcme_shadow_crash_versions runs only when the core's test fails
