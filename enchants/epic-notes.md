@@ -74,6 +74,14 @@ flag. The core then sets the aura's time left to that value instead of adding it
 as extensions (found while reviewing Savage Momentum, whose Stampede would drop to 2 sec). 13 are reached by Mystic
 Enchants through their data; they still need a look.
 
+`enchants/core-version-gaps.csv` lists core enchant rules that find a spell through its "twin" lookup. This server runs
+`CoA.ClassModel = "hero"`, where that lookup only knows the stock spell and its ranks, so another version of the same
+spell (a CoA Beacon of Light or Living Bomb, say) never sets the rule off (found while reviewing Pyroclasmic Ignition).
+Where we cover a gap, ours runs only when the core's own test fails.
+
+Aura links (`coa_mystic_enchant_aura_link`) must watch the proc buff only, never the talent that procs it: a talent is a
+passive aura you always have, so the grant becomes permanent (found while reviewing Decimation by Pyro).
+
 ## Tooltip differences to review
 
 Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate
@@ -820,7 +828,7 @@ patch or the mechanic when there is a chance.
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
-- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
 
 **Assumptions:** The out-of-Stealth Garrote is allowed once within 10 sec of the Crimson Tempest proc (10 sec is our choice); its silence is removed right after it lands. "Your bleeds" are bleeds you applied.
@@ -1527,12 +1535,17 @@ patch or the mechanic when there is a chance.
 
 ### Decimation by Pyro (271547, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
+
+**Assumptions:** The core already does this enchant (wildcard_decimation_pyro: while you have a Decimation buff, the one that cuts cast time, you get 271542 for the same time left: Pyroblast and Meteor +25%). Review 2026-11-18: our old aura link (007) watched the Decimation talent ranks as well as the buff, so anyone with the talent had 271542 all the time; it also watched 271542 itself. The link is removed (SQL only, so it goes live at the next patch night).
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
@@ -2453,12 +2466,17 @@ patch or the mechanic when there is a chance.
 
 ### Fingers of Death (274179, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
+
+**Assumptions:** Review 2026-11-18: our aura link (007) watched the Fingers of Frost talent ranks as well as the Fingers of Frost buff, so anyone with the talent had the enchant's bonus all the time. The watch list now names the buff versions only. The core does not handle this enchant.
+
+**Sources:** our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
@@ -3106,14 +3124,16 @@ patch or the mechanic when there is a chance.
 | 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 | 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
 | 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- Growing Light (270661) for the Beacon of Light versions the core misses. The core's wildcard_growing_light only finds your Beacon through GetAuraOfRankedSpellOrTwin(53563); on this server's "hero" class model that is the stock Beacon alone, so a Beacon from 1153563, 1253563 or 1567798 never sets it off. This copies the core's rule (any Holy heal of yours, before absorbs, on a target with your Beacon heals up to 3 other allies within 8 yards for 20% through 270665) and runs only when the core's own test fails, so the two never both fire.
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: Savage Momentum (1556008) and Growing Light (270661) were dropped in review 2026-11-18: the core already does them.
 - 051-epics-5.sql: Growing Light 270661 did too, but is now left to the core).
 
-**Assumptions:** Review 2026-11-18: the core already does this enchant (wildcard_growing_light in AscensionWildcardReconstruction: any Holy heal of yours on a target with your Beacon of Light heals up to 3 other allies within 8 yards for 20% through 270665). Ours did the same splash again (40% in total) and is removed. Differences from ours, now the core's: heal-over-time ticks also count, and the splash is its own spell 270665.
+**Assumptions:** Review 2026-11-18: the core already does this enchant (wildcard_growing_light in AscensionWildcardReconstruction: any Holy heal of yours on a target with your Beacon of Light heals up to 3 other allies within 8 yards for 20% through 270665). Ours did the same splash again (40% in total) and is removed. Differences from ours, now the core's: heal-over-time ticks also count, and the splash is its own spell 270665. Second look, same day: the core's Beacon test only sees the stock Beacon of Light (53563) on this server's 'hero' class model, so wcme_growing_light_versions copies the core's rule (same splash spell 270665, same most-injured pick) for the other Beacon versions (1153563, 1253563, 1567798) and runs only when the core's test fails.
 
 **Sources:** our client spell data (Spell.dbc)
 
@@ -3255,7 +3275,7 @@ patch or the mechanic when there is a chance.
 **What the server does (from the code and SQL comments):**
 
 - Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
-- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
 - 051-epics-5.sql: The same build also fixes the order of the two units in the core's heal hook for direct heals (Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before;
 
@@ -3280,7 +3300,7 @@ patch or the mechanic when there is a chance.
 **What the server does (from the code and SQL comments):**
 
 - Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
-- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
 - 051-epics-5.sql: The same build also fixes the order of the two units in the core's heal hook for direct heals (Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before;
 
@@ -4494,13 +4514,14 @@ patch or the mechanic when there is a chance.
 |---|---|---|---|---|
 | 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 | 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
+- Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
 
-**Assumptions:** "Your Living Bomb" means one you cast.
+**Assumptions:** 'Your Living Bomb' means one you cast. The core already does this enchant (Unit.cpp: Hunter Explosive Shot +30%, +20% against players, on a target with your stock Living Bomb 44457 or its ranks). On this server's 'hero' class model the core's version lookup has no other Living Bomb versions, so ours covers the rest: another Living Bomb version (1144457 and others) or a non-Hunter Explosive Shot. Review 2026-11-18: ours used to add the bonus again on top of the core's (+69%), and counted player pets as players; now it runs only when the core's test fails and matches the core's player test.
 
 **Sources:** our client spell data (Spell.dbc)
 
@@ -4531,12 +4552,17 @@ patch or the mechanic when there is a chance.
 
 ### Pyroclasmic Shadows (276551, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
+
+**Assumptions:** Review 2026-11-18: our aura link (007) watched the Pyroclasm talent ranks as well as the Pyroclasm buff, so anyone with the talent had the enchant's bonus all the time. The watch list now names the buff versions only. The core does not handle this enchant.
+
+**Sources:** our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 

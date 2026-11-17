@@ -241,7 +241,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the pull requests said:**
 
@@ -1124,7 +1124,7 @@ patch or the mechanic when there is a chance.
 |---|---|---|---|---|
 | 2026-11-16 | ead73f1 | #173 Medium legendary fixes, batch 2 | build47 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | b01de40 | #173 Medium legendary fixes, batch 2 | build47 (2026-11-15) | 2026-11-16 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1153,7 +1153,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1275,7 +1275,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1466,7 +1466,7 @@ patch or the mechanic when there is a chance.
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1583,7 +1583,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 | 2026-11-18 | d8f9215 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
@@ -1748,7 +1748,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1925,7 +1925,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2050,7 +2050,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2105,7 +2105,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2145,7 +2145,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2269,7 +2269,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 1d8de01 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2301,7 +2301,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 1d8de01 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2509,7 +2509,7 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
-| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2925,8 +2925,8 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
-| 2026-11-16 | 6976f48 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
+| 2026-11-16 | 6976f48 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3265,7 +3265,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
