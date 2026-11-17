@@ -57,4 +57,12 @@ heals (healer first) than for heal-over-time ticks (target first). Batch 5 (`sql
 the wrong way round: Growing Light (270661), Holy Ground (81315 / 281788) and the Align heal bonus (986160). Any new
 heal rule should call `WcmeHealParties` first.
 
+## Overlaps with the core's own enchant code
+
+The core has its own Mystic Enchant system (the `coa_mystic_enchant_*` tables run by `spell_ascension_mystic_enchant_proc`,
+and some enchants written into its C++). Where we also scripted an enchant it already handles, the effect happened twice.
+`enchants/core-overlap-review.csv` lists every enchant we touch that also appears in the core, with the review result.
+Before scripting any enchant, check that file's sources first: the core's tables in `data/sql/updates/pending_db_world`
+and its C++ in `src/server` (search for the enchant's spell id).
+
 ## Enchants

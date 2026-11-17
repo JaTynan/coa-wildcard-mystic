@@ -2,7 +2,8 @@
 -- client patch change). Most of these are hooks in wcme_epic_batch1_hooks and need no rows here:
 -- Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre
 -- (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death
--- (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420).
+-- (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in
+-- review 2026-11-18, the core already does it).
 -- With rows: Dancer in the Dark (81521, 282118: Shadow Dance recovers twice as fast in Stealth), Soul Restoration
 -- (84381, 282213, 1181290: heals shorten Weakened Soul), Swift Shadows (272814: Shadowstep reset from a Shadow Marked
 -- target).

@@ -1,6 +1,6 @@
 -- The last legendaries (needs the build with this version of mystic-enchants-scripts.patch; no client patch change).
--- Explosive Charge (1568152): 25% of Explosive Shot's damage to other enemies within 5 yards (its aura 354 had no
--- handler for this enchant; done in the damage hook wcme_last_legendary_hooks, so it needs no rows here).
+-- Explosive Charge (1568152): was done in the damage hook wcme_last_legendary_hooks; review 2026-11-18 found the core
+-- already does it (its own enchant rule), so the hook was removed. No rows here either way.
 -- Social Distancing (81102): 20% disease resistance while no other player is within 6 yards (its proc had nothing to
 -- trigger).
 -- Harbinger of Pestilence (990020): Wrath / Haunt stacks, Nightfall from Wrath, Harbinger's Bile on Haunt, Haunt

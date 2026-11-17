@@ -14,7 +14,7 @@ spell,verdict,assumptions,sources,decisions,tooltip_review
 81453,,Applies to your pet or a charmed or tamed minion (the builder text says Hunter pet; the newer copies say any Tamed Pet). Done as +20% damage while you have Berserk rather than a buff on the pet.,"Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)",,
 282009,,As 81453.,our client spell data (Spell.dbc),,
 1581626,,As 81453.,our client spell data (Spell.dbc),,
-1180420,,Each Waterbolt that deals damage gives one stack of 1180423 (stacks and duration from the data).,our client spell data (Spell.dbc),,
+1180420,,"Review 2026-11-18: the core already does this enchant (coa_mystic_enchant_minion_aura puts listener 1180421 on your minions; Waterbolt damage from it makes you cast the haste stack 1180423 through 1180422). Our batch 1 hook cast the stack too, so each Waterbolt gave two stacks. Ours removed.",our client spell data (Spell.dbc),,
 81521,,Done as 1 extra second off Shadow Dance's cooldown every second while stealthed.,"Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)",,
 282118,,As 81521.,our client spell data (Spell.dbc),,
 84381,,,"Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)",,

@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..da53c96
+index 0000000..df3fbfe
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14564 @@
+@@ -0,0 +1,14539 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -11179,11 +11179,9 @@ index 0000000..da53c96
 +    }
 +};
 +
-+// Damage parts of the last legendaries:
-+// - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered
-+//   casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every
-+//   other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for
-+//   this enchant.
++// Damage parts of the last legendaries. Explosive Charge (1568152) used to be here; review 2026-11-18 found the core
++// already does it (coa_mystic_enchant_proc rule on every Explosive Shot version, ticks included, run by
++// spell_ascension_mystic_enchant_proc), so ours made its splash happen twice and was removed.
 +// - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the
 +//   excess is added to its critical damage bonus (+1% of the hit per 1% excess).
 +// - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures
@@ -11248,23 +11246,6 @@ index 0000000..da53c96
 +        return damage;
 +    }
 +
-+    static void ExplosiveCharge(Unit* attacker, Unit* target, int64 share)
-+    {
-+        if (share <= 0)
-+            return;
-+        ObjectGuid const targetGuid = target->GetGUID();
-+        attacker->m_Events.AddEventAtOffset([attacker, targetGuid, share]()
-+        {
-+            SpellInfo const* splash = sSpellMgr->GetSpellInfo(1568153);
-+            Unit* center = ObjectAccessor::GetUnit(*attacker, targetGuid);
-+            if (!splash || !center || !attacker->IsAlive())
-+                return;
-+            for (Unit* enemy : WcmeEnemiesNear(attacker, center, 5.0f, 20))
-+                if (enemy != center)
-+                    WcmeExtraDamage(attacker, enemy, splash, share);
-+        }, 1ms);
-+    }
-+
 +    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
 +    {
 +        if (!target || !attacker || !spellInfo || damage <= 0 || target == attacker)
@@ -11288,10 +11269,6 @@ index 0000000..da53c96
 +            if (blades == 3)
 +                BladeBurst(attacker, target, value * 40 / 100);
 +        }
-+        if (spellInfo->SpellFamilyName == SPELLFAMILY_HUNTER && spellInfo->SpellName[0] &&
-+            std::strncmp(spellInfo->SpellName[0], "Explosive Shot", 14) == 0)
-+            if (AuraEffect const* charge = attacker->GetAuraEffect(1568152, EFFECT_0))
-+                ExplosiveCharge(attacker, target, value * charge->GetAmount() / 100);
 +        if (WcmeNamed(spellInfo, "Lava Burst") && attacker->HasAura(1398169))
 +        {
 +            SpellSchoolMask const school = spellInfo->GetSchoolMask();
@@ -11456,7 +11433,8 @@ index 0000000..da53c96
 +//   disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut
 +//   is its own data.
 +// - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk.
-+// - Elemental Torrent (1180420): Waterbolt damage from your Water Elemental gives you a stack of 1180423 (spell haste).
++// Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its
++// coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 +class wcme_epic_batch1_hooks : public UnitScript
 +{
 +public:
@@ -11585,9 +11563,6 @@ index 0000000..da53c96
 +                }, 1ms);
 +            }
 +        }
-+        if (WcmeNamed(spellInfo, "Waterbolt") && attacker->GetTypeId() == TYPEID_UNIT)
-+            if (Unit* owner = attacker->GetOwner(); owner && owner->HasAura(1180420))
-+                owner->m_Events.AddEventAtOffset([owner]() { owner->CastSpell(owner, 1180423, true); }, 1ms);
 +        damage = int32(std::min<int64>(INT32_MAX, value));
 +    }
 +};

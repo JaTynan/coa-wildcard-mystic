@@ -1,0 +1,57 @@
+spell,name,quality,core_tables,core_cpp,status,outcome
+55441,Glyph of Mana Tide,Rare,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,spell_shaman.cpp,to review,
+55675,Glyph of Circle of Healing,Rare,,spell_priest.cpp,to review,
+56842,Glyph of Trueshot Aura,Rare,coa_mystic_enchant_bonus,,to review,
+87498,Accurate Shadow Bolt,Uncommon,,firework_show_Exodar.h,to review,
+88626,Hardy Mark of the Wild,Uncommon,,firework_show_BootyBay.h,to review,
+90098,Concentrated Hibernate,Uncommon,,firework_show_Shattrath.h,to review,
+91266,Hasty Feign Death,Uncommon,,firework_show_ThunderBluff.h,to review,
+91346,Concentrated Bear Form,Uncommon,,firework_show_Orgrimmar.h,to review,
+93776,Brutal Lava Burst,Uncommon,,firework_show_Orgrimmar.h,to review,
+95654,Hardy Water Shield,Uncommon,,firework_show_Orgrimmar.h,to review,
+96765,Concentrated Avenger's Shield,Uncommon,,firework_show_Undercity.h,to review,
+97364,Brutal Mangle (Cat),Uncommon,,firework_show_Orgrimmar.h,to review,
+270661,Growing Light,Epic,,AscensionWildcardReconstruction.cpp,to review,
+271125,Pyroclasmic Ignition,Epic,,Unit.cpp,to review,
+271547,Decimation by Pyro,Epic,,AscensionWildcardReconstruction.cpp,to review,
+271907,Dragon Warrior,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+273418,Flowing,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours trimmed to the 3rd-stack Overflowing only (core builds the stacks)
+273458,Shadow Crash,Epic,,AscensionShadowfuryShadowCrash.cpp,to review,
+273786,Demolisher,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+273885,Blood and Guts,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+274205,Trauma Care,Epic,script aura_wildcard_trauma_care,AscensionWildcardReconstruction.cpp,resolved,ours removed (core script; buff data gives the extra target)
+274918,Disciple of the Tides,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+276302,Relentless Reflexes,Uncommon,script aura_wildcard_relentless_reflexes,,to review,
+276551,Pyroclasmic Shadows,Epic,,firework_show_Exodar.h,to review,
+277082,Electrical Discharge,Epic,,SpellAuraEffects.cpp,resolved,"ours removed (core does it, hard-coded)"
+277460,Physics in Practice,Epic,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core damage hook)
+282040,Blind Rage,Uncommon,script aura_wildcard_skillcard_proc,AscensionSkillcardProcRules.h,to review,
+1154364,Feeding the Abyss,Legendary,,AscensionMysticEnchantScripts.cpp,to review,
+1180030,Lone Wolf,Epic,coa_mystic_enchant_bonus,,to review,
+1180200,Precision Impact,Epic,coa_mystic_enchant_bonus,,to review,
+1180420,Elemental Torrent,Epic,coa_mystic_enchant_minion_aura,,resolved,ours removed (core minion listener)
+1180480,Soul Erosion,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1180590,Moon's Wrath,Epic,coa_mystic_enchant_bonus,,to review,
+1180640,Searing Flames,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1180900,Shadow Funnel,Epic,,AscensionMysticEnchantScripts.cpp,to review,
+1181300,Controlled Aggression,Epic,coa_mystic_enchant_aura_link,,to review,
+1181340,Iron Guard,Epic,,Unit.cpp,resolved,core patch 69 trimmed to blocked spells (core does melee/ranged)
+1181360,Stormbound Instinct,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1181400,Blazing Flame,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1544910,Wraithweaver: Shadow Orbs,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1554908,Holy Templar,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,noted earlier as handled by the core; no code of ours
+1556008,Savage Momentum,Epic,coa_mystic_enchant_minion_aura,,to review,
+1568152,Explosive Charge,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed in #178 (core enchant rule); doubled until then
+1570700,Shadow Visions,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1571951,Overflow,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1573649,Cremation,Legendary,,AscensionScalingBaseData.h,to review,
+1575124,Critical Time,Epic,coa_mystic_enchant_bonus,,to review,
+1577402,Pyroclasmic Shadows,Epic,coa_mystic_enchant_bonus,,to review,
+1581647,Pious Strikes,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
+1584166,Fire Walk With Me,Epic,,SpellInfo.cpp Unit.cpp,to review,
+1584997,Holy Servitude,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
+1587962,Abjurer's Ward: Arcane,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
+1587982,Abjurer's Ward: Fire,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
+1588050,Abjurer's Ward: Frost,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
+1590974,Blood-Soaked Mutilation,Epic,coa_mystic_enchant_bonus,AscensionMysticEnchantMechanics.cpp,to review,
+1988300,Omen of Doom,Epic,,AscensionMysticEnchantScripts.cpp,to review,
