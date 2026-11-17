@@ -3,7 +3,6 @@
 -- enchant spell is bound to the script, and its spell_proc row says which events can set it off.
 INSERT INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('aura_link', 1988300),
-('aura_link', 271547),
 ('aura_link', 271679),
 ('aura_link', 271680),
 ('aura_link', 272247),
@@ -192,22 +191,24 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1587982, 'spell_wcme_enchant_action'),
 (1588050, 'spell_wcme_enchant_action');
 -- Part 2: "while you have X, you also have Y" through the core's existing coa_mystic_enchant_aura_link table.
+-- Review 2026-11-18: a watch list must name the proc buff only, never the talent that procs it (a talent is a passive
+-- aura you always have, so the grant would be permanent). Mind Core (283042), Pyroclasmic Shadows (276551) and Fingers of
+-- Death (274179) lost their talent ids; Decimation by Pyro (271547) is gone, the core does it (wildcard_decimation_pyro).
 DELETE FROM `coa_mystic_enchant_aura_link` WHERE `enchant_spell` IN (283042, 283031, 272255, 272256, 281602, 281597, 299988, 271547, 276551, 272247, 275463, 299944, 271680, 1988300, 274179, 410400, 271679);
 INSERT INTO `coa_mystic_enchant_aura_link` (`enchant_spell`, `aura`, `grant_spell`, `comment`) VALUES
-(283042, '47245 47246 47247 47383 71162 71165 276071 276083 276090 285430 901085 984093 984094 984181 997178 1147245 1147246 1147247 1147383 1171162 1171165 1247245 1247246 1247247 1247383 1271162 1271165 1576330 1576331 1576332 1576333 1576356 1576360 1576362 1576363 2140849 2142772', 283040, 'WCME: Mind Core: gaining Molten Core grants Mind Core'),
+(283042, '47383 71162 71165 276071 276083 276090 901085 984094 984181 997178 1147383 1171162 1171165 1247383 1271162 1271165 1576331 1576332 1576333 1576356 1576360 1576362 1576363 2140849 2142772', 283040, 'WCME: Mind Core: gaining Molten Core grants Mind Core'),
 (283031, '16880 16886 26091 61345 61346 116886 283216 285538 816886 861346 861347 916880 961345 961346 1116880 1116886 1161345 1161346 1209306 1209307 1209308 1209309 1209310 1216880 1216886 1261345 1261346 1361346 1590195 1590197 1590198', 283033, 'WCME: Natural Destruction: Nature''s Grace also grants Natural Destruction'),
 (272255, '48518 48520 1148518', 272250, 'WCME: Total Lunar Eclipse: Lunar Eclipse raises Arcane damage'),
 (272256, '48517 48519 1148517', 272251, 'WCME: Total Solar Eclipse: Solar Eclipse raises Nature crit'),
 (281602, '277029 997450', 281603, 'WCME: Swashbuckler: Flurry of Blows: melee haste while Swashbuckling'),
 (281597, '277029 997450', 81220, 'WCME: Swashbuckler: Matched Blows: parry while Swashbuckling'),
 (299988, '31801 42463 120128 355260 355261 365122 992965 992969 1131801 1142463', 299989, 'WCME: Vengeful Plague: Blood Plague damage while Seal of Vengeance is active'),
-(271547, '63156 63158 63165 63167 263165 263167 271542 271543 524913 573289 704193 704215 707457 806238 1163156 1163158 1163165 1163167 1263156 1263158 1263165 1263167 1578726 1578727 1578728 1578729 1578730 1578731 1578732 1578733', 271542, 'WCME: Decimation by Pyro: Decimation also boosts Pyroblast and Meteor'),
-(276551, '18073 18093 18096 63243 63244 63245 93018 520019 520826 805482 805486 918073 918096 963245 965601 966102 966103 966104 1007113 1118073 1118093 1118096 1163243 1163244 1163245 1209401 1209402 1209403 1209404 1209405 1218073 1218093 1218096 1263243 1263244 1263245', 276548, 'WCME: Pyroclasmic Shadows: Shadow Bolt and Chaos Bolt boost while Pyroclasm is active'),
+(276551, '18093 63243 63244 93018 520019 520826 805482 805486 965601 1007113 1118093 1163243 1163244 1218093 1263243 1263244', 276548, 'WCME: Pyroclasmic Shadows: Shadow Bolt and Chaos Bolt boost while Pyroclasm is active'),
 (272247, '48517 48518 48519 48520 1148517 1148518', 48389, 'WCME: Lunar Frenzy: entering an Eclipse grants Owlkin Frenzy'),
 (275463, '31842 71166 1131842 1231842 1575125', 275429, 'WCME: Fury of the Light: Holy crit bonus while Divine Illumination is active'),
 (299944, '48518 48520 1148518', 299945, 'WCME: Lunar Marksmanship: Arcane Shot boost during Lunar Eclipse'),
 (271680, '48517 48519 1148517', 271675, 'WCME: Wrath of the Sun: Wrath boost during Solar Eclipse'),
 (1988300, '12536 67210 823768 983908 983909 1112536 1116246 1116870 1116871 1167210 1212536 1216246 1216870 1586519', 1988301, 'WCME: Omen of Doom: Clearcasting raises Arcane and Nature damage (lasts while Clearcasting does)'),
-(274179, '44543 44544 44545 74396 271943 414888 815051 844543 844544 844545 844549 944543 944545 954021 965296 978421 983963 997633 1144543 1144544 1144545 1174396 1209949 1209950 1209951 1209952 1209953 1244543 1244544 1244545', 274171, 'WCME: Fingers of Death: gaining Fingers of Frost grants Fingers of Death'),
+(274179, '44544 74396 271943 815051 844544 954021 965296 983963 997633 1144544 1174396 1244544', 274171, 'WCME: Fingers of Death: gaining Fingers of Frost grants Fingers of Death'),
 (410400, '16880 16886 26091 61345 61346 116886 283216 285538 816886 861346 861347 916880 961345 961346 1116880 1116886 1161345 1161346 1209306 1209307 1209308 1209309 1209310 1216880 1216886 1261345 1261346 1361346 1590195 1590197 1590198', 410401, 'WCME: Natural Destruction: Nature''s Grace also grants Natural Destruction'),
 (271679, '16880 16886 26091 61345 61346 116886 283216 285538 816886 861346 861347 916880 961345 961346 1116880 1116886 1161345 1161346 1209306 1209307 1209308 1209309 1209310 1216880 1216886 1261345 1261346 1361346 1590195 1590197 1590198', 271670, 'WCME: Druidic Storm: Lightning damage boost while Nature''s Grace is active (the longer Nature''s Grace is not done)');

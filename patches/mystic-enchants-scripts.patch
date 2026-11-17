@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..eaaaaba
+index 0000000..d401d15
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14599 @@
+@@ -0,0 +1,14644 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -12747,13 +12747,56 @@ index 0000000..eaaaaba
 +    static inline std::unordered_map<ObjectGuid, TimePoint> _quietGarrote;
 +    bool _inMending = false;
 +};
++// Growing Light (270661) for the Beacon of Light versions the core misses. The core's wildcard_growing_light only
++// finds your Beacon through GetAuraOfRankedSpellOrTwin(53563); on this server's "hero" class model that is the stock
++// Beacon alone, so a Beacon from 1153563, 1253563 or 1567798 never sets it off. This copies the core's rule (any Holy
++// heal of yours, before absorbs, on a target with your Beacon heals up to 3 other allies within 8 yards for 20%
++// through 270665) and runs only when the core's own test fails, so the two never both fire.
++class wcme_growing_light_versions : public UnitScript
++{
++public:
++    wcme_growing_light_versions() : UnitScript("wcme_growing_light_versions", true, { UNITHOOK_ON_BEFORE_HEAL_ABSORB }) { }
++
++    void OnBeforeHealAbsorb(HealInfo& heal) override
++    {
++        Unit* caster = heal.GetHealer();
++        Unit* target = heal.GetTarget();
++        SpellInfo const* info = heal.GetSpellInfo();
++        if (!caster || !caster->IsPlayer() || !target || !info || info->Id == 270665 || !heal.GetHeal() ||
++            !(info->GetSchoolMask() & SPELL_SCHOOL_MASK_HOLY) || !caster->HasAura(270661) ||
++            target->GetAuraOfRankedSpellOrTwin(53563, caster->GetGUID()) ||
++            !WcmeAuraFromNamed(target, caster, "Beacon of Light"))
++            return;
++        // The same pick as the core's ReconstructionAllies: friendly, assistable, in line of sight, most injured first.
++        std::list<Unit*> allies;
++        Acore::AnyFriendlyUnitInObjectRangeCheck check(target, caster, 8.0f);
++        Acore::UnitListSearcher<Acore::AnyFriendlyUnitInObjectRangeCheck> searcher(target, allies, check);
++        Cell::VisitObjects(target, searcher, 8.0f);
++        allies.remove_if([caster, target](Unit* ally)
++        {
++            return ally == target || !caster->IsValidAssistTarget(ally) || !caster->IsWithinLOSInMap(ally);
++        });
++        allies.sort([](Unit* a, Unit* b) { return a->GetHealthPct() < b->GetHealthPct(); });
++        int32 const amount = int32(CalculatePct(heal.GetHeal(), 20));
++        uint8 count = 0;
++        for (Unit* ally : allies)
++            if (count++ < 3)
++                caster->CastCustomSpell(270665, SPELLVALUE_BASE_POINT0, amount, ally, true);
++    }
++};
++
 +
 +// Epic batch 4, unit side:
-+// - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb.
++// - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core
++//   does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks;
++//   on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours
++//   added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive
++//   Shot from outside the Hunter family.
 +// - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's
 +//   silence is removed.
 +// - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in
 +//   AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash.
++//   wcme_growing_light_versions covers only the Beacon of Light versions the core can't see.
 +// - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8
 +//   yards for 5%.
 +class wcme_epic_batch4_hooks : public UnitScript
@@ -12764,8 +12807,9 @@ index 0000000..eaaaaba
 +
 +    static int64 Damage(Unit* target, Unit* attacker, SpellInfo const* spell, int64 value)
 +    {
-+        if (attacker->HasAura(271125) && WcmeNamed(spell, "Explosive Shot") && WcmeAuraFromNamed(target, attacker, "Living Bomb"))
-+            value = value * (target->IsControlledByPlayer() ? 120 : 130) / 100;
++        if (attacker->HasAura(271125) && WcmeNamed(spell, "Explosive Shot") && WcmeAuraFromNamed(target, attacker, "Living Bomb") &&
++            !(spell->SpellFamilyName == SPELLFAMILY_HUNTER && target->GetAuraOfRankedSpellOrTwin(44457, attacker->GetGUID())))
++            value = value * (target->IsPlayer() ? 120 : 130) / 100;
 +        if (attacker->HasAura(1590974) && WcmeNamed(spell, "Mutilate"))
 +        {
 +            int32 bleeds = 0;
@@ -14379,6 +14423,7 @@ index 0000000..eaaaaba
 +    RegisterSpellScript(spell_wcme_lone_wolf);
 +    RegisterSpellScript(spell_wcme_lone_wolf_buff);
 +    RegisterSpellScript(spell_wcme_stampede_extension);
++    new wcme_growing_light_versions();
 +    new wcme_epic_batch4_spells();
 +    new wcme_epic_batch4_hooks();
 +    RegisterSpellScript(spell_wcme_area_keeper);

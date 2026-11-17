@@ -74,4 +74,12 @@ flag. The core then sets the aura's time left to that value instead of adding it
 as extensions (found while reviewing Savage Momentum, whose Stampede would drop to 2 sec). 13 are reached by Mystic
 Enchants through their data; they still need a look.
 
+`enchants/core-version-gaps.csv` lists core enchant rules that find a spell through its "twin" lookup. This server runs
+`CoA.ClassModel = "hero"`, where that lookup only knows the stock spell and its ranks, so another version of the same
+spell (a CoA Beacon of Light or Living Bomb, say) never sets the rule off (found while reviewing Pyroclasmic Ignition).
+Where we cover a gap, ours runs only when the core's own test fails.
+
+Aura links (`coa_mystic_enchant_aura_link`) must watch the proc buff only, never the talent that procs it: a talent is a
+passive aura you always have, so the grant becomes permanent (found while reviewing Decimation by Pyro).
+
 ## Enchants
