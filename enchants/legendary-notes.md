@@ -600,6 +600,22 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Booming Thunder (965305, Legendary)
+
+**Status:** changed, awaiting in-game test (core patch 71)
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 508789d | not merged yet | none yet | - |
+
+**Assumptions:** Its 'Chain Lightning loses 10% less damage per jump' (a flat +10 on the jump multiplier) was added by the core as +10 to the 0.7-ish multiplier, so every jump hit about 10 times harder than the last. Core patch 71 (epic batch 5-7 review, PR #178) reads flat jump-multiplier modifiers as percentage points.
+
+**Sources:** our client spell data (Spell.dbc); core source (SpellInfo.cpp, Player::ApplySpellMod)
+
+**Decisions:** 2026-11-17 James: fix the base problems found in the review.
+
+**Testing:** nothing recorded yet
+
 ### Bulwark (1590962, Legendary)
 
 **Status:** changed, awaiting in-game test
@@ -2747,18 +2763,20 @@ patch or the mechanic when there is a chance.
 
 ### Overflow (1571951, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
 | 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-17 | 2a15355 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Overflow (977710): its own design instead of twin 1571951 (003 no longer links them). Healing Touch also heals the most injured other ally within 12 yards for 50% of the amount healed (954283), always plants Living Seed (48504: 30% of the heal) if you know Living Seed, and gives a stack of Flowing (986112); the third stack becomes Overflowing (986113): the next Chain Heal heals 50% more (the data's own spell mod), plants Living Seed on each target and grants Nature's Grace (16886) if you know it or are in Random mode (973827). Living Seed blooming restores 1% of your base mana, and each Chain Heal target healed takes 1 sec off Tranquility.
 - Overflow (enchant 1571951, whose Regrowth and Nourish casts already give Overflow stacks 1571954 through the core's enchant procs): your next Healing Touch spends the stacks. It always plants Living Seed (48504: 30% of the heal) if you know Living Seed, and heals one more ally within 12 yards per stack for 30% of the amount healed (1571952), the most injured first. The stacks' cast time and mana cut is the data's own spell mod.
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to each enemy within 10 yards of you, the Mangle target included (its helper is an area around you). - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to each enemy within 5 yards of the target, the target included (its helper explodes from the target); each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 032-overflow.sql: Overflow (977710): its own design instead of twin 1571951 (003 no longer links them): Healing Touch overflow heal, Living Seed and Flowing;
 - 037-overflow-stacks-astral-storm.sql: Overflow (enchant 1571951): its stacks (1571954) are spent by the next Healing Touch for Living Seed and extra ally heals.
 
@@ -2772,16 +2790,18 @@ patch or the mechanic when there is a chance.
 
 ### Overflow (977710, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | - |
+| 2026-11-17 | 2a15355 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Overflow (977710): its own design instead of twin 1571951 (003 no longer links them). Healing Touch also heals the most injured other ally within 12 yards for 50% of the amount healed (954283), always plants Living Seed (48504: 30% of the heal) if you know Living Seed, and gives a stack of Flowing (986112); the third stack becomes Overflowing (986113): the next Chain Heal heals 50% more (the data's own spell mod), plants Living Seed on each target and grants Nature's Grace (16886) if you know it or are in Random mode (973827). Living Seed blooming restores 1% of your base mana, and each Chain Heal target healed takes 1 sec off Tranquility.
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to each enemy within 10 yards of you, the Mangle target included (its helper is an area around you). - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to each enemy within 5 yards of the target, the target included (its helper explodes from the target); each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 032-overflow.sql: Overflow (977710): its own design instead of twin 1571951 (003 no longer links them): Healing Touch overflow heal, Living Seed and Flowing;
 
 **What the pull requests said:**
@@ -3689,7 +3709,7 @@ patch or the mechanic when there is a chance.
 
 ### Transcendental Embrace (1583831, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed, awaiting in-game test (core patch 71)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3699,6 +3719,12 @@ patch or the mechanic when there is a chance.
 **What the pull requests said:**
 
 - #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
+
+**Assumptions:** Its Transcendental Embrace buff (1583832) makes the next Chain Heal lose 20% less per jump (a flat +20 on the jump multiplier); the core added 20 to the 0.8 multiplier, so jumps healed about 21 times the last. Fixed by core patch 71 (PR #178).
+
+**Sources:** our client spell data (Spell.dbc); core source (SpellInfo.cpp, Player::ApplySpellMod)
+
+**Decisions:** 2026-11-17 James: fix the base problems found in the review.
 
 **Testing:** nothing recorded yet
 

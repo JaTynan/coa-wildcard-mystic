@@ -44,7 +44,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 983070 | Blood for the Blood God | yes | 983070: changed, awaiting in-game test (#173) |
 | 978219 | Blood Venom |  | 978219: changed, awaiting in-game test (#165) |
 | 965280 | Blooming Growth |  | 965280: changed, awaiting in-game test (#164) |
-| 965305 | Booming Thunder |  | 965305: unchanged: working (audit)<br>1570759: unchanged: working (audit) |
+| 965305 | Booming Thunder |  | 965305: changed, awaiting in-game test (core patch 71)<br>1570759: unchanged: working (audit) |
 | 978724 | Bulwark |  | 978724: changed, awaiting in-game test (#26)<br>1590962: changed, awaiting in-game test (#26) |
 | 990190 | Burning Darkness |  | 990190: changed, awaiting in-game test (#165) |
 | 986008 | Carnage Incarnate |  | 986008: changed, awaiting in-game test (#26)<br>1590982: changed, awaiting in-game test (#26) |
@@ -132,7 +132,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 965283 | Nature's Fervor |  | 965283: changed, awaiting in-game test (#164 #166)<br>1570238: changed, awaiting in-game test (#20 #164) |
 | 979748 | One With The Light |  | 979748: changed, awaiting in-game test (#171)<br>1575034: changed, awaiting in-game test (#164 #171) |
 | 979240 | Oracle of the Eclipse | yes | 979240: changed, awaiting in-game test (#175) |
-| 977710 | Overflow |  | 977710: changed, awaiting in-game test (#20 #175)<br>1571951: changed, awaiting in-game test (#20 #175) |
+| 977710 | Overflow |  | 977710: changed on an unmerged branch (#20 #175)<br>1571951: changed on an unmerged branch (#20 #175) |
 | 81119 | Overheating |  | 81119: changed, awaiting in-game test (#171) |
 | 81122 | Overloaded Froststorm |  | 81122: changed, awaiting in-game test (#167) |
 | 956445 | Paratrooper |  | 956445: changed, awaiting in-game test (#26) |
@@ -299,11 +299,11 @@ text in our client is the only record.
 | 1398163 | Tame Dragonkin | tested (see test notes) (#26) |
 | 1398162 | Tether Elemental | tested (see test notes) (#26) |
 | 1591076 | Touch of the Magi | changed, awaiting in-game test (#26 #174) |
-| 1583831 | Transcendental Embrace | changed, awaiting in-game test (#164) |
+| 1583831 | Transcendental Embrace | changed, awaiting in-game test (core patch 71) (#164) |
 | 1180460 | Twist of Faith | unchanged: working (audit) |
 | 1398184 | Void Eruption | changed, awaiting in-game test (#175) |
 | 1571327 | Void Herald: Whispers of the Old Gods | unchanged: working (audit) |
 | 1760200 | Wind Lash | changed, awaiting in-game test (#175) |
 | 1544910 | Wraithweaver: Shadow Orbs | changed, awaiting in-game test (#175) |
 
-Copy totals (all 305): changed, awaiting in-game test: 209, unchanged: working: 82, tested: 5, works from its data: 3, works: 2, handled by the core: 2, changed after its last test: 1, handled: 1.
+Copy totals (all 305): changed, awaiting in-game test: 208, unchanged: working: 81, tested: 5, works from its data: 3, works: 2, handled by the core: 2, changed on an unmerged branch: 2, changed after its last test: 1, handled: 1.
