@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..7490dbb
+index 0000000..cdbf337
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14395 @@
+@@ -0,0 +1,14432 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -12900,6 +12900,19 @@ index 0000000..7490dbb
 +        caster->AddAura(spellId, owner);
 +}
 +
++// For a helper cast with an amount already worked out from a finished hit or heal: the core would otherwise add the
++// caster's spell power and percentage bonuses to it a second time when the aura is applied. Damage helpers skip the
++// caster's modifiers entirely; heal helpers lose their spell power coefficient (the core has no "skip" for heals).
++static void WcmeNoSecondBonus(uint32 spellId)
++{
++    SpellInfo* info = const_cast<SpellInfo*>(sSpellMgr->GetSpellInfo(spellId));
++    if (!info)
++        return;
++    info->AttributesEx3 |= SPELL_ATTR3_IGNORE_CASTER_MODIFIERS;
++    for (SpellEffectInfo& effect : info->Effects)
++        effect.BonusMultiplier = 0.0f;
++}
++
 +static bool WcmeIsBleed(SpellInfo const* info)
 +{
 +    return info && (info->Mechanic == MECHANIC_BLEED || (info->GetAllEffectsMechanicMask() & (1ULL << MECHANIC_BLEED)));
@@ -13193,9 +13206,12 @@ index 0000000..7490dbb
 +            caster->RemoveAurasDueToSpell(276579);
 +            int32 const tick = int32(damage * 15 / 100 / 3);
 +            if (tick > 0)
++            {
++                WcmeNoSecondBonus(276585);
 +                for (Unit* enemy : WcmeEnemiesNear(caster, target, 8.0f, 4))
 +                    if (enemy != target)
 +                        caster->CastCustomSpell(enemy, 276585, &tick, nullptr, nullptr, true);
++            }
 +        }
 +        else if (caster->HasAura(276580) && WcmeNamed(info, "Frost Shock"))
 +        {
@@ -13494,6 +13510,7 @@ index 0000000..7490dbb
 +// ===== Epic batches 6 and 7 =====
 +
 +static std::unordered_map<ObjectGuid, std::pair<uint32, TimePoint>> WcmeMarkedCast;    // caster: spell cast with a buff up
++static std::unordered_map<ObjectGuid, std::pair<ObjectGuid, TimePoint>> WcmeAmbushStealthed; // Double Agent: target, until
 +static std::unordered_map<ObjectGuid, TimePoint> WcmeBloodsurgeReady;                 // Ol' Bloodsurge 4 sec cooldown
 +static std::unordered_map<ObjectGuid, TimePoint> WcmeBloodsurgeBonus;                 // next direct ability +20%, until
 +static std::unordered_map<ObjectGuid, ObjectGuid> WcmeSearingFlamesTarget;            // caster: the one Immolate target
@@ -13610,9 +13627,11 @@ index 0000000..7490dbb
 +
 +// Epic batches 6 and 7, spell side:
 +// - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20)
-+//   as Nature damage (277083) to other enemies within 8 yards.
++//   as Nature damage (277083) to each enemy within 10 yards of you, the Mangle target included (its helper is an area
++//   around you).
 +// - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage
-+//   (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana.
++//   (1581627) to each enemy within 5 yards of the target, the target included (its helper explodes from the target);
++//   each cast restores 5% of your base mana.
 +// - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within
 +//   40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc.
 +// - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed
@@ -13658,6 +13677,14 @@ index 0000000..7490dbb
 +            return;
 +        if (caster->HasAura(274205) && caster->HasAura(274211) && WcmeNamed(info, "Greater Heal"))
 +            WcmeMarkCast(caster, info->Id);
++        if (caster->HasAura(81439) && info->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(info, "Ambush"))
++        {
++            Unit* target = spell->m_targets.GetUnitTarget();
++            if (target && target->HasAuraType(SPELL_AURA_MOD_STEALTH))
++                WcmeAmbushStealthed[caster->GetGUID()] = { target->GetGUID(), GameTime::Now() + 5s };
++            else
++                WcmeAmbushStealthed.erase(caster->GetGUID());
++        }
 +        if (caster->HasAura(273422) && WcmeNamed(info, "Chain Heal"))
 +        {
 +            WcmeMarkedCast.erase(caster->GetGUID());
@@ -13804,16 +13831,14 @@ index 0000000..7490dbb
 +
 +        if (caster->HasAura(277082) && WcmeNamed(info, "Mangle (Bear)") && roll_chance_i(15))
 +            if (SpellInfo const* discharge = sSpellMgr->GetSpellInfo(277083))
-+                for (Unit* enemy : WcmeEnemiesNear(caster, target, 8.0f, 11))
-+                    if (enemy != target)
-+                        WcmeExtraDamage(caster, enemy, discharge, int64(damage) * 60 / 100);
++                for (Unit* enemy : WcmeEnemiesNear(caster, caster, 10.0f, 10))
++                    WcmeExtraDamage(caster, enemy, discharge, int64(damage) * 60 / 100);
 +
 +        if (caster->HasAura(1581647) && info->SpellFamilyName == SPELLFAMILY_PALADIN &&
 +            WcmeNamedAny(info, { "Crusader Strike", "Avenger's Shield" }))
 +            if (SpellInfo const* light = sSpellMgr->GetSpellInfo(1581627))
-+                for (Unit* enemy : WcmeEnemiesNear(caster, target, 8.0f, 11))
-+                    if (enemy != target)
-+                        WcmeExtraDamage(caster, enemy, light, int64(damage) * 10 / 100);
++                for (Unit* enemy : WcmeEnemiesNear(caster, target, 5.0f, 10))
++                    WcmeExtraDamage(caster, enemy, light, int64(damage) * 10 / 100);
 +
 +        if (caster->HasAura(984696) && WcmeNamed(info, "Swipe (Cat)") && !target->HasAura(984698, caster->GetGUID()))
 +        {
@@ -13823,6 +13848,7 @@ index 0000000..7490dbb
 +                target->RemoveAurasDueToSpell(984697, caster->GetGUID());
 +                int32 const tick = int32(caster->GetLevel() +
 +                    (caster->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_ALL) + caster->GetTotalAttackPowerValue(BASE_ATTACK)) * 0.06f);
++                WcmeNoSecondBonus(984698);
 +                caster->CastCustomSpell(target, 984698, &tick, nullptr, nullptr, true);
 +            }
 +            else
@@ -13871,8 +13897,8 @@ index 0000000..7490dbb
 +};
 +
 +// Epic batches 6 and 7, unit side:
-+// - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection
-+//   is its data).
++// - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core
++//   takes the target's stealth off before the damage is worked out). Its stealth detection is its data.
 +// - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus
 +//   (15% of it against players).
 +// - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast.
@@ -13887,7 +13913,8 @@ index 0000000..7490dbb
 +// - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same
 +//   damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet.
 +// - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass.
-+// - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks).
++// - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks;
++//   each stack ticks for the latest Greater Heal's share). The heal over time doesn't add your spell power again.
 +// - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of
 +//   Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack.
 +// - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on
@@ -13912,9 +13939,16 @@ index 0000000..7490dbb
 +    static int64 Direct(Unit* target, Unit* attacker, SpellInfo const* spell, int64 value)
 +    {
 +        bool const versusPlayer = target->IsControlledByPlayer();
-+        if (attacker->HasAura(81439) && spell->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(spell, "Ambush") &&
-+            target->HasAuraType(SPELL_AURA_MOD_STEALTH))
-+            value *= 2;
++        if (attacker->HasAura(81439) && spell->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(spell, "Ambush"))
++        {
++            auto stealthed = WcmeAmbushStealthed.find(attacker->GetGUID());
++            if (stealthed != WcmeAmbushStealthed.end())
++            {
++                if (stealthed->second.first == target->GetGUID() && GameTime::Now() <= stealthed->second.second)
++                    value *= 2;
++                WcmeAmbushStealthed.erase(stealthed);
++            }
++        }
 +        if (attacker->HasAura(277460) && WcmeNamedAny(spell, { "Deadly Throw", "Shuriken Toss" }))
 +            for (AuraEffect const* effect : attacker->GetAuraEffectsByType(SPELL_AURA_MOD_INCREASE_SPEED))
 +                if (effect->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(effect->GetSpellInfo(), "Sprint"))
@@ -14073,7 +14107,10 @@ index 0000000..7490dbb
 +                player->m_Events.AddEventAtOffset([player, guid, tick]()
 +                {
 +                    if (Unit* ally = ObjectAccessor::GetUnit(*player, guid); ally && ally->IsAlive())
++                    {
++                        WcmeNoSecondBonus(1584998);
 +                        player->CastCustomSpell(ally, 1584998, &tick, nullptr, nullptr, true);
++                    }
 +                }, 1ms);
 +        }
 +
