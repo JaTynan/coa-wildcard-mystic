@@ -3390,7 +3390,7 @@ patch or the mechanic when there is a chance.
 
 - #175: Steward of Eternity (986162):** Moonfire → Align, Renew → Time-bind, Arcane Missiles → Synchronize; each drains energy (5 / 30 / 70), adds Temporal Distortion and triggers final-rank Borrowed Time; your heals on an Aligned target heal 10% more; emptying energy releases Eternity (healing wave +13% per stack; buff for 2 sec + 0.6 sec per stack, from the class version 276347/276373); Time-bind absorbs 30% of each hit (15% of hits from players) and heals it back over time after 6 sec; Synchronize heals only Aligned / Time-bound allies, holds Align and uses Missile Barrage (data).
 
-**Assumptions:** Eternity lasts 2 sec + 0.6 sec per stack (class version 276347 / 276373); Borrowed Time only if you know it.
+**Assumptions:** Eternity lasts 2 sec + 0.6 sec per stack (class version 276347 / 276373); Borrowed Time only if you know it. The +10% heal on Aligned targets only worked for heal-over-time ticks until the heal-order fix in epic batch 5 (051, PR #178); direct heals now get it too.
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc); player descriptions supplied by James (2026-11-16); core class (Chronomancer) versions of the spells
 

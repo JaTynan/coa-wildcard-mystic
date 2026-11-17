@@ -49,16 +49,28 @@ lower-quality copies of the same enchants) is `enchants/epic-history.csv`. Legen
    against the core release the build uses (also with the Windows header macros defined) and its SQL loaded twice
    into a scratch database. None of that replaces in-game testing, which is recorded per enchant below.
 
+## Known core quirk
+
+The core calls the heal hook (`UnitScript::ModifyHealReceived`) with its two units in a different order for direct
+heals (healer first) than for heal-over-time ticks (target first). Batch 5 (`sql/enchants/051-epics-5.sql`) added
+`WcmeHealParties` to the enchant scripts to put them in the right order, and fixed the three rules that had read them
+the wrong way round: Growing Light (270661), Holy Ground (81315 / 281788) and the Align heal bonus (986160). Any new
+heal rule should call `WcmeHealParties` first.
+
 ## Tooltip differences to review
 
 Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate
 call (see its Decisions and Assumptions); check them again at every review, and fix the tooltip in the client
 patch or the mechanic when there is a chance.
 
+- Blessed by the Elune (272253): Moonfire also deals its direct damage, which the tooltip doesn't mention.
+- Blood Shield (288804): The shield caps (20% of maximum health, 10% against players) are our numbers; the tooltip's are blank in the data.
 - Chilling Blows (81213): The tooltip can be read as 10.5 sec per Frostbrand hit on a stun-immune target; the server gives it once per Deep Freeze.
 - Eclipse Bomber (275014): The Bomber buffs' own tooltips name the opposite Flames (data) from the enchant text; the server follows the enchant text.
+- Elemental Lord (276578): The tethered-elemental parts of Elemental Aftershock and Elemental Lava are not done.
 - Poison Bomb (979113): Its helper spell 979165 says 2 sec; the enchant tooltip and the server use 4 sec.
 - Soul Restoration (282213): Its tooltip says Weakened Soul is shortened by 4 sec; the server uses 2 sec so every copy matches (James, 17 Nov).
+- Spellstorm (271709): Arcane Evoked and Fire Evoked are an extra 80% roll of their own, used up by the next eligible spell, rather than a change to the talent's chance.
 - Sweeping Swings (912326): Its helper spell 912327 says 2 sec; the enchant tooltip and the server use 1 sec.
 - Weapon Command (283338): The Ascension builder says +10% attack speed; our client tooltip and the server use +10% Physical damage.
 - Weapon Command (954057): The Ascension builder says +10% attack speed; our client tooltip and the server use +10% Physical damage.
@@ -557,6 +569,30 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Blessed by the Elune (272253, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Each Eclipse arms its effect for up to 30 sec (no number given). Uses your highest known Insect Swarm or Moonfire, or rank 1 if you know none; Moonfire comes with its own small direct hit. A Starsurge with both armed applies both.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** Moonfire also deals its direct damage, which the tooltip doesn't mention.
+
+**Testing:** nothing recorded yet
+
 ### Blind Rage (282040, Uncommon)
 
 **Status:** changed, awaiting in-game test
@@ -636,6 +672,29 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Blood Shield (288804, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** The tooltip's caps were missing from the data: 20% of your maximum health, 10% when your target is a player. 100% of the Death Strike heal before overhealing. Needs Frost Presence.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** The shield caps (20% of maximum health, 10% against players) are our numbers; the tooltip's are blank in the data.
+
+**Testing:** nothing recorded yet
+
 ### Blood and Guts (273885, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -657,7 +716,11 @@ patch or the mechanic when there is a chance.
 
 ### Blood-Soaked Mutilation (1590974, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -877,7 +940,11 @@ patch or the mechanic when there is a chance.
 
 ### Chilling Blows (81213, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1459,6 +1526,48 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Deter and Punish (283979, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** As 977988.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Deter and Punish (977988, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Reflect uses Spell Reflection (11818) set to 100%; retaliation uses the warrior's Retaliation (20230: counterattacks melee hits from the front, up to 20, for 50% weapon damage). Both last exactly as long as Deterrence.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Devastating Pound (997121, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -1718,7 +1827,11 @@ patch or the mechanic when there is a chance.
 
 ### Elemental Burst (278033, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1771,6 +1884,30 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Elemental Lord (276578, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Earth: 15% of the Earth Shock hit split over 3 ticks on up to 3 other enemies within 8 yards (its helper's 15). Frost: +55% next Lava Burst (+20% against players), used up by it. Fire: the empowered Flame Shock always finishes Lava Burst's cooldown (its helper's 100% chance) and its ticks for 12 sec have 20%. The empowerment from Elemental Blast or Lava Burst replaces the last one. The tethered-elemental bonuses in the helper texts are not done.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** The tethered-elemental parts of Elemental Aftershock and Elemental Lava are not done.
 
 **Testing:** nothing recorded yet
 
@@ -1942,7 +2079,11 @@ patch or the mechanic when there is a chance.
 
 ### Faerie Swarm (281916, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1959,7 +2100,11 @@ patch or the mechanic when there is a chance.
 
 ### Faerie Swarm (81402, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2026,6 +2171,48 @@ patch or the mechanic when there is a chance.
 
 **Testing:** fail: aura stays on but Charge never triggers it, although the rule loads; sister enchants 92249/92250/92252/92438 suspect (2 Nov) | 2026-11-02
 
+### Final Shield (281638, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** As 81255.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Final Shield (81255, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Counts your own Power Word: Shield on yourself as an ally. Crowd control means harmful stuns, fears, charms, polymorphs, sleeps, horrors, saps, freezes, banishes, shackles, roots, silences and pacifies; snares are not removed. The 30 sec lockout starts only when something was removed. Health is checked when the shield is cast.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Fingers of Death (274179, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -2059,7 +2246,11 @@ patch or the mechanic when there is a chance.
 
 ### Fire Walk With Me (1584166, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2077,7 +2268,11 @@ patch or the mechanic when there is a chance.
 
 ### Fire Walk With Me (283296, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2094,7 +2289,11 @@ patch or the mechanic when there is a chance.
 
 ### Fire Walk With Me (952120, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2632,14 +2831,20 @@ patch or the mechanic when there is a chance.
 
 ### Growing Light (270661, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661): your Holy heals on your Beacon of Light target also heal 3 allies within 8 yards of it for 20% of the heal. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
+- 051-epics-5.sql: The same build also fixes the order of the two units in the core's heal hook for direct heals (Growing Light 270661, Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before).
 
-**Assumptions:** Holy means a heal with the Holy school; 3 allies within 8 yards of the Beacon target; heal-over-time ticks don't count.
+**Assumptions:** Holy means a heal with the Holy school; 3 allies within 8 yards of the Beacon target; heal-over-time ticks don't count. Batch 5 (051) fixed which unit the server read as the healer for direct heals; before that this rule never fired.
 
 **Sources:** our client spell data (Spell.dbc)
 
@@ -2770,15 +2975,21 @@ patch or the mechanic when there is a chance.
 
 ### Holy Ground (281788, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661): your Holy heals on your Beacon of Light target also heal 3 allies within 8 yards of it for 20% of the heal. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
+- 051-epics-5.sql: The same build also fixes the order of the two units in the core's heal hook for direct heals (Growing Light 270661, Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before).
 
-**Assumptions:** As 81315.
+**Assumptions:** As 81315. Batch 5 (051) fixed which unit the server read as the healer for direct heals; before that this rule never fired.
 
 **Sources:** our client spell data (Spell.dbc)
 
@@ -2788,15 +2999,21 @@ patch or the mechanic when there is a chance.
 
 ### Holy Ground (81315, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's silence is removed. - Growing Light (270661): your Holy heals on your Beacon of Light target also heal 3 allies within 8 yards of it for 20% of the heal. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
+- 051-epics-5.sql: The same build also fixes the order of the two units in the core's heal hook for direct heals (Growing Light 270661, Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before).
 
-**Assumptions:** 983813 is put on allies inside your Consecration every second. The 5% splash goes to up to 5 allies within 8 yards of the healed ally; heal-over-time ticks don't count. The Purification by Light and Consecrated Strikes exclusion is not checked.
+**Assumptions:** 983813 is put on allies inside your Consecration every second. The 5% splash goes to up to 5 allies within 8 yards of the healed ally; heal-over-time ticks don't count. The Purification by Light and Consecrated Strikes exclusion is not checked. Batch 5 (051) fixed which unit the server read as the healer for direct heals; before that this rule never fired.
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
@@ -3065,7 +3282,11 @@ patch or the mechanic when there is a chance.
 
 ### Lightning Mastery (81140, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3075,6 +3296,27 @@ patch or the mechanic when there is a chance.
 **Assumptions:** 11% (its own chance). The echo is a second hit of the same spell for half the damage; it cannot echo again.
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Lone Wolf (1180030, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Lone Wolf (1180030): its own data already gives 1180031 (+10% damage and armour penetration) every second; that is now held back while you have a pet out. Every second, each enemy in combat with you within 8 yards adds a stack of 1101498 (+3% damage and attack speed, up to 5, its own data).
+- 051-epics-5.sql: With rows: Sniper (81166) and Ready, Set, Go! (81128) (standing still), Lone Wolf (1180030: no pet, enemies around you).
+
+**Assumptions:** Pet means a pet you control (a hunter or warlock pet); guardians don't count. Surrounded counts enemies in combat with you within 8 yards, checked every second, up to 5 stacks.
+
+**Sources:** our client spell data (Spell.dbc)
 
 **Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
@@ -3184,7 +3426,11 @@ patch or the mechanic when there is a chance.
 
 ### Mastery of the Tide (1574368, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3200,7 +3446,11 @@ patch or the mechanic when there is a chance.
 
 ### Mastery of the Tide (274948, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3236,7 +3486,11 @@ patch or the mechanic when there is a chance.
 
 ### Mending Hands (281724, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3253,7 +3507,11 @@ patch or the mechanic when there is a chance.
 
 ### Mending Hands (81297, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3451,7 +3709,11 @@ patch or the mechanic when there is a chance.
 
 ### Overload Mastery (281411, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3640,6 +3902,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Predatory Nature (979050, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** The combo points go on your selected target (2 against players); with no hostile target you still get the critical strike buff. The critical strike buff is removed after the next spell that uses Predator's Swiftness (the crit has already been rolled by then); otherwise it lasts its 12 sec.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Prepare for Shatter (84585, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3714,7 +3997,11 @@ patch or the mechanic when there is a chance.
 
 ### Pyroclasmic Ignition (271125, Epic)
 
-**Status:** unchanged: partly working
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3884,6 +4171,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Ready, Set, Go! (81128, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Standing still, checked every half second: - Sniper (81166): every 3 sec standing still adds a stack of 81167 (Aimed Shot and Kill Shot +1 yard range and +2% damage per stack, up to 10, its own data); moving removes the stacks. - Ready, Set, Go! (81128): in combat, every 3 sec standing still adds a stack of 81129 (+7% movement speed per stack, up to 5, its own data). The stacks are kept fresh while you stand still and last their 3 sec once you move, so the speed is there when you set off.
+- 051-epics-5.sql: With rows: Sniper (81166) and Ready, Set, Go! (81128) (standing still), Lone Wolf (1180030: no pet, enemies around you).
+
+**Assumptions:** Stacks build every 3 sec standing still in combat and last their own 3 sec once you move, so the speed is there as you set off. Leaving combat stops the building but doesn't remove stacks you have.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Return to the Light (84641, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3957,7 +4265,11 @@ patch or the mechanic when there is a chance.
 
 ### Savage Momentum (1556008, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4193,7 +4505,11 @@ patch or the mechanic when there is a chance.
 
 ### Shooting Stars (281485, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4277,6 +4593,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Sniper (81166, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Standing still, checked every half second: - Sniper (81166): every 3 sec standing still adds a stack of 81167 (Aimed Shot and Kill Shot +1 yard range and +2% damage per stack, up to 10, its own data); moving removes the stacks. - Ready, Set, Go! (81128): in combat, every 3 sec standing still adds a stack of 81129 (+7% movement speed per stack, up to 5, its own data). The stacks are kept fresh while you stand still and last their 3 sec once you move, so the speed is there when you set off.
+- 051-epics-5.sql: With rows: Sniper (81166) and Ready, Set, Go! (81128) (standing still), Lone Wolf (1180030: no pet, enemies around you).
+
+**Assumptions:** Checked every 0.5 sec; falling counts as moving. Stacks are kept fresh while you stand still (the stack aura lasts only 3 sec). Works in or out of combat (the tooltip doesn't limit it).
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Soul Restoration (1181290, Epic)
 
 **Status:** changed on an unmerged branch
@@ -4339,6 +4676,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Soul Siphoner (81398, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Heals the 3 lowest-health members (by percentage) of your party or raid within 40 yards, not yourself; each gets the halved amount. The enchant's own -50% modifier had no spells in its mask, so the halving is done by the script.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Spectre (81186, Epic)
 
 **Status:** changed on an unmerged branch
@@ -4365,6 +4723,30 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Spellstorm (271709, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Arcane Evoked and Fire Evoked are each used up by the next spell that could have given the other proc (a chilling Frost damage spell for Brain Freeze; Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt for Missile Barrage), whether or not the extra 80% roll succeeds. Needs the matching talent. The extra chance is rolled on its own, not added to the talent's chance.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** Arcane Evoked and Fire Evoked are an extra 80% roll of their own, used up by the next eligible spell, rather than a change to the talent's chance.
 
 **Testing:** nothing recorded yet
 
@@ -4436,6 +4818,28 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Suffocating Roots (84378, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Only when the roots are dispelled (not when they break or run out). The dispeller gets the same roots spell from you if you can attack them, with no range limit.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -4658,7 +5062,11 @@ patch or the mechanic when there is a chance.
 
 ### Tempered by Chaos (299180, Epic)
 
-**Status:** unchanged: broken
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4795,6 +5203,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Tidecaller's Boon (271813, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Healing Wave +50%, less 4% per stack of your Tidecaller's Boon already on the target (its helper's -4% per stack), then adds 3 stacks (up to 15, 10 sec). Each periodic heal tick of yours takes off one stack. The helper's bonus for periodic heals (271820's text) is not part of this enchant.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Timed Charge (954636, Epic)
 
 **Status:** changed on an unmerged branch
@@ -4917,6 +5346,27 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Twilight (84471, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Bleed ticks of yours (any class) heal through your Vampiric Embrace exactly like Shadow damage does in the core: you for its percentage, your party for a fifth of that. Direct bleed hits don't count.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -5077,6 +5527,27 @@ patch or the mechanic when there is a chance.
 **Assumptions:** As 81418 (Nature).
 
 **Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### War Mage (281939, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
+- 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**Assumptions:** Counts enemies in the explosion's radius just before it goes off, up to 6, rather than the hits it scores. Uses Arcanist's Explosion if you know it, else Arcane Explosion, else rank 1. War Mage 81408 (the other copy) is a separate enchant with its own rule.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
