@@ -238,7 +238,7 @@ text in our client is the only record.
 | 1134983 | Enhancement Mastery | unchanged: working (audit) |
 | 1398164 | Enslave Demon | changed, awaiting in-game test (#26) |
 | 1398216 | Execution Sentence | unchanged: working (audit) |
-| 1568152 | Explosive Charge | changed, awaiting in-game test (#177) |
+| 1568152 | Explosive Charge | handled by the core (checked 2026-11-18) (#177) |
 | 1584001 | Expunge | unchanged: working (audit) |
 | 1154364 | Feeding the Abyss | changed, awaiting in-game test (#175) |
 | 1180240 | Feral Frenzy | changed, awaiting in-game test (#26) |
@@ -306,4 +306,4 @@ text in our client is the only record.
 | 1760200 | Wind Lash | changed, awaiting in-game test (#175) |
 | 1544910 | Wraithweaver: Shadow Orbs | changed, awaiting in-game test (#175) |
 
-Copy totals (all 305): changed, awaiting in-game test: 208, unchanged: working: 81, tested: 5, works from its data: 3, works: 2, handled by the core: 2, changed on an unmerged branch: 2, changed after its last test: 1, handled: 1.
+Copy totals (all 305): changed, awaiting in-game test: 207, unchanged: working: 81, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed on an unmerged branch: 2, changed after its last test: 1, handled: 1.
