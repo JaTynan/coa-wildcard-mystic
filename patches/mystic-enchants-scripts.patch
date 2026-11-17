@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..5adc074
+index 0000000..7490dbb
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,13696 @@
+@@ -0,0 +1,14395 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -43,6 +43,7 @@ index 0000000..5adc074
 +#include <cstring>
 +#include <initializer_list>
 +#include <list>
++#include <map>
 +#include <unordered_map>
 +#include <unordered_set>
 +#include <vector>
@@ -11640,6 +11641,9 @@ index 0000000..5adc074
 +// - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2).
 +// - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned
 +//   Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
++// - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges;
++//   a new one starts with 1.
++// - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 +class spell_wcme_finisher_combo : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_finisher_combo);
@@ -11708,7 +11712,7 @@ index 0000000..5adc074
 +        PreventDefaultAction();
 +        Unit* owner = GetTarget();
 +        uint8 const points = owner->GetComboPoints();
-+        if (!roll_chance_i((GetId() == 979080 ? 10 : 20) * points))
++        if (!roll_chance_i((GetId() == 979080 || GetId() == 983475 ? 10 : 20) * points))
 +            return;
 +        Player* player = owner->ToPlayer();
 +        switch (GetId())
@@ -11770,6 +11774,24 @@ index 0000000..5adc074
 +                break;
 +            case 285111:
 +                owner->CastSpell(owner, 285115, true);
++                break;
++            case 274205:
++                if (Aura* care = owner->GetAura(274211))
++                {
++                    care->SetCharges(std::min<uint8>(2, care->GetCharges() + 1));
++                    care->RefreshDuration();
++                }
++                else if (Aura* first = owner->AddAura(274211, owner))
++                    first->SetCharges(1);
++                break;
++            case 983475:
++                if (Aura* tankard = owner->GetAura(983476))
++                {
++                    tankard->SetStackAmount(std::min<uint8>(4, tankard->GetStackAmount() + 1));
++                    tankard->RefreshDuration();
++                }
++                else
++                    owner->AddAura(983476, owner);
 +                break;
 +            default:
 +                break;
@@ -13469,8 +13491,685 @@ index 0000000..5adc074
 +    static inline thread_local bool _inner = false;
 +};
 +
++// ===== Epic batches 6 and 7 =====
++
++static std::unordered_map<ObjectGuid, std::pair<uint32, TimePoint>> WcmeMarkedCast;    // caster: spell cast with a buff up
++static std::unordered_map<ObjectGuid, TimePoint> WcmeBloodsurgeReady;                 // Ol' Bloodsurge 4 sec cooldown
++static std::unordered_map<ObjectGuid, TimePoint> WcmeBloodsurgeBonus;                 // next direct ability +20%, until
++static std::unordered_map<ObjectGuid, ObjectGuid> WcmeSearingFlamesTarget;            // caster: the one Immolate target
++static std::unordered_map<ObjectGuid, std::pair<int64, TimePoint>> WcmeLingeringDeath; // target: heals still negated
++static std::map<std::pair<ObjectGuid, ObjectGuid>, int32> WcmeGoreBonus;              // (target, caster): bonus %
++static std::unordered_map<ObjectGuid, TimePoint> WcmeAegisReady;                      // avoidance trigger, 5 sec
++
++static void WcmeMarkCast(Unit* caster, uint32 spellId)
++{
++    WcmeMarkedCast[caster->GetGUID()] = { spellId, GameTime::Now() + 5s };
++}
++
++static bool WcmeTakeMark(Unit* caster, uint32 spellId)
++{
++    auto mark = WcmeMarkedCast.find(caster->GetGUID());
++    if (mark == WcmeMarkedCast.end() || mark->second.first != spellId || GameTime::Now() > mark->second.second)
++        return false;
++    WcmeMarkedCast.erase(mark);
++    return true;
++}
++
++static Unit* WcmeLowestAlly(Player* player, Unit* exclude, float range)
++{
++    Unit* best = nullptr;
++    for (Unit* ally : WcmeAlliesNear(player, player, range, 40))
++        if (ally != exclude && ally->GetHealth() < ally->GetMaxHealth() && (!best || ally->GetHealthPct() < best->GetHealthPct()))
++            best = ally;
++    return best;
++}
++
++// Shows Twisted Mind (978703) in place of Fel Armor while Twisted Mind (979779) is active.
++class spell_wcme_twisted_mind : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_twisted_mind);
++
++    void Apply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Fel Armor", SPELLFAMILY_WARLOCK, 978703, true);
++    }
++
++    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
++    {
++        WcmeSyncSwap(GetTarget(), "Fel Armor", SPELLFAMILY_WARLOCK, 978703, false);
++        GetTarget()->RemoveAurasDueToSpell(978703);
++    }
++
++    void Register() override
++    {
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_twisted_mind::Apply, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_twisted_mind::Remove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
++    }
++};
++
++// Energy Surge (1180750): every second, while a creature (not a player) has your Gouge, you get 10 more energy, doubling
++// the normal regeneration. Its Gouge cost cut is its data; the damage bonus is in wcme_epic_batch67_hooks.
++class spell_wcme_energy_surge : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_energy_surge);
++
++    void CalcPeriod(AuraEffect const* /*aurEff*/, bool& isPeriodic, int32& amplitude)
++    {
++        isPeriodic = true;
++        amplitude = 1000;
++    }
++
++    void Tick(AuraEffect const* /*aurEff*/)
++    {
++        PreventDefaultAction();
++        Unit* owner = GetTarget();
++        for (Unit* enemy : WcmeEnemiesNear(owner, owner, 40.0f, 20))
++            if (!enemy->IsControlledByPlayer() && WcmeAuraFromNamed(enemy, owner, "Gouge"))
++            {
++                owner->EnergizeBySpell(owner, GetId(), 10, POWER_ENERGY);
++                return;
++            }
++    }
++
++    void Register() override
++    {
++        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_energy_surge::CalcPeriod, EFFECT_0, SPELL_AURA_ANY);
++        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_energy_surge::Tick, EFFECT_0, SPELL_AURA_ANY);
++    }
++};
++
++// Aegis Overdrive (299160): dodging, parrying or blocking with Mana Shield up has a 20% chance (its helper 299162) to
++// set off Aegis Explosion (299163), at most once every 5 sec. The explosions on Mana Shield going up and ending are in
++// wcme_epic_batch67_hooks.
++class spell_wcme_aegis_overdrive : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_aegis_overdrive);
++
++    bool CheckProc(ProcEventInfo& /*eventInfo*/)
++    {
++        Unit* owner = GetTarget();
++        if (!WcmeHasAuraNamed(owner, "Mana Shield", SPELLFAMILY_MAGE))
++            return false;
++        auto ready = WcmeAegisReady.find(owner->GetGUID());
++        return (ready == WcmeAegisReady.end() || GameTime::Now() >= ready->second) && roll_chance_i(20);
++    }
++
++    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    {
++        PreventDefaultAction();
++        WcmeAegisReady[GetTarget()->GetGUID()] = GameTime::Now() + 5s;
++        GetTarget()->CastSpell(GetTarget(), 299163, true);
++    }
++
++    void Register() override
++    {
++        DoCheckProc += AuraCheckProcFn(spell_wcme_aegis_overdrive::CheckProc);
++        OnProc += AuraProcFn(spell_wcme_aegis_overdrive::HandleProc);
++    }
++};
++
++// Epic batches 6 and 7, spell side:
++// - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20)
++//   as Nature damage (277083) to other enemies within 8 yards.
++// - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage
++//   (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana.
++// - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within
++//   40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc.
++// - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed
++//   of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be
++//   refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within
++//   8 yards that have your Saber Fangs.
++// - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the
++//   stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL).
++// - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347).
++// - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins
++//   (997193) for 6 sec.
++// - Void Teleportation (954626): Void Shift also swaps your position with the target's.
++// - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on
++//   each ally it heals, for 30% of the heal (its own value).
++// - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each
++//   other bleed of yours on the target when cast, up to 40%, for its whole duration.
++// - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's
++//   Firebolt crit uses up its crit stacks (1180644).
++// - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind
++//   and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once
++//   every 4 sec.
++// - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within
++//   3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec).
++// - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses
++//   one.
++// - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
++class wcme_epic_batch67_spells : public AllSpellScript
++{
++public:
++    wcme_epic_batch67_spells() : AllSpellScript("wcme_epic_batch67_spells", { ALLSPELLHOOK_ON_PREPARE, ALLSPELLHOOK_ON_CAST,
++        ALLSPELLHOOK_ON_HIT_RESULT, ALLSPELLHOOK_ON_SPELL_CHECK_CAST }) { }
++
++    void OnSpellCheckCast(Spell* spell, bool /*strict*/, SpellCastResult& res) override
++    {
++        Unit* caster = spell ? spell->GetCaster() : nullptr;
++        if (caster && res == SPELL_CAST_OK && spell->GetSpellInfo()->Id == 983478 && !caster->HasAura(983476))
++            res = SPELL_FAILED_CASTER_AURASTATE;
++    }
++
++    void OnSpellPrepare(Spell* spell, Unit* caster, SpellInfo const* info) override
++    {
++        if (!spell || !caster || !info)
++            return;
++        if (caster->HasAura(274205) && caster->HasAura(274211) && WcmeNamed(info, "Greater Heal"))
++            WcmeMarkCast(caster, info->Id);
++        if (caster->HasAura(273422) && WcmeNamed(info, "Chain Heal"))
++        {
++            WcmeMarkedCast.erase(caster->GetGUID());
++            if (caster->HasAura(273420))
++                WcmeMarkCast(caster, info->Id);
++        }
++    }
++
++    static bool DirectDamage(SpellInfo const* info)
++    {
++        for (SpellEffectInfo const& effect : info->GetEffects())
++            if (effect.IsEffect(SPELL_EFFECT_SCHOOL_DAMAGE) || effect.IsEffect(SPELL_EFFECT_WEAPON_DAMAGE) ||
++                effect.IsEffect(SPELL_EFFECT_WEAPON_PERCENT_DAMAGE) || effect.IsEffect(SPELL_EFFECT_NORMALIZED_WEAPON_DMG) ||
++                effect.IsEffect(SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL))
++                return true;
++        return false;
++    }
++
++    void OnSpellCast(Spell* spell, Unit* caster, SpellInfo const* info, bool /*skipCheck*/) override
++    {
++        if (!spell || !caster || !info)
++            return;
++        Unit* target = spell->m_targets.GetUnitTarget();
++
++        if (info->Id == 983478)
++            if (Aura* tankard = caster->GetAura(983476))
++            {
++                if (tankard->GetStackAmount() > 1)
++                    tankard->SetStackAmount(tankard->GetStackAmount() - 1);
++                else
++                    tankard->Remove();
++            }
++
++        if (caster->HasAura(1581647) && info->SpellFamilyName == SPELLFAMILY_PALADIN &&
++            WcmeNamedAny(info, { "Crusader Strike", "Avenger's Shield" }))
++            caster->EnergizeBySpell(caster, 1581627, caster->GetCreateMana() * 5 / 100, POWER_MANA);
++
++        if (caster->HasAura(272317) && info->SpellFamilyName == SPELLFAMILY_HUNTER && !spell->IsTriggered() &&
++            DirectDamage(info))
++        {
++            WcmeAddStack(caster, 272319);
++            if (Aura const* stacks = caster->GetAura(272319); stacks && stacks->GetStackAmount() >= 5)
++            {
++                caster->RemoveAurasDueToSpell(272319);
++                WcmeRestoreChargeByName(caster, "Unrelenting Wrath");
++            }
++        }
++
++        if (caster->HasAura(276362) && WcmeNamedAny(info, { "Align", "Synchronize", "Time-bind" }))
++            caster->m_Events.AddEventAtOffset([caster]()
++            {
++                if (caster->IsAlive() && caster->GetPower(POWER_ENERGY) == 0)
++                    caster->CastSpell(caster, 276347, true);
++            }, 1ms);
++
++        if (caster->HasAura(997188) && info->SpellFamilyName == SPELLFAMILY_WARRIOR && WcmeNamed(info, "Heroic Leap") &&
++            DirectDamage(info))
++        {
++            caster->CastSpell(caster->GetPositionX(), caster->GetPositionY(), caster->GetPositionZ(), 997194, true);
++            caster->CastSpell(caster, 997193, true);
++        }
++
++        if (caster->HasAura(954626) && target && target != caster && WcmeNamed(info, "Void Shift"))
++        {
++            Position const mine = caster->GetPosition();
++            Position const theirs = target->GetPosition();
++            ObjectGuid const guid = target->GetGUID();
++            caster->m_Events.AddEventAtOffset([caster, guid, mine, theirs]()
++            {
++                Unit* ally = ObjectAccessor::GetUnit(*caster, guid);
++                if (!ally || !ally->IsAlive() || !caster->IsAlive() || ally->GetMapId() != caster->GetMapId())
++                    return;
++                caster->NearTeleportTo(theirs.GetPositionX(), theirs.GetPositionY(), theirs.GetPositionZ(), caster->GetOrientation());
++                ally->NearTeleportTo(mine.GetPositionX(), mine.GetPositionY(), mine.GetPositionZ(), ally->GetOrientation());
++            }, 1ms);
++        }
++
++        if (target && caster->HasAura(983020) && info->Id == 983021)
++        {
++            int32 bleeds = 0;
++            for (auto const& [id, app] : target->GetAppliedAuras())
++                if (id != 983021 && app->GetBase()->GetCasterGUID() == caster->GetGUID() && WcmeIsBleed(app->GetBase()->GetSpellInfo()))
++                    ++bleeds;
++            WcmeGoreBonus[{ target->GetGUID(), caster->GetGUID() }] = std::min(40, 8 * bleeds);
++        }
++
++        if (target && caster->HasAura(1180640) && info->SpellFamilyName == SPELLFAMILY_WARLOCK && WcmeNamed(info, "Immolate"))
++        {
++            ObjectGuid& last = WcmeSearingFlamesTarget[caster->GetGUID()];
++            if (!last.IsEmpty() && last != target->GetGUID())
++                if (Unit* old = ObjectAccessor::GetUnit(*caster, last))
++                {
++                    std::vector<uint32> immolates;
++                    for (auto const& [id, app] : old->GetAppliedAuras())
++                        if (app->GetBase()->GetCasterGUID() == caster->GetGUID() && WcmeNamed(app->GetBase()->GetSpellInfo(), "Immolate"))
++                            immolates.push_back(id);
++                    for (uint32 id : immolates)
++                        old->RemoveAurasDueToSpell(id, caster->GetGUID());
++                }
++            last = target->GetGUID();
++        }
++    }
++
++    void OnSpellHitResult(Spell* spell, Unit* target, uint8 missInfo, uint32 damage, uint32 healing, bool critical) override
++    {
++        Unit* caster = spell ? spell->GetCaster() : nullptr;
++        if (!caster || !target || missInfo != SPELL_MISS_NONE)
++            return;
++        SpellInfo const* info = spell->GetSpellInfo();
++        Player* player = caster->ToPlayer();
++
++        if (critical && caster->HasAura(1180644) && WcmeNamed(info, "Firebolt"))
++            caster->RemoveAurasDueToSpell(1180644);
++
++        if (healing && player && WcmeNamed(info, "Greater Heal") && WcmeTakeMark(caster, info->Id))
++            if (Unit* ally = WcmeLowestAlly(player, target, 40.0f))
++            {
++                ObjectGuid const guid = ally->GetGUID();
++                uint32 const id = info->Id;
++                player->m_Events.AddEventAtOffset([player, guid, healing, id]()
++                {
++                    if (Unit* other = ObjectAccessor::GetUnit(*player, guid); other && other->IsAlive())
++                    {
++                        HealInfo healInfo(player, other, healing, sSpellMgr->GetSpellInfo(id), SPELL_SCHOOL_MASK_HOLY);
++                        player->HealBySpell(healInfo);
++                    }
++                }, 1ms);
++            }
++
++        if (healing && caster->HasAura(273422) && WcmeNamed(info, "Chain Heal"))
++        {
++            auto mark = WcmeMarkedCast.find(caster->GetGUID());
++            if (mark != WcmeMarkedCast.end() && mark->second.first == info->Id && GameTime::Now() <= mark->second.second)
++            {
++                AuraEffect const* rule = caster->GetAuraEffect(273422, EFFECT_0);
++                int32 const seed = int32(healing * uint32(rule ? std::max(0, rule->GetAmount()) : 30) / 100);
++                if (seed > 0)
++                    caster->CastCustomSpell(target, 48504, &seed, nullptr, nullptr, true);
++            }
++        }
++
++        if (!damage)
++            return;
++
++        if (caster->HasAura(277082) && WcmeNamed(info, "Mangle (Bear)") && roll_chance_i(15))
++            if (SpellInfo const* discharge = sSpellMgr->GetSpellInfo(277083))
++                for (Unit* enemy : WcmeEnemiesNear(caster, target, 8.0f, 11))
++                    if (enemy != target)
++                        WcmeExtraDamage(caster, enemy, discharge, int64(damage) * 60 / 100);
++
++        if (caster->HasAura(1581647) && info->SpellFamilyName == SPELLFAMILY_PALADIN &&
++            WcmeNamedAny(info, { "Crusader Strike", "Avenger's Shield" }))
++            if (SpellInfo const* light = sSpellMgr->GetSpellInfo(1581627))
++                for (Unit* enemy : WcmeEnemiesNear(caster, target, 8.0f, 11))
++                    if (enemy != target)
++                        WcmeExtraDamage(caster, enemy, light, int64(damage) * 10 / 100);
++
++        if (caster->HasAura(984696) && WcmeNamed(info, "Swipe (Cat)") && !target->HasAura(984698, caster->GetGUID()))
++        {
++            Aura const* counter = target->GetAura(984697, caster->GetGUID());
++            if (counter && counter->GetStackAmount() >= 2)
++            {
++                target->RemoveAurasDueToSpell(984697, caster->GetGUID());
++                int32 const tick = int32(caster->GetLevel() +
++                    (caster->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_ALL) + caster->GetTotalAttackPowerValue(BASE_ATTACK)) * 0.06f);
++                caster->CastCustomSpell(target, 984698, &tick, nullptr, nullptr, true);
++            }
++            else
++                WcmeAddStack(target, 984697, caster);
++        }
++
++        if (caster->HasAura(984696) && WcmeNamed(info, "Ferocious Bite"))
++            if (SpellInfo const* thrash = sSpellMgr->GetSpellInfo(984700))
++            {
++                uint8 hits = 0;
++                for (Unit* enemy : WcmeEnemiesNear(caster, target, 8.0f, 20))
++                    if (enemy != target && enemy->HasAura(984698, caster->GetGUID()) && hits++ < 5)
++                        WcmeExtraDamage(caster, enemy, thrash, int64(damage) * 50 / 100);
++            }
++
++        if (caster->HasAura(983600) && WcmeNamedAny(info, { "Mongoose Bite", "Counterattack", "Glaive Toss", "Mortal Strike",
++                "Execute", "Raging Blow", "Whirlwind", "Bloodthirst" }))
++        {
++            auto ready = WcmeBloodsurgeReady.find(caster->GetGUID());
++            if (ready == WcmeBloodsurgeReady.end() || GameTime::Now() >= ready->second)
++            {
++                WcmeBloodsurgeReady[caster->GetGUID()] = GameTime::Now() + 4s;
++                caster->AddAura(983604, caster);
++            }
++        }
++
++        if (caster->HasAura(81506) && info->SpellFamilyName == SPELLFAMILY_PRIEST && WcmeNamed(info, "Shadow Word: Death"))
++        {
++            WcmeLingeringDeath[target->GetGUID()] = { int64(damage), GameTime::Now() + 3s };
++            Position const spot = target->GetPosition();
++            for (uint8 second = 0; second < 6; ++second)
++                caster->m_Events.AddEventAtOffset([caster, spot]()
++                {
++                    if (!caster->IsAlive())
++                        return;
++                    std::list<Unit*> enemies;
++                    Acore::AnyUnfriendlyUnitInObjectRangeCheck check(caster, caster, 60.0f);
++                    Acore::UnitListSearcher<Acore::AnyUnfriendlyUnitInObjectRangeCheck> searcher(caster, enemies, check);
++                    Cell::VisitObjects(caster, searcher, 60.0f);
++                    for (Unit* enemy : enemies)
++                        if (enemy->IsAlive() && caster->IsValidAttackTarget(enemy) && enemy->GetExactDist(&spot) <= 7.0f)
++                            caster->AddAura(3600, enemy);
++                }, Milliseconds(1000 * second + 1));
++        }
++    }
++};
++
++// Epic batches 6 and 7, unit side:
++// - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection
++//   is its data).
++// - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus
++//   (15% of it against players).
++// - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast.
++// - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own
++//   value); the Gouge then breaks as usual.
++// - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more
++//   (within 15 sec).
++// - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving
++//   Stealth puts you in Shadowform if you know it.
++// - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of
++//   yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target.
++// - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same
++//   damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet.
++// - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass.
++// - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks).
++// - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of
++//   Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack.
++// - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on
++//   them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up.
++// - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes
++//   instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your
++//   maximum health per heal.
++// - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you
++//   for 3 more sec.
++// - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova
++//   (1180902) around it. The no-threat part is its data.
++// - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout
++//   (299161) is on you; Mana Shield running out or breaking sets it off again.
++// - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
++class wcme_epic_batch67_hooks : public UnitScript
++{
++public:
++    wcme_epic_batch67_hooks() : UnitScript("wcme_epic_batch67_hooks", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN,
++        UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK, UNITHOOK_MODIFY_MELEE_DAMAGE, UNITHOOK_MODIFY_HEAL_RECEIVED,
++        UNITHOOK_ON_AURA_APPLY, UNITHOOK_ON_AURA_REMOVE }) { }
++
++    static int64 Direct(Unit* target, Unit* attacker, SpellInfo const* spell, int64 value)
++    {
++        bool const versusPlayer = target->IsControlledByPlayer();
++        if (attacker->HasAura(81439) && spell->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(spell, "Ambush") &&
++            target->HasAuraType(SPELL_AURA_MOD_STEALTH))
++            value *= 2;
++        if (attacker->HasAura(277460) && WcmeNamedAny(spell, { "Deadly Throw", "Shuriken Toss" }))
++            for (AuraEffect const* effect : attacker->GetAuraEffectsByType(SPELL_AURA_MOD_INCREASE_SPEED))
++                if (effect->GetSpellInfo()->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(effect->GetSpellInfo(), "Sprint"))
++                {
++                    int32 const bonus = std::max(0, effect->GetAmount());
++                    value = value * (versusPlayer ? 10000 + 15 * bonus : 10000 + 100 * bonus) / 10000;
++                    break;
++                }
++        if (attacker->HasAura(1180750) && spell->SpellFamilyName == SPELLFAMILY_ROGUE && !WcmeNamed(spell, "Gouge") &&
++            WcmeAuraFromNamed(target, attacker, "Gouge"))
++        {
++            AuraEffect const* rule = attacker->GetAuraEffect(1180750, EFFECT_1);
++            value = value * (100 + (rule ? rule->GetAmount() : 30)) / 100;
++        }
++        if ((spell->SpellFamilyName == SPELLFAMILY_HUNTER || spell->SpellFamilyName == SPELLFAMILY_WARRIOR))
++        {
++            auto bonus = WcmeBloodsurgeBonus.find(attacker->GetGUID());
++            if (bonus != WcmeBloodsurgeBonus.end())
++            {
++                if (GameTime::Now() <= bonus->second)
++                    value = value * 120 / 100;
++                WcmeBloodsurgeBonus.erase(bonus);
++            }
++        }
++        return value;
++    }
++
++    static int64 Any(Unit* /*target*/, Unit* attacker, SpellInfo const* spell, int64 value)
++    {
++        if (attacker->HasAura(997217) && (spell->SchoolMask & SPELL_SCHOOL_MASK_SHADOW))
++            if (AuraEffect const* subtlety = attacker->GetAuraEffect(31665, EFFECT_0))
++                value = value * (100 + std::max(0, subtlety->GetAmount())) / 100;
++        return value;
++    }
++
++    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
++    {
++        if (target && attacker && spellInfo && damage > 0 && target != attacker)
++            damage = int32(std::min<int64>(INT32_MAX, Any(target, attacker, spellInfo, Direct(target, attacker, spellInfo, damage))));
++    }
++
++    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override
++    {
++        if (!target || !attacker || !spellInfo || !damage || target == attacker ||
++            spellInfo->HasAura(SPELL_AURA_PERIODIC_HEAL) || spellInfo->HasAura(SPELL_AURA_OBS_MOD_HEALTH))
++            return;
++        int64 value = Any(target, attacker, spellInfo, damage);
++        if (spellInfo->Id == 983021)
++        {
++            auto bonus = WcmeGoreBonus.find({ target->GetGUID(), attacker->GetGUID() });
++            if (bonus != WcmeGoreBonus.end())
++                value = value * (100 + bonus->second) / 100;
++        }
++        damage = uint32(std::min<int64>(UINT32_MAX, value));
++
++        if (attacker->HasAura(1180640) && spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && WcmeNamed(spellInfo, "Immolate"))
++        {
++            ObjectGuid const guid = target->GetGUID();
++            uint32 const amount = damage;
++            attacker->m_Events.AddEventAtOffset([attacker, guid, amount]()
++            {
++                Unit* center = ObjectAccessor::GetUnit(*attacker, guid);
++                SpellInfo const* splash = sSpellMgr->GetSpellInfo(1180643);
++                if (center && splash && attacker->IsAlive())
++                    for (Unit* enemy : WcmeEnemiesNear(attacker, center, 8.0f, 11))
++                        if (enemy != center)
++                            WcmeExtraDamage(attacker, enemy, splash, amount);
++                if (Player* player = attacker->ToPlayer())
++                    if (Pet* pet = player->GetPet(); pet && pet->IsAlive())
++                        WcmeAddStack(pet, 1180644, attacker);
++            }, 1ms);
++        }
++    }
++
++    void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage) override
++    {
++        if (!target || !attacker || !damage || attacker->IsPlayer())
++            return;
++        Unit* owner = attacker->GetCharmerOrOwner();
++        Creature* creature = attacker->ToCreature();
++        if (!owner || !creature)
++            return;
++        if (owner->HasAura(1180900) && creature->GetCreatureTemplate()->Name == "Voidwalker")
++            if (Spell const* channel = owner->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
++                channel && WcmeNamed(channel->GetSpellInfo(), "Health Funnel"))
++                attacker->m_Events.AddEventAtOffset([attacker]() { if (attacker->IsAlive()) attacker->CastSpell(attacker, 1180902, true); }, 1ms);
++        if (!owner->HasAura(275963))
++            return;
++        uint32 const type = creature->GetCreatureType();
++        bool const enslaved = attacker->IsCharmed() && (type == CREATURE_TYPE_DEMON || type == CREATURE_TYPE_UNDEAD);
++        if (!enslaved && type != CREATURE_TYPE_UNDEAD)
++            return;
++        ObjectGuid const guid = target->GetGUID();
++        owner->m_Events.AddEventAtOffset([owner, guid]()
++        {
++            if (Unit* victim = ObjectAccessor::GetUnit(*owner, guid); victim && victim->IsAlive())
++                WcmeAddStack(victim, 275966, owner);
++        }, 1ms);
++    }
++
++    void ModifyHealReceived(Unit* target, Unit* healer, uint32& heal, SpellInfo const* spellInfo) override
++    {
++        if (!target || !healer || !spellInfo || _inner)
++            return;
++        WcmeHealParties(target, healer, heal, spellInfo);
++        bool const periodic = WcmeLastHealTick.amount == &heal && spellInfo->HasAura(SPELL_AURA_PERIODIC_HEAL);
++
++        auto blocked = WcmeLingeringDeath.find(target->GetGUID());
++        if (blocked != WcmeLingeringDeath.end() && heal)
++        {
++            if (GameTime::Now() > blocked->second.second)
++                WcmeLingeringDeath.erase(blocked);
++            else
++            {
++                int64 const taken = std::min<int64>(heal, blocked->second.first);
++                heal -= uint32(taken);
++                blocked->second.first -= taken;
++                if (blocked->second.first <= 0)
++                    WcmeLingeringDeath.erase(blocked);
++            }
++        }
++
++        Player* player = healer->ToPlayer();
++        if (!player || !heal)
++            return;
++
++        if (spellInfo->Id == 15290 && player->HasAura(277003))
++        {
++            uint32 const amount = heal;
++            heal = 0;
++            if (target != player)
++                return;
++            player->m_Events.AddEventAtOffset([player, amount]()
++            {
++                Unit* ally = WcmeLowestAlly(player, nullptr, 40.0f);
++                if (!ally && player->GetHealth() < player->GetMaxHealth())
++                    ally = player;
++                SpellInfo const* info = sSpellMgr->GetSpellInfo(15290);
++                if (!ally || !info)
++                    return;
++                uint32 value = player->SpellHealingBonusDone(ally, info, amount, HEAL, EFFECT_1);
++                value = std::min<uint32>(value, player->CountPctFromMaxHealth(5));
++                _inner = true;
++                HealInfo healInfo(player, ally, value, info, info->GetSchoolMask());
++                player->HealBySpell(healInfo);
++                _inner = false;
++            }, 1ms);
++            return;
++        }
++
++        if (!periodic && player->HasAura(1584997) && spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && WcmeNamed(spellInfo, "Greater Heal"))
++        {
++            int32 const tick = int32(uint64(heal) * 12 / 100 / 4);
++            ObjectGuid const guid = target->GetGUID();
++            if (tick > 0)
++                player->m_Events.AddEventAtOffset([player, guid, tick]()
++                {
++                    if (Unit* ally = ObjectAccessor::GetUnit(*player, guid); ally && ally->IsAlive())
++                        player->CastCustomSpell(ally, 1584998, &tick, nullptr, nullptr, true);
++                }, 1ms);
++        }
++
++        if (!periodic && spellInfo->Id == 983524 && player->HasAura(983523) && target->GetHealth() < target->GetMaxHealth())
++            player->m_Events.AddEventAtOffset([player]() { WcmeAddStack(player, 983519); }, 1ms);
++
++        if (periodic && target != player && player->HasAura(287852) && spellInfo->SpellFamilyName == SPELLFAMILY_DRUID &&
++            (spellInfo->SchoolMask & SPELL_SCHOOL_MASK_NATURE) && roll_chance_i(20))
++            for (auto const& [id, app] : target->GetAppliedAuras())
++            {
++                Aura const* aura = app->GetBase();
++                if (aura->GetCasterGUID() != player->GetGUID() || !WcmeNamed(aura->GetSpellInfo(), "Lifebloom"))
++                    continue;
++                AuraEffect const* bloom = aura->GetEffect(EFFECT_1);
++                SpellInfo const* finalHeal = sSpellMgr->GetSpellInfo(33778);
++                if (!bloom || !finalHeal)
++                    break;
++                uint8 const stacks = aura->GetStackAmount();
++                int32 amount = int32(player->SpellHealingBonusDone(target, finalHeal, bloom->GetAmount(), HEAL, EFFECT_1, 0.0f, stacks));
++                amount = int32(target->SpellHealingBonusTaken(player, finalHeal, amount, HEAL, stacks));
++                ObjectGuid const guid = target->GetGUID();
++                ObjectGuid const from = player->GetGUID();
++                player->m_Events.AddEventAtOffset([player, guid, from, amount]()
++                {
++                    if (Unit* ally = ObjectAccessor::GetUnit(*player, guid); ally && ally->IsAlive())
++                        ally->CastCustomSpell(ally, 33778, &amount, nullptr, nullptr, true, nullptr, nullptr, from);
++                }, 1ms);
++                break;
++            }
++    }
++
++    static bool BearStats(SpellInfo const* info)
++    {
++        return info->SpellFamilyName == SPELLFAMILY_DRUID &&
++            WcmeNamedAny(info, { "Bear Form (Passive)", "Bear Form (Passive2)", "Dire Bear Form (Passive)" });
++    }
++
++    void OnAuraApply(Unit* unit, Aura* aura) override
++    {
++        if (!unit || !aura || aura->GetOwner() != unit)
++            return;
++        if (unit->HasAura(299160) && aura->GetCasterGUID() == unit->GetGUID() &&
++            WcmeNamed(aura->GetSpellInfo(), "Mana Shield") && !unit->HasAura(299161))
++        {
++            unit->CastSpell(unit, 299161, true);
++            unit->CastSpell(unit, 299163, true);
++        }
++    }
++
++    void OnAuraRemove(Unit* unit, AuraApplication* aurApp, AuraRemoveMode mode) override
++    {
++        if (!unit || !aurApp)
++            return;
++        Aura* aura = aurApp->GetBase();
++        SpellInfo const* info = aura->GetSpellInfo();
++        uint32 const id = aura->GetId();
++
++        if (id == 983604 && unit->HasAura(983600) && WcmeConsumed(aurApp, mode))
++            unit->m_Events.AddEventAtOffset([unit]() { WcmeBloodsurgeBonus[unit->GetGUID()] = GameTime::Now() + 15s; }, 1ms);
++
++        if (id == 983519 && unit->HasAura(983523) && WcmeConsumed(aurApp, mode))
++            WcmeCutCooldownByName(unit, "Downpour", 3000 * aura->GetStackAmount());
++
++        if (unit->HasAura(997217) && info->SpellFamilyName == SPELLFAMILY_ROGUE && WcmeNamed(info, "Stealth") &&
++            mode != AURA_REMOVE_BY_DEATH && unit->IsAlive())
++            if (uint32 shadowform = WcmeKnownByName(unit, "Shadowform", SPELLFAMILY_PRIEST); shadowform &&
++                !WcmeHasAuraNamed(unit, "Shadowform", SPELLFAMILY_PRIEST))
++                unit->m_Events.AddEventAtOffset([unit, shadowform]() { if (unit->IsAlive()) unit->CastSpell(unit, shadowform, true); }, 1ms);
++
++        if (WcmeHasAnyAura(unit, { 81446, 282004 }) && BearStats(info) && mode == AURA_REMOVE_BY_DEFAULT && unit->IsAlive())
++            unit->m_Events.AddEventAtOffset([unit, id]()
++            {
++                if (unit->IsAlive() && !unit->HasAura(id))
++                    if (Aura* kept = unit->AddAura(id, unit))
++                    {
++                        kept->SetMaxDuration(3000);
++                        kept->SetDuration(3000);
++                    }
++            }, 1ms);
++
++        if (unit->HasAura(299160) && aura->GetCasterGUID() == unit->GetGUID() && WcmeNamed(info, "Mana Shield") &&
++            (mode == AURA_REMOVE_BY_EXPIRE || mode == AURA_REMOVE_BY_ENEMY_SPELL) && unit->IsAlive())
++            unit->m_Events.AddEventAtOffset([unit]() { if (unit->IsAlive()) unit->CastSpell(unit, 299163, true); }, 1ms);
++    }
++
++private:
++    static inline thread_local bool _inner = false;
++};
++
 +void AddSC_WcmeEnchantScripts()
 +{
++    new wcme_epic_batch67_spells();
++    new wcme_epic_batch67_hooks();
++    RegisterSpellScript(spell_wcme_twisted_mind);
++    RegisterSpellScript(spell_wcme_energy_surge);
++    RegisterSpellScript(spell_wcme_aegis_overdrive);
 +    new wcme_heal_order();
 +    new wcme_epic_batch5_spells();
 +    new wcme_epic_batch5_hooks();
