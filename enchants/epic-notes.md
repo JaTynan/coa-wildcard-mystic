@@ -67,8 +67,12 @@ patch or the mechanic when there is a chance.
 - Blood Shield (288804): The shield caps (20% of maximum health, 10% against players) are our numbers; the tooltip's are blank in the data.
 - Chilling Blows (81213): The tooltip can be read as 10.5 sec per Frostbrand hit on a stun-immune target; the server gives it once per Deep Freeze.
 - Eclipse Bomber (275014): The Bomber buffs' own tooltips name the opposite Flames (data) from the enchant text; the server follows the enchant text.
+- Electrical Discharge (277082): Dealt as one hit per enemy rather than through its helper's damage-over-time area.
 - Elemental Lord (276578): The tethered-elemental parts of Elemental Aftershock and Elemental Lava are not done.
+- Pious Strikes (1581647): The high threat in the text isn't added.
 - Poison Bomb (979113): Its helper spell 979165 says 2 sec; the enchant tooltip and the server use 4 sec.
+- Saber Fangs (984696): Saber Fangs' tick amount comes from the text formula; the data has none.
+- Shadow Funnel (1180900): Void Nova deals Physical damage (its data) though the text says Shadow.
 - Soul Restoration (282213): Its tooltip says Weakened Soul is shortened by 4 sec; the server uses 2 sec so every copy matches (James, 17 Nov).
 - Spellstorm (271709): Arcane Evoked and Fire Evoked are an extra 80% roll of their own, used up by the next eligible spell, rather than a change to the talent's chance.
 - Sweeping Swings (912326): Its helper spell 912327 says 2 sec; the enchant tooltip and the server use 1 sec.
@@ -216,7 +220,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** 12 sec (1589467's value) taken off any Adrenaline Rush you know. The GCD removal was already its data.
@@ -242,6 +246,28 @@ patch or the mechanic when there is a chance.
 **Assumptions:** As 81418 (Shadow).
 
 **Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Aegis Overdrive (299160, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Aegis Overdrive (299160): dodging, parrying or blocking with Mana Shield up has a 20% chance (its helper 299162) to set off Aegis Explosion (299163), at most once every 5 sec. The explosions on Mana Shield going up and ending are in wcme_epic_batch67_hooks.
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: With rows: Party Recuperation (983475: finisher proc, 10% per combo point), Twisted Mind (979779: Fel Armor shows as Twisted Mind), Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or block with Mana Shield up).
+
+**Assumptions:** Mana-Forged Barrier isn't checked. The activation lockout is its own helper 299161. 20% chance and 5 sec cooldown on avoidance from the text.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -375,6 +401,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Arngrim's Greeting (997188, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Landing means the Heroic Leap damage spell that fires when you land. Blizzard and Icy Veins use their own helpers (997194, 997193).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Astral Reconstitution (850088, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -453,6 +500,27 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Bestial Assault (272317, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- 052-epics-6.sql: With rows: Trauma Care (274205: finisher proc, spell_wcme_finisher_combo, 20% per combo point) and Bestial Assault (272317: its own data procs are switched off, the script gives the stacks instead).
+
+**Assumptions:** Direct damage means an effect that deals spell or weapon damage; triggered spells don't count. Its own data procs (on every melee and ranged attack) are switched off.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -1042,7 +1110,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** As 979106; the newer text says Tamed Pet of any kind, done as your active pet.
@@ -1061,7 +1129,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** The crit buff goes to your active pet (979105 targets the pet).
@@ -1077,6 +1145,27 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Consumed By Shadows (997217, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Shadowform is cast only if you know it and aren't already in it. Master of Subtlety's bonus (31665's value) is added to Shadow damage while it is up.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -1311,7 +1400,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Sudden Death only (283835); needs the talent unless you have 973827, as its text says.
@@ -1330,7 +1419,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Needs the Sudden Death talent known (any rank); triggers through its own 977858 (Sudden Death 52437 and Deadly Combo 954353).
@@ -1346,10 +1435,11 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - Controlled Aggression (1181300): keeps its helper 1181301 on you (Shield Slam's cooldown 50% longer, so 3 sec, from its data); the attack power part and the doubled Sword and Board chance are in wcme_epic_batch3_hooks. Deadly Follow-up (979080): teaches Deadly Follow-up (979081) for as long as you know Shiv and have the enchant.
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire. - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
@@ -1647,6 +1737,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Double Agent (81439, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Stealthed means the target has any stealth aura when the Ambush damage is worked out. The stealth detection is its data.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Double Team (275094, Epic)
 
 **Status:** changed on an unmerged branch
@@ -1657,7 +1768,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Sources:** our client spell data (Spell.dbc)
@@ -1699,6 +1810,27 @@ patch or the mechanic when there is a chance.
 **Assumptions:** Any bleed or poison on the target counts, not only yours ("afflicted with").
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Downpour (983523, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**Assumptions:** Taught unconditionally. Effectively healed means the ally was below full health. The Riptide bonuses and charge use are Torrential Riptide's data.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -1802,6 +1934,29 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Electrical Discharge (277082, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** $*3;s1% in its text reads as 3 x 20 = 60% of the Mangle (Bear) hit, dealt once to each other enemy within 8 yards (up to 10) rather than as its helper's area-over-time effect.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** Dealt as one hit per enemy rather than through its helper's damage-over-time area.
 
 **Testing:** nothing recorded yet
 
@@ -1996,6 +2151,28 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Energy Surge (1180750, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Energy Surge (1180750): every second, while a creature (not a player) has your Gouge, you get 10 more energy, doubling the normal regeneration. Its Gouge cost cut is its data; the damage bonus is in wcme_epic_batch67_hooks.
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: With rows: Party Recuperation (983475: finisher proc, 10% per combo point), Twisted Mind (979779: Fel Armor shows as Twisted Mind), Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or block with Mana Shield up).
+
+**Assumptions:** Doubling regeneration is +10 energy a second (the normal 10). The bonus hit is any damaging Rogue ability other than Gouge on your Gouged target.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Enraging Finale (283405, Epic)
 
 **Status:** changed on an unmerged branch
@@ -2006,7 +2183,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Casts your known Bloodrage; without it, only with 973827 (then the Bloodrage buff 29131). The 20 sec limit starts on every successful roll.
@@ -2040,6 +2217,27 @@ patch or the mechanic when there is a chance.
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124), Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
 
 **Assumptions:** Arcane Blast's buff (normally 4 stacks) goes to 5; each hit has 10% per stack to add 15% as Esoteric Power (1556016). The chance per stack is the text's; 15% is its own value.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Eternity (276362, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Checked just after the cast; any of your Align, Synchronize or Time-bind spells by name.
 
 **Sources:** our client spell data (Spell.dbc)
 
@@ -3031,6 +3229,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Holy Servitude (1584997, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** 12% (4 x its 3) of each Greater Heal over 12 sec in 4 ticks, up to 3 stacks; how the core combines a new heal amount with existing stacks is the core's normal refresh.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Hot Hands (275397, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3294,6 +3513,28 @@ patch or the mechanic when there is a chance.
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Savage Momentum (1556008), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125), Growing Light (270661).
 
 **Assumptions:** 11% (its own chance). The echo is a second hit of the same spell for half the damage; it cannot echo again.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Lingering Death (81506, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003), Shadow Funnel (1180900).
+
+**Assumptions:** Heals are reduced until the Shadow Word: Death damage is used up or 3 sec pass. The ground effect is re-applying Earthbind (3600: 40% slow, 3 sec) to enemies within 7 yards of the spot every second for 6 sec.
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
@@ -3645,6 +3886,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Necromancer's Touch (275963, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Counts melee hits from an enslaved or dominated demon or undead, or any undead pet you own (a ghoul). The Grave Coil bonus in the text (288824) is its helper's data, not checked.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Neltharion's Legacy (278010, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3686,6 +3948,28 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Ol' Bloodsurge (983600, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003), Shadow Funnel (1180900).
+
+**Assumptions:** Uses the builder's 100% chance and 4 sec cooldown. The +20% goes on your next Hunter or Warrior direct damage spell within 15 sec of using Bloodsurge.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Omen of Doom (1988300, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3704,6 +3988,27 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Overflowing Cultivation (273422, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Overflowing must be up when the Chain Heal starts; every ally it heals gets Living Seed for 30% (the enchant's value) of that heal.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -3755,6 +4060,30 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Party Recuperation (983475, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+- 053-epics-7.sql: With rows: Party Recuperation (983475: finisher proc, 10% per combo point), Twisted Mind (979779: Fel Armor shows as Twisted Mind), Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or block with Mana Shield up).
+
+**Assumptions:** 10% per combo point. Party Recuperate can't be cast without a stack and uses one. Bubbling Tankard's data doesn't stack, so the script sets the stack count itself (up to 4).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -3818,6 +4147,71 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Photosynthesis (287852, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003), Shadow Funnel (1180900).
+
+**Assumptions:** Only your druid Nature heal-over-time ticks; the bloom amount is worked out as the core's Lifebloom does at expiry.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Physics in Practice (277460, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Uses the speed bonus of your Sprint aura (e.g. +70% speed means +70% damage); against players 15% of that.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Pious Strikes (1581647, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** 10% of each Crusader Strike or Avenger's Shield hit to every other enemy within 8 yards (Avenger's Shield's bounces each count); 5% base mana once per cast. The extra threat in the text isn't added.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** The high threat in the text isn't added.
+
+**Testing:** nothing recorded yet
+
 ### Pious Strikes (282014, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -3848,7 +4242,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more; Devastate and Revenge get a second roll at your Sword and Board talent's chance (10% per rank). - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
 
@@ -4213,6 +4607,29 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Saber Fangs (984696, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Saber Fangs' tick is your level + 6% of (spell power + attack power) from its text formula, as its data has no amount. Ferocious Bite's spread uses its helper's 50%.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** Saber Fangs' tick amount comes from the text formula; the data has none.
+
+**Testing:** nothing recorded yet
+
 ### Saber Slash (852370, Rare)
 
 **Status:** changed, awaiting in-game test
@@ -4370,6 +4787,28 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Searing Flames (1180640, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003), Shadow Funnel (1180900).
+
+**Assumptions:** The splash is the full tick to every other enemy within 8 yards (up to 10). A new Immolate removes yours from the previous target. The crit stacks go to your current pet (not only an Imp) and are used up by a Firebolt crit.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Seed of Life (273346, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -4409,6 +4848,29 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Shadow Funnel (1180900, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003), Shadow Funnel (1180900).
+
+**Assumptions:** Voidwalker means a pet whose creature template is named Voidwalker. Void Nova's damage is its data (school is Physical in the data though the text says Shadow).
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Tooltip differs from what the server does (review):** Void Nova deals Physical damage (its data) though the text says Shadow.
 
 **Testing:** nothing recorded yet
 
@@ -4460,6 +4922,28 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Shadow Word: Gore (983020, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**Assumptions:** Taught unconditionally. The bonus counts your other bleeds when you cast it and lasts until it is cast again on that target.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -4863,7 +5347,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Gives 285115 (crit, up to 5) with the same Swashbuckling check; the Defias Gunslinger helper 285113 is not used.
@@ -4882,7 +5366,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
 **Assumptions:** Swashbuckling means one one-handed weapon in the main hand, nothing in the off hand, not shapeshifted (the same check Swashbuckler: Bloodsail Captain uses). New stacks do not refresh the 18 sec timer. The rage is 1 per stack per main-hand auto attack hit (983113, kept at the same stacks).
@@ -5255,7 +5739,7 @@ patch or the mechanic when there is a chance.
 
 **What the server does (from the code and SQL comments):**
 
-- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends.
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
@@ -5349,6 +5833,29 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Trauma Care (274205, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Trauma Care (274205): Trauma Care (274211: next Greater Heal instant and +100%, its data), holding up to 2 charges; a new one starts with 1. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 052-epics-6.sql: With rows: Trauma Care (274205: finisher proc, spell_wcme_finisher_combo, 20% per combo point) and Bestial Assault (272317: its own data procs are switched off, the script gives the stacks instead).
+
+**Assumptions:** Charges: a new Trauma Care starts with 1 and holds up to 2. The extra target is the lowest-health injured ally within 40 yards (you included) other than the Greater Heal's target, healed for the same amount after bonuses.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Twilight (84471, Epic)
 
 **Status:** changed on an unmerged branch
@@ -5390,6 +5897,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Twisted Mind (979779, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Shows Twisted Mind (978703) in place of Fel Armor while Twisted Mind (979779) is active.
+- 053-epics-7.sql: With rows: Party Recuperation (983475: finisher proc, 10% per combo point), Twisted Mind (979779: Fel Armor shows as Twisted Mind), Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or block with Mana Shield up).
+
+**Assumptions:** Fel Armor (every rank) shows as Twisted Mind while the enchant is active.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Unbounded Drain Life (81352, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -5400,6 +5928,26 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Unbounded Drain Mana (81362, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**Assumptions:** Taught whether or not you know Drain Mana; the taught spell works from its data.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Unbounded Drain Soul (81363, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -5407,6 +5955,26 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Unbounded Mind Flay (81370, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**Assumptions:** Taught whether or not you know Mind Flay; the taught spell works from its data.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -5461,6 +6029,48 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Ursoc's Blessing (282004, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** As 81446.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
+### Ursoc's Blessing (81446, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Re-applies the bear form's own Stamina and Armor passive auras for 3 sec after the form ends. If the core strips form-only auras outside the form, this won't hold (test it).
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Valkyr's Calling (850128, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -5491,6 +6101,27 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Vampirism (277003, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that is stealthed when it lands (its stealth detection is its data). - Physics in Practice (277460): Deadly Throw and Shuriken Toss deal more damage by your active Sprint's speed bonus (15% of it against players). - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too; leaving Stealth puts you in Shadowform if you know it. - Necromancer's Touch (275963): melee hits from a demon or undead you have enslaved or dominated, or any undead pet of yours (a ghoul), add a stack of Necromancer's Touch (275966) from you on the target. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643), and adds a stack of 1180644 (+3% spell crit) to your pet. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Holy Servitude (1584997): your Greater Heal also heals 12% of its amount over 12 sec (1584998, up to 3 stacks). - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the form's Stamina and Armor auras on you for 3 more sec. - Shadow Funnel (1180900): while you channel Health Funnel, each melee hit from your Voidwalker sets off Void Nova (1180902) around it. The no-threat part is its data. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Trauma Care (274205) / Party Recuperation (983475): finisher procs in spell_wcme_finisher_combo.
+- 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003), Shadow Funnel (1180900).
+
+**Assumptions:** The heal goes to the lowest-health injured ally within 40 yards (you if no one else is hurt), healing power added as the core adds it to Vampiric Embrace's heal, capped at 5% of your maximum health.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
+
+**Testing:** nothing recorded yet
+
 ### Veil of Shadows (997168, Epic)
 
 **Status:** changed, awaiting in-game test
@@ -5509,6 +6140,27 @@ patch or the mechanic when there is a chance.
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### Void Teleportation (954626, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Epic batches 6 and 7, spell side: - Electrical Discharge (277082): Mangle (Bear) hits have a 15% chance to deal 60% of their damage (three times its 20) as Nature damage (277083) to other enemies within 8 yards. - Pious Strikes (1581647): Crusader Strike and Avenger's Shield hits deal 10% of their damage as Holy damage (1581627) to other enemies within 8 yards; each cast restores 5% of your base mana. - Trauma Care (274205): a Greater Heal cast with Trauma Care (274211) also heals the lowest-health injured ally within 40 yards for the same amount. Its instant cast and +100% are its data; the charges come from the finisher proc. - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap starts its Blizzard (997194) where you land and Icy Veins (997193) for 6 sec. - Void Teleportation (954626): Void Shift also swaps your position with the target's. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
+- 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Electrical Discharge (277082), Holy Servitude (1584997), Pious Strikes (1581647), Physics in Practice (277460), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**Assumptions:** Positions swap right after Void Shift lands, only on the same map.
+
+**Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
@@ -5733,6 +6385,26 @@ patch or the mechanic when there is a chance.
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+
+**Testing:** nothing recorded yet
+
+### You're a Solid Crate (982476, Epic)
+
+**Status:** changed on an unmerged branch
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**Assumptions:** Taught whether or not you know Stealth. The crate is a summoned object (300099) in its data; if that object is missing from our world database you will be stealthed with no crate.
+
+**Sources:** our client spell data (Spell.dbc)
+
+**Decisions:** 2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.
 
 **Testing:** nothing recorded yet
 
