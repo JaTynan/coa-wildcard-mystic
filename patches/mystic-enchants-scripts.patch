@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..886ff36
+index 0000000..e3a8da6
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14624 @@
+@@ -0,0 +1,14641 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -13599,43 +13599,39 @@ index 0000000..886ff36
 +    }
 +};
 +
-+// Flowing (273418): its data has no proc flags, so it never fired. Each Healing Touch you cast adds a stack of Flowing
-+// (273419, 15 sec); the third stack becomes Overflowing (273420: the next Chain Heal heals 50% more and loses nothing per
-+// jump, its data with core patch 71). The enchant's text says 3 stacks; the buff's own text says 2.
-+class spell_wcme_flowing : public AuraScript
++// You're a Solid Crate (982476) teaches "Stealth" (982477). In our data that spell only gives the Stealth form (so
++// stealth openers work) and summons the crate (creature 300099, which our world database has); the actual hiding and
++// the "no legs" slow are its two server-side helpers, which nothing applied: "Stealth" - SLS #1 (982478: stealth of
++// the same strength as Stealth, 5 + 5 per level) and SLS #2 (982479: -95% movement speed). They come and go with the
++// crate form; moving still breaks it (its data). The crate it summoned is removed when the form ends, so crates don't
++// pile up.
++class spell_wcme_solid_crate : public AuraScript
 +{
-+    PrepareAuraScript(spell_wcme_flowing);
++    PrepareAuraScript(spell_wcme_solid_crate);
 +
-+    bool CheckProc(ProcEventInfo& eventInfo)
++    void Apply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
-+        SpellInfo const* spell = eventInfo.GetSpellInfo();
-+        return spell && spell->SpellFamilyName == SPELLFAMILY_DRUID && WcmeNamed(spell, "Healing Touch");
++        Unit* owner = GetTarget();
++        owner->AddAura(982478, owner);
++        owner->AddAura(982479, owner);
 +    }
 +
-+    void HandleProc(ProcEventInfo& /*eventInfo*/)
++    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
 +    {
-+        PreventDefaultAction();
 +        Unit* owner = GetTarget();
-+        Aura* flowing = owner->GetAura(273419);
-+        uint8 const stacks = (flowing ? flowing->GetStackAmount() : 0) + 1;
-+        if (stacks >= 3)
-+        {
-+            owner->RemoveAurasDueToSpell(273419);
-+            owner->AddAura(273420, owner);
-+        }
-+        else if (!flowing)
-+            owner->AddAura(273419, owner);
-+        else
-+        {
-+            flowing->SetStackAmount(stacks);
-+            flowing->RefreshDuration();
-+        }
++        owner->RemoveAurasDueToSpell(982478);
++        owner->RemoveAurasDueToSpell(982479);
++        std::list<Creature*> crates;
++        owner->GetCreatureListWithEntryInGrid(crates, 300099, 100.0f);
++        for (Creature* crate : crates)
++            if (TempSummon* summon = crate->ToTempSummon(); summon && summon->GetSummonerGUID() == owner->GetGUID())
++                summon->DespawnOrUnsummon();
 +    }
 +
 +    void Register() override
 +    {
-+        DoCheckProc += AuraCheckProcFn(spell_wcme_flowing::CheckProc);
-+        OnProc += AuraProcFn(spell_wcme_flowing::HandleProc);
++        AfterEffectApply += AuraEffectApplyFn(spell_wcme_solid_crate::Apply, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL);
++        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_solid_crate::Remove, EFFECT_0, SPELL_AURA_MOD_SHAPESHIFT, AURA_EFFECT_HANDLE_REAL);
 +    }
 +};
 +
@@ -13773,6 +13769,14 @@ index 0000000..886ff36
 +        if (caster && res == SPELL_CAST_OK && spell->GetSpellInfo()->Id == 81371 &&
 +            !WcmeKnownByName(caster, "Mind Flay", SPELLFAMILY_PRIEST))
 +            res = SPELL_FAILED_NOT_KNOWN;
++        // Likewise Unbounded Drain Mana (81362 -> 81383) needs Drain Mana, and You're a Solid Crate (982476 -> 982477)
++        // needs Stealth.
++        if (caster && res == SPELL_CAST_OK && spell->GetSpellInfo()->Id == 81383 &&
++            !WcmeKnownByName(caster, "Drain Mana", SPELLFAMILY_WARLOCK))
++            res = SPELL_FAILED_NOT_KNOWN;
++        if (caster && res == SPELL_CAST_OK && spell->GetSpellInfo()->Id == 982477 &&
++            !WcmeKnownByName(caster, "Stealth", SPELLFAMILY_ROGUE))
++            res = SPELL_FAILED_NOT_KNOWN;
 +    }
 +
 +    void OnSpellPrepare(Spell* spell, Unit* caster, SpellInfo const* info) override
@@ -13838,6 +13842,19 @@ index 0000000..886ff36
 +                else
 +                    tankard->Remove();
 +            }
++
++        // Flowing (273418): the core's own Mystic Enchant rule (spell_ascension_mystic_enchant_proc) already adds a stack of
++        // Flowing (273419) for each Healing Touch cast, but nothing turned the stacks into Overflowing. Just after the
++        // cast, three stacks (the enchant's text; the buff's own text says 2) become Overflowing (273420).
++        if (caster->HasAura(273418) && info->SpellFamilyName == SPELLFAMILY_DRUID && WcmeNamed(info, "Healing Touch"))
++            caster->m_Events.AddEventAtOffset([caster]()
++            {
++                if (Aura const* flowing = caster->GetAura(273419); flowing && flowing->GetStackAmount() >= 3)
++                {
++                    caster->RemoveAurasDueToSpell(273419);
++                    caster->AddAura(273420, caster);
++                }
++            }, 1ms);
 +
 +        // Overflowing (273420, from Flowing): its data never removes it (its "removal delay" helper has nothing to set it
 +        // off), so the Chain Heal it empowers takes it off once all its jumps have landed.
@@ -14396,7 +14413,7 @@ index 0000000..886ff36
 +    new wcme_epic_batch67_hooks();
 +    RegisterSpellScript(spell_wcme_twisted_mind);
 +    RegisterSpellScript(spell_wcme_void_shift);
-+    RegisterSpellScript(spell_wcme_flowing);
++    RegisterSpellScript(spell_wcme_solid_crate);
 +    RegisterSpellScript(spell_wcme_energy_surge);
 +    RegisterSpellScript(spell_wcme_aegis_overdrive);
 +    new wcme_heal_order();

@@ -5,12 +5,13 @@
 -- You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour
 -- (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
 -- With rows: Party Recuperation (983475: finisher proc, 10% per combo point), Twisted Mind (979779: Fel Armor shows as
--- Twisted Mind), Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or
+-- Twisted Mind), "Stealth" (982477, You're a Solid Crate: its stealth and slow helpers, crate removed after),
+-- Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or
 -- block with Mana Shield up).
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
 ('spell_proc', 983475), ('spell_proc', 299160);
 DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (983475, 979779, 1180750, 299160);
-DELETE FROM `spell_script_names` WHERE `spell_id` IN (983475, 979779, 1180750, 299160) AND `ScriptName` LIKE 'spell\_wcme\_%';
+DELETE FROM `spell_script_names` WHERE `spell_id` IN (983475, 979779, 1180750, 299160, 982477) AND `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE FROM `spell_proc` WHERE `SpellId` IN (983475, 299160);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
 (983475, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
@@ -19,7 +20,8 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (983475, 'spell_wcme_finisher_combo'),
 (979779, 'spell_wcme_twisted_mind'),
 (1180750, 'spell_wcme_energy_surge'),
-(299160, 'spell_wcme_aegis_overdrive');
+(299160, 'spell_wcme_aegis_overdrive'),
+(982477, 'spell_wcme_solid_crate');
 DELETE FROM `wcme_enchant_teach` WHERE `enchant_spell` IN (81370, 81362, 982476, 983020, 983523, 983475);
 INSERT INTO `wcme_enchant_teach` (`enchant_spell`, `taught_spell`, `comment`) VALUES
 (81370, 81371, 'Unbounded Mind Flay teaches Mind Flay (Unbounded Mind Flay)'),
