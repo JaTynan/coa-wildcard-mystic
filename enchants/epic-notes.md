@@ -1543,7 +1543,7 @@ patch or the mechanic when there is a chance.
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
 
-**Assumptions:** The core already does this enchant (wildcard_decimation_pyro: while you have a Decimation buff, the one that cuts cast time, you get 271542 for the same time left: Pyroblast and Meteor +25%). Review 2026-11-18: our old aura link (007) watched the Decimation talent ranks as well as the buff, so anyone with the talent had 271542 all the time; it also watched 271542 itself. The link is removed (SQL only, so it goes live at the next patch night).
+**Assumptions:** The core already does this enchant (wildcard_decimation_pyro: while you have a Decimation buff, the one that cuts cast time, you get 271542 for the same time left: Pyroblast and Meteor +25%). Review 2026-11-18: our old aura link (007) watched the Decimation talent ranks as well as the buff, so anyone with the talent had 271542 all the time; it also watched 271542 itself. The link is removed (SQL only, so it goes live at the first patch night after the fix merges, without a build).
 
 **Sources:** our client spell data (Spell.dbc); the core
 
