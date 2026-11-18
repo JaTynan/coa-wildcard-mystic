@@ -158,100 +158,133 @@ patch or the mechanic when there is a chance.
 
 ### Abjurer's Ward: Arcane (1587962, Rare)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Abjurer's Ward: Arcane, Fire and Frost (each in three copies): absorbing damage with a Ward (Fire Ward or Frost Ward, any rank or version) takes the enchant's own value (10 sec) off Presence of Mind, Combustion or Cold Snap. The core does this itself for 1587962, 1587982 and 1588050, but only when one of its 18 CoA Ward ranks absorbs and only for the CoA versions of the three spells (spell_ascension_mystic_abjurers_ward). Review 2026-11-18: our old action rows fired as well (20 sec off in that case), counted Mana Shield as a Ward, and couldn't tell which shield absorbed. This script, on every Ward, does everything except exactly what the core already did, so each absorb takes 10 sec off once.
+
+**Assumptions:** Review 2026-11-18: absorbing damage with a Ward (Fire Ward or Frost Ward) takes the enchant's own 10 sec off Presence of Mind (Arcane), Combustion (Fire) or Cold Snap (Frost). The core does this for 1587962, 1587982 and 1588050, but only when one of its 18 CoA Ward ranks absorbs, and only for the CoA versions of the three spells. Our old action rows (007) fired as well, so that case lost 20 sec; they also counted Mana Shield as a Ward. Both the stock Wards (543, 6143 ...) and the stock spells (12043, 11129, 11958) are learnable here. spell_wcme_abjurers_ward, on all 37 Ward spells, now does everything except exactly what the core did, so each absorb takes 10 sec off once, for every Ward and spell version; the same script covers the six copies the core doesn't know (284711, 982567, 284716, 982572, 284752, 982605).
+
+**Sources:** the core; our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Arcane (284711, Uncommon)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Arcane (982567, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Fire (1587982, Rare)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Abjurer's Ward: Arcane, Fire and Frost (each in three copies): absorbing damage with a Ward (Fire Ward or Frost Ward, any rank or version) takes the enchant's own value (10 sec) off Presence of Mind, Combustion or Cold Snap. The core does this itself for 1587962, 1587982 and 1588050, but only when one of its 18 CoA Ward ranks absorbs and only for the CoA versions of the three spells (spell_ascension_mystic_abjurers_ward). Review 2026-11-18: our old action rows fired as well (20 sec off in that case), counted Mana Shield as a Ward, and couldn't tell which shield absorbed. This script, on every Ward, does everything except exactly what the core already did, so each absorb takes 10 sec off once.
+
+**Assumptions:** Review 2026-11-18: absorbing damage with a Ward (Fire Ward or Frost Ward) takes the enchant's own 10 sec off Presence of Mind (Arcane), Combustion (Fire) or Cold Snap (Frost). The core does this for 1587962, 1587982 and 1588050, but only when one of its 18 CoA Ward ranks absorbs, and only for the CoA versions of the three spells. Our old action rows (007) fired as well, so that case lost 20 sec; they also counted Mana Shield as a Ward. Both the stock Wards (543, 6143 ...) and the stock spells (12043, 11129, 11958) are learnable here. spell_wcme_abjurers_ward, on all 37 Ward spells, now does everything except exactly what the core did, so each absorb takes 10 sec off once, for every Ward and spell version; the same script covers the six copies the core doesn't know (284711, 982567, 284716, 982572, 284752, 982605).
+
+**Sources:** the core; our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Fire (284716, Uncommon)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Fire (982572, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Frost (1588050, Rare)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Abjurer's Ward: Arcane, Fire and Frost (each in three copies): absorbing damage with a Ward (Fire Ward or Frost Ward, any rank or version) takes the enchant's own value (10 sec) off Presence of Mind, Combustion or Cold Snap. The core does this itself for 1587962, 1587982 and 1588050, but only when one of its 18 CoA Ward ranks absorbs and only for the CoA versions of the three spells (spell_ascension_mystic_abjurers_ward). Review 2026-11-18: our old action rows fired as well (20 sec off in that case), counted Mana Shield as a Ward, and couldn't tell which shield absorbed. This script, on every Ward, does everything except exactly what the core already did, so each absorb takes 10 sec off once.
+
+**Assumptions:** Review 2026-11-18: absorbing damage with a Ward (Fire Ward or Frost Ward) takes the enchant's own 10 sec off Presence of Mind (Arcane), Combustion (Fire) or Cold Snap (Frost). The core does this for 1587962, 1587982 and 1588050, but only when one of its 18 CoA Ward ranks absorbs, and only for the CoA versions of the three spells. Our old action rows (007) fired as well, so that case lost 20 sec; they also counted Mana Shield as a Ward. Both the stock Wards (543, 6143 ...) and the stock spells (12043, 11129, 11958) are learnable here. spell_wcme_abjurers_ward, on all 37 Ward spells, now does everything except exactly what the core did, so each absorb takes 10 sec off once, for every Ward and spell version; the same script covers the six copies the core doesn't know (284711, 982567, 284716, 982572, 284752, 982605).
+
+**Sources:** the core; our client spell data (Spell.dbc)
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Frost (284752, Uncommon)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Frost (982605, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
 
 **Testing:** nothing recorded yet
 
@@ -2045,11 +2078,12 @@ patch or the mechanic when there is a chance.
 
 ### Electric Surge (1181190, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
 
 **Testing:** nothing recorded yet
 

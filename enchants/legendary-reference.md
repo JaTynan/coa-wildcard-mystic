@@ -165,7 +165,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 997127 | Swashbuckler: Bloodsail Captain | yes | 997127: changed, awaiting in-game test (#175) |
 | 954424 | Templar of Flame |  | 954424: changed, awaiting in-game test (#20 #172) |
 | 977972 | Temporal Shift |  | 977972: changed, awaiting in-game test (#174) |
-| 983739 | Thermal Void | yes | 983739: changed, awaiting in-game test (#26 #171) |
+| 983739 | Thermal Void | yes | 983739: changed on an unmerged branch (#26 #171) |
 | 978236 | Thunder Slam |  | 978236: changed, awaiting in-game test (#165) |
 | 954074 | Tidecaller |  | 954074: changed, awaiting in-game test (#164) |
 | 965245 | Time Warp |  | 965245: changed, awaiting in-game test (#26 #174) |
@@ -306,4 +306,4 @@ text in our client is the only record.
 | 1760200 | Wind Lash | changed, awaiting in-game test (#175) |
 | 1544910 | Wraithweaver: Shadow Orbs | changed on an unmerged branch (#175) |
 
-Copy totals (all 305): changed, awaiting in-game test: 181, unchanged: working: 81, changed on an unmerged branch: 28, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.
+Copy totals (all 305): changed, awaiting in-game test: 180, unchanged: working: 81, changed on an unmerged branch: 29, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.

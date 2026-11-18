@@ -3659,12 +3659,13 @@ patch or the mechanic when there is a chance.
 
 ### Thermal Void (983739, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
 
 **What the pull requests said:**
 

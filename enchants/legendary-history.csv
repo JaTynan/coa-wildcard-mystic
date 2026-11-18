@@ -268,7 +268,7 @@ spell,name,quality,status,audit,tracker status,pull requests,first build with th
 954424,Templar of Flame,Legendary,"changed, awaiting in-game test",needs-code,live,#20 #172,build6,build46,2026-11-02,2026-11-16,,,"Review 2026-11-18: twin 272101 (linked in 003) also gives 272095 on Judgement through its core rule; ours does too, but it is the same aura refreshed, so nothing doubles, and ours covers Judgement versions the core's list lacks. No change.",our client spell data (Spell.dbc); the core,,
 977972,Temporal Shift,Legendary,"changed, awaiting in-game test",needs-code,broken,#174,build47,build47,2026-11-16,2026-11-16,,,"Stored Time (9990018) shares Arcane Blast's spell flag, so it also shortened Arcane Blast; the server now limits it to Temporal Blast. No client change was needed.","Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)",2026-11-17 James: fix every known gap.,
 1398162,Tether Elemental,Legendary,tested (see test notes),teaches-needs-code,verified,#26,build6,build6,2026-11-02,2026-10-31,,"pass: raise, revive, dismiss | 2026-11-03",,,,
-983739,Thermal Void,Legendary,"changed, awaiting in-game test",needs-code,live,#26 #171,build6,build46,2026-11-02,2026-11-16,,,,,,
+983739,Thermal Void,Legendary,changed on an unmerged branch,needs-code,live,#26 #171,build6,build46,2026-11-02,2026-11-18,cca2a2c,,,,,
 978236,Thunder Slam,Legendary,"changed, awaiting in-game test",standard,working (audit),#165,build45,build45,2026-11-16,2026-11-15,,,,,,
 954074,Tidecaller,Legendary,"changed, awaiting in-game test",standard,working (audit),#164,build45,build45,2026-11-16,2026-11-15,,,,,,
 965245,Time Warp,Legendary,"changed, awaiting in-game test",needs-code,live,#26 #174,build6,build47,2026-11-02,2026-11-16,,,,,,
