@@ -1742,12 +1742,13 @@ patch or the mechanic when there is a chance.
 
 ### Fire Watch (978220, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | f9806da | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3336,15 +3337,24 @@ patch or the mechanic when there is a chance.
 
 ### Soul Erosion (1180480, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | f9806da | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 020-quick-legendaries.sql: Soul Erosion (1180480) is the core's own (review 2026-11-18): its rule empowers the next Drain Soul on Unstable Affliction or Curse of Agony damage, at the spell's own 8% chance.
 
 **What the pull requests said:**
 
 - #171: Soul Erosion:** Unstable Affliction or Curse of Agony damage has an 8% chance to empower the next Drain Soul.
+
+**Assumptions:** Review 2026-11-18: the core already does this (its proc rule casts 1180481 on Unstable Affliction or Curse of Agony damage, ticks included, covering every learnable version; its proc row leaves the chance to the spell's own 8%). File 020 replaced the core's proc row with ours at 100%, so the core's rule empowered Drain Soul on every tick, and our own 8% rule ran on top. Ours is removed and the core's proc row is put back exactly as it ships (SQL only).
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
@@ -3480,6 +3490,10 @@ patch or the mechanic when there is a chance.
 **What the pull requests said:**
 
 - #175: Stormbound Instinct (1181360):** Shocks deal bonus threat, give a stack of Maelstrom Weapon (if you have the talent) and Stormbound Reflexes (+20% dodge until the next attack on you), and 30% of their damage hits other enemies within 10 yards of the target. Primal Strike, Lightning Bolt and Chain Lightning make the next Shock trigger no cooldown.
+
+**Assumptions:** Review 2026-11-18: no doubling. The core's rule gives the 'next Shock has no cooldown' aura (2414024, through 1181361) on Lightning Bolt, Chain Lightning and Primal Strike, and ours gives the same aura; it doesn't stack, so it is one aura either way. Everything else (threat, Maelstrom Weapon, Stormbound Reflexes, the 30% splash) is ours only. Our proc row still lets the core's rule see those casts.
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 

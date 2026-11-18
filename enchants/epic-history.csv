@@ -627,7 +627,7 @@ spell,name,quality,status,audit,tracker status,pull requests,first build with th
 283296,Fire Walk With Me,Epic,changed on an unmerged branch,needs-code,broken,,,,,2026-11-17,79f4a39,,As 952120.,our client spell data (Spell.dbc),2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.,
 952120,Fire Walk With Me,Epic,changed on an unmerged branch,needs-code,broken,,,,,2026-11-17,79f4a39,,"The speed field is the client's own 411155 cast at Flamestrike's target point; ""does not work with Flameburst"" is not checked.","Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)",2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.,
 1573558,Fire Watch,Epic,unchanged: working (audit),standard,working (audit),,,,,,,,,,,
-274470,Fire Watch,Epic,"changed, awaiting in-game test",standard,working (audit),#23 #164 #171,build6,build46,2026-11-02,2026-11-16,,,,,,
+274470,Fire Watch,Epic,changed on an unmerged branch,standard,working (audit),#23 #164 #171,build6,build46,2026-11-02,2026-11-18,f9806da,,,,,
 997298,Fire and Fury,Epic,"changed, awaiting in-game test",needs-code,live,#26,build6,build6,2026-11-02,2026-10-31,,,,,,
 84382,Fire and Ice,Epic,changed on an unmerged branch,needs-code,broken,,,,,2026-11-17,75e2c05,,"Frozen Flesh has 3 charges (""up to 3 times""); every Fire spell hit on it triggers Thawed Flesh and spends one.","Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)",2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.,
 1585270,Fired Up,Epic,unchanged: working (audit),standard,working (audit),,,,,,,,,,,

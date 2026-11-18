@@ -91,7 +91,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 101086 | Felborne |  | 101086: changed, awaiting in-game test (#167) |
 | 965301 | Festering Wound |  | 965301: unchanged: working (audit)<br>1570737: unchanged: working (audit) |
 | 978208 | Fingers of Death |  | 978208: changed, awaiting in-game test (#165) |
-| 978220 | Fire Watch |  | 978220: changed, awaiting in-game test (#23 #171) |
+| 978220 | Fire Watch |  | 978220: changed on an unmerged branch (#23 #171) |
 | 965293 | Flame On! |  | 965293: changed, awaiting in-game test (#171) |
 | 984448 | Flashpoint Operative |  | 984448: changed, awaiting in-game test (#164) |
 | 954326 | Forbidden Technique |  | 954326: changed, awaiting in-game test (#26 #175) |
@@ -287,7 +287,7 @@ text in our client is the only record.
 | 1572059 | Shadow Crash | changed, awaiting in-game test (#26) |
 | 1134970 | Shadow Mastery | unchanged: working (audit) |
 | 1585038 | Sinister Flurry | changed, awaiting in-game test (#23) |
-| 1180480 | Soul Erosion | changed, awaiting in-game test (#171) |
+| 1180480 | Soul Erosion | changed on an unmerged branch (#171) |
 | 1398159 | Soul Harvest | changed, awaiting in-game test (#175) |
 | 1591060 | Spirit of the Forest | changed, awaiting in-game test (#26) |
 | 1180059 | Stampede | unchanged: working (audit) |
@@ -306,4 +306,4 @@ text in our client is the only record.
 | 1760200 | Wind Lash | changed, awaiting in-game test (#175) |
 | 1544910 | Wraithweaver: Shadow Orbs | changed, awaiting in-game test (#175) |
 
-Copy totals (all 305): changed, awaiting in-game test: 203, unchanged: working: 81, changed on an unmerged branch: 6, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.
+Copy totals (all 305): changed, awaiting in-game test: 201, unchanged: working: 81, changed on an unmerged branch: 8, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.

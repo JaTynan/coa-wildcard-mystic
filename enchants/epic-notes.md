@@ -96,6 +96,10 @@ link a twin for that reason (Cauterize 850093, Frost Shot 851989, Shadow Siphon 
 give both the twin's effect and their own spell, while the addon shows only the twin's tooltip; listed in
 `enchants/core-overlap-review.csv` as needing a decision (found while reviewing Moon's Wrath and Critical Time).
 
+Our SQL must not replace the core's own `spell_proc` row for an enchant the core runs: the core's rule takes its chance
+from that row (usually 0, meaning the spell's own chance), so a row of ours at 100% makes the core's rule fire every
+time. `enchants/core-proc-row-replacements.csv` lists the six places we did it (found while reviewing Soul Erosion).
+
 ## Tooltip differences to review
 
 Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate
@@ -2619,7 +2623,7 @@ patch or the mechanic when there is a chance.
 
 ### Fire Watch (274470, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2627,6 +2631,7 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | f9806da | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
