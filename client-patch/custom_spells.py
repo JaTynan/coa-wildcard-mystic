@@ -47,6 +47,17 @@ TRANSFORM = 56                     # aura: look like the creature in misc
 RISEN_ALLY = 30230                 # Raise Ally's ghoul (creature), so the same four ghoul models
 NO_IMMUNITIES = 0x20000000         # Attributes: shows over a shapeshift form's model too
 KEPT_THROUGH_DEATH = 0x00100000    # AttributesEx3 (column 7): death doesn't remove it
+# Human Spellsword (patches/73-racial-spellsword.ps1): the server sets every amount
+SPELLSWORD = 9990032               # the buff: at work
+SPELLSWORD_IDLE = 9990033          # the buff when the build converts power, critical strike and hit already
+SPELLSWORD_SPELL_POWER = 9990034   # hidden: spell damage, spell healing
+SPELLSWORD_ATTACK_POWER = 9990035  # hidden: melee, ranged attack power
+SPELLSWORD_SPELL_RATINGS = 9990036  # hidden: spell critical strike rating, spell hit rating
+SPELLSWORD_MELEE_CRIT = 9990037    # hidden: melee, ranged critical strike rating
+SPELLSWORD_MELEE_HIT = 9990038     # hidden: melee, ranged hit rating
+BOOK_SPELLSWORD = 9990039          # its spellbook entry
+MOD_DAMAGE_DONE, MOD_ATTACK_POWER, MOD_RANGED_ATTACK_POWER, MOD_HEALING_DONE, MOD_RATING = 13, 99, 124, 135, 189
+CR_HIT_MELEE, CR_HIT_RANGED, CR_HIT_SPELL, CR_CRIT_MELEE, CR_CRIT_RANGED, CR_CRIT_SPELL = 5, 6, 7, 8, 9, 10
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
@@ -67,11 +78,14 @@ BOOK_PASSIVE = 0x80000050  # a spellbook passive like the stock racials (ability
 ICON_BANNER_DRAENEI = 9990001
 # The Elemental Rend icons (rend_icons.py makes them from the client's Rend icon; racials_off_gcd.py --icons adds them)
 ICON_REND_FROST, ICON_REND_FIRE, ICON_REND_NATURE = 9990002, 9990003, 9990004
+ICON_SPELLSWORD, ICON_SPELLSWORD_IDLE = 9990005, 9990006  # Human Spellsword (James's picks, 14 November)
 ICONS = {
     ICON_BANNER_DRAENEI: 'Interface\\Icons\\inv_misc_tournaments_banner_draenei',
     ICON_REND_FROST: 'Interface\\Icons\\wcme_rend_frost',
     ICON_REND_FIRE: 'Interface\\Icons\\wcme_rend_fire',
     ICON_REND_NATURE: 'Interface\\Icons\\wcme_rend_nature',
+    ICON_SPELLSWORD: 'Interface\\Icons\\inv_sword_144',
+    ICON_SPELLSWORD_IDLE: 'Interface\\Icons\\inv_axe_39',
 }
 # Client spells that get one of our icons in place of their own: spell -> icon (both the icon and the active icon)
 ICON_OVERRIDES = {
@@ -216,6 +230,35 @@ SPELLS = {
                            'You can\'t rise as a ghoul again until this runs out.',
                            'You can\'t rise as a ghoul again until this runs out.',
                            3254, 0, [(DUMMY, 0, 0)], {7: KEPT_THROUGH_DEATH}),
+    BOOK_SPELLSWORD: ('Spellsword',
+                      'The experimenter\'s race. For power (attack power against spell power), critical strike chance '
+                      '(melee and ranged against spell) and hit chance (melee and ranged against spell), your weaker side '
+                      'is raised 30% of the way towards your stronger side: with 2,000 attack power and 500 spell power, '
+                      'you gain 450 spell power. Each of the three is skipped while your build already converts between '
+                      'the two sides for it (Sheath of Light, Mental Quickness, Mental Dexterity and the like).',
+                      '', ICON_SPELLSWORD, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    SPELLSWORD: ('Spellsword',
+                 'Your weaker side is raised 30% of the way towards your stronger side, for power, critical strike '
+                 'chance and hit chance. Skipped for any of the three your build already converts.',
+                 'Your weaker side is raised 30% of the way towards your stronger side: power, critical strike and '
+                 'hit. Your character sheet shows the result.',
+                 ICON_SPELLSWORD, 0, [(DUMMY, 0, 0)]),
+    SPELLSWORD_IDLE: ('Spellsword',
+                      'Your build already converts between physical and spell power, critical strike and hit, so '
+                      'Spellsword has nothing to add.',
+                      'Your build already converts between physical and spell power, critical strike and hit, so '
+                      'Spellsword has nothing to add.',
+                      ICON_SPELLSWORD_IDLE, 0, [(DUMMY, 0, 0)]),
+    SPELLSWORD_SPELL_POWER: ('Spellsword', 'Spell power raised.', '', ICON_SPELLSWORD, 0,
+                             [(MOD_DAMAGE_DONE, 0, MAGIC_SCHOOLS), (MOD_HEALING_DONE, 0, ALL_SCHOOLS)], {4: HIDDEN}),
+    SPELLSWORD_ATTACK_POWER: ('Spellsword', 'Attack power raised.', '', ICON_SPELLSWORD, 0,
+                              [(MOD_ATTACK_POWER, 0, 0), (MOD_RANGED_ATTACK_POWER, 0, 0)], {4: HIDDEN}),
+    SPELLSWORD_SPELL_RATINGS: ('Spellsword', 'Spell critical strike and hit rating raised.', '', ICON_SPELLSWORD, 0,
+                               [(MOD_RATING, 0, 1 << CR_CRIT_SPELL), (MOD_RATING, 0, 1 << CR_HIT_SPELL)], {4: HIDDEN}),
+    SPELLSWORD_MELEE_CRIT: ('Spellsword', 'Melee and ranged critical strike rating raised.', '', ICON_SPELLSWORD, 0,
+                            [(MOD_RATING, 0, 1 << CR_CRIT_MELEE), (MOD_RATING, 0, 1 << CR_CRIT_RANGED)], {4: HIDDEN}),
+    SPELLSWORD_MELEE_HIT: ('Spellsword', 'Melee and ranged hit rating raised.', '', ICON_SPELLSWORD, 0,
+                           [(MOD_RATING, 0, 1 << CR_HIT_MELEE), (MOD_RATING, 0, 1 << CR_HIT_RANGED)], {4: HIDDEN}),
     TEMPORAL_STORE: ('Stored Time',
                      'Time stored from a cancelled Temporal Blast.',
                      'Your next Temporal Blast casts faster by the time you had already spent on the cancelled one.',
@@ -247,7 +290,7 @@ for _spell, _schools in RESONANCE_PENALTY.items():
 CHARGE_CATEGORIES = {9001: (3, 8000)}  # Dark Transfusion (spell_wcme_dark_transfusion)
 CHARGE_LINKS = {978640: 9001}
 RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT,
-                                               BOOK_GRAVE_DEFIANCE)}
+                                               BOOK_GRAVE_DEFIANCE, BOOK_SPELLSWORD)}
 
 # Rows we used to add and still delete, so servers that ran an older file lose them
 RETIRED_PROCS = [ABYSSAL_HUNGER]

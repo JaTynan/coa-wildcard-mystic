@@ -81,6 +81,10 @@ worldserver.conf | Racials.RadiantPresence = 1
 # (30% less damage and healing, can't die or be healed); a killing blow brings you back at 20% health, otherwise you
 # die. Once every 5 min; not from falling, lava, drowning or your duel opponent. 0 = off.
 worldserver.conf | Racials.GraveDefiance = 1
+# Human Spellsword (race kits): for power (attack power against spell power), critical strike and hit (melee and
+# ranged against spell), the weaker side is raised 30% of the way towards the stronger; each skipped while the build
+# already converts between the two sides for it (Sheath of Light, Mental Quickness and the like). 0 = off.
+worldserver.conf | Racials.Spellsword = 1
 # Mana-forged Barrier, the full Ascension tank stance (the core only gave the form): absorbs up to 90% of damage with
 # mana (less as mana runs low, half against magic), +160% threat from Magic damage, immune to interrupts, dodge/parry/block while
 # casting, Power Surge mana return; 30% less damage, 40% less healing, double damage from players; leaving it leaves
