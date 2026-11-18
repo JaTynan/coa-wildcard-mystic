@@ -30,13 +30,13 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1180030,Lone Wolf,Epic,coa_mystic_enchant_bonus,,resolved,"damage doubled (core bonus +10% and 1180031 +10%): 1180031's damage effect zeroed, it keeps armour penetration; pet test matches the core's"
 1180200,Precision Impact,Epic,coa_mystic_enchant_bonus,,resolved,twin link removed (a different enchant: Meteor reset); the core does the enchant's own bonuses
 1180420,Elemental Torrent,Epic,coa_mystic_enchant_minion_aura,,resolved,ours removed (core minion listener)
-1180480,Soul Erosion,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1180480,Soul Erosion,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,"ours removed and the core's proc row restored (ours had set 100% chance, so the core's rule fired on every tick)"
 1180590,Moon's Wrath,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +8% crit; ours doubled it)
 1180640,Searing Flames,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,"ours trimmed: core's rule only covers effect 1 (pet crit stacks), so our splash, one-target rule and crit-stack use-up stay; our duplicate pet stacks removed"
 1180900,Shadow Funnel,Epic,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core gives the Voidwalker 1180901 while Health Funnelled; Void Nova on auto attacks)
 1181300,Controlled Aggression,Epic,coa_mystic_enchant_aura_link,,resolved,"our 1181301 grant removed (core link does it); 1181302 has no class mask so the doubling stays ours, now exact and with the Shield Slam reset"
 1181340,Iron Guard,Epic,,Unit.cpp,resolved,core patch 69 trimmed to blocked spells (core does melee/ranged)
-1181360,Stormbound Instinct,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1181360,Stormbound Instinct,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling: the shared 'no cooldown' aura doesn't stack; the rest is ours only
 1181400,Blazing Flame,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 1544910,Wraithweaver: Shadow Orbs,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 1554908,Holy Templar,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,noted earlier as handled by the core; no code of ours

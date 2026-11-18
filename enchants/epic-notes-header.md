@@ -96,4 +96,8 @@ link a twin for that reason (Cauterize 850093, Frost Shot 851989, Shadow Siphon 
 give both the twin's effect and their own spell, while the addon shows only the twin's tooltip; listed in
 `enchants/core-overlap-review.csv` as needing a decision (found while reviewing Moon's Wrath and Critical Time).
 
+Our SQL must not replace the core's own `spell_proc` row for an enchant the core runs: the core's rule takes its chance
+from that row (usually 0, meaning the spell's own chance), so a row of ours at 100% makes the core's rule fire every
+time. `enchants/core-proc-row-replacements.csv` lists the six places we did it (found while reviewing Soul Erosion).
+
 ## Enchants
