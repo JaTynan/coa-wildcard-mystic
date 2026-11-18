@@ -5,6 +5,9 @@
 -- charges on every crit, since re-applying an aura with charges resets them).
 -- Precision Impact (1180200) no longer links twin 290200 either: the core's bonus table does this enchant's own two
 -- damage bonuses, and the twin is a different effect (a 20% chance to reset Meteor) the text never mentions.
+-- Shadow Siphon (852174) no longer links twin 1180660: the core teaches its own spell (Shadow Siphon 913222, a Death
+-- Strike that heals 5% per disease), which it now scripts, so players had both. Cauterize (850093), Frost Shot (851989) and
+-- Hammerstorm (852412) have the same double, but their own spells still need code; their links go once that is done.
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (283140, 1583677, 2, 'WCME: Mass Killing Spree uses twin 1583677 (standard, tooltip 0.69 alike)'),
 (118123, 55440, 2, 'WCME: Glyph of Healing Wave uses twin 55440 (scripted, tooltip 0.68 alike)'),
@@ -43,7 +46,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (977711, 1585375, 2, 'WCME: Unstable Void uses twin 1585375 (standard, tooltip 0.22 alike)'),
 (978226, 274526, 2, 'WCME: Knight of the Eclipse uses twin 274526 (standard, tooltip 0.21 alike)'),
 (1328332, 911189, 2, 'WCME: Frost Warding uses twin 911189 (standard, tooltip 0.20 alike)'),
-(852174, 1180660, 2, 'WCME: Shadow Siphon uses twin 1180660 (standard, tooltip 0.19 alike)'),
 (118055, 54845, 2, 'WCME: Glyph of Starfire uses twin 54845 (standard, tooltip 0.19 alike)'),
 (1329076, 929074, 2, 'WCME: Master of Elements uses twin 929074 (standard, tooltip 0.18 alike)'),
 (1355340, 955339, 2, 'WCME: Torment the Weak uses twin 955339 (standard, tooltip 0.15 alike)'),

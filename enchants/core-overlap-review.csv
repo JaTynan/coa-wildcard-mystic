@@ -48,14 +48,14 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1575124,Critical Time,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +5% crit; ours doubled it)
 1577402,Pyroclasmic Shadows,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +20% crit; ours doubled it)
 1581647,Pious Strikes,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
-1584166,Fire Walk With Me,Epic,,SpellInfo.cpp Unit.cpp,to review,
+1584166,Fire Walk With Me,Epic,,SpellInfo.cpp Unit.cpp,resolved,our Scorch helper removed (core does cast-while-moving and -10 yards; Scorch lost 20); Flamestrike field stays ours
 1584997,Holy Servitude,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
 1587962,Abjurer's Ward: Arcane,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
 1587982,Abjurer's Ward: Fire,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
 1588050,Abjurer's Ward: Frost,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
 1590974,Blood-Soaked Mutilation,Epic,coa_mystic_enchant_bonus,AscensionMysticEnchantMechanics.cpp,resolved,our Mutilate bonus removed (core bonus does it); Crimson Tempest/Garrote parts stay ours
-1988300,Omen of Doom,Epic,,AscensionMysticEnchantScripts.cpp,to review,
-852174,Shadow Siphon,Rare,core teaches its spell (TaughtSpells),,needs decision,"linked to a twin (003) and the addon shows the twin's tooltip, but the core also teaches the enchant's own spell, so players get both"
-850093,Cauterize,Epic,core teaches its spell (TaughtSpells),,needs decision,"linked to a twin (003) and the addon shows the twin's tooltip, but the core also teaches the enchant's own spell, so players get both"
-851989,Frost Shot,Rare,core teaches its spell (TaughtSpells),,needs decision,"linked to a twin (003) and the addon shows the twin's tooltip, but the core also teaches the enchant's own spell, so players get both"
-852412,Hammerstorm,Rare,core teaches its spell (TaughtSpells),,needs decision,"linked to a twin (003) and the addon shows the twin's tooltip, but the core also teaches the enchant's own spell, so players get both"
+1988300,Omen of Doom,Epic,,AscensionMysticEnchantScripts.cpp,resolved,our aura link removed (core casts the timed buff on druid Clearcasting; ours watched every class and cut the buff short)
+852174,Shadow Siphon,Rare,core teaches its spell (TaughtSpells),,resolved,twin link and tooltip entry removed (James chose option 1): the core teaches and now scripts its own Shadow Siphon
+850093,Cauterize,Epic,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
+851989,Frost Shot,Rare,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
+852412,Hammerstorm,Rare,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"

@@ -2,7 +2,6 @@
 -- Part 1: what each enchant does when it procs, read from its tooltip (see the patch for the columns). The
 -- enchant spell is bound to the script, and its spell_proc row says which events can set it off.
 INSERT INTO `wcme_owned` (`tbl`, `id`) VALUES
-('aura_link', 1988300),
 ('aura_link', 271679),
 ('aura_link', 271680),
 ('aura_link', 272247),
@@ -194,6 +193,8 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 -- Review 2026-11-18: a watch list must name the proc buff only, never the talent that procs it (a talent is a passive
 -- aura you always have, so the grant would be permanent). Mind Core (283042), Pyroclasmic Shadows (276551) and Fingers of
 -- Death (274179) lost their talent ids; Decimation by Pyro (271547) is gone, the core does it (wildcard_decimation_pyro).
+-- Omen of Doom (1988300) is gone too: the core casts its buff on druid Clearcasting with the buff's own duration, while
+-- this link watched every class's Clearcasting and took the buff away as soon as Clearcasting was used.
 DELETE FROM `coa_mystic_enchant_aura_link` WHERE `enchant_spell` IN (283042, 283031, 272255, 272256, 281602, 281597, 299988, 271547, 276551, 272247, 275463, 299944, 271680, 1988300, 274179, 410400, 271679);
 INSERT INTO `coa_mystic_enchant_aura_link` (`enchant_spell`, `aura`, `grant_spell`, `comment`) VALUES
 (283042, '47383 71162 71165 276071 276083 276090 901085 984094 984181 997178 1147383 1171162 1171165 1247383 1271162 1271165 1576331 1576332 1576333 1576356 1576360 1576362 1576363 2140849 2142772', 283040, 'WCME: Mind Core: gaining Molten Core grants Mind Core'),
@@ -208,7 +209,6 @@ INSERT INTO `coa_mystic_enchant_aura_link` (`enchant_spell`, `aura`, `grant_spel
 (275463, '31842 71166 1131842 1231842 1575125', 275429, 'WCME: Fury of the Light: Holy crit bonus while Divine Illumination is active'),
 (299944, '48518 48520 1148518', 299945, 'WCME: Lunar Marksmanship: Arcane Shot boost during Lunar Eclipse'),
 (271680, '48517 48519 1148517', 271675, 'WCME: Wrath of the Sun: Wrath boost during Solar Eclipse'),
-(1988300, '12536 67210 823768 983908 983909 1112536 1116246 1116870 1116871 1167210 1212536 1216246 1216870 1586519', 1988301, 'WCME: Omen of Doom: Clearcasting raises Arcane and Nature damage (lasts while Clearcasting does)'),
 (274179, '44544 74396 271943 815051 844544 954021 965296 983963 997633 1144544 1174396 1244544', 274171, 'WCME: Fingers of Death: gaining Fingers of Frost grants Fingers of Death'),
 (410400, '16880 16886 26091 61345 61346 116886 283216 285538 816886 861346 861347 916880 961345 961346 1116880 1116886 1161345 1161346 1209306 1209307 1209308 1209309 1209310 1216880 1216886 1261345 1261346 1361346 1590195 1590197 1590198', 410401, 'WCME: Natural Destruction: Nature''s Grace also grants Natural Destruction'),
 (271679, '16880 16886 26091 61345 61346 116886 283216 285538 816886 861346 861347 916880 961345 961346 1116880 1116886 1161345 1161346 1209306 1209307 1209308 1209309 1209310 1216880 1216886 1261345 1261346 1361346 1590195 1590197 1590198', 271670, 'WCME: Druidic Storm: Lightning damage boost while Nature''s Grace is active (the longer Nature''s Grace is not done)');

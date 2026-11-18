@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..035db86
+index 0000000..ee760dd
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14654 @@
+@@ -0,0 +1,14642 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -12542,8 +12542,9 @@ index 0000000..035db86
 +static thread_local bool WcmeInLightningEcho = false;
 +
 +// Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on
-+// them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards
-+// less range, its own data).
++// them +5%, its own value). Fire Walk With Me 1584166 used to keep its helper 1584168 on you here (Scorch while moving,
++// 10 yards less range); review 2026-11-18 found the core already does both in its own code (Unit.cpp, SpellInfo.cpp),
++// so Scorch lost 20 yards. Its Flamestrike speed field stays ours (wcme_epic_batch4_spells).
 +class spell_wcme_area_keeper : public AuraScript
 +{
 +    PrepareAuraScript(spell_wcme_area_keeper);
@@ -12560,28 +12561,15 @@ index 0000000..035db86
 +        Player* player = GetTarget()->ToPlayer();
 +        if (!player)
 +            return;
-+        if (GetId() == 1584166)
-+        {
-+            if (!player->HasAura(1584168))
-+                player->AddAura(1584168, player);
-+            return;
-+        }
 +        for (DynamicObject* consecration : WcmeDynObjectsNamed(player, "Consecration", SPELLFAMILY_PALADIN))
 +            for (Unit* ally : WcmeAlliesNear(player, consecration, consecration->GetRadius(), 40))
 +                player->CastSpell(ally, 983813, true);
-+    }
-+
-+    void Remove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-+    {
-+        if (GetId() == 1584166)
-+            GetTarget()->RemoveAurasDueToSpell(1584168);
 +    }
 +
 +    void Register() override
 +    {
 +        DoEffectCalcPeriodic += AuraEffectCalcPeriodicFn(spell_wcme_area_keeper::CalcPeriod, EFFECT_0, SPELL_AURA_ANY);
 +        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_area_keeper::Tick, EFFECT_0, SPELL_AURA_ANY);
-+        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_area_keeper::Remove, EFFECT_0, SPELL_AURA_ANY, AURA_EFFECT_HANDLE_REAL);
 +    }
 +};
 +
