@@ -21,11 +21,11 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 273885,Blood and Guts,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling: our 977906 links it on purpose and only adds what the core lacks
 274205,Trauma Care,Epic,script aura_wildcard_trauma_care,AscensionWildcardReconstruction.cpp,resolved,ours removed (core script; buff data gives the extra target)
 274918,Disciple of the Tides,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,"no overlap: the core builds the buff, ours spends it on Penance"
-276302,Relentless Reflexes,Uncommon,script aura_wildcard_relentless_reflexes,,to review,
+276302,Relentless Reflexes,Uncommon,script aura_wildcard_relentless_reflexes,,resolved,"ours removed, core's row restored: the core's 4 Nov script adds a stack per finisher without refreshing the duration (as the text says); ours refreshed it, and our proc row hid the core's"
 276551,Pyroclasmic Shadows,Epic,,firework_show_Exodar.h,resolved,no overlap: the core match was a fireworks file. Our link no longer watches the Pyroclasm talents (was permanent)
 277082,Electrical Discharge,Epic,,SpellAuraEffects.cpp,resolved,"ours removed (core does it, hard-coded)"
 277460,Physics in Practice,Epic,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core damage hook)
-282040,Blind Rage,Uncommon,script aura_wildcard_skillcard_proc,AscensionSkillcardProcRules.h,to review,
+282040,Blind Rage,Uncommon,script aura_wildcard_skillcard_proc,AscensionSkillcardProcRules.h,resolved,core's row restored; ours hid it without changing the result (the core's skill-card script only lets true misses through)
 1154364,Feeding the Abyss,Legendary,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core does the whole enchant; ours gave a second absorb roll and a second Life Tap payoff)
 1180030,Lone Wolf,Epic,coa_mystic_enchant_bonus,,resolved,"damage doubled (core bonus +10% and 1180031 +10%): 1180031's damage effect zeroed, it keeps armour penetration; pet test matches the core's"
 1180200,Precision Impact,Epic,coa_mystic_enchant_bonus,,resolved,twin link removed (a different enchant: Meteor reset); the core does the enchant's own bonuses
@@ -59,3 +59,6 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 850093,Cauterize,Epic,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
 851989,Frost Shot,Rare,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
 852412,Hammerstorm,Rare,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
+285100,Hellish Pursuit,Rare,core skill-card script + proc row (27 Oct); our 005 proc row replaces it,,to review,found 2026-11-18 by the full proc-row check
+979137,Starburst Barrage,Epic,core script aura_hero_druid_starburst_barrage + proc row (2 Nov); our 007 action row and proc row on top,,to review,found 2026-11-18 by the full proc-row check
+1587050,Rush of Blood,Rare,core script spell_ascension_mystic_rush_of_blood + proc row (3 Nov); our 017 script and proc row on top,,to review,found 2026-11-18 by the full proc-row check
