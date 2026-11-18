@@ -105,8 +105,22 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
     player copy CoA keeps is covered (28730, 50613, 814286-814292, 1125046, 1125047, 1128730, 1150613).
   - The 1 min cooldown is spell data, read once at server start, so turning the setting off takes a restart to bring
     back 2 min; the client patch shows 1 min either way.
+- Dwarf Prospector's Spirit: `patches/76-racial-prospectors-spirit.ps1` (`Racials.ProspectorsSpirit`). Buffs 9990049
+  (mining), 9990050 (herbalism), 9990051 (skinning), 9990052 (treasure), 9990053 (fishing) and hidden 9990054 (water
+  breathing at 3 fishing stacks). Details settled in the build:
+  - A gathering counts when the core rewards its skill (once per vein, herb or creature per player, as the skill-up);
+    mining or herbalism on a creature counts too. It needs the skill, as gathering does.
+  - Treasure counts a chest whose lock has the Treasure type, which is exactly what Find Treasure shows (checked on the
+    server's Lock.dbc: Battered and Tattered Chests, Large Iron Bound Chests, strongboxes; not boss chests or quest
+    objects). Opening the same chest or catch again counts once.
+  - A discovery counts whenever the core marks a new area explored, at any level (at the level cap there's no
+    experience to raise, but the Treasure find still counts).
+  - Fishing's speed is on foot (not mounted). It works on top of Sprint-type buffs, but next to a boot speed enchant
+    only the higher of the two counts (the core keeps the bigger of the two kinds). Swim speed takes the best swim
+    bonus, like Aquatic Form.
+  - The buffs are kept through death and logout; their 2 hours count while you're online.
 - Spellbook entries: `patches/62-racial-spellbook.ps1` teaches each race its "Racial Passive" entry (spells
-  9990013-9990017, 9990031, 9990039, 9990045 and 9990047, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
+  9990013-9990017, 9990031, 9990039, 9990045, 9990047 and 9990055, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
 
 ## Buff icons (James's picks, 14 November)
 
@@ -133,11 +147,11 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Troll | Voodoo Regeneration burst | inv_offhand_zulaman_d_01 | 19697 |
 | Troll | Voodoo Regeneration on cooldown | achievement_dungeon_drak'tharon_heroic | 3234 |
 | Blood Elf | Arcane Hunger stacks | achievement_bg_wineos | 3384 (done) |
-| Dwarf | Prospector's Spirit: Mining | inv_elemental_eternal_earth | 12199 |
-| Dwarf | Prospector's Spirit: Herbalism | inv_elemental_eternal_life | 12201 |
-| Dwarf | Prospector's Spirit: Skinning | inv_elemental_eternal_fire | 12200 |
-| Dwarf | Prospector's Spirit: Treasure (and discovering areas) | inv_elemental_eternal_shadow | 12202 |
-| Dwarf | Prospector's Spirit: Fishing | inv_elemental_eternal_water | 12203 |
+| Dwarf | Prospector's Spirit: Mining | inv_elemental_eternal_earth | 12199 (done) |
+| Dwarf | Prospector's Spirit: Herbalism | inv_elemental_eternal_life | 12201 (done) |
+| Dwarf | Prospector's Spirit: Skinning | inv_elemental_eternal_fire | 12200 (done) |
+| Dwarf | Prospector's Spirit: Treasure (and discovering areas) | inv_elemental_eternal_shadow | 12202 (done) |
+| Dwarf | Prospector's Spirit: Fishing | inv_elemental_eternal_water | 12203 (done) |
 
 ## Balance notes
 

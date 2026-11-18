@@ -72,6 +72,16 @@ RUNE_BLOOD, RUNE_UNHOLY, RUNE_FROST = 0, 1, 2
 ARCANE_HUNGER = 9990046            # stacks: +1.5% damage and healing done (the server sets it), +2% ability costs each
 BOOK_ARCANE_HUNGER = 9990047       # its spellbook entry
 ARCANE_HUNGER_WARD = 9990048       # hidden: 0.5% less damage taken per stack (the server sets it)
+# Dwarf Prospector's Spirit (patches/76-racial-prospectors-spirit.ps1): 3 stacks, 2 hours, kept through death
+PROSPECT_MINING = 9990049          # +2% Stamina per stack
+PROSPECT_HERBALISM = 9990050       # +2% Intellect and Spirit per stack
+PROSPECT_SKINNING = 9990051        # +2% Strength and Agility per stack
+PROSPECT_TREASURE = 9990052        # +2% damage and healing per stack
+PROSPECT_FISHING = 9990053         # +3% running and swim speed per stack
+PROSPECT_WATER_BREATHING = 9990054  # hidden: with 3 stacks of the fishing buff
+BOOK_PROSPECTOR = 9990055          # its spellbook entry
+MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
+STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
@@ -328,6 +338,45 @@ SPELLS = {
                                (MOD_POWER_COST_PCT, 2, ALL_SCHOOLS)]),  # achievement_bg_wineos
     ARCANE_HUNGER_WARD: ('Arcane Hunger', 'Damage taken reduced by 0.5% for each stack of Arcane Hunger.', '', 3384, 0,
                          [(MOD_DAMAGE_PERCENT_TAKEN, 0, ALL_SCHOOLS)], {4: HIDDEN}),
+    BOOK_PROSPECTOR: ('Prospector\'s Spirit',
+                      'Natural explorers: each kind of find gives its own buff, stacking up to 3 times and lasting 2 '
+                      'hours (finding more adds a stack and starts the 2 hours again). Mining a vein: 2% more Stamina '
+                      'per stack. Herbalism: 2% more Intellect and Spirit. Skinning: 2% more Strength and Agility. '
+                      'Treasure, from opening a chest that Find Treasure shows or discovering a new area: 2% more damage '
+                      'and healing. Fishing a catch: 3% more running and swim speed, and at 3 stacks you can breathe '
+                      'underwater. Discovering a new area also gives 50% more experience.',
+                      '', 12202, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    PROSPECT_MINING: ('Prospector\'s Spirit: Mining',
+                      'Stamina increased by 2% per stack, up to 3. Mining another vein adds a stack and starts the 2 '
+                      'hours again.',
+                      'Stamina increased by $s1% per stack.',
+                      12199, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_STAMINA)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_earth
+    PROSPECT_HERBALISM: ('Prospector\'s Spirit: Herbalism',
+                         'Intellect and Spirit increased by 2% per stack, up to 3. Gathering another herb adds a stack and '
+                         'starts the 2 hours again.',
+                         'Intellect and Spirit increased by $s1% per stack.',
+                         12201, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_INTELLECT),
+                                    (MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_SPIRIT)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_life
+    PROSPECT_SKINNING: ('Prospector\'s Spirit: Skinning',
+                        'Strength and Agility increased by 2% per stack, up to 3. Skinning another creature adds a stack '
+                        'and starts the 2 hours again.',
+                        'Strength and Agility increased by $s1% per stack.',
+                        12200, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_STRENGTH),
+                                   (MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_AGILITY)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_fire
+    PROSPECT_TREASURE: ('Prospector\'s Spirit: Treasure',
+                        'Damage and healing done increased by 2% per stack, up to 3. Opening another chest that Find '
+                        'Treasure shows, or discovering a new area, adds a stack and starts the 2 hours again.',
+                        'Damage and healing done increased by $s1% per stack.',
+                        12202, 3, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 2, 0)],
+                        {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_shadow
+    PROSPECT_FISHING: ('Prospector\'s Spirit: Fishing',
+                       'Running speed on foot and swim speed increased by 3% per stack, up to 3; at 3 stacks you can '
+                       'also breathe underwater. Another catch adds a stack and starts the 2 hours again.',
+                       'Running and swim speed increased by $s1% per stack. At 3 stacks you can breathe underwater.',
+                       12203, 3, [(MOD_SPEED_ALWAYS, 3, 0), (MOD_INCREASE_SWIM_SPEED, 3, 0)],
+                       {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_water
+    PROSPECT_WATER_BREATHING: ('Prospector\'s Spirit: Fishing', 'You can breathe underwater.', '', 12203, 0,
+                               [(WATER_BREATHING, 0, 0)], {4: HIDDEN, 7: KEPT_THROUGH_DEATH}),
     TEMPORAL_STORE: ('Stored Time',
                      'Time stored from a cancelled Temporal Blast.',
                      'Your next Temporal Blast casts faster by the time you had already spent on the cancelled one.',
@@ -360,7 +409,7 @@ CHARGE_CATEGORIES = {9001: (3, 8000)}  # Dark Transfusion (spell_wcme_dark_trans
 CHARGE_LINKS = {978640: 9001}
 RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT,
                                                BOOK_GRAVE_DEFIANCE, BOOK_SPELLSWORD, BOOK_OVERCLOCK,
-                                               BOOK_ARCANE_HUNGER)}
+                                               BOOK_ARCANE_HUNGER, BOOK_PROSPECTOR)}
 
 # Rows we used to add and still delete, so servers that ran an older file lose them
 RETIRED_PROCS = [ABYSSAL_HUNGER]
