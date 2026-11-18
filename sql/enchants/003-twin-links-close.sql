@@ -3,6 +3,8 @@
 -- Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our
 -- scripts do their own text in full, and the twins' core rules doubled it (two more combo points; Frozen Chaos back to 4
 -- charges on every crit, since re-applying an aura with charges resets them).
+-- Precision Impact (1180200) no longer links twin 290200 either: the core's bonus table does this enchant's own two
+-- damage bonuses, and the twin is a different effect (a 20% chance to reset Meteor) the text never mentions.
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (283140, 1583677, 2, 'WCME: Mass Killing Spree uses twin 1583677 (standard, tooltip 0.69 alike)'),
 (118123, 55440, 2, 'WCME: Glyph of Healing Wave uses twin 55440 (scripted, tooltip 0.68 alike)'),
@@ -26,7 +28,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (913976, 1313980, 2, 'WCME: Initiative uses twin 1313980 (standard, tooltip 0.39 alike)'),
 (983730, 285387, 2, 'WCME: Spot Weakness uses twin 285387 (standard, tooltip 0.38 alike)'),
 (986075, 1590006, 2, 'WCME: Power Loop uses twin 1590006 (standard, tooltip 0.38 alike)'),
-(1180200, 290200, 2, 'WCME: Precision Impact uses twin 290200 (scripted, tooltip 0.37 alike)'),
 (81513, 1581956, 2, 'WCME: Frugal Disposition uses twin 1581956 (scripted, tooltip 0.36 alike)'),
 (978709, 284000, 2, 'WCME: Master of Arms uses twin 284000 (standard, tooltip 0.36 alike)'),
 (1356337, 956333, 2, 'WCME: T.N.T. uses twin 956333 (standard, tooltip 0.35 alike)'),

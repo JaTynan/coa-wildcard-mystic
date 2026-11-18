@@ -541,3 +541,4 @@ audit,919572,Improved Mend Pet,1175790,probably already works,.aura 919572; chec
 003,980673,Frozen Chaos (link fix),0,proc,".aura 980673; crit with Frostbolt several times","one charge of Frozen Chaos per crit, up to 4 (not straight to 4); Frostfire Bolt crits give nothing; Frost Shock crits do"
 004,978229,Elemental Assassin (link fix),0,proc,.aura 978229; Backstab; then Flame Shock,"only Elemental Assassin 978642 appears (not 274679); Flame Shock +110%"
 015,301000,Circle of Life (Halo cuts),0,action,".aura 301000; use Halo (Circle of Life); cast Flash Heal, then Circle of Healing","Halo's cooldown drops 4 sec, then 3 sec"
+003,1180200,Precision Impact (link fix),0,core,".aura 1180200; Fireball a dummy, then Scorch it; cast Meteor and Fireball repeatedly","Scorch +20% while Fireball's burn is up; Meteor's cooldown is never reset by these casts; .list auras shows no 290200"
