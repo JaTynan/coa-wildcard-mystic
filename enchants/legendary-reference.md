@@ -151,7 +151,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 84515 | Seething Flames |  | 84515: changed, awaiting in-game test (#164) |
 | 982400 | Serpent Form | yes | 982400: changed, awaiting in-game test (#175) |
 | 977967 | Shadow Counter |  | 977967: changed, awaiting in-game test (#26) |
-| 965299 | Shadow Visions |  | 965299: changed, awaiting in-game test (#167)<br>1570700: changed, awaiting in-game test (#18 #167) |
+| 965299 | Shadow Visions |  | 965299: changed, awaiting in-game test (#167)<br>1570700: changed on an unmerged branch (#18 #167) |
 | 990055 | Snowblind |  | 990055: changed, awaiting in-game test (#174) |
 | 81102 | Social Distancing |  | 81102: changed, awaiting in-game test (#177) |
 | 984200 | Son of Gruul | yes | 984200: changed, awaiting in-game test (#175) |
@@ -306,4 +306,4 @@ text in our client is the only record.
 | 1760200 | Wind Lash | changed, awaiting in-game test (#175) |
 | 1544910 | Wraithweaver: Shadow Orbs | changed on an unmerged branch (#175) |
 
-Copy totals (all 305): changed, awaiting in-game test: 200, unchanged: working: 81, changed on an unmerged branch: 9, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.
+Copy totals (all 305): changed, awaiting in-game test: 199, unchanged: working: 81, changed on an unmerged branch: 10, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.
