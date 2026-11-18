@@ -722,21 +722,27 @@ patch or the mechanic when there is a chance.
 
 ### Blind Rage (282040, Uncommon)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | c494f83 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 005-twin-procs.sql: Review 2026-11-18: Blind Rage (282040) uses the core's own row again (its skill-card repairs fire it on misses); ours hid it without changing what happened, since the core's script only lets true misses through.
 
 **Testing:** nothing recorded yet
 
 ### Blind Rage (81477, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | c494f83 | not merged yet | none yet | - |
 
 **Testing:** nothing recorded yet
 

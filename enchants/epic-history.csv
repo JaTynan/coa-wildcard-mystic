@@ -142,8 +142,8 @@ spell,name,quality,status,audit,tracker status,pull requests,first build with th
 1180360,Bleeding Edge,Epic,unchanged: working (audit),standard,working (audit),,,,,,,,,,,
 1585123,Blessed Hammer,Epic,unchanged: working (audit),standard,working (audit),,,,,,,,,,,
 272253,Blessed by the Elune,Epic,changed on an unmerged branch,needs-code,broken,,,,,2026-11-17,09c12c0,,"Each Eclipse arms its effect for up to 30 sec (no number given). Uses your highest known Insect Swarm or Moonfire, or rank 1 if you know none; Moonfire comes with its own small direct hit. A Starsurge with both armed applies both.",our client spell data (Spell.dbc),2026-11-17 James: assumptions and new features are fine; base missing numbers on similar existing spells.,"Moonfire also deals its direct damage, which the tooltip doesn't mention."
-282040,Blind Rage,Uncommon,"changed, awaiting in-game test",standard,working (audit),#24,build6,build6,2026-11-02,2026-10-31,,,,,,
-81477,Blind Rage,Epic,"changed, awaiting in-game test",needs-code,live,#24,build6,build6,2026-11-02,2026-10-31,,,,,,
+282040,Blind Rage,Uncommon,changed on an unmerged branch,standard,working (audit),#24,build6,build6,2026-11-02,2026-11-18,c494f83,,,,,
+81477,Blind Rage,Epic,changed on an unmerged branch,needs-code,live,#24,build6,build6,2026-11-02,2026-11-18,c494f83,,,,,
 283428,Blinding Dispersion,Epic,changed on an unmerged branch,needs-code,partly working,,,,,2026-11-17,4a0748b,,"Also fires when Dispersion is cancelled early (""ends""). Nova uses its own spell 283429 (area and 2 sec duration from the data). The cooldown cut was already its data.",our client spell data (Spell.dbc),,
 954634,Blinding Dispersion,Epic,changed on an unmerged branch,needs-code,partly working,,,,,2026-11-17,4a0748b,,"As 283428, with its own nova 954635.","Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)",,
 272185,Blink and you'll miss it!,Epic,unchanged: working (audit),standard,working (audit),,,,,,,,,,,
