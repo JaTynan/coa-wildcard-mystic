@@ -1,7 +1,7 @@
 spell,name,quality,core_tables,core_cpp,status,outcome
 55441,Glyph of Mana Tide,Rare,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,spell_shaman.cpp,to review,
 55675,Glyph of Circle of Healing,Rare,,spell_priest.cpp,to review,
-56842,Glyph of Trueshot Aura,Rare,coa_mystic_enchant_bonus,,to review,
+56842,Glyph of Trueshot Aura,Rare,coa_mystic_enchant_bonus,,resolved,no doubling: the core's bonus row picks Aimed Shot by its class mask; the linked twin 118478's override aura is read by nothing
 87498,Accurate Shadow Bolt,Uncommon,,firework_show_Exodar.h,to review,
 88626,Hardy Mark of the Wild,Uncommon,,firework_show_BootyBay.h,to review,
 90098,Concentrated Hibernate,Uncommon,,firework_show_Shattrath.h,to review,
