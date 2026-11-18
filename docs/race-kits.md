@@ -90,8 +90,17 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
     and like other speed buffs it doesn't add to a bigger one (Sprint). The rocket boot icon goes on all three.
   - Expansive Mind still shows in the spellbook (as the stock Regeneration does for Trolls); the Overclock entry says
     it replaces it.
+- Blood Elf Arcane Hunger: `patches/75-racial-arcane-hunger.ps1` (`Racials.ArcaneHunger`). Buff 9990046 (stack count =
+  stacks). Details settled in the build:
+  - A stack is added just after the ability that earns it, so it counts from the next ability (the first one isn't
+    dearer). Not counted: triggered spells, passives, items (potions, trinkets), auto attack and auto-repeat shots.
+  - Casting or channelling keeps the stacks from falling off, so a long cast or channel doesn't lose them.
+  - Arcane Torrent keeps its own effects (the silence and CoA's own restore) and adds the 2% per stack on top. Every
+    player copy CoA keeps is covered (28730, 50613, 814286-814292, 1125046, 1125047, 1128730, 1150613).
+  - The 1 min cooldown is spell data, read once at server start, so turning the setting off takes a restart to bring
+    back 2 min; the client patch shows 1 min either way.
 - Spellbook entries: `patches/62-racial-spellbook.ps1` teaches each race its "Racial Passive" entry (spells
-  9990013-9990017, 9990031, 9990039 and 9990045, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
+  9990013-9990017, 9990031, 9990039, 9990045 and 9990047, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
 
 ## Buff icons (James's picks, 14 November)
 
@@ -117,7 +126,7 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Undead | Grave Defiance on cooldown | inv_helmet_168 | 13716 (done) |
 | Troll | Voodoo Regeneration burst | inv_offhand_zulaman_d_01 | 19697 |
 | Troll | Voodoo Regeneration on cooldown | achievement_dungeon_drak'tharon_heroic | 3234 |
-| Blood Elf | Arcane Hunger stacks | achievement_bg_wineos | 3384 |
+| Blood Elf | Arcane Hunger stacks | achievement_bg_wineos | 3384 (done) |
 | Dwarf | Prospector's Spirit: Mining | inv_elemental_eternal_earth | 12199 |
 | Dwarf | Prospector's Spirit: Herbalism | inv_elemental_eternal_life | 12201 |
 | Dwarf | Prospector's Spirit: Skinning | inv_elemental_eternal_fire | 12200 |

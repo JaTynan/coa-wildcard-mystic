@@ -68,6 +68,9 @@ BOOK_OVERCLOCK = 9990045           # its spellbook entry
 MOD_POWER_REGEN_PERCENT, MOD_INCREASE_ENERGY_PERCENT = 110, 132
 POWER_MANA, POWER_RAGE, POWER_ENERGY, POWER_RUNE, POWER_RUNIC_POWER = 0, 1, 3, 5, 6
 RUNE_BLOOD, RUNE_UNHOLY, RUNE_FROST = 0, 1, 2
+# Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1)
+ARCANE_HUNGER = 9990046            # stacks: +1% damage and healing done, +2% ability costs each
+BOOK_ARCANE_HUNGER = 9990047       # its spellbook entry
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
@@ -306,6 +309,20 @@ SPELLS = {
                        'Movement speed increased by 60% for 3 sec after Escape Artist.',
                        'Movement speed increased by $s1%.',
                        ICON_ROCKET_BOOTS, 0, [(MOD_INCREASE_SPEED, 60, 0)]),
+    BOOK_ARCANE_HUNGER: ('Arcane Hunger',
+                         'Each ability or spell you use adds a stack of Arcane Hunger, up to 10. Per stack, abilities '
+                         'deal and heal 1% more and cost 2% more (at 10: 10% more damage and healing, 20% more cost). Go '
+                         '5 sec without using an ability and the stacks fall off. Arcane Torrent eats every stack: '
+                         'besides its usual effects, it restores 2% of every resource you have (mana, rage, energy, '
+                         'runic power) per stack eaten, 20% at 10. Arcane Torrent\'s cooldown is 1 min.',
+                         '', 3384, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    ARCANE_HUNGER: ('Arcane Hunger',
+                    'Each ability or spell adds a stack: abilities deal and heal 1% more and cost 2% more per stack. Fades '
+                    'after 5 sec without using an ability. Arcane Torrent eats the stacks for 2% of every resource each.',
+                    'Damage and healing done increased by 1% and ability costs by 2% for each stack. Fades after 5 sec '
+                    'without using an ability.',
+                    3384, 10, [(MOD_DAMAGE_PERCENT_DONE, 1, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 1, 0),
+                               (MOD_POWER_COST_PCT, 2, ALL_SCHOOLS)]),  # achievement_bg_wineos
     TEMPORAL_STORE: ('Stored Time',
                      'Time stored from a cancelled Temporal Blast.',
                      'Your next Temporal Blast casts faster by the time you had already spent on the cancelled one.',
@@ -337,7 +354,8 @@ for _spell, _schools in RESONANCE_PENALTY.items():
 CHARGE_CATEGORIES = {9001: (3, 8000)}  # Dark Transfusion (spell_wcme_dark_transfusion)
 CHARGE_LINKS = {978640: 9001}
 RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT,
-                                               BOOK_GRAVE_DEFIANCE, BOOK_SPELLSWORD, BOOK_OVERCLOCK)}
+                                               BOOK_GRAVE_DEFIANCE, BOOK_SPELLSWORD, BOOK_OVERCLOCK,
+                                               BOOK_ARCANE_HUNGER)}
 
 # Rows we used to add and still delete, so servers that ran an older file lose them
 RETIRED_PROCS = [ABYSSAL_HUNGER]
