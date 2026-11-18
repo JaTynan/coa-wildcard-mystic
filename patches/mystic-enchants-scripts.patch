@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..ee760dd
+index 0000000..ed84b7c
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14642 @@
+@@ -0,0 +1,14617 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -6457,64 +6457,39 @@ index 0000000..ee760dd
 +    }
 +};
 +
-+// Wraithweaver: Shadow Orbs (1544910; its own orb effects use effect 188, which the core does not handle): each tick of
-+// your Shadow Word: Pain, Devouring Plague or Vampiric Touch has a 20% chance to give a Shadow Orb (1544913, up to 3:
-+// Mind Blast +10% per orb, the data's own spell mod). A Mind Blast hit with 3 orbs spends them and sends a Shadowy
-+// Apparition (1544915) that reaches the target 1 sec later and deals 320 (at level 60) + 32% SP Shadow damage to every
-+// enemy within 5 yards of it.
-+class spell_wcme_shadow_orbs : public AuraScript
++// Wraithweaver: Shadow Orbs (1544910). The orbs themselves are the core's: its rule (effect 2) casts 1544912 on 20% of
++// your Shadow Word: Pain, Devouring Plague and Vampiric Touch damage (the spell's own chance, through the core's proc row),
++// and 1544912 adds a Shadow Orb (1544913, up to 3: Mind Blast +10% per orb). Review 2026-11-18: this used to be a proc
++// script with its own proc row at 100%, which made the core's rule give an orb on every tick, with our own 20% on top;
++// the core's row is back. What the core lacks stays here, outside the proc (the 20% chance would gate it): a Mind Blast
++// hit with 3 orbs spends them and sends a Shadowy Apparition (1544915) that reaches the target 1 sec later and deals 320
++// (at level 60) + 32% SP Shadow damage to every enemy within 5 yards of it.
++class wcme_shadow_orbs_mind_blast : public UnitScript
 +{
-+    PrepareAuraScript(spell_wcme_shadow_orbs);
++public:
++    wcme_shadow_orbs_mind_blast() : UnitScript("wcme_shadow_orbs_mind_blast", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN }) { }
 +
 +    static constexpr uint32 ORB = 1544913;
 +    static constexpr uint32 APPARITION = 1544915;
 +
-+    bool CheckProc(ProcEventInfo& eventInfo)
++    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
 +    {
-+        SpellInfo const* spell = eventInfo.GetSpellInfo();
-+        if (!spell || !eventInfo.GetActionTarget() || !WcmeDealtDamage(eventInfo))
-+            return false;
-+        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
-+            return WcmeNamedAny(spell, { "Shadow Word: Pain", "Devouring Plague", "Vampiric Touch" });
-+        return WcmeNamed(spell, "Mind Blast") && GetTarget()->GetAuraCount(ORB) >= 3;
-+    }
-+
-+    void HandleProc(ProcEventInfo& eventInfo)
-+    {
-+        PreventDefaultAction();
-+        Unit* owner = GetTarget();
-+        if (eventInfo.GetTypeMask() & PERIODIC_PROC_FLAG_MASK)
-+        {
-+            if (!roll_chance_i(20))
-+                return;
-+            if (Aura* orb = owner->GetAura(ORB))
-+            {
-+                if (orb->GetStackAmount() < orb->GetSpellInfo()->StackAmount)
-+                    orb->SetStackAmount(orb->GetStackAmount() + 1);
-+                orb->RefreshDuration();
-+            }
-+            else
-+                owner->AddAura(ORB, owner);
++        if (!target || !attacker || attacker == target || damage <= 0 || !attacker->IsPlayer() ||
++            !attacker->HasAura(1544910) || !WcmeNamed(spellInfo, "Mind Blast") || attacker->GetAuraCount(ORB) < 3)
 +            return;
-+        }
-+        owner->RemoveAurasDueToSpell(ORB);
-+        ObjectGuid const targetGuid = eventInfo.GetActionTarget()->GetGUID();
-+        int64 const damage = int64(320.0f * owner->GetLevel() / 60.0f + 0.32f * WcmeSpellPower(owner));
-+        owner->m_Events.AddEventAtOffset([owner, targetGuid, damage]()
++        attacker->RemoveAurasDueToSpell(ORB);
++        Unit* owner = attacker;
++        ObjectGuid const targetGuid = target->GetGUID();
++        int64 const extra = int64(320.0f * owner->GetLevel() / 60.0f + 0.32f * WcmeSpellPower(owner));
++        owner->m_Events.AddEventAtOffset([owner, targetGuid, extra]()
 +        {
 +            SpellInfo const* apparition = sSpellMgr->GetSpellInfo(APPARITION);
-+            Unit* target = ObjectAccessor::GetUnit(*owner, targetGuid);
-+            if (!apparition || !target || !owner->IsInWorld())
++            Unit* victim = ObjectAccessor::GetUnit(*owner, targetGuid);
++            if (!apparition || !victim || !owner->IsInWorld())
 +                return;
-+            for (Unit* enemy : WcmeEnemiesNear(owner, target, 5.0f, 50))
-+                WcmeExtraDamage(owner, enemy, apparition, damage);
++            for (Unit* enemy : WcmeEnemiesNear(owner, victim, 5.0f, 50))
++                WcmeExtraDamage(owner, enemy, apparition, extra);
 +        }, 1s);
-+    }
-+
-+    void Register() override
-+    {
-+        DoCheckProc += AuraCheckProcFn(spell_wcme_shadow_orbs::CheckProc);
-+        OnProc += AuraProcFn(spell_wcme_shadow_orbs::HandleProc);
 +    }
 +};
 +
@@ -14563,7 +14538,7 @@ index 0000000..ee760dd
 +    RegisterSpellScript(spell_wcme_fel_corruption);
 +    RegisterSpellScript(spell_wcme_overflow_stacks);
 +    RegisterSpellScript(spell_wcme_astral_storm);
-+    RegisterSpellScript(spell_wcme_shadow_orbs);
++    new wcme_shadow_orbs_mind_blast();
 +    RegisterSpellScript(spell_wcme_dragon_roar_whirlwind);
 +    RegisterSpellScript(spell_wcme_dragon_warrior);
 +    RegisterSpellScript(spell_wcme_dragon_roar_stun);

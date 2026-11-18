@@ -37,8 +37,8 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1181300,Controlled Aggression,Epic,coa_mystic_enchant_aura_link,,resolved,"our 1181301 grant removed (core link does it); 1181302 has no class mask so the doubling stays ours, now exact and with the Shield Slam reset"
 1181340,Iron Guard,Epic,,Unit.cpp,resolved,core patch 69 trimmed to blocked spells (core does melee/ranged)
 1181360,Stormbound Instinct,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling: the shared 'no cooldown' aura doesn't stack; the rest is ours only
-1181400,Blazing Flame,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
-1544910,Wraithweaver: Shadow Orbs,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1181400,Blazing Flame,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling: Blazing Speed doesn't stack; ours also covers two stock ranks the core misses
+1544910,Wraithweaver: Shadow Orbs,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,core proc row restored (ours at 100% gave an orb every tick); our orb gain removed; Mind Blast/Apparition kept as a hook
 1554908,Holy Templar,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,noted earlier as handled by the core; no code of ours
 1556008,Savage Momentum,Epic,coa_mystic_enchant_minion_aura,,resolved,ours trimmed to the shot versions the core misses; Stampede extension fixed to add 2 sec (core's refresh effect would set it to 2 sec)
 1568152,Explosive Charge,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed in #178 (core enchant rule); doubled until then
