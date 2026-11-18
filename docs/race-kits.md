@@ -60,8 +60,25 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
   - Rising ends the low-health bonus, which starts its 45 sec cooldown.
   - A battleground flag carrier drops the flag on rising, as at death (an unkillable carrier would be a sure capture).
   - The ghoul's cooldown has no icon of its own in the picks: it reuses the ghoul's icon.
+- Human Spellsword: `patches/73-racial-spellsword.ps1` (`Racials.Spellsword`). The raises ride on hidden auras the
+  server sets every 2 sec: spell power 9990034, attack power 9990035, spell critical strike and hit rating 9990036, melee
+  and ranged critical strike rating 9990037, melee and ranged hit rating 9990038. The buff 9990032 shows it at work, and
+  9990033 (the "no effect" icon) when the build converts all three already. Details settled in the build:
+  - The sides: spell power is the best school's (damage or healing); attack power, critical strike and hit take the
+    better of melee and ranged. Raising the physical side raises melee and ranged each towards the spell side.
+  - Our own raises are taken out before reading the two sides, so the bonus never feeds itself.
+  - Critical strike and hit are added as rating, worked out from the percent at the player's level, so the bonus is
+    exact rather than rounded to whole percents.
+  - "Already converts" means an aura that turns one side into the other: for power, spell power from attack power,
+    Strength or Agility, attack power from Intellect or Spirit, or one of those stats from the other side's (Sheath of
+    Light, Mental Quickness, Mental Dexterity, Careful Aim, Touched by the Light and many Mystic Enchants); for critical
+    strike or hit, a melee or ranged rating from Intellect or Spirit, or a spell rating from Strength or Agility
+    (Mental Dexterity, Zealotry, Molten Armor). Stamina doesn't count. Effects that raise both sides at once (all
+    critical strike, all hit) aren't conversions.
+  - Spell power multipliers (such as the ones that double spell power) and attack power percentages apply to the raise
+    as to any other bonus.
 - Spellbook entries: `patches/62-racial-spellbook.ps1` teaches each race its "Racial Passive" entry (spells
-  9990013-9990017 and 9990031, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
+  9990013-9990017, 9990031 and 9990039, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
 
 ## Buff icons (James's picks, 14 November)
 
@@ -75,8 +92,8 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Tauren | Plainsrunning | Achievement_Zone_ArathiHighlands_01 | 3542 (done) |
 | Orc | Bloodrush stacks | achievement_bg_interruptx_flagcapture_attempts_1game | 6200 (done) |
 | Orc | Bloodrush speed | Ability_Rogue_Sprint | 516 (done) |
-| Human | Spellsword | inv_sword_144 | add |
-| Human | Spellsword: no effect (build already converts) | inv_axe_39 | add |
+| Human | Spellsword | inv_sword_144 | add (done: SpellIcon 9990005) |
+| Human | Spellsword: no effect (build already converts) | inv_axe_39 | add (done: SpellIcon 9990006) |
 | Night Elf | Ambush | achievement_profession_fishing_findfish | 3701 |
 | Draenei | Radiant Presence | inv_misc_tournaments_banner_draenei | 9990001 (added, done) |
 | Gnome | Overclock: bigger pools | inv_misc_enggizmos_23 | add |
