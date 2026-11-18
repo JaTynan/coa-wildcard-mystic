@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..ed84b7c
+index 0000000..6f99d80
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14617 @@
+@@ -0,0 +1,14639 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -1709,6 +1709,7 @@ index 0000000..ed84b7c
 +// spell modifiers, which the core applies), explodes for Shadow damage on enemies around the target, and goes on a 12
 +// sec cooldown. Mind Blast deals 65% more damage (25% against players), and your next Mind Flay deals 25% more damage,
 +// 1% less for each tick (Mind Sear is above this server's level cap).
++// 1570700's fragments and the buff itself come from the core's rules; what the buff does is ours.
 +// 1570700, as its own data says: Devouring Plague lasts 12 sec longer; Mind Blast deals 50% more damage and your next
 +// Mind Flay deals 30% more; Vampiric Touch marks the target to take 20% more periodic damage from you.
 +class spell_wcme_shadow_visions : public AuraScript
@@ -1757,7 +1758,9 @@ index 0000000..ed84b7c
 +                WcmeExtraDamage(owner, target, spell, int64(damage->GetDamage() + damage->GetAbsorb()) * _flayBonus / 100);
 +                _flayBonus -= _flayDecay;
 +            }
-+            if (WcmeAddStacks(owner, original ? 965899 : 1570701, 1, original ? 9 : 6))
++            // 1570700's Soul Fragments (1570701) and its Shadow Visions at full fragments are the core's own rules (review
++            // 2026-11-18: ours added a second fragment on every tick, so Shadow Visions came twice as fast).
++            if (original && WcmeAddStacks(owner, 965899, 1, 9))
 +                owner->CastSpell(owner, Buff(), true);
 +            return;
 +        }
@@ -12706,6 +12709,24 @@ index 0000000..ed84b7c
 +    static inline std::unordered_map<ObjectGuid, TimePoint> _quietGarrote;
 +    bool _inMending = false;
 +};
++// Overflow (1571951) for the Regrowth and Nourish versions the core misses. The core's rules (effects 1 and 2) give an
++// Overflow stack (1571954) on casting Regrowth or Nourish, but list only the CoA versions (1108936 ..., 1150464); the
++// stock ones (8936 and its ranks, 50464), also learnable here, never gave a stack. This gives the stack for those, so
++// the two never both fire. (The rules' other helper, 1571955, is an inert dummy.)
++class wcme_overflow_versions : public AllSpellScript
++{
++public:
++    wcme_overflow_versions() : AllSpellScript("wcme_overflow_versions", { ALLSPELLHOOK_ON_CAST }) { }
++
++    void OnSpellCast(Spell* /*spell*/, Unit* caster, SpellInfo const* info, bool) override
++    {
++        if (!caster || !caster->IsPlayer() || !info || info->SpellFamilyName != SPELLFAMILY_DRUID || info->Id >= 1000000 ||
++            !WcmeNamedAny(info, { "Regrowth", "Nourish" }) || !caster->HasAura(1571951))
++            return;
++        caster->CastSpell(caster, 1571954, true);
++    }
++};
++
 +// Shadow Crash (273458) for the Shadowfury versions the core misses. The core (AscensionShadowfuryShadowCrash) calls
 +// down Shadow Crash (273455) at Shadowfury's target spot while Pure Shadow (273456) is at full stacks, but it spots
 +// Shadowfury by its third effect launching 273459, which only the stock ranks (30283 ... 47847) do; the CoA Warlock
@@ -14397,6 +14418,7 @@ index 0000000..ed84b7c
 +    RegisterSpellScript(spell_wcme_stampede_extension);
 +    new wcme_growing_light_versions();
 +    new wcme_shadow_crash_versions();
++    new wcme_overflow_versions();
 +    new wcme_epic_batch4_spells();
 +    new wcme_epic_batch4_hooks();
 +    RegisterSpellScript(spell_wcme_area_keeper);

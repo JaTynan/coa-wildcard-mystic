@@ -42,8 +42,8 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1554908,Holy Templar,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,noted earlier as handled by the core; no code of ours
 1556008,Savage Momentum,Epic,coa_mystic_enchant_minion_aura,,resolved,ours trimmed to the shot versions the core misses; Stampede extension fixed to add 2 sec (core's refresh effect would set it to 2 sec)
 1568152,Explosive Charge,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed in #178 (core enchant rule); doubled until then
-1570700,Shadow Visions,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
-1571951,Overflow,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
+1570700,Shadow Visions,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,our fragment-building removed (doubled the core's: Visions twice as fast); the buff's effects stay ours
+1571951,Overflow,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling; version gap fixed (stock Regrowth/Nourish now give stacks)
 1573649,Cremation,Legendary,,AscensionScalingBaseData.h,to review,
 1575124,Critical Time,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +5% crit; ours doubled it)
 1577402,Pyroclasmic Shadows,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +20% crit; ours doubled it)

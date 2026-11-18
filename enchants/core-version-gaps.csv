@@ -6,3 +6,4 @@ spell,name,core_code,looks_up,status
 271489,Light of Life,AscensionWildcardReconstruction.cpp spell_wildcard_light_of_life_renew,Renew 139 chain only,to review
 273458,Shadow Crash,AscensionShadowfuryShadowCrash.cpp shadowfury_shadow_crash,"Shadowfury by its 273459 missile, which only the stock ranks carry",covered: wcme_shadow_crash_versions runs only when the core's test fails
 1180200,Precision Impact,coa_mystic_enchant_bonus effect 1 (target_aura),"Meteor damage over time: misses 760042 and 2110042, the ground burns of learnable Meteors 760040 and 2110040",to review
+1571951,Overflow,coa_mystic_enchant_proc effects 1 and 2,"CoA Regrowth and Nourish only (misses stock 8936 and its ranks, 50464)",covered: wcme_overflow_versions gives the stack for the stock versions
