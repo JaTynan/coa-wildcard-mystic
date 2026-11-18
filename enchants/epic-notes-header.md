@@ -106,4 +106,8 @@ enchant's text teaches, so where we teach a twin's version of the ability instea
 work as it stands (a rough first sort: dummy auras aren't caught, so each needs a look). Decision (James, 2026-11-18,
 option 1): own spell only once it works, then our teach goes (found while reviewing Cremation).
 
+Where the addon shows a twin's tooltip (`addon/WildcardEnchants/TooltipData.lua`), the enchant should do only the twin's
+effect. `enchants/swap-own-effects.csv` lists 19 of those 203 swaps whose own data still has a proc aura that can fire,
+so players may get both; some are deliberate combined designs, so each needs a look (found while reviewing Hellish Pursuit).
+
 ## Enchants
