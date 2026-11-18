@@ -1453,7 +1453,7 @@ patch or the mechanic when there is a chance.
 
 ### Deadly Bite (272353, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -1463,12 +1463,13 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Deadly Bite (272353): Mongoose Bite, Counterattack or Savage Blade damage puts 40% of that hit into a bleed over its duration; a new hit adds to what is left of the bleed and refreshes it.
 - Deadly Bite (965292), Ascension's own version (the builder tooltip; our client links the same spells): teaches Savage Blade, which applies Deadly Bite itself. Mongoose Bite and Counterattack damage apply Deadly Bite (965408: a bleed of 66 + 3.4% SP + 3.4% ranged AP every 2 sec, +20% Raptor Strike and Savage Blade damage, up to 5 stacks, 12 sec). Deadly Bite's damage has a chance to trigger Sharpened Blade: 20% per tick (no chance survives; assumed), which takes 4 sec off Savage Blade's cooldown and 1 sec off Glaive Toss's, and stacks up the next Savage Blade's damage. (Its twin 272353 keeps the other design: a share of the hit, accumulated into one bleed.)
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 - 019-tooltip-review.sql: Deadly Bite's own version (965292) is Ascension's real design, not a placeholder for its twin 272353: it teaches Savage Blade and stacks its own bleed (spell_wcme_deadly_bite_stacks). 004 no longer blanks it or links it to 272353.
 
 **What the pull requests said:**
@@ -5529,12 +5530,21 @@ patch or the mechanic when there is a chance.
 
 ### Starburst Barrage (979137, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-02), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- Starburst Barrage (979137) for Starsurge. Its text names Starfire, Starsurge and Arcane Barrage, but the core's aura_hero_druid_starburst_barrage (2 November) lets only Starfire and Arcane Barrage through, and with two scripts on one aura its filter also blocked ours, so Starsurge gave nothing. This gives the stack (979138) for a Starsurge cast.
+
+**Assumptions:** Review 2026-11-18: the core has done this since 2 November (aura_hero_druid_starburst_barrage: Starfire and Arcane Barrage hits give a Starburst Barrage stack, 979138, through the aura's own trigger). Our 007 action row sat on the same aura, and since every script's filter must pass, the core's filter blocked our Starsurge, which the text names, so Starsurge gave nothing. Our row and proc row are removed, the core's row restored, and wcme_starburst_barrage_starsurge gives the stack for a Starsurge cast (both learnable Starsurges, 954800 and 2304800).
+
+**Sources:** the core
 
 **Testing:** pass: Starfire grants Starburst Barrage, stacks to 4 (2 Nov) | 2026-11-02
 

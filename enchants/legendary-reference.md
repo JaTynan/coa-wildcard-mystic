@@ -25,10 +25,10 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 991030 | Adorned by Light |  | 991030: works (checked in #171) (#26) |
 | 81448 | Aimed Explosive Shot |  | 81448: changed, awaiting in-game test (through its shot 81449, #171) |
 | 84512 | Amal'thazad's Curse |  | 84512: changed, awaiting in-game test (#164) |
-| 977771 | Ambidextrous |  | 977771: changed, awaiting in-game test (#165 #166)<br>1572215: unchanged: working (audit) |
+| 977771 | Ambidextrous |  | 977771: changed on an unmerged branch (#165 #166)<br>1572215: unchanged: working (audit) |
 | 902185 | Apostle of Eredath |  | 902185: changed, awaiting in-game test (#31 #175) |
 | 978227 | Arcane Gunslinger |  | 978227: changed, awaiting in-game test (#23) |
-| 997055 | Arcane Thunder Seer | yes | 997055: changed, awaiting in-game test (#166) |
+| 997055 | Arcane Thunder Seer | yes | 997055: changed on an unmerged branch (#166) |
 | 965334 | Assuaging Shadows |  | 965334: changed, awaiting in-game test (#175)<br>1571129: changed, awaiting in-game test (#164) |
 | 978235 | Astral Bomber |  | 978235: changed, awaiting in-game test (#175) |
 | 832617 | Astral Storm |  | 832617: changed after its last test (2026-11-03), retest needed (#26 #175) |
@@ -37,7 +37,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 84459 | Battle Fervor |  | 84459: changed, awaiting in-game test (#23) |
 | 81258 | Battlemage |  | 81258: changed, awaiting in-game test (#20) |
 | 978237 | Beast and Blade |  | 978237: changed, awaiting in-game test (#173) |
-| 81251 | Benevolent Crusader |  | 81251: changed, awaiting in-game test (#165 #166) |
+| 81251 | Benevolent Crusader |  | 81251: changed on an unmerged branch (#165 #166) |
 | 965862 | Blademaster |  | 965862: changed, awaiting in-game test (#167) |
 | 965476 | Blessing of the Divines |  | 965476: changed, awaiting in-game test (#167)<br>1571465: unchanged: working (audit) |
 | 977906 | Blood and Guts |  | 977906: changed, awaiting in-game test (#23 #175) |
@@ -52,14 +52,14 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 986000 | Champion of Justice |  | 986000: changed, awaiting in-game test (#175) |
 | 301000 | Circle of Life | yes | 301000: changed on an unmerged branch (#23 #164) |
 | 979740 | Compound Power |  | 979740: changed on an unmerged branch (#20 #171) |
-| 965295 | Consecrated Strikes |  | 965295: changed, awaiting in-game test (#166) |
+| 965295 | Consecrated Strikes |  | 965295: changed on an unmerged branch (#166) |
 | 414080 | Consumed by Fire |  | 414080: unchanged: working (audit) |
-| 81407 | Controlled Burn |  | 81407: changed, awaiting in-game test (#165 #166) |
+| 81407 | Controlled Burn |  | 81407: changed on an unmerged branch (#165 #166) |
 | 99634 | Corrupted Bear Form |  | 99634: changed, awaiting in-game test (#175) |
 | 84529 | Crazy Cultist |  | 84529: changed, awaiting in-game test (#167)<br>1568195: changed, awaiting in-game test (#167) |
 | 977727 | Crimson Champion |  | 977727: tested (see test notes) (#26) |
 | 86576 | Cryotherapist | yes | 86576: changed, awaiting in-game test (#20) |
-| 982806 | Curse of Arugal | yes | 982806: changed, awaiting in-game test (#165 #166 #169) |
+| 982806 | Curse of Arugal | yes | 982806: changed on an unmerged branch (#165 #166 #169) |
 | 980056 | Dark Apotheosis | yes | 980056: unchanged: working (audit) |
 | 997115 | Dark Ranger | yes | 997115: changed, awaiting in-game test (#175) |
 | 978209 | Dark Surgeon |  | 978209: changed, awaiting in-game test (#20 #175) |
@@ -73,13 +73,13 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 84531 | Deranged Druid |  | 84531: changed, awaiting in-game test (#167)<br>1568216: changed, awaiting in-game test (#167) |
 | 982980 | Disciple of Arugal | yes | 982980: changed, awaiting in-game test (#175) |
 | 978234 | Disciple of the Tides |  | 978234: changed, awaiting in-game test (#23 #175) |
-| 965421 | Divine Purpose |  | 965421: changed, awaiting in-game test (#164 #166) |
+| 965421 | Divine Purpose |  | 965421: changed on an unmerged branch (#164 #166) |
 | 81472 | Dominant Word: Shield |  | 81472: changed, awaiting in-game test (#20) |
 | 978742 | Double Down |  | 978742: changed, awaiting in-game test (#165) |
 | 954252 | Dragon Warrior |  | 954252: changed, awaiting in-game test (#23 #175) |
 | 84533 | Eccentric Elementalist |  | 84533: changed, awaiting in-game test (#167)<br>1568237: changed, awaiting in-game test (#167) |
 | 986234 | Edge of Fury | yes | 986234: changed, awaiting in-game test (#175) |
-| 81116 | Eldritch Knight |  | 81116: changed, awaiting in-game test (#165 #166) |
+| 81116 | Eldritch Knight |  | 81116: changed on an unmerged branch (#165 #166) |
 | 978229 | Elemental Assassin |  | 978229: changed on an unmerged branch (#23 #171 #177) |
 | 978231 | Elemental Destruction |  | 978231: changed, awaiting in-game test (#23) |
 | 990200 | Elemental Lord |  | 990200: changed, awaiting in-game test (#173) |
@@ -115,7 +115,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 979765 | Hot Hands |  | 979765: changed, awaiting in-game test (#174 #177)<br>1575104: changed, awaiting in-game test (#174 #177) |
 | 954359 | Hydromancer |  | 954359: changed, awaiting in-game test (#20) |
 | 965294 | Ice Barrage |  | 965294: changed, awaiting in-game test (#20)<br>1570523: changed, awaiting in-game test (#20) |
-| 977764 | Ice Lash |  | 977764: changed, awaiting in-game test (#165 #166) |
+| 977764 | Ice Lash |  | 977764: changed on an unmerged branch (#165 #166) |
 | 978226 | Knight of the Eclipse |  | 978226: changed, awaiting in-game test (#20) |
 | 417700 | Lava Sweep |  | 417700: changed, awaiting in-game test (#26 #175)<br>1590905: changed, awaiting in-game test (#26) |
 | 984117 | Legacy of the Arcanist | yes | 984117: changed, awaiting in-game test (#175) |
@@ -124,12 +124,12 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 81404 | Low Tide |  | 81404: changed, awaiting in-game test (#172) |
 | 978218 | Lucifur |  | 978218: unchanged: working (audit) |
 | 977870 | Mana Fiend |  | 977870: changed, awaiting in-game test (#175) |
-| 84752 | Martial Crescendo |  | 84752: changed, awaiting in-game test (#165 #166) |
+| 84752 | Martial Crescendo |  | 84752: changed on an unmerged branch (#165 #166) |
 | 980046 | Master of Shadows |  | 980046: changed, awaiting in-game test (#173) |
 | 965309 | Mending Tide |  | 965309: changed, awaiting in-game test (#174)<br>1570865: unchanged: working (audit) |
 | 978228 | Midnight Flames |  | 978228: changed, awaiting in-game test (#23) |
 | 965307 | Molten Earth |  | 965307: unchanged: working (audit) |
-| 965283 | Nature's Fervor |  | 965283: changed, awaiting in-game test (#164 #166)<br>1570238: changed, awaiting in-game test (#20 #164) |
+| 965283 | Nature's Fervor |  | 965283: changed on an unmerged branch (#164 #166)<br>1570238: changed, awaiting in-game test (#20 #164) |
 | 979748 | One With The Light |  | 979748: changed, awaiting in-game test (#171)<br>1575034: changed, awaiting in-game test (#164 #171) |
 | 979240 | Oracle of the Eclipse | yes | 979240: changed, awaiting in-game test (#175) |
 | 977710 | Overflow |  | 977710: changed on an unmerged branch (#20 #175)<br>1571951: changed on an unmerged branch (#20 #175) |
@@ -139,7 +139,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 81399 | Plague Bearer |  | 81399: changed, awaiting in-game test (#165) |
 | 986033 | Prayer of Preservation |  | 986033: changed, awaiting in-game test (#175) |
 | 977802 | Predator's Wrath |  | 977802: changed, awaiting in-game test (#174) |
-| 977717 | Primordial Fury |  | 977717: changed, awaiting in-game test (#165 #166) |
+| 977717 | Primordial Fury |  | 977717: changed on an unmerged branch (#165 #166) |
 | 979796 | Prophet of Wrath |  | 979796: changed, awaiting in-game test (#171) |
 | 977713 | Pure Shadow |  | 977713: unchanged: working (audit) |
 | 84508 | Purification By Light |  | 84508: changed, awaiting in-game test (#164) |
@@ -169,11 +169,11 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 978236 | Thunder Slam |  | 978236: changed, awaiting in-game test (#165) |
 | 954074 | Tidecaller |  | 954074: changed, awaiting in-game test (#164) |
 | 965245 | Time Warp |  | 965245: changed, awaiting in-game test (#26 #174) |
-| 954067 | Titanic Mutilate |  | 954067: changed, awaiting in-game test (#164 #166) |
-| 84750 | Tools of War |  | 84750: changed, awaiting in-game test (#165 #166) |
+| 954067 | Titanic Mutilate |  | 954067: changed on an unmerged branch (#164 #166) |
+| 84750 | Tools of War |  | 84750: changed on an unmerged branch (#165 #166) |
 | 965282 | Total Eclipse |  | 965282: unchanged: working (audit) |
 | 86438 | Tree of Wrath |  | 86438: changed, awaiting in-game test (#26 #175) |
-| 977824 | Twilight Paragon |  | 977824: changed, awaiting in-game test (#165 #166)<br>1572527: unchanged: working (audit) |
+| 977824 | Twilight Paragon |  | 977824: changed on an unmerged branch (#165 #166)<br>1572527: unchanged: working (audit) |
 | 84506 | Unbounded Deathbringer |  | 84506: changed, awaiting in-game test (#164) |
 | 84510 | Unbounded Spell Slinger |  | 84510: changed, awaiting in-game test (#23 #164) |
 | 978727 | Unchained |  | 978727: changed, awaiting in-game test (#23) |
@@ -188,7 +188,7 @@ is in `enchants/legendary-history.csv` and `enchants/legendary-notes.md`.
 | 978202 | White Walker |  | 978202: changed, awaiting in-game test (#175) |
 | 965315 | Wild Felfire |  | 965315: unchanged: working (audit) |
 | 978232 | Wind Rager |  | 978232: changed, awaiting in-game test (#20) |
-| 81470 | Words of Healing |  | 81470: changed, awaiting in-game test (#165 #166) |
+| 81470 | Words of Healing |  | 81470: changed on an unmerged branch (#165 #166) |
 | 902137 | Zandalari Windreaver | yes | 902137: changed, awaiting in-game test (#31 #175) |
 | 84527 | Zany Zealot |  | 84527: changed, awaiting in-game test (#167)<br>1568174: changed, awaiting in-game test (#167) |
 
@@ -282,7 +282,7 @@ text in our client is the only record.
 | 1134991 | Retribution Mastery | unchanged: working (audit) |
 | 1398179 | Roll the Bones | unchanged: working (audit) |
 | 1180009 | Rune of Power | unchanged: working (audit) |
-| 1587050 | Rush of Blood | changed, awaiting in-game test (#165 #166) |
+| 1587050 | Rush of Blood | changed on an unmerged branch (#165 #166) |
 | 1180002 | Shadow Blades | changed, awaiting in-game test (#26 #171) |
 | 1572059 | Shadow Crash | changed, awaiting in-game test (#26) |
 | 1134970 | Shadow Mastery | unchanged: working (audit) |
@@ -306,4 +306,4 @@ text in our client is the only record.
 | 1760200 | Wind Lash | changed, awaiting in-game test (#175) |
 | 1544910 | Wraithweaver: Shadow Orbs | changed on an unmerged branch (#175) |
 
-Copy totals (all 305): changed, awaiting in-game test: 198, unchanged: working: 81, changed on an unmerged branch: 11, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.
+Copy totals (all 305): changed, awaiting in-game test: 181, unchanged: working: 81, changed on an unmerged branch: 28, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.

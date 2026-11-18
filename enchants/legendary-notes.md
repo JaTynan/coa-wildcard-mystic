@@ -131,7 +131,7 @@ patch or the mechanic when there is a chance.
 
 ### Ambidextrous (977771, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -140,11 +140,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Ambidextrous (977771): with Single-Minded Fury, off-hand auto attacks trigger Dominant Strike (main hand); Bloodthirst, Execute and Rend trigger Southpaw Strike (off hand). Each has its own 16 sec cooldown.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -207,17 +208,18 @@ patch or the mechanic when there is a chance.
 
 ### Arcane Thunder Seer (997055, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Arcane Thunder Seer (997055): Arcane Missiles damage grants Arcane Thunder, one extra stack per Thunder Seer stack; Missile Barrage cannot activate while it is equipped.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -422,7 +424,7 @@ patch or the mechanic when there is a chance.
 
 ### Benevolent Crusader (81251, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -430,11 +432,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bbb213c | #165 Bring 33 dead Legendary enchants to life | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Benevolent Crusader (81251): direct heals grant a stack of Benevolent Crusader; Smite, Holy Fire, Penance or Exorcism damage triggers a Holy Nova at the target, at most once every 3 sec.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -794,18 +797,19 @@ patch or the mechanic when there is a chance.
 
 ### Consecrated Strikes (965295, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Consecrated Strikes (965295): Crusader Strike, Divine Storm and Hammer of the Righteous have a chance to create Consecrated Ground. No proc chance survives in any record; 35% is assumed (James: near-constant uptime with slow weapons, no extra clutter with fast ones).
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -817,7 +821,7 @@ patch or the mechanic when there is a chance.
 
 ### Controlled Burn (81407, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -826,11 +830,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Controlled Burn (81407): Chaos Bolt refreshes Immolate; Chaos Bolt, Incinerate, Searing Pain and Scorch grant Controlled Burn, which keeps Immolate on the target through the next Conflagrate; Conflagrate applies Heating Up!; Scorch deals 20% more to targets with your Conflagrate on them.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -944,7 +949,7 @@ patch or the mechanic when there is a chance.
 
 ### Curse of Arugal (982806, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -954,11 +959,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Curse of Arugal (982806): Cat finishing moves have a 20% chance per combo point to grant Goldrinn's Guile: your next Mind Blast or Vampiric Touch is instant and deals 20% more damage (the builder tooltip's number; the client data has 40%), awards 2 combo points and a stack of Goldrinn's Focus, and spends it. While Goldrinn's Fury is up, Cat ability damage applies a stack of Arugal's Gift. Darkness (no Ascension data survives; James's design): bleed or Shadow periodic damage, and combo point generators in Cat Form, build Darkness, at most one stack every 2.5 sec, up to 5, lasting 15 sec after the last gain. Mind Blast spends it all for 4% more damage per stack (20% at 5, on par with Goldrinn's Guile's 20%; James chose it), as extra Shadow damage.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -1316,7 +1322,7 @@ patch or the mechanic when there is a chance.
 
 ### Divine Purpose (965421, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -1324,11 +1330,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Divine Purpose (965421): Penance damage grants Divine Purpose, Penance healing grants Divine Judgement.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -1460,7 +1467,7 @@ patch or the mechanic when there is a chance.
 
 ### Eldritch Knight (81116, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -1468,11 +1475,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Eldritch Knight (81116): melee abilities while Eldritch Weapon is up grant Eldritch Knight (Eldritch Wrath grants it itself); Eldritch Wrath hits apply Eldritch Condemnation. While Eldritch Knight is up, melee abilities restore mana and add a stack of Anomaly; full stacks become Eldritch Horror.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -1593,7 +1601,7 @@ patch or the mechanic when there is a chance.
 **What the server does (from the code and SQL comments):**
 
 - Evoker (953308): casting Arcane Missiles with Missile Barrage up (spending it) grants Arcane Evoked (better Brain Freeze chance); casting Fireball with Brain Freeze up grants Fire Evoked (better Missile Barrage chance); either grants Frost Evoked (faster Frostbolt, which then grants Evoker).
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -2414,7 +2422,7 @@ patch or the mechanic when there is a chance.
 
 ### Ice Lash (977764, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2424,11 +2432,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Ice Lash (977764): Ice Lash grants Solid Ice when the off-hand weapon carries Frostbrand; consuming Fingers of Frost has a 33% chance to trigger Ice Crash (Ice Lash's cooldown reset, more damage and targets).
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -2615,7 +2624,7 @@ patch or the mechanic when there is a chance.
 
 ### Martial Crescendo (84752, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2624,11 +2633,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Martial Crescendo (84752) and Tools of War (84750): each different direct-damage Physical ability adds a stack (not "on next swing" abilities); no refresh at full stacks; any non-Physical damage removes all stacks.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -2708,7 +2718,7 @@ patch or the mechanic when there is a chance.
 
 ### Nature's Fervor (965283, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2718,11 +2728,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Nature's Fervor (965283): fully stacking Lacerate on a target empowers the next Feral ability.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -2987,7 +2998,7 @@ patch or the mechanic when there is a chance.
 
 ### Primordial Fury (977717, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2997,11 +3008,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Primordial Fury (977717): during Shamanistic Rage, non-periodic spell and ability critical hits spend 50 rage to deal Elemental damage and grant a stack of Elemental Rage. Nothing happens without the rage.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -3126,7 +3138,7 @@ patch or the mechanic when there is a chance.
 
 ### Rush of Blood (1587050, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3135,11 +3147,11 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Rush of Blood (1587050): Hemorrhage twice in a row makes the next Ambush usable outside Stealth; a third Hemorrhage restores energy. Any other ability starts the count again.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- Rush of Blood (1587050) used to be here; review 2026-11-18 found the core has done it since 3 November (spell_ascension_mystic_rush_of_blood, which also takes the free Ambush away when another ability breaks the sequence), so both counted Hemorrhages and the third gave the energy twice.
 
 **What the pull requests said:**
 
@@ -3713,7 +3725,7 @@ patch or the mechanic when there is a chance.
 
 ### Titanic Mutilate (954067, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3721,11 +3733,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Titanic Mutilate (954067): dealing damage with Whirlwind triggers Bloodrage if you know it, once per Whirlwind; that Enrage does not grant a rage charge (Raging Blow).
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -3736,7 +3749,7 @@ patch or the mechanic when there is a chance.
 
 ### Tools of War (84750, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3745,11 +3758,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Martial Crescendo (84752) and Tools of War (84750): each different direct-damage Physical ability adds a stack (not "on next swing" abilities); no refresh at full stacks; any non-Physical damage removes all stacks.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -3824,7 +3838,7 @@ patch or the mechanic when there is a chance.
 
 ### Twilight Paragon (977824, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3833,11 +3847,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Twilight Paragon (977824): direct damage with Smite and Holy Fire, and with Penance against creatures, grants Paragon of Light. Casting Exorcism spends every stack: one Twilight Torment on the target per stack, then Paragon of Darkness for 1 sec per stack.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -4141,7 +4156,7 @@ patch or the mechanic when there is a chance.
 
 ### Words of Healing (81470, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -4150,11 +4165,12 @@ patch or the mechanic when there is a chance.
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Words of Healing (81470): effective direct heals add a stack of Premonition; at full stacks it becomes Clairvoyant. (Its heal crit bonus while Borrowed Time is up is an aura link, sql/enchants/016.)
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
