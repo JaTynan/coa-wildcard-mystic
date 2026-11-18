@@ -42,7 +42,8 @@ One character you stick with and keep investing in. The end state:
 6. **Race kits: a signature passive for every race (optional).** Design: [race-kits.md](race-kits.md). Every race
    keeps its stock racials and gains one passive that defines how it plays (Tauren Plainsrunning, Troll Voodoo
    Regeneration and so on). A config switch, set per realm through the settings kit, so other realms keep the stock
-   racials only. Built as C++ hooks plus addon tooltips; no new actives, so no client patch needed beyond tooltips.
+   racials only. Built as C++ hooks; no new actives, and the buffs and spellbook entries come from the client patch.
+   Built so far: Tauren, Orc, Night Elf, Troll, Draenei, Undead; still to build: Human, Dwarf, Gnome, Blood Elf.
 7. **Level cap 70.** First check the Wildcard roll budget (CharacterAdvancementEssence.dbc): if its rows stop at
    level 60, add a small server change that keeps granting rolls to 70. Then raise `MaxPlayerLevel` through the
    settings kit and test a character from 60 to 70: rolls, spell ranks, prestige at the new cap, Outland quests

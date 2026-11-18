@@ -13,7 +13,8 @@ Each race owns a niche, so no two signatures overlap: Tauren movement, Trolls en
 resources for damage, Orcs greedy rushes (solo), Undead death, Humans hybrid builds, Dwarves exploring and gathering, Night Elves
 stealth, Draenei patient group fights.
 
-Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
+Build notes: *hook* = a small piece of C++. Tooltips come from the client patch: each buff and each "Racial Passive"
+spellbook entry is our own spell (`client-patch/custom_spells.py`).
 
 ## Signature passives
 
@@ -25,7 +26,7 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
 | Gnome | Overclock | The endurance king for resources: gnomes learn their enemy and plan their next move. +5% maximum mana, energy, rage and runic power. Every 15 sec in combat, another step: abilities cost 1% less (whatever resource they use) and runes recharge 1% faster, and you're instantly topped up by that step's number in every resource (1% at the first step, 2% at the second, up to 10% at the tenth). After 10 steps (2 min 30 sec) it stops: the 10% discount stays for the rest of the fight, 55% topped up in all. Resets when combat ends. About 12% of a mana pool in a 1 min fight, 110% in 5 min, 185% in 10 min. Escape Artist also gives +60% movement speed for 3 sec. | hook (reworks the stock Expansive Mind, which gives intellect); Escape Artist gains a speed effect |
 | Draenei | Radiant Presence | Patient, steady, best in a group. In combat, gain a stack of Light every 6 sec, up to 5 (30 sec to fill). Each stack gives you and every ally within 30 yards (pets and guardians included) +1% damage and healing and 1% less damage taken (up to 5%). Stacks fade 10 sec after combat. Your auras and totems reach 50% further. Doesn't stack with a second Draenei. | hook |
 | Orc | Bloodrush | Greedy, fast, best alone. For each enemy in combat with you, +2% damage and +2% haste, up to 5 enemies (+10%). Each killing blow also gives +30% movement speed for 6 sec, which runs its full 6 sec in or out of combat. The damage and haste go out of combat. | hook |
-| Undead | Grave Defiance | Below 35% health you deal and heal more, rising evenly to +30% at 1% health (about +13% at 20%, +22% at 10%). It lasts up to 15 sec at a time; when it ends (time up, or healed above 35%) it can't start again for 45 sec, so bouncing across the line (Drain Life, Life Tap) gains nothing: at most 15 sec in every minute. When you die, you rise as a ghoul for 10 sec and keep fighting, dealing and healing 30% less (the low-health bonus doesn't apply to the ghoul); a killing blow by the ghoul brings you back at 20% health. Once every 5 min. Living dangerously: the opposite of Trolls, who want to heal back up. | hooks; the ghoul form reuses Raise Ally's |
+| Undead | Grave Defiance | Below 35% health you deal and heal more, rising evenly to +30% at 1% health (about +13% at 20%, +22% at 10%). It lasts up to 15 sec at a time; when it ends (time up, or healed above 35%) it can't start again for 45 sec, so bouncing across the line (Drain Life, Life Tap) gains nothing: at most 15 sec in every minute. When you die, you rise as a ghoul for 10 sec and keep fighting, dealing and healing 30% less (the low-health bonus doesn't apply to the ghoul); a killing blow by the ghoul brings you back at 20% health. Once every 5 min. Living dangerously: the opposite of Trolls, who want to heal back up. | hooks; the ghoul wears Raise Ally's ghoul model (you keep your own spells) |
 | Tauren | Plainsrunning | While you keep moving on foot, speed builds to a cap over 60 sec of running. The cap is your level + 40% (41% at level 1, 100% at level 60). When you stop it drains, full to nothing in 6 sec. Adds on top of other speed effects (at full, Sprint's +70% and Plainsrunning's +100% make +170%). Not while mounted; paused while carrying a battleground flag. | hook |
 | Troll | Voodoo Regeneration | The endurance king for health. Out of combat, health regenerates 50% faster. In combat, regenerate 0.3% of maximum health per second (a full bar about every 5.5 min), halved while the burst below is on cooldown. Below 35% health, regenerate 28% of maximum health over 5 sec, once every 2 min. Both take percentage healing reductions and increases (Mortal Strike halves them), but no bonus healing or spell power. Replaces the stock Regeneration passive. | hook |
 | Blood Elf | Arcane Hunger | Each ability or spell you use adds a stack, up to 10. Per stack, abilities deal or heal 1% more and cost 2% more (at 10: +10% damage and healing, +20% cost). Stop using abilities for 5 sec (when mana would start regenerating) and the stacks fall off. **Arcane Torrent** eats every stack: besides its silence, it restores 2% of every resource you have (mana, energy, rage, runic power) per stack eaten (20% at 10), and its cooldown drops to 1 min. Keep hitting harder at a growing cost, or cash the stacks in for resources. | hook; Arcane Torrent reworked (cooldown and the refund) |
@@ -44,8 +45,23 @@ Build notes: *hook* = a small piece of C++. Tooltips come from the addon.
   9990005 (out-of-combat regeneration), burst 9990006 and its cooldown 9990007.
 - Draenei Radiant Presence: `patches/59-racial-radiant-presence.ps1` (`Racials.RadiantPresence`). Buff 9990008 on
   the Draenei and allies in range (stacks = Light); the client patch adds its banner icon (SpellIcon 9990001).
+- Undead Grave Defiance: `patches/72-racial-grave-defiance.ps1` (`Racials.GraveDefiance`). Buff 9990027 (stacks =
+  bonus in percent), its cooldown 9990028, the ghoul 9990029 (Raise Ally's ghoul model, creature 30230, so one of its
+  four looks) and the ghoul's cooldown 9990030. James chose (18 November) that the ghoul is still you, in the ghoul's
+  shape with your own spells, not a separate ghoul to control as Raise Ally does. Details settled in the build:
+  - The rise happens when a hit would kill you, after absorbs (Cheat Death, Ardent Defender and the like save
+    first). Nobody gets kill credit until the ghoul really dies; then whoever landed the last killing hit does.
+  - The ghoul stays at 1 health: it can't die from damage and can't be healed (so a ghoul at full health can't die by
+    surprise). Instant-kill effects (some boss mechanics, falling out of the world) still kill, as they do anything.
+  - A killing blow counts on an enemy worth experience or honor (not critters, totems, pets or gray enemies), landed by
+    you, not your pet. It brings you back at 20% health.
+  - No rise from falling, lava, drowning or fatigue, from your duel opponent (the duel ends at 1 health as usual), in a
+    vehicle, or in Spirit of Redemption. The 5 min cooldown is kept through death and logout.
+  - Rising ends the low-health bonus, which starts its 45 sec cooldown.
+  - A battleground flag carrier drops the flag on rising, as at death (an unkillable carrier would be a sure capture).
+  - The ghoul's cooldown has no icon of its own in the picks: it reuses the ghoul's icon.
 - Spellbook entries: `patches/62-racial-spellbook.ps1` teaches each race its "Racial Passive" entry (spells
-  9990013-9990017, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
+  9990013-9990017 and 9990031, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
 
 ## Buff icons (James's picks, 14 November)
 
@@ -66,9 +82,9 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Gnome | Overclock: bigger pools | inv_misc_enggizmos_23 | add |
 | Gnome | Overclock: learning the enemy (steps) | achievement_bg_tophealer_wsg | add |
 | Gnome | Escape Artist speed (+60%, 3 sec), and Escape Artist's own spell icon (client patch) | inv_gizmo_rocketboot_destroyed_02 | add |
-| Undead | Grave Defiance (below 35%) | achievement_boss_devourerofsouls | 4153 |
-| Undead | Ghoul on death | achievement_dungeon_coablackdragonflight | 3254 |
-| Undead | Grave Defiance on cooldown | inv_helmet_168 | 13716 |
+| Undead | Grave Defiance (below 35%) | achievement_boss_devourerofsouls | 4153 (done) |
+| Undead | Ghoul on death (and its 5 min cooldown) | achievement_dungeon_coablackdragonflight | 3254 (done) |
+| Undead | Grave Defiance on cooldown | inv_helmet_168 | 13716 (done) |
 | Troll | Voodoo Regeneration burst | inv_offhand_zulaman_d_01 | 19697 |
 | Troll | Voodoo Regeneration on cooldown | achievement_dungeon_drak'tharon_heroic | 3234 |
 | Blood Elf | Arcane Hunger stacks | achievement_bg_wineos | 3384 |
