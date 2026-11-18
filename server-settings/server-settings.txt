@@ -90,8 +90,8 @@ worldserver.conf | Racials.Spellsword = 1
 # and each step tops up every resource by its number in percent (55% in all); resets when combat ends. Escape Artist
 # also gives +60% movement speed for 3 sec. 0 = off (Expansive Mind comes back).
 worldserver.conf | Racials.Overclock = 1
-# Blood Elf Arcane Hunger (race kits): each ability adds a stack (up to 10): +1% damage and healing, +2% ability
-# costs per stack; falls off after 5 sec without an ability. Arcane Torrent eats the stacks for 2% of every resource
+# Blood Elf Arcane Hunger (race kits): each ability adds a stack (up to 10): +1.5% damage and healing, 0.5% less
+# damage taken, +2% ability costs per stack; falls off after 5 sec without an ability. Arcane Torrent eats the stacks for 2% of every resource
 # each, and its cooldown is 1 min (read at server start). 0 = off.
 worldserver.conf | Racials.ArcaneHunger = 1
 # Mana-forged Barrier, the full Ascension tank stance (the core only gave the form): absorbs up to 90% of damage with

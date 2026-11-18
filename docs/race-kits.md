@@ -29,7 +29,7 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
 | Undead | Grave Defiance | Below 35% health you deal and heal more, rising evenly to +30% at 1% health (about +13% at 20%, +22% at 10%). It lasts up to 15 sec at a time; when it ends (time up, or healed above 35%) it can't start again for 45 sec, so bouncing across the line (Drain Life, Life Tap) gains nothing: at most 15 sec in every minute. When you die, you rise as a ghoul for 10 sec and keep fighting, dealing and healing 30% less (the low-health bonus doesn't apply to the ghoul); a killing blow by the ghoul brings you back at 20% health. Once every 5 min. Living dangerously: the opposite of Trolls, who want to heal back up. | hooks; the ghoul wears Raise Ally's ghoul model (you keep your own spells) |
 | Tauren | Plainsrunning | While you keep moving on foot, speed builds to a cap over 60 sec of running. The cap is your level + 40% (41% at level 1, 100% at level 60). When you stop it drains, full to nothing in 6 sec. Adds on top of other speed effects (at full, Sprint's +70% and Plainsrunning's +100% make +170%). Not while mounted; paused while carrying a battleground flag. | hook |
 | Troll | Voodoo Regeneration | The endurance king for health. Out of combat, health regenerates 50% faster. In combat, regenerate 0.3% of maximum health per second (a full bar about every 5.5 min), halved while the burst below is on cooldown. Below 35% health, regenerate 28% of maximum health over 5 sec, once every 2 min. Both take percentage healing reductions and increases (Mortal Strike halves them), but no bonus healing or spell power. Replaces the stock Regeneration passive. | hook |
-| Blood Elf | Arcane Hunger | Each ability or spell you use adds a stack, up to 10. Per stack, abilities deal or heal 1% more and cost 2% more (at 10: +10% damage and healing, +20% cost). Stop using abilities for 5 sec (when mana would start regenerating) and the stacks fall off. **Arcane Torrent** eats every stack: besides its silence, it restores 2% of every resource you have (mana, energy, rage, runic power) per stack eaten (20% at 10), and its cooldown drops to 1 min. Keep hitting harder at a growing cost, or cash the stacks in for resources. | hook; Arcane Torrent reworked (cooldown and the refund) |
+| Blood Elf | Arcane Hunger | Each ability or spell you use adds a stack, up to 10. Per stack, abilities deal or heal 1.5% more, you take 0.5% less damage, and abilities cost 2% more (at 10: +15% damage and healing, 5% less damage taken, +20% cost). Stop using abilities for 5 sec (when mana would start regenerating) and the stacks fall off. **Arcane Torrent** eats every stack: besides its silence, it restores 2% of every resource you have (mana, energy, rage, runic power) per stack eaten (20% at 10), and its cooldown drops to 1 min. Keep hitting harder at a growing cost, or cash the stacks in for resources. | hook; Arcane Torrent reworked (cooldown and the refund) |
 
 ## Already done
 
@@ -91,7 +91,13 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
   - Expansive Mind still shows in the spellbook (as the stock Regeneration does for Trolls); the Overclock entry says
     it replaces it.
 - Blood Elf Arcane Hunger: `patches/75-racial-arcane-hunger.ps1` (`Racials.ArcaneHunger`). Buff 9990046 (stack count =
-  stacks). Details settled in the build:
+  stacks; hidden 9990048 carries the damage taken). Details settled in the build:
+  - Numbers raised 18 November (James): first built at +1% damage and healing per stack, which for a player who runs
+    out of resources was a loss (1.10 / 1.20 per point spent) and left Draenei ahead with no drawback. Now +1.5% damage
+    and healing and 0.5% less damage taken per stack (tanks too), cost still +2%: resource-bound players lose about 4%
+    damage per point spent, others gain 15%, ahead of Draenei for one player while Draenei stays the group racial.
+    Aura amounts are whole percents, so the halves round up as stacks build (damage and healing 2, 3, 5, 6, 8, 9, 11,
+    12, 14, 15%; damage taken 1, 1, 2, 2, 3, 3, 4, 4, 5, 5%).
   - A stack is added just after the ability that earns it, so it counts from the next ability (the first one isn't
     dearer). Not counted: triggered spells, passives, items (potions, trinkets), auto attack and auto-repeat shots.
   - Casting or channelling keeps the stacks from falling off, so a long cast or channel doesn't lose them.

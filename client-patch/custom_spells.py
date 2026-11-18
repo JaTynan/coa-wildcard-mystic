@@ -69,8 +69,9 @@ MOD_POWER_REGEN_PERCENT, MOD_INCREASE_ENERGY_PERCENT = 110, 132
 POWER_MANA, POWER_RAGE, POWER_ENERGY, POWER_RUNE, POWER_RUNIC_POWER = 0, 1, 3, 5, 6
 RUNE_BLOOD, RUNE_UNHOLY, RUNE_FROST = 0, 1, 2
 # Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1)
-ARCANE_HUNGER = 9990046            # stacks: +1% damage and healing done, +2% ability costs each
+ARCANE_HUNGER = 9990046            # stacks: +1.5% damage and healing done (the server sets it), +2% ability costs each
 BOOK_ARCANE_HUNGER = 9990047       # its spellbook entry
+ARCANE_HUNGER_WARD = 9990048       # hidden: 0.5% less damage taken per stack (the server sets it)
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
@@ -311,18 +312,22 @@ SPELLS = {
                        ICON_ROCKET_BOOTS, 0, [(MOD_INCREASE_SPEED, 60, 0)]),
     BOOK_ARCANE_HUNGER: ('Arcane Hunger',
                          'Each ability or spell you use adds a stack of Arcane Hunger, up to 10. Per stack, abilities '
-                         'deal and heal 1% more and cost 2% more (at 10: 10% more damage and healing, 20% more cost). Go '
-                         '5 sec without using an ability and the stacks fall off. Arcane Torrent eats every stack: '
+                         'deal and heal 1.5% more and cost 2% more, and you take 0.5% less damage (at 10: 15% more '
+                         'damage and healing, 5% less damage taken, 20% more cost). Go 5 sec without using an ability '
+                         'and the stacks fall off. Arcane Torrent eats every stack: '
                          'besides its usual effects, it restores 2% of every resource you have (mana, rage, energy, '
                          'runic power) per stack eaten, 20% at 10. Arcane Torrent\'s cooldown is 1 min.',
                          '', 3384, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     ARCANE_HUNGER: ('Arcane Hunger',
-                    'Each ability or spell adds a stack: abilities deal and heal 1% more and cost 2% more per stack. Fades '
-                    'after 5 sec without using an ability. Arcane Torrent eats the stacks for 2% of every resource each.',
-                    'Damage and healing done increased by 1% and ability costs by 2% for each stack. Fades after 5 sec '
-                    'without using an ability.',
-                    3384, 10, [(MOD_DAMAGE_PERCENT_DONE, 1, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 1, 0),
+                    'Each ability or spell adds a stack: abilities deal and heal 1.5% more and cost 2% more per stack, '
+                    'and you take 0.5% less damage. Fades after 5 sec without using an ability. Arcane Torrent eats the '
+                    'stacks for 2% of every resource each.',
+                    'For each stack: damage and healing done increased by 1.5%, damage taken reduced by 0.5%, ability '
+                    'costs increased by 2%. Fades after 5 sec without using an ability.',
+                    3384, 10, [(MOD_DAMAGE_PERCENT_DONE, 0, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 0, 0),
                                (MOD_POWER_COST_PCT, 2, ALL_SCHOOLS)]),  # achievement_bg_wineos
+    ARCANE_HUNGER_WARD: ('Arcane Hunger', 'Damage taken reduced by 0.5% for each stack of Arcane Hunger.', '', 3384, 0,
+                         [(MOD_DAMAGE_PERCENT_TAKEN, 0, ALL_SCHOOLS)], {4: HIDDEN}),
     TEMPORAL_STORE: ('Stored Time',
                      'Time stored from a cancelled Temporal Blast.',
                      'Your next Temporal Blast casts faster by the time you had already spent on the cancelled one.',
