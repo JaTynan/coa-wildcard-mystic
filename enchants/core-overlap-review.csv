@@ -2,15 +2,15 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 55441,Glyph of Mana Tide,Rare,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,spell_shaman.cpp,resolved,"no doubling: the core's rule and class script do it; our proc row (005) only narrows it to Mana Tide Totem, same chance, both learnable versions match; the mana-cost buff doesn't stack"
 55675,Glyph of Circle of Healing,Rare,,spell_priest.cpp,resolved,no overlap: the core's Circle of Healing script (both learnable rank chains) adds the target; ours only lets the glyph add one to our Lesser Circle of Healing
 56842,Glyph of Trueshot Aura,Rare,coa_mystic_enchant_bonus,,resolved,no doubling: the core's bonus row picks Aimed Shot by its class mask; the linked twin 118478's override aura is read by nothing
-87498,Accurate Shadow Bolt,Uncommon,,firework_show_Exodar.h,to review,
-88626,Hardy Mark of the Wild,Uncommon,,firework_show_BootyBay.h,to review,
-90098,Concentrated Hibernate,Uncommon,,firework_show_Shattrath.h,to review,
-91266,Hasty Feign Death,Uncommon,,firework_show_ThunderBluff.h,to review,
-91346,Concentrated Bear Form,Uncommon,,firework_show_Orgrimmar.h,to review,
-93776,Brutal Lava Burst,Uncommon,,firework_show_Orgrimmar.h,to review,
-95654,Hardy Water Shield,Uncommon,,firework_show_Orgrimmar.h,to review,
-96765,Concentrated Avenger's Shield,Uncommon,,firework_show_Undercity.h,to review,
-97364,Brutal Mangle (Cat),Uncommon,,firework_show_Orgrimmar.h,to review,
+87498,Accurate Shadow Bolt,Uncommon,,firework_show_Exodar.h,resolved,no overlap: the only core matches are gameobject GUIDs in the GatherMate node files (coincidental)
+88626,Hardy Mark of the Wild,Uncommon,,firework_show_BootyBay.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+90098,Concentrated Hibernate,Uncommon,,firework_show_Shattrath.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+91266,Hasty Feign Death,Uncommon,,firework_show_ThunderBluff.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+91346,Concentrated Bear Form,Uncommon,,firework_show_Orgrimmar.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+93776,Brutal Lava Burst,Uncommon,,firework_show_Orgrimmar.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+95654,Hardy Water Shield,Uncommon,,firework_show_Orgrimmar.h,resolved,no overlap: the only core match is a gameobject template id in a spawn fix (coincidental)
+96765,Concentrated Avenger's Shield,Uncommon,,firework_show_Undercity.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+97364,Brutal Mangle (Cat),Uncommon,,firework_show_Orgrimmar.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
 270661,Growing Light,Epic,,AscensionWildcardReconstruction.cpp,resolved,ours removed (core wildcard_growing_light does the 20% splash; ours doubled it)
 271125,Pyroclasmic Ignition,Epic,,Unit.cpp,resolved,ours now runs only when the core's test fails (other Living Bomb versions on the hero class model); was +69%
 271547,Decimation by Pyro,Epic,,AscensionWildcardReconstruction.cpp,resolved,"our aura link removed (core does it; ours watched the talent too, so it was permanent)"
