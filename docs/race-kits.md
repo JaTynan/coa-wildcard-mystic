@@ -77,8 +77,21 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
     critical strike, all hit) aren't conversions.
   - Spell power multipliers (such as the ones that double spell power) and attack power percentages apply to the raise
     as to any other bonus.
+- Gnome Overclock: `patches/74-racial-overclock.ps1` (`Racials.Overclock`), replacing the stock Expansive Mind (20591
+  and CoA's copy 1120591; it comes back when the setting is off). Buff 9990040 (bigger pools; hidden 9990041 for runic
+  power), the steps 9990042 (stack count = steps; hidden 9990043 carries the frost runes) and the Escape Artist speed
+  9990044. Details settled in the build:
+  - The discount is a percent off every ability's cost, whatever resource it uses (rune costs aren't a percent, so
+    runes get the faster recharge instead). The recharge is per rune type, so death runes follow their base rune.
+  - The top-up goes to every resource the character has a pool for (mana, rage, energy, runic power), with combat
+    text, and causes threat as any self-energize does.
+  - The first step comes 15 sec into combat; dying resets the steps like leaving combat.
+  - Escape Artist's speed counts the stock spell (20589) and CoA's copies (1120589, 830589), not its triggered parts,
+    and like other speed buffs it doesn't add to a bigger one (Sprint). The rocket boot icon goes on all three.
+  - Expansive Mind still shows in the spellbook (as the stock Regeneration does for Trolls); the Overclock entry says
+    it replaces it.
 - Spellbook entries: `patches/62-racial-spellbook.ps1` teaches each race its "Racial Passive" entry (spells
-  9990013-9990017, 9990031 and 9990039, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
+  9990013-9990017, 9990031, 9990039 and 9990045, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
 
 ## Buff icons (James's picks, 14 November)
 
@@ -96,9 +109,9 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Human | Spellsword: no effect (build already converts) | inv_axe_39 | add (done: SpellIcon 9990006) |
 | Night Elf | Ambush | achievement_profession_fishing_findfish | 3701 |
 | Draenei | Radiant Presence | inv_misc_tournaments_banner_draenei | 9990001 (added, done) |
-| Gnome | Overclock: bigger pools | inv_misc_enggizmos_23 | add |
-| Gnome | Overclock: learning the enemy (steps) | achievement_bg_tophealer_wsg | add |
-| Gnome | Escape Artist speed (+60%, 3 sec), and Escape Artist's own spell icon (client patch) | inv_gizmo_rocketboot_destroyed_02 | add |
+| Gnome | Overclock: bigger pools | inv_misc_enggizmos_23 | add (done: SpellIcon 9990007) |
+| Gnome | Overclock: learning the enemy (steps) | achievement_bg_tophealer_wsg | add (done: SpellIcon 9990008) |
+| Gnome | Escape Artist speed (+60%, 3 sec), and Escape Artist's own spell icon (client patch) | inv_gizmo_rocketboot_destroyed_02 | add (done: SpellIcon 9990009) |
 | Undead | Grave Defiance (below 35%) | achievement_boss_devourerofsouls | 4153 (done) |
 | Undead | Ghoul on death (and its 5 min cooldown) | achievement_dungeon_coablackdragonflight | 3254 (done) |
 | Undead | Grave Defiance on cooldown | inv_helmet_168 | 13716 (done) |
