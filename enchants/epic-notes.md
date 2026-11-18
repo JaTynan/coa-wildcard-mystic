@@ -1241,7 +1241,7 @@ patch or the mechanic when there is a chance.
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit). Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has no spell class mask, so it changes nothing by itself. - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300: no rows since review 2026-11-18, the core's aura link keeps its helpers; the script hook stays), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
 
-**Assumptions:** The core's aura link grants both helpers while you have the enchant: 1181301 (Shield Slam cooldown +50%, so 6 to 9 sec) and 1181302. 1181302's data says 'Sword and Board chance +100%' but has no spell class mask, so it changes nothing; the doubling is ours. After each Devastate or Revenge hit, if the talent did not just proc (its buff is not fresh), a second roll at p/(1-p) makes the total exactly 2p (10% per rank: 20/40/60%). A success resets Shield Slam's cooldown and gives the talent's own buff (50227, or 1150227 / 1250227 for the CoA talent versions). The 25% of attack power is added to Shield Slam before armour and crit but after other damage-done bonuses (assumption). Review 2026-11-18: our script also added 1181301 (harmless duplicate, removed); and our old second roll only gave 50227, so it never reset Shield Slam's cooldown (the reset is in the talent's proc script) and gave the wrong buff to the CoA talent versions; both fixed.
+**Assumptions:** The core's aura link grants both helpers while you have the enchant: 1181301 (Shield Slam cooldown +50%, so 6 to 9 sec) and 1181302. 1181302's data says 'Sword and Board chance +100%' but has no spell class mask, so it changes nothing; the doubling is ours. (Rechecked the same day with the correct mask layout: still none. 1181301's first effect does target Shield Slam, +25 with modifier type 42, but this core ignores types above 31, so our attack power bonus is the only one.) After each Devastate or Revenge hit, if the talent did not just proc (its buff is not fresh), a second roll at p/(1-p) makes the total exactly 2p (10% per rank: 20/40/60%). A success resets Shield Slam's cooldown and gives the talent's own buff (50227, or 1150227 / 1250227 for the CoA talent versions). The 25% of attack power is added to Shield Slam before armour and crit but after other damage-done bonuses (assumption). Review 2026-11-18: our script also added 1181301 (harmless duplicate, removed); and our old second roll only gave 50227, so it never reset Shield Slam's cooldown (the reset is in the talent's proc script) and gave the wrong buff to the CoA talent versions; both fixed.
 
 **Sources:** our client spell data (Spell.dbc)
 
@@ -1763,6 +1763,10 @@ patch or the mechanic when there is a chance.
 **What the pull requests said:**
 
 - #175: Disciple of the Tides (978234):** its own design instead of twin 274918 (004 override and link removed, addon tooltip twin removed): Chain Heal → Blessed Waves; each bolt adds a Tidal Swell charge (up to 5); Lesser Healing Wave → Tidal Shield while charges last; Tidal Shield spends a charge and adds an absorb (50% of health restored, 10% on full overheal, stacking to 35% max health); single-target Shaman crit heals take 1 sec off Blessed Waves.
+
+**Assumptions:** Review 2026-11-18: no overlap. The core gives the buff (274921, up to 5 stacks) on critical Nature heals; our script on the buff spends every stack on the next Penance (+20% per stack through its hidden modifier 274928; the other two helpers, 274926 and 274927, do nothing: one is empty, the other uses a modifier type this core ignores). Small difference, the core's: its 'critical heal' event also counts heal-over-time crits, while the text says direct heals.
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
@@ -4431,21 +4435,35 @@ patch or the mechanic when there is a chance.
 
 ### Precision Impact (1180200, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | aa927a6 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 003-twin-links-close.sql: Precision Impact (1180200) no longer links twin 290200 either: the core's bonus table does this enchant's own two damage bonuses, and the twin is a different effect (a 20% chance to reset Meteor) the text never mentions.
+
+**Assumptions:** The core does this enchant itself (coa_mystic_enchant_bonus): Meteor and Scorch +20% on targets with your Fireball or Pyroblast damage over time, Fireball and Pyroblast +10% on targets with your Meteor damage over time; its lists cover every learnable version except two Meteor burns (see below). Review 2026-11-18: file 003 also linked twin 290200, a different enchant of the same name (Meteor, Fireball and Pyroblast have a 20% chance to reset Meteor's cooldown), so players got that extra effect, and the addon showed its tooltip. Link and tooltip entry removed. The core's Meteor-burn list misses 760042 and 2110042 (the ground burns of the learnable Meteors 760040 and 2110040), so Fireball and Pyroblast get no +10% on those targets (core-version-gaps.csv).
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
 ### Precision Impact (290200, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | aa927a6 | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 003-twin-links-close.sql: Precision Impact (1180200) no longer links twin 290200 either: the core's bonus table does this enchant's own two damage bonuses, and the twin is a different effect (a 20% chance to reset Meteor) the text never mentions.
 
 **Testing:** nothing recorded yet
 
