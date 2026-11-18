@@ -106,6 +106,10 @@ enchant's text teaches, so where we teach a twin's version of the ability instea
 work as it stands (a rough first sort: dummy auras aren't caught, so each needs a look). Decision (James, 2026-11-18,
 option 1): own spell only once it works, then our teach goes (found while reviewing Cremation).
 
+Where the addon shows a twin's tooltip (`addon/WildcardEnchants/TooltipData.lua`), the enchant should do only the twin's
+effect. `enchants/swap-own-effects.csv` lists 19 of those 203 swaps whose own data still has a proc aura that can fire,
+so players may get both; some are deliberate combined designs, so each needs a look (found while reviewing Hellish Pursuit).
+
 ## Tooltip differences to review
 
 Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate
@@ -3293,11 +3297,12 @@ patch or the mechanic when there is a chance.
 
 ### Hellish Pursuit (983065, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 0c119f4 | not merged yet | none yet | - |
 
 **Testing:** nothing recorded yet
 
@@ -4985,12 +4990,13 @@ patch or the mechanic when there is a chance.
 
 ### Scorched Ground (911162, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | 4795ac5 | #25 Batch 5 fix: triggered spells can set off three procs | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 0c119f4 | not merged yet | none yet | - |
 
 **What the pull requests said:**
 
