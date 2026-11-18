@@ -47,6 +47,41 @@ TRANSFORM = 56                     # aura: look like the creature in misc
 RISEN_ALLY = 30230                 # Raise Ally's ghoul (creature), so the same four ghoul models
 NO_IMMUNITIES = 0x20000000         # Attributes: shows over a shapeshift form's model too
 KEPT_THROUGH_DEATH = 0x00100000    # AttributesEx3 (column 7): death doesn't remove it
+# Human Spellsword (patches/73-racial-spellsword.ps1): the server sets every amount
+SPELLSWORD = 9990032               # the buff: at work
+SPELLSWORD_IDLE = 9990033          # the buff when the build converts power, critical strike and hit already
+SPELLSWORD_SPELL_POWER = 9990034   # hidden: spell damage, spell healing
+SPELLSWORD_ATTACK_POWER = 9990035  # hidden: melee, ranged attack power
+SPELLSWORD_SPELL_RATINGS = 9990036  # hidden: spell critical strike rating, spell hit rating
+SPELLSWORD_MELEE_CRIT = 9990037    # hidden: melee, ranged critical strike rating
+SPELLSWORD_MELEE_HIT = 9990038     # hidden: melee, ranged hit rating
+BOOK_SPELLSWORD = 9990039          # its spellbook entry
+MOD_DAMAGE_DONE, MOD_ATTACK_POWER, MOD_RANGED_ATTACK_POWER, MOD_HEALING_DONE, MOD_RATING = 13, 99, 124, 135, 189
+CR_HIT_MELEE, CR_HIT_RANGED, CR_HIT_SPELL, CR_CRIT_MELEE, CR_CRIT_RANGED, CR_CRIT_SPELL = 5, 6, 7, 8, 9, 10
+# Gnome Overclock (patches/74-racial-overclock.ps1)
+OVERCLOCK = 9990040                # +5% maximum mana, rage and energy
+OVERCLOCK_RUNIC = 9990041          # hidden: +5% maximum runic power
+OVERCLOCK_STEPS = 9990042          # stacks = steps: costs 1% less, blood and unholy runes 1% faster per step
+OVERCLOCK_STEPS_FROST = 9990043    # hidden, same stacks: frost runes 1% faster per step
+OVERCLOCK_ESCAPE = 9990044         # Escape Artist: +60% movement speed for 3 sec
+BOOK_OVERCLOCK = 9990045           # its spellbook entry
+MOD_POWER_REGEN_PERCENT, MOD_INCREASE_ENERGY_PERCENT = 110, 132
+POWER_MANA, POWER_RAGE, POWER_ENERGY, POWER_RUNE, POWER_RUNIC_POWER = 0, 1, 3, 5, 6
+RUNE_BLOOD, RUNE_UNHOLY, RUNE_FROST = 0, 1, 2
+# Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1)
+ARCANE_HUNGER = 9990046            # stacks: +1.5% damage and healing done (the server sets it), +2% ability costs each
+BOOK_ARCANE_HUNGER = 9990047       # its spellbook entry
+ARCANE_HUNGER_WARD = 9990048       # hidden: 0.5% less damage taken per stack (the server sets it)
+# Dwarf Prospector's Spirit (patches/76-racial-prospectors-spirit.ps1): 3 stacks, 2 hours, kept through death
+PROSPECT_MINING = 9990049          # +2% Stamina per stack
+PROSPECT_HERBALISM = 9990050       # +2% Intellect and Spirit per stack
+PROSPECT_SKINNING = 9990051        # +2% Strength and Agility per stack
+PROSPECT_TREASURE = 9990052        # +2% damage and healing per stack
+PROSPECT_FISHING = 9990053         # +3% running and swim speed per stack
+PROSPECT_WATER_BREATHING = 9990054  # hidden: with 3 stacks of the fishing buff
+BOOK_PROSPECTOR = 9990055          # its spellbook entry
+MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
+STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
@@ -67,17 +102,27 @@ BOOK_PASSIVE = 0x80000050  # a spellbook passive like the stock racials (ability
 ICON_BANNER_DRAENEI = 9990001
 # The Elemental Rend icons (rend_icons.py makes them from the client's Rend icon; racials_off_gcd.py --icons adds them)
 ICON_REND_FROST, ICON_REND_FIRE, ICON_REND_NATURE = 9990002, 9990003, 9990004
+ICON_SPELLSWORD, ICON_SPELLSWORD_IDLE = 9990005, 9990006  # Human Spellsword (James's picks, 14 November)
+ICON_OVERCLOCK, ICON_OVERCLOCK_STEPS, ICON_ROCKET_BOOTS = 9990007, 9990008, 9990009  # Gnome Overclock (James's picks)
 ICONS = {
     ICON_BANNER_DRAENEI: 'Interface\\Icons\\inv_misc_tournaments_banner_draenei',
     ICON_REND_FROST: 'Interface\\Icons\\wcme_rend_frost',
     ICON_REND_FIRE: 'Interface\\Icons\\wcme_rend_fire',
     ICON_REND_NATURE: 'Interface\\Icons\\wcme_rend_nature',
+    ICON_SPELLSWORD: 'Interface\\Icons\\inv_sword_144',
+    ICON_SPELLSWORD_IDLE: 'Interface\\Icons\\inv_axe_39',
+    ICON_OVERCLOCK: 'Interface\\Icons\\inv_misc_enggizmos_23',
+    ICON_OVERCLOCK_STEPS: 'Interface\\Icons\\achievement_bg_tophealer_wsg',
+    ICON_ROCKET_BOOTS: 'Interface\\Icons\\inv_gizmo_rocketboot_destroyed_02',
 }
 # Client spells that get one of our icons in place of their own: spell -> icon (both the icon and the active icon)
 ICON_OVERRIDES = {
     978693: ICON_REND_FROST,   # Elemental Rend (Frost), Spell Shredder
     978694: ICON_REND_FIRE,    # Elemental Rend (Fire)
     978695: ICON_REND_NATURE,  # Elemental Rend (Nature)
+    20589: ICON_ROCKET_BOOTS,     # Escape Artist (Gnome racial; Overclock adds its speed)
+    1120589: ICON_ROCKET_BOOTS,   # CoA's copies of Escape Artist
+    830589: ICON_ROCKET_BOOTS,
 }
 
 
@@ -216,6 +261,122 @@ SPELLS = {
                            'You can\'t rise as a ghoul again until this runs out.',
                            'You can\'t rise as a ghoul again until this runs out.',
                            3254, 0, [(DUMMY, 0, 0)], {7: KEPT_THROUGH_DEATH}),
+    BOOK_SPELLSWORD: ('Spellsword',
+                      'The experimenter\'s race. For power (attack power against spell power), critical strike chance '
+                      '(melee and ranged against spell) and hit chance (melee and ranged against spell), your weaker side '
+                      'is raised 30% of the way towards your stronger side: with 2,000 attack power and 500 spell power, '
+                      'you gain 450 spell power. Each of the three is skipped while your build already converts between '
+                      'the two sides for it (Sheath of Light, Mental Quickness, Mental Dexterity and the like).',
+                      '', ICON_SPELLSWORD, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    SPELLSWORD: ('Spellsword',
+                 'Your weaker side is raised 30% of the way towards your stronger side, for power, critical strike '
+                 'chance and hit chance. Skipped for any of the three your build already converts.',
+                 'Your weaker side is raised 30% of the way towards your stronger side: power, critical strike and '
+                 'hit. Your character sheet shows the result.',
+                 ICON_SPELLSWORD, 0, [(DUMMY, 0, 0)]),
+    SPELLSWORD_IDLE: ('Spellsword',
+                      'Your build already converts between physical and spell power, critical strike and hit, so '
+                      'Spellsword has nothing to add.',
+                      'Your build already converts between physical and spell power, critical strike and hit, so '
+                      'Spellsword has nothing to add.',
+                      ICON_SPELLSWORD_IDLE, 0, [(DUMMY, 0, 0)]),
+    SPELLSWORD_SPELL_POWER: ('Spellsword', 'Spell power raised.', '', ICON_SPELLSWORD, 0,
+                             [(MOD_DAMAGE_DONE, 0, MAGIC_SCHOOLS), (MOD_HEALING_DONE, 0, ALL_SCHOOLS)], {4: HIDDEN}),
+    SPELLSWORD_ATTACK_POWER: ('Spellsword', 'Attack power raised.', '', ICON_SPELLSWORD, 0,
+                              [(MOD_ATTACK_POWER, 0, 0), (MOD_RANGED_ATTACK_POWER, 0, 0)], {4: HIDDEN}),
+    SPELLSWORD_SPELL_RATINGS: ('Spellsword', 'Spell critical strike and hit rating raised.', '', ICON_SPELLSWORD, 0,
+                               [(MOD_RATING, 0, 1 << CR_CRIT_SPELL), (MOD_RATING, 0, 1 << CR_HIT_SPELL)], {4: HIDDEN}),
+    SPELLSWORD_MELEE_CRIT: ('Spellsword', 'Melee and ranged critical strike rating raised.', '', ICON_SPELLSWORD, 0,
+                            [(MOD_RATING, 0, 1 << CR_CRIT_MELEE), (MOD_RATING, 0, 1 << CR_CRIT_RANGED)], {4: HIDDEN}),
+    SPELLSWORD_MELEE_HIT: ('Spellsword', 'Melee and ranged hit rating raised.', '', ICON_SPELLSWORD, 0,
+                           [(MOD_RATING, 0, 1 << CR_HIT_MELEE), (MOD_RATING, 0, 1 << CR_HIT_RANGED)], {4: HIDDEN}),
+    BOOK_OVERCLOCK: ('Overclock',
+                     'Gnomes learn their enemy and plan their next move. Maximum mana, rage, energy and runic power '
+                     'increased by 5%. Every 15 sec in combat, another step, up to 10: abilities cost 1% less per step '
+                     '(whatever resource they use) and runes recharge 1% faster per step, and each step tops up every '
+                     'resource you have by its number in percent (1% at the first step, up to 10% at the tenth: 55% in '
+                     'all over 2 min 30 sec). The steps reset when combat ends. Escape Artist also gives 60% more '
+                     'movement speed for 3 sec. Replaces Expansive Mind.',
+                     '', ICON_OVERCLOCK, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    OVERCLOCK: ('Overclock',
+                'Maximum mana, rage, energy and runic power increased by 5%.',
+                'Maximum mana, rage, energy and runic power increased by 5%.',
+                ICON_OVERCLOCK, 0, [(MOD_INCREASE_ENERGY_PERCENT, 5, POWER_MANA),
+                                    (MOD_INCREASE_ENERGY_PERCENT, 5, POWER_RAGE),
+                                    (MOD_INCREASE_ENERGY_PERCENT, 5, POWER_ENERGY)], {7: KEPT_THROUGH_DEATH}),
+    OVERCLOCK_RUNIC: ('Overclock', 'Maximum runic power increased by 5%.', '', ICON_OVERCLOCK, 0,
+                      [(MOD_INCREASE_ENERGY_PERCENT, 5, POWER_RUNIC_POWER)], {4: HIDDEN, 7: KEPT_THROUGH_DEATH}),
+    OVERCLOCK_STEPS: ('Overclock',
+                      'Every 15 sec in combat, another step, up to 10. Each step makes abilities cost 1% less and '
+                      'runes recharge 1% faster, and tops up every resource by its number in percent.',
+                      'Abilities cost 1% less and runes recharge 1% faster for each step. The number is the steps.',
+                      ICON_OVERCLOCK_STEPS, 10, [(MOD_POWER_COST_PCT, -1, ALL_SCHOOLS),
+                                                 (MOD_POWER_REGEN_PERCENT, 1, POWER_RUNE),
+                                                 (MOD_POWER_REGEN_PERCENT, 1, POWER_RUNE)],
+                      {114: RUNE_BLOOD, 115: RUNE_UNHOLY}),  # MiscValueB of effects 2 and 3: the rune
+    OVERCLOCK_STEPS_FROST: ('Overclock', 'Frost runes recharge 1% faster for each step.', '', ICON_OVERCLOCK_STEPS, 10,
+                            [(MOD_POWER_REGEN_PERCENT, 1, POWER_RUNE)], {4: HIDDEN, 113: RUNE_FROST}),
+    OVERCLOCK_ESCAPE: ('Escape Artist',
+                       'Movement speed increased by 60% for 3 sec after Escape Artist.',
+                       'Movement speed increased by $s1%.',
+                       ICON_ROCKET_BOOTS, 0, [(MOD_INCREASE_SPEED, 60, 0)]),
+    BOOK_ARCANE_HUNGER: ('Arcane Hunger',
+                         'Each ability or spell you use adds a stack of Arcane Hunger, up to 10. Per stack, abilities '
+                         'deal and heal 1.5% more and cost 2% more, and you take 0.5% less damage (at 10: 15% more '
+                         'damage and healing, 5% less damage taken, 20% more cost). Go 5 sec without using an ability '
+                         'and the stacks fall off. Arcane Torrent eats every stack: '
+                         'besides its usual effects, it restores 2% of every resource you have (mana, rage, energy, '
+                         'runic power) per stack eaten, 20% at 10. Arcane Torrent\'s cooldown is 1 min.',
+                         '', 3384, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    ARCANE_HUNGER: ('Arcane Hunger',
+                    'Each ability or spell adds a stack: abilities deal and heal 1.5% more and cost 2% more per stack, '
+                    'and you take 0.5% less damage. Fades after 5 sec without using an ability. Arcane Torrent eats the '
+                    'stacks for 2% of every resource each.',
+                    'For each stack: damage and healing done increased by 1.5%, damage taken reduced by 0.5%, ability '
+                    'costs increased by 2%. Fades after 5 sec without using an ability.',
+                    3384, 10, [(MOD_DAMAGE_PERCENT_DONE, 0, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 0, 0),
+                               (MOD_POWER_COST_PCT, 2, ALL_SCHOOLS)]),  # achievement_bg_wineos
+    ARCANE_HUNGER_WARD: ('Arcane Hunger', 'Damage taken reduced by 0.5% for each stack of Arcane Hunger.', '', 3384, 0,
+                         [(MOD_DAMAGE_PERCENT_TAKEN, 0, ALL_SCHOOLS)], {4: HIDDEN}),
+    BOOK_PROSPECTOR: ('Prospector\'s Spirit',
+                      'Natural explorers: each kind of find gives its own buff, stacking up to 3 times and lasting 2 '
+                      'hours (finding more adds a stack and starts the 2 hours again). Mining a vein: 2% more Stamina '
+                      'per stack. Herbalism: 2% more Intellect and Spirit. Skinning: 2% more Strength and Agility. '
+                      'Treasure, from opening a chest that Find Treasure shows or discovering a new area: 2% more damage '
+                      'and healing. Fishing a catch: 3% more running and swim speed, and at 3 stacks you can breathe '
+                      'underwater. Discovering a new area also gives 50% more experience.',
+                      '', 12202, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    PROSPECT_MINING: ('Prospector\'s Spirit: Mining',
+                      'Stamina increased by 2% per stack, up to 3. Mining another vein adds a stack and starts the 2 '
+                      'hours again.',
+                      'Stamina increased by $s1% per stack.',
+                      12199, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_STAMINA)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_earth
+    PROSPECT_HERBALISM: ('Prospector\'s Spirit: Herbalism',
+                         'Intellect and Spirit increased by 2% per stack, up to 3. Gathering another herb adds a stack and '
+                         'starts the 2 hours again.',
+                         'Intellect and Spirit increased by $s1% per stack.',
+                         12201, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_INTELLECT),
+                                    (MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_SPIRIT)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_life
+    PROSPECT_SKINNING: ('Prospector\'s Spirit: Skinning',
+                        'Strength and Agility increased by 2% per stack, up to 3. Skinning another creature adds a stack '
+                        'and starts the 2 hours again.',
+                        'Strength and Agility increased by $s1% per stack.',
+                        12200, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_STRENGTH),
+                                   (MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_AGILITY)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_fire
+    PROSPECT_TREASURE: ('Prospector\'s Spirit: Treasure',
+                        'Damage and healing done increased by 2% per stack, up to 3. Opening another chest that Find '
+                        'Treasure shows, or discovering a new area, adds a stack and starts the 2 hours again.',
+                        'Damage and healing done increased by $s1% per stack.',
+                        12202, 3, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 2, 0)],
+                        {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_shadow
+    PROSPECT_FISHING: ('Prospector\'s Spirit: Fishing',
+                       'Running speed on foot and swim speed increased by 3% per stack, up to 3; at 3 stacks you can '
+                       'also breathe underwater. Another catch adds a stack and starts the 2 hours again.',
+                       'Running and swim speed increased by $s1% per stack. At 3 stacks you can breathe underwater.',
+                       12203, 3, [(MOD_SPEED_ALWAYS, 3, 0), (MOD_INCREASE_SWIM_SPEED, 3, 0)],
+                       {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_water
+    PROSPECT_WATER_BREATHING: ('Prospector\'s Spirit: Fishing', 'You can breathe underwater.', '', 12203, 0,
+                               [(WATER_BREATHING, 0, 0)], {4: HIDDEN, 7: KEPT_THROUGH_DEATH}),
     TEMPORAL_STORE: ('Stored Time',
                      'Time stored from a cancelled Temporal Blast.',
                      'Your next Temporal Blast casts faster by the time you had already spent on the cancelled one.',
@@ -247,7 +408,8 @@ for _spell, _schools in RESONANCE_PENALTY.items():
 CHARGE_CATEGORIES = {9001: (3, 8000)}  # Dark Transfusion (spell_wcme_dark_transfusion)
 CHARGE_LINKS = {978640: 9001}
 RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT,
-                                               BOOK_GRAVE_DEFIANCE)}
+                                               BOOK_GRAVE_DEFIANCE, BOOK_SPELLSWORD, BOOK_OVERCLOCK,
+                                               BOOK_ARCANE_HUNGER, BOOK_PROSPECTOR)}
 
 # Rows we used to add and still delete, so servers that ran an older file lose them
 RETIRED_PROCS = [ABYSSAL_HUNGER]

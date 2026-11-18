@@ -81,6 +81,24 @@ worldserver.conf | Racials.RadiantPresence = 1
 # (30% less damage and healing, can't die or be healed); a killing blow brings you back at 20% health, otherwise you
 # die. Once every 5 min; not from falling, lava, drowning or your duel opponent. 0 = off.
 worldserver.conf | Racials.GraveDefiance = 1
+# Human Spellsword (race kits): for power (attack power against spell power), critical strike and hit (melee and
+# ranged against spell), the weaker side is raised 30% of the way towards the stronger; each skipped while the build
+# already converts between the two sides for it (Sheath of Light, Mental Quickness and the like). 0 = off.
+worldserver.conf | Racials.Spellsword = 1
+# Gnome Overclock (race kits, replaces the stock Expansive Mind passive): +5% maximum mana, rage, energy and runic
+# power; every 15 sec in combat another step (up to 10): abilities cost 1% less and runes recharge 1% faster per step,
+# and each step tops up every resource by its number in percent (55% in all); resets when combat ends. Escape Artist
+# also gives +60% movement speed for 3 sec. 0 = off (Expansive Mind comes back).
+worldserver.conf | Racials.Overclock = 1
+# Blood Elf Arcane Hunger (race kits): each ability adds a stack (up to 10): +1.5% damage and healing, 0.5% less
+# damage taken, +2% ability costs per stack; falls off after 5 sec without an ability. Arcane Torrent eats the stacks for 2% of every resource
+# each, and its cooldown is 1 min (read at server start). 0 = off.
+worldserver.conf | Racials.ArcaneHunger = 1
+# Dwarf Prospector's Spirit (race kits): a buff per kind of find, up to 3 stacks, 2 hours: mining +2% Stamina,
+# herbalism +2% Intellect and Spirit, skinning +2% Strength and Agility, treasure (Find Treasure chests or discovering
+# an area) +2% damage and healing, fishing +3% run and swim speed (water breathing at 3). Discovering an area gives
+# 50% more exploration experience. 0 = off.
+worldserver.conf | Racials.ProspectorsSpirit = 1
 # Mana-forged Barrier, the full Ascension tank stance (the core only gave the form): absorbs up to 90% of damage with
 # mana (less as mana runs low, half against magic), +160% threat from Magic damage, immune to interrupts, dodge/parry/block while
 # casting, Power Surge mana return; 30% less damage, 40% less healing, double damage from players; leaving it leaves

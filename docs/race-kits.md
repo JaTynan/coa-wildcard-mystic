@@ -29,7 +29,7 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
 | Undead | Grave Defiance | Below 35% health you deal and heal more, rising evenly to +30% at 1% health (about +13% at 20%, +22% at 10%). It lasts up to 15 sec at a time; when it ends (time up, or healed above 35%) it can't start again for 45 sec, so bouncing across the line (Drain Life, Life Tap) gains nothing: at most 15 sec in every minute. When you die, you rise as a ghoul for 10 sec and keep fighting, dealing and healing 30% less (the low-health bonus doesn't apply to the ghoul); a killing blow by the ghoul brings you back at 20% health. Once every 5 min. Living dangerously: the opposite of Trolls, who want to heal back up. | hooks; the ghoul wears Raise Ally's ghoul model (you keep your own spells) |
 | Tauren | Plainsrunning | While you keep moving on foot, speed builds to a cap over 60 sec of running. The cap is your level + 40% (41% at level 1, 100% at level 60). When you stop it drains, full to nothing in 6 sec. Adds on top of other speed effects (at full, Sprint's +70% and Plainsrunning's +100% make +170%). Not while mounted; paused while carrying a battleground flag. | hook |
 | Troll | Voodoo Regeneration | The endurance king for health. Out of combat, health regenerates 50% faster. In combat, regenerate 0.3% of maximum health per second (a full bar about every 5.5 min), halved while the burst below is on cooldown. Below 35% health, regenerate 28% of maximum health over 5 sec, once every 2 min. Both take percentage healing reductions and increases (Mortal Strike halves them), but no bonus healing or spell power. Replaces the stock Regeneration passive. | hook |
-| Blood Elf | Arcane Hunger | Each ability or spell you use adds a stack, up to 10. Per stack, abilities deal or heal 1% more and cost 2% more (at 10: +10% damage and healing, +20% cost). Stop using abilities for 5 sec (when mana would start regenerating) and the stacks fall off. **Arcane Torrent** eats every stack: besides its silence, it restores 2% of every resource you have (mana, energy, rage, runic power) per stack eaten (20% at 10), and its cooldown drops to 1 min. Keep hitting harder at a growing cost, or cash the stacks in for resources. | hook; Arcane Torrent reworked (cooldown and the refund) |
+| Blood Elf | Arcane Hunger | Each ability or spell you use adds a stack, up to 10. Per stack, abilities deal or heal 1.5% more, you take 0.5% less damage, and abilities cost 2% more (at 10: +15% damage and healing, 5% less damage taken, +20% cost). Stop using abilities for 5 sec (when mana would start regenerating) and the stacks fall off. **Arcane Torrent** eats every stack: besides its silence, it restores 2% of every resource you have (mana, energy, rage, runic power) per stack eaten (20% at 10), and its cooldown drops to 1 min. Keep hitting harder at a growing cost, or cash the stacks in for resources. | hook; Arcane Torrent reworked (cooldown and the refund) |
 
 ## Already done
 
@@ -60,8 +60,67 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
   - Rising ends the low-health bonus, which starts its 45 sec cooldown.
   - A battleground flag carrier drops the flag on rising, as at death (an unkillable carrier would be a sure capture).
   - The ghoul's cooldown has no icon of its own in the picks: it reuses the ghoul's icon.
+- Human Spellsword: `patches/73-racial-spellsword.ps1` (`Racials.Spellsword`). The raises ride on hidden auras the
+  server sets every 2 sec: spell power 9990034, attack power 9990035, spell critical strike and hit rating 9990036, melee
+  and ranged critical strike rating 9990037, melee and ranged hit rating 9990038. The buff 9990032 shows it at work, and
+  9990033 (the "no effect" icon) when the build converts all three already. Details settled in the build:
+  - The sides: spell power is the best school's (damage or healing); attack power, critical strike and hit take the
+    better of melee and ranged. Raising the physical side raises melee and ranged each towards the spell side.
+  - Our own raises are taken out before reading the two sides, so the bonus never feeds itself.
+  - Critical strike and hit are added as rating, worked out from the percent at the player's level, so the bonus is
+    exact rather than rounded to whole percents.
+  - "Already converts" means an aura that turns one side into the other: for power, spell power from attack power,
+    Strength or Agility, attack power from Intellect or Spirit, or one of those stats from the other side's (Sheath of
+    Light, Mental Quickness, Mental Dexterity, Careful Aim, Touched by the Light and many Mystic Enchants); for critical
+    strike or hit, a melee or ranged rating from Intellect or Spirit, or a spell rating from Strength or Agility
+    (Mental Dexterity, Zealotry, Molten Armor). Stamina doesn't count. Effects that raise both sides at once (all
+    critical strike, all hit) aren't conversions.
+  - Spell power multipliers (such as the ones that double spell power) and attack power percentages apply to the raise
+    as to any other bonus.
+- Gnome Overclock: `patches/74-racial-overclock.ps1` (`Racials.Overclock`), replacing the stock Expansive Mind (20591
+  and CoA's copy 1120591; it comes back when the setting is off). Buff 9990040 (bigger pools; hidden 9990041 for runic
+  power), the steps 9990042 (stack count = steps; hidden 9990043 carries the frost runes) and the Escape Artist speed
+  9990044. Details settled in the build:
+  - The discount is a percent off every ability's cost, whatever resource it uses (rune costs aren't a percent, so
+    runes get the faster recharge instead). The recharge is per rune type, so death runes follow their base rune.
+  - The top-up goes to every resource the character has a pool for (mana, rage, energy, runic power), with combat
+    text, and causes threat as any self-energize does.
+  - The first step comes 15 sec into combat; dying resets the steps like leaving combat.
+  - Escape Artist's speed counts the stock spell (20589) and CoA's copies (1120589, 830589), not its triggered parts,
+    and like other speed buffs it doesn't add to a bigger one (Sprint). The rocket boot icon goes on all three.
+  - Expansive Mind still shows in the spellbook (as the stock Regeneration does for Trolls); the Overclock entry says
+    it replaces it.
+- Blood Elf Arcane Hunger: `patches/75-racial-arcane-hunger.ps1` (`Racials.ArcaneHunger`). Buff 9990046 (stack count =
+  stacks; hidden 9990048 carries the damage taken). Details settled in the build:
+  - Numbers raised 18 November (James): first built at +1% damage and healing per stack, which for a player who runs
+    out of resources was a loss (1.10 / 1.20 per point spent) and left Draenei ahead with no drawback. Now +1.5% damage
+    and healing and 0.5% less damage taken per stack (tanks too), cost still +2%: resource-bound players lose about 4%
+    damage per point spent, others gain 15%, ahead of Draenei for one player while Draenei stays the group racial.
+    Aura amounts are whole percents, so the halves round up as stacks build (damage and healing 2, 3, 5, 6, 8, 9, 11,
+    12, 14, 15%; damage taken 1, 1, 2, 2, 3, 3, 4, 4, 5, 5%).
+  - A stack is added just after the ability that earns it, so it counts from the next ability (the first one isn't
+    dearer). Not counted: triggered spells, passives, items (potions, trinkets), auto attack and auto-repeat shots.
+  - Casting or channelling keeps the stacks from falling off, so a long cast or channel doesn't lose them.
+  - Arcane Torrent keeps its own effects (the silence and CoA's own restore) and adds the 2% per stack on top. Every
+    player copy CoA keeps is covered (28730, 50613, 814286-814292, 1125046, 1125047, 1128730, 1150613).
+  - The 1 min cooldown is spell data, read once at server start, so turning the setting off takes a restart to bring
+    back 2 min; the client patch shows 1 min either way.
+- Dwarf Prospector's Spirit: `patches/76-racial-prospectors-spirit.ps1` (`Racials.ProspectorsSpirit`). Buffs 9990049
+  (mining), 9990050 (herbalism), 9990051 (skinning), 9990052 (treasure), 9990053 (fishing) and hidden 9990054 (water
+  breathing at 3 fishing stacks). Details settled in the build:
+  - A gathering counts when the core rewards its skill (once per vein, herb or creature per player, as the skill-up);
+    mining or herbalism on a creature counts too. It needs the skill, as gathering does.
+  - Treasure counts a chest whose lock has the Treasure type, which is exactly what Find Treasure shows (checked on the
+    server's Lock.dbc: Battered and Tattered Chests, Large Iron Bound Chests, strongboxes; not boss chests or quest
+    objects). Opening the same chest or catch again counts once.
+  - A discovery counts whenever the core marks a new area explored, at any level (at the level cap there's no
+    experience to raise, but the Treasure find still counts).
+  - Fishing's speed is on foot (not mounted). It works on top of Sprint-type buffs, but next to a boot speed enchant
+    only the higher of the two counts (the core keeps the bigger of the two kinds). Swim speed takes the best swim
+    bonus, like Aquatic Form.
+  - The buffs are kept through death and logout; their 2 hours count while you're online.
 - Spellbook entries: `patches/62-racial-spellbook.ps1` teaches each race its "Racial Passive" entry (spells
-  9990013-9990017 and 9990031, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
+  9990013-9990017, 9990031, 9990039, 9990045, 9990047 and 9990055, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
 
 ## Buff icons (James's picks, 14 November)
 
@@ -75,24 +134,24 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Tauren | Plainsrunning | Achievement_Zone_ArathiHighlands_01 | 3542 (done) |
 | Orc | Bloodrush stacks | achievement_bg_interruptx_flagcapture_attempts_1game | 6200 (done) |
 | Orc | Bloodrush speed | Ability_Rogue_Sprint | 516 (done) |
-| Human | Spellsword | inv_sword_144 | add |
-| Human | Spellsword: no effect (build already converts) | inv_axe_39 | add |
+| Human | Spellsword | inv_sword_144 | add (done: SpellIcon 9990005) |
+| Human | Spellsword: no effect (build already converts) | inv_axe_39 | add (done: SpellIcon 9990006) |
 | Night Elf | Ambush | achievement_profession_fishing_findfish | 3701 |
 | Draenei | Radiant Presence | inv_misc_tournaments_banner_draenei | 9990001 (added, done) |
-| Gnome | Overclock: bigger pools | inv_misc_enggizmos_23 | add |
-| Gnome | Overclock: learning the enemy (steps) | achievement_bg_tophealer_wsg | add |
-| Gnome | Escape Artist speed (+60%, 3 sec), and Escape Artist's own spell icon (client patch) | inv_gizmo_rocketboot_destroyed_02 | add |
+| Gnome | Overclock: bigger pools | inv_misc_enggizmos_23 | add (done: SpellIcon 9990007) |
+| Gnome | Overclock: learning the enemy (steps) | achievement_bg_tophealer_wsg | add (done: SpellIcon 9990008) |
+| Gnome | Escape Artist speed (+60%, 3 sec), and Escape Artist's own spell icon (client patch) | inv_gizmo_rocketboot_destroyed_02 | add (done: SpellIcon 9990009) |
 | Undead | Grave Defiance (below 35%) | achievement_boss_devourerofsouls | 4153 (done) |
 | Undead | Ghoul on death (and its 5 min cooldown) | achievement_dungeon_coablackdragonflight | 3254 (done) |
 | Undead | Grave Defiance on cooldown | inv_helmet_168 | 13716 (done) |
 | Troll | Voodoo Regeneration burst | inv_offhand_zulaman_d_01 | 19697 |
 | Troll | Voodoo Regeneration on cooldown | achievement_dungeon_drak'tharon_heroic | 3234 |
-| Blood Elf | Arcane Hunger stacks | achievement_bg_wineos | 3384 |
-| Dwarf | Prospector's Spirit: Mining | inv_elemental_eternal_earth | 12199 |
-| Dwarf | Prospector's Spirit: Herbalism | inv_elemental_eternal_life | 12201 |
-| Dwarf | Prospector's Spirit: Skinning | inv_elemental_eternal_fire | 12200 |
-| Dwarf | Prospector's Spirit: Treasure (and discovering areas) | inv_elemental_eternal_shadow | 12202 |
-| Dwarf | Prospector's Spirit: Fishing | inv_elemental_eternal_water | 12203 |
+| Blood Elf | Arcane Hunger stacks | achievement_bg_wineos | 3384 (done) |
+| Dwarf | Prospector's Spirit: Mining | inv_elemental_eternal_earth | 12199 (done) |
+| Dwarf | Prospector's Spirit: Herbalism | inv_elemental_eternal_life | 12201 (done) |
+| Dwarf | Prospector's Spirit: Skinning | inv_elemental_eternal_fire | 12200 (done) |
+| Dwarf | Prospector's Spirit: Treasure (and discovering areas) | inv_elemental_eternal_shadow | 12202 (done) |
+| Dwarf | Prospector's Spirit: Fishing | inv_elemental_eternal_water | 12203 (done) |
 
 ## Balance notes
 
