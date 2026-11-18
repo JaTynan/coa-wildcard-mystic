@@ -69,13 +69,18 @@ worldserver.conf | Racials.Bloodrush = 1
 # healing; at most once every 20 sec. 0 = off.
 worldserver.conf | Racials.Ambush = 1
 # Troll Voodoo Regeneration (race kits, replaces the stock Regeneration passive): +50% health regeneration out of
-# combat; 0.3% of maximum health per second in combat (half while the burst is on cooldown); below 35% health, 3% per
-# second for 8 sec, once every 2 min. 0 = off (the stock passive comes back).
+# combat; 0.3% of maximum health per second in combat (half while the burst is on cooldown); below 35% health, 28% of
+# maximum health over 5 sec, once every 2 min. 0 = off (the stock passive comes back).
 worldserver.conf | Racials.VoodooRegeneration = 1
 # Draenei Radiant Presence (race kits): in combat, a stack of Light every 6 sec, up to 5; each gives you and allies
 # within 30 yards (group, pets, guardians) +1% damage and healing and 1% less damage taken; fades 10 sec after combat;
 # a second Draenei adds nothing (the highest count counts). Your auras and totems reach 50% further. 0 = off.
 worldserver.conf | Racials.RadiantPresence = 1
+# Undead Grave Defiance (race kits): below 35% health, up to +30% damage and healing (more the lower you are), for up
+# to 15 sec, then 45 sec before it can start again. A hit that would kill you raises you as a ghoul for 10 sec instead
+# (30% less damage and healing, can't die or be healed); a killing blow brings you back at 20% health, otherwise you
+# die. Once every 5 min; not from falling, lava, drowning or your duel opponent. 0 = off.
+worldserver.conf | Racials.GraveDefiance = 1
 # Mana-forged Barrier, the full Ascension tank stance (the core only gave the form): absorbs up to 90% of damage with
 # mana (less as mana runs low, half against magic), +160% threat from Magic damage, immune to interrupts, dodge/parry/block while
 # casting, Power Surge mana return; 30% less damage, 40% less healing, double damage from players; leaving it leaves

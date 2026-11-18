@@ -1,6 +1,6 @@
 # Spellbook entries for the signature racials (docs/race-kits.md): each race with one learns a "Racial Passive" spell
 # that explains it when hovered, next to the stock racials. They do nothing themselves; the racial is still the hook in
-# its own patch. Spells 9990013-9990017 (sql/enchants/150-custom-spells.sql and the client patch,
+# its own patch. Spells 9990013-9990017 and 9990031 (sql/enchants/150-custom-spells.sql and the client patch,
 # client-patch/custom_spells.py). Checked at every login: learned while the racial's setting is on, and unlearned when
 # it is turned off. Run by the build from the workspace root, after 40-battlegrounds.ps1 and the racial patches.
 # Throws if an anchor is gone. Listed in CHANGES.md.
@@ -32,6 +32,7 @@ public:
             { RACE_NIGHTELF, 9990015, "Racials.Ambush" },
             { RACE_TROLL, 9990016, "Racials.VoodooRegeneration" },
             { RACE_DRAENEI, 9990017, "Racials.RadiantPresence" },
+            { RACE_UNDEAD_PLAYER, 9990031, "Racials.GraveDefiance" },
         };
         for (Entry const& entry : entries)
         {

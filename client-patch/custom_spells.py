@@ -37,6 +37,16 @@ RESONANCE_PENALTY = {9990022: 28, 9990023: 88, 9990024: 76, 9990025: 84}  # Lega
 HIDDEN = 0x80000080  # can't be cancelled, and not shown on the buff bar
 APOSTATE_HOLY_FIRE_HIT = 9990026  # Cauterizing Flames: Flames of the Apostate gives Holy Fire 6% more hit chance
 SPELLMOD_RESIST_MISS_CHANCE = 16
+# Undead Grave Defiance (patches/72-racial-grave-defiance.ps1)
+GRAVE_DEFIANCE = 9990027           # below 35% health: stacks = bonus damage and healing in percent
+GRAVE_DEFIANCE_COOLDOWN = 9990028  # 45 sec after the bonus ends
+GRAVE_GHOUL = 9990029              # risen as a ghoul for 10 sec
+GRAVE_GHOUL_COOLDOWN = 9990030     # 5 min from rising
+BOOK_GRAVE_DEFIANCE = 9990031      # its spellbook entry
+TRANSFORM = 56                     # aura: look like the creature in misc
+RISEN_ALLY = 30230                 # Raise Ally's ghoul (creature), so the same four ghoul models
+NO_IMMUNITIES = 0x20000000         # Attributes: shows over a shapeshift form's model too
+KEPT_THROUGH_DEATH = 0x00100000    # AttributesEx3 (column 7): death doesn't remove it
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
@@ -175,6 +185,37 @@ SPELLS = {
                    'fades 10 sec after combat. A second Draenei doesn\'t add more. Your auras and totems reach 50% '
                    'further.',
                    '', ICON_BANNER_DRAENEI, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    BOOK_GRAVE_DEFIANCE: ('Grave Defiance',
+                          'Below 35% health, you deal and heal more, rising evenly to 30% more at 1% health (about 13% '
+                          'at 20%, 22% at 10%). It lasts up to 15 sec, then can\'t start again for 45 sec. When a hit '
+                          'would kill you, you rise as a ghoul for 10 sec instead, dealing and healing 30% less; the '
+                          'ghoul can\'t die or be healed. A killing blow on an enemy worth experience or honor brings '
+                          'you back at 20% health; otherwise you die when it ends. Rising works once every 5 min, and '
+                          'not from falling, lava or drowning, or against your duel opponent.',
+                          '', 4153, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+    # Grave Defiance's buffs (the server sets every timer)
+    GRAVE_DEFIANCE: ('Grave Defiance',
+                     'Below 35% health, damage and healing done increased by up to 30% as your health falls. Lasts up '
+                     'to 15 sec, then can\'t start again for 45 sec.',
+                     'Damage and healing done increased. The number is the bonus in percent.',
+                     4153, 30, [(MOD_DAMAGE_PERCENT_DONE, 1, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 1, 0)]),  # achievement_boss_devourerofsouls
+    GRAVE_DEFIANCE_COOLDOWN: ('Grave Defiance (cooldown)',
+                              'Grave Defiance has ended and can\'t start again until this runs out.',
+                              'Grave Defiance can\'t start again until this runs out.',
+                              13716, 0, [(DUMMY, 0, 0)], {7: KEPT_THROUGH_DEATH}),  # inv_helmet_168
+    GRAVE_GHOUL: ('Risen Ghoul',
+                  'Risen as a ghoul: damage and healing done reduced by 30%, and you can\'t die or be healed. A killing '
+                  'blow on an enemy worth experience or honor brings you back at 20% health; otherwise you die when '
+                  'this ends.',
+                  'Risen as a ghoul. Land a killing blow to come back at 20% health, or die when this ends. Damage '
+                  'and healing done reduced by 30%.',
+                  3254, 0, [(TRANSFORM, 0, RISEN_ALLY), (MOD_DAMAGE_PERCENT_DONE, -30, ALL_SCHOOLS),
+                            (MOD_HEALING_DONE_PERCENT, -30, 0)],
+                  {4: 0x80000000 | NO_IMMUNITIES}),  # achievement_dungeon_coablackdragonflight
+    GRAVE_GHOUL_COOLDOWN: ('Risen Ghoul (cooldown)',
+                           'You can\'t rise as a ghoul again until this runs out.',
+                           'You can\'t rise as a ghoul again until this runs out.',
+                           3254, 0, [(DUMMY, 0, 0)], {7: KEPT_THROUGH_DEATH}),
     TEMPORAL_STORE: ('Stored Time',
                      'Time stored from a cancelled Temporal Blast.',
                      'Your next Temporal Blast casts faster by the time you had already spent on the cancelled one.',
@@ -205,12 +246,19 @@ for _spell, _schools in RESONANCE_PENALTY.items():
 # category -> (maximum, recovery ms), and spell -> category (SpellChargesCategory.dbc / SpellCharges.dbc).
 CHARGE_CATEGORIES = {9001: (3, 8000)}  # Dark Transfusion (spell_wcme_dark_transfusion)
 CHARGE_LINKS = {978640: 9001}
-RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT)}
+RANKS = {spell: 'Racial Passive' for spell in (BOOK_PLAINSRUNNING, BOOK_BLOODRUSH, BOOK_AMBUSH, BOOK_VOODOO, BOOK_RADIANT,
+                                               BOOK_GRAVE_DEFIANCE)}
+
+# Rows we used to add and still delete, so servers that ran an older file lose them
+RETIRED_PROCS = [ABYSSAL_HUNGER]
+RETIRED_SCRIPTS = ['spell_wcme_abyssal_hunger']
+# Comment lines at the end of the SQL file
+NOTES = ["-- Abyssal Hunger (9990020) keeps its spell row (the client patch has it) but nothing applies it since review 2026-11-18:",
+         "-- Feeding the Abyss is the core's own."]
 
 # spell_script_names rows: id -> script (in the server patch named next to the spell)
 SCRIPTS = {
     BARRIER_SHIELD: 'spell_wcme_manaforged_barrier',  # patches/60-manaforged-barrier.ps1
-    ABYSSAL_HUNGER: 'spell_wcme_abyssal_hunger',  # mystic-enchants-scripts.patch
 }
 
 # spell_proc rows (charges used up by the next ability): id -> (ProcFlags, SpellTypeMask, SpellPhaseMask, Charges)
@@ -218,7 +266,6 @@ PROCS = {
     # Used by the next ability that lands, whatever it does: damage and heals, and also spells that only apply an aura
     # (Renew, Corruption: they would otherwise keep the +50% on every cast, and buffs can't be told apart from them).
     AMBUSH: (NEXT_ABILITY, 7, 2, 1),
-    ABYSSAL_HUNGER: (0x400 | 0x4000, 0, 1, 0),  # Life Tap casts: spends the stored damage
 }
 
 STRINGS = {136: 0, 170: 1, 187: 2}  # enUS name, description, aura text (index into the tuple above)
@@ -280,7 +327,7 @@ def sql(fields=234):
     out.append(",\n".join("(" + ", ".join(value(c, v, i) for c, v in enumerate(row(i, fields))) + ")" for i in ids) + ";")
     procs = sorted(PROCS)
     out.append("INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES " + ", ".join(f"('spell_proc', {i})" for i in procs) + ";")
-    out.append("DELETE FROM `spell_proc` WHERE `SpellId` IN (" + ", ".join(map(str, procs)) + ");")
+    out.append("DELETE FROM `spell_proc` WHERE `SpellId` IN (" + ", ".join(map(str, sorted(procs + RETIRED_PROCS))) + ");")
     out.append("INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, "
                "`SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, "
                "`DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES")
@@ -288,9 +335,10 @@ def sql(fields=234):
                           for i, (f, s, ph, c) in ((i, PROCS[i]) for i in procs)) + ";")
     scripts = sorted(SCRIPTS)
     out.append("DELETE FROM `spell_script_names` WHERE `ScriptName` IN (" +
-               ", ".join(f"'{SCRIPTS[i]}'" for i in scripts) + ");")
+               ", ".join(f"'{name}'" for name in [SCRIPTS[i] for i in scripts] + RETIRED_SCRIPTS) + ");")
     out.append("INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES " +
                ", ".join(f"({i}, '{SCRIPTS[i]}')" for i in scripts) + ";")
+    out += NOTES
     return "\n".join(out) + "\n"
 
 
