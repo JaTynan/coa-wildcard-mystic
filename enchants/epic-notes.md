@@ -982,13 +982,18 @@ patch or the mechanic when there is a chance.
 
 ### Cauterize (850093, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
 
-**Assumptions:** Review 2026-11-18, needs a decision: file 003 links twin 1181410 and the addon shows the twin's tooltip, but the enchant's own text teaches Cauterize (280330), and the core teaches it too (its 'Teaches you' parser). So a player gets both: the twin's effect and a Cauterize spell whose effects (a script effect and a dummy) nothing in the core handles. Same pattern on three rares: Frost Shot 851989, Shadow Siphon 852174 (its spell 913222 is now scripted by the core), Hammerstorm 852412.
+**What the server does (from the code and SQL comments):**
+
+- 003-twin-links-close.sql: Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412) have the same double, but their own spells still need code; their links go once that is done.
+
+**Assumptions:** Review 2026-11-18, needs a decision: file 003 links twin 1181410 and the addon shows the twin's tooltip, but the enchant's own text teaches Cauterize (280330), and the core teaches it too (its 'Teaches you' parser). So a player gets both: the twin's effect and a Cauterize spell whose effects (a script effect and a dummy) nothing in the core handles. Same pattern on three rares: Frost Shot 851989, Shadow Siphon 852174 (its spell 913222 is now scripted by the core), Hammerstorm 852412. Decision (James, 2026-11-18): own spell only. Shadow Siphon's link is removed now (the core scripts 913222); Cauterize, Frost Shot and Hammerstorm keep theirs until their own spells are fixed in a later batch.
 
 **Sources:** our client spell data (Spell.dbc); the core
 
@@ -2554,14 +2559,15 @@ patch or the mechanic when there is a chance.
 |---|---|---|---|---|
 | 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 | 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
+- Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 used to keep its helper 1584168 on you here (Scorch while moving, 10 yards less range); review 2026-11-18 found the core already does both in its own code (Unit.cpp, SpellInfo.cpp), so Scorch lost 20 yards. Its Flamestrike speed field stays ours (wcme_epic_batch4_spells).
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
-- 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
+- 050-epics-4.sql: Fire Walk With Me (1584166) lost its Scorch helper row in review 2026-11-18 (the core does Scorch while moving and its shorter range itself); its Flamestrike field is a hook.
 
-**Assumptions:** Speed field 1584167 (+40%); Scorch while moving and 10 yards less range come from its helper 1584168, kept on you.
+**Assumptions:** Speed field 1584167 (+40%); Scorch while moving and 10 yards less range come from its helper 1584168, kept on you. Review 2026-11-18: the core already does the Scorch part in its own code: Scorch can be cast while moving (Unit.cpp) and its range is 10 yards shorter (SpellInfo.cpp), for every Mage Scorch (both learnable versions carry the flag it checks). Our helper 1584168 did both again, so Scorch lost 20 yards; it is removed. The Flamestrike speed field (1584167, +40% for allies) stays ours.
 
 **Sources:** our client spell data (Spell.dbc)
 
@@ -3224,11 +3230,16 @@ patch or the mechanic when there is a chance.
 
 ### Hammerstorm (852412, Rare)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 003-twin-links-close.sql: Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412) have the same double, but their own spells still need code; their links go once that is done.
 
 **Testing:** nothing recorded yet
 
@@ -3322,12 +3333,13 @@ patch or the mechanic when there is a chance.
 | 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 | 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
 | 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
+- Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 used to keep its helper 1584168 on you here (Scorch while moving, 10 yards less range); review 2026-11-18 found the core already does both in its own code (Unit.cpp, SpellInfo.cpp), so Scorch lost 20 yards. Its Flamestrike speed field stays ours (wcme_epic_batch4_spells).
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): (Mutilate +6% per bleed of yours is the core's bonus table; ours doubled it and was removed in review 2026-11-18.) The out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
-- 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
+- 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration).
 - 051-epics-5.sql: The same build also fixes the order of the two units in the core's heal hook for direct heals (Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before;
 
 **Assumptions:** As 81315. Batch 5 (051) fixed which unit the server read as the healer for direct heals; before that this rule never fired.
@@ -3347,12 +3359,13 @@ patch or the mechanic when there is a chance.
 | 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
 | 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
 | 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 keeps its helper 1584168 on you (Scorch while moving, 10 yards less range, its own data).
+- Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 used to keep its helper 1584168 on you here (Scorch while moving, 10 yards less range); review 2026-11-18 found the core already does both in its own code (Unit.cpp, SpellInfo.cpp), so Scorch lost 20 yards. Its Flamestrike speed field stays ours (wcme_epic_batch4_spells).
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): (Mutilate +6% per bleed of yours is the core's bonus table; ours doubled it and was removed in review 2026-11-18.) The out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
-- 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration) and Fire Walk With Me (1584166: Scorch helper).
+- 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration).
 - 051-epics-5.sql: The same build also fixes the order of the two units in the core's heal hook for direct heals (Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before;
 
 **Assumptions:** 983813 is put on allies inside your Consecration every second. The 5% splash goes to up to 5 allies within 8 yards of the healed ally; heal-over-time ticks don't count. The Purification by Light and Consecrated Strikes exclusion is not checked. Batch 5 (051) fixed which unit the server read as the healer for direct heals; before that this rule never fired.
@@ -4132,12 +4145,17 @@ patch or the mechanic when there is a chance.
 
 ### Omen of Doom (1988300, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+
+**Assumptions:** Review 2026-11-18: the core already does this (AscensionMysticEnchantScripts: when druid Clearcasting 16870 or 1116870 appears, it casts 1988301, +10% Arcane and Nature damage, for the buff's own duration; every learnable Omen of Clarity ends in one of those two). Our old aura link (007) watched 14 Clearcasting auras from every class, though the text says Omen of Clarity, and took the buff away as soon as Clearcasting was used, cutting the core's timed buff short. Removed (SQL only).
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
@@ -5093,21 +5111,31 @@ patch or the mechanic when there is a chance.
 
 ### Shadow Siphon (1180660, Epic)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 003-twin-links-close.sql: Shadow Siphon (852174) no longer links twin 1180660: the core teaches its own spell (Shadow Siphon 913222, a Death Strike that heals 5% per disease), which it now scripts, so players had both.
 
 **Testing:** nothing recorded yet
 
 ### Shadow Siphon (852174, Rare)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 003-twin-links-close.sql: Shadow Siphon (852174) no longer links twin 1180660: the core teaches its own spell (Shadow Siphon 913222, a Death Strike that heals 5% per disease), which it now scripts, so players had both.
 
 **Testing:** nothing recorded yet
 
