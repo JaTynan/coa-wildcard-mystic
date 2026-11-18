@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..ab3def9
+index 0000000..3482956
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14519 @@
+@@ -0,0 +1,14498 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -268,46 +268,9 @@ index 0000000..ab3def9
 +constexpr std::array<uint32, 8> FRENZY_SHOT_RANKS = { 954587, 954728, 954729, 954730, 954731, 954732, 954733, 1954587 };
 +}
 +
-+// Rush of Blood (1587050): Hemorrhage twice in a row makes the next Ambush usable outside Stealth; a third
-+// Hemorrhage restores energy. Any other ability starts the count again.
-+class spell_wcme_rush_of_blood : public AuraScript
-+{
-+    PrepareAuraScript(spell_wcme_rush_of_blood);
-+
-+    static constexpr uint32 AMBUSH_ANYWHERE = 1587051;
-+    static constexpr uint32 ENERGY = 1587057;
-+    uint8 _hemorrhages = 0;
-+
-+    bool CheckProc(ProcEventInfo& eventInfo)
-+    {
-+        SpellInfo const* spell = eventInfo.GetSpellInfo();
-+        return spell && !spell->IsPassive();
-+    }
-+
-+    void HandleProc(ProcEventInfo& eventInfo)
-+    {
-+        PreventDefaultAction();
-+        Unit* owner = GetTarget();
-+        if (!WcmeNamed(eventInfo.GetSpellInfo(), "Hemorrhage"))
-+        {
-+            _hemorrhages = 0;
-+            return;
-+        }
-+        if (++_hemorrhages == 2)
-+            owner->CastSpell(owner, AMBUSH_ANYWHERE, true);
-+        else if (_hemorrhages >= 3)
-+        {
-+            owner->CastSpell(owner, ENERGY, true);
-+            _hemorrhages = 0;
-+        }
-+    }
-+
-+    void Register() override
-+    {
-+        DoCheckProc += AuraCheckProcFn(spell_wcme_rush_of_blood::CheckProc);
-+        OnProc += AuraProcFn(spell_wcme_rush_of_blood::HandleProc);
-+    }
-+};
++// Rush of Blood (1587050) used to be here; review 2026-11-18 found the core has done it since 3 November
++// (spell_ascension_mystic_rush_of_blood, which also takes the free Ambush away when another ability breaks the sequence),
++// so both counted Hemorrhages and the third gave the energy twice.
 +
 +// Martial Crescendo (84752) and Tools of War (84750): each different direct-damage Physical ability adds a stack
 +// (not "on next swing" abilities); no refresh at full stacks; any non-Physical damage removes all stacks.
@@ -12592,6 +12555,22 @@ index 0000000..ab3def9
 +    static inline std::unordered_map<ObjectGuid, TimePoint> _quietGarrote;
 +    bool _inMending = false;
 +};
++// Starburst Barrage (979137) for Starsurge. Its text names Starfire, Starsurge and Arcane Barrage, but the core's
++// aura_hero_druid_starburst_barrage (2 November) lets only Starfire and Arcane Barrage through, and with two scripts on
++// one aura its filter also blocked ours, so Starsurge gave nothing. This gives the stack (979138) for a Starsurge cast.
++class wcme_starburst_barrage_starsurge : public AllSpellScript
++{
++public:
++    wcme_starburst_barrage_starsurge() : AllSpellScript("wcme_starburst_barrage_starsurge", { ALLSPELLHOOK_ON_CAST }) { }
++
++    void OnSpellCast(Spell* /*spell*/, Unit* caster, SpellInfo const* info, bool) override
++    {
++        if (caster && caster->IsPlayer() && info && info->SpellFamilyName == SPELLFAMILY_DRUID &&
++            WcmeNamed(info, "Starsurge") && caster->HasAura(979137))
++            caster->CastSpell(caster, 979138, true);
++    }
++};
++
 +// Overflow (1571951) for the Regrowth and Nourish versions the core misses. The core's rules (effects 1 and 2) give an
 +// Overflow stack (1571954) on casting Regrowth or Nourish, but list only the CoA versions (1108936 ..., 1150464); the
 +// stock ones (8936 and its ranks, 50464), also learnable here, never gave a stack. This gives the stack for those, so
@@ -14302,6 +14281,7 @@ index 0000000..ab3def9
 +    new wcme_growing_light_versions();
 +    new wcme_shadow_crash_versions();
 +    new wcme_overflow_versions();
++    new wcme_starburst_barrage_starsurge();
 +    new wcme_epic_batch4_spells();
 +    new wcme_epic_batch4_hooks();
 +    RegisterSpellScript(spell_wcme_area_keeper);
@@ -14333,7 +14313,6 @@ index 0000000..ab3def9
 +    new wcme_mana_fiend_regen();
 +    new wcme_kit5_hooks();
 +    new wcme_kit6_hooks();
-+    RegisterSpellScript(spell_wcme_rush_of_blood);
 +    RegisterSpellScript(spell_wcme_unique_physical_stacks);
 +    RegisterSpellScript(spell_wcme_curse_of_arugal);
 +    RegisterSpellScript(spell_wcme_darkness_counter);

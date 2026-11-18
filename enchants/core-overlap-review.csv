@@ -60,5 +60,5 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 851989,Frost Shot,Rare,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
 852412,Hammerstorm,Rare,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
 285100,Hellish Pursuit,Rare,core skill-card script + proc row (27 Oct); our 005 proc row replaces it,,to review,found 2026-11-18 by the full proc-row check
-979137,Starburst Barrage,Epic,core script aura_hero_druid_starburst_barrage + proc row (2 Nov); our 007 action row and proc row on top,,to review,found 2026-11-18 by the full proc-row check
-1587050,Rush of Blood,Rare,core script spell_ascension_mystic_rush_of_blood + proc row (3 Nov); our 017 script and proc row on top,,to review,found 2026-11-18 by the full proc-row check
+979137,Starburst Barrage,Epic,core script aura_hero_druid_starburst_barrage + proc row (2 Nov); our 007 action row and proc row on top,,resolved,"ours removed, core's row restored; the core's filter (Starfire, Arcane Barrage) blocked our Starsurge, so a fill-in now gives the Starsurge stack the text names"
+1587050,Rush of Blood,Rare,core script spell_ascension_mystic_rush_of_blood + proc row (3 Nov); our 017 script and proc row on top,,resolved,"ours removed, core's row restored: both scripts counted Hemorrhages, so the third gave its energy twice; the core's also takes the free Ambush away when the sequence breaks"
