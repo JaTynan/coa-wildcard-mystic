@@ -476,6 +476,10 @@ patch or the mechanic when there is a chance.
 
 - #171: Blazing Flame:** Blast Wave and Dragon's Breath grant Blazing Speed.
 
+**Assumptions:** Review 2026-11-18: no doubling. The core's rule and our action row both give Blazing Speed (1181401) on Blast Wave and Dragon's Breath; it doesn't stack, so it is one buff, and ours also covers rank 1 of the stock Blast Wave (11113) and Dragon's Breath (31661), which the core's list misses. The +2 sec per Scorch or Pyroblast (016, 1181404) is ours alone, and the core's effect 177 adds the time as it should.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
 ### Blessing of the Divines (965476, Legendary)
@@ -4140,20 +4144,25 @@ patch or the mechanic when there is a chance.
 
 ### Wraithweaver: Shadow Orbs (1544910, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-18 | 06d67c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Wraithweaver: Shadow Orbs (1544910; its own orb effects use effect 188, which the core does not handle): each tick of your Shadow Word: Pain, Devouring Plague or Vampiric Touch has a 20% chance to give a Shadow Orb (1544913, up to 3: Mind Blast +10% per orb, the data's own spell mod). A Mind Blast hit with 3 orbs spends them and sends a Shadowy Apparition (1544915) that reaches the target 1 sec later and deals 320 (at level 60) + 32% SP Shadow damage to every enemy within 5 yards of it.
-- 038-core-handlers-and-visuals.sql: Wraithweaver: Shadow Orbs (1544910): orbs from DoT ticks and the Shadowy Apparition, scripted around effect 188.
+- Wraithweaver: Shadow Orbs (1544910). The orbs themselves are the core's: its rule (effect 2) casts 1544912 on 20% of your Shadow Word: Pain, Devouring Plague and Vampiric Touch damage (the spell's own chance, through the core's proc row), and 1544912 adds a Shadow Orb (1544913, up to 3: Mind Blast +10% per orb). Review 2026-11-18: this used to be a proc script with its own proc row at 100%, which made the core's rule give an orb on every tick, with our own 20% on top; the core's row is back. What the core lacks stays here, outside the proc (the 20% chance would gate it): a Mind Blast hit with 3 orbs spends them and sends a Shadowy Apparition (1544915) that reaches the target 1 sec later and deals 320 (at level 60) + 32% SP Shadow damage to every enemy within 5 yards of it.
+- 038-core-handlers-and-visuals.sql: Wraithweaver: Shadow Orbs (1544910): the orbs are the core's own rule (review 2026-11-18: our proc row here was at 100%, so the core gave an orb on every tick; the core's row is put back below).
 
 **What the pull requests said:**
 
 - #175: Wraithweaver: Shadow Orbs (1544910):** its orb effects use effect 188, which the core does not handle, so it is scripted instead: SW:P / Devouring Plague / Vampiric Touch ticks have a 20% chance to give a Shadow Orb (up to 3, Mind Blast +10% each); a Mind Blast hit at 3 orbs spends them for a Shadowy Apparition (320 at level 60 + 32% SP to enemies within 5 yd of the target, 1 sec later).
+
+**Assumptions:** Review 2026-11-18: the orbs are the core's own rule (effect 2 casts 1544912 on Shadow Word: Pain, Devouring Plague or Vampiric Touch damage, covering every learnable version; 1544912 adds a Shadow Orb, 1544913, up to 3; the chance is the spell's own 20% through the core's proc row). File 038 replaced the core's proc row with ours at 100%, so the core gave an orb on every tick, and our own 20% roll added more. The core's row is restored and our orb gain removed. The Mind Blast part (3 orbs spent, Shadowy Apparition after 1 sec, 320 at level 60 + 32% SP to enemies within 5 yards) stays ours, now as a damage hook, since a proc script would be gated by that 20% too. Effect 188 on 1544912 is still unhandled by the core; it isn't needed for the orb.
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 

@@ -304,6 +304,6 @@ text in our client is the only record.
 | 1398184 | Void Eruption | changed, awaiting in-game test (#175) |
 | 1571327 | Void Herald: Whispers of the Old Gods | unchanged: working (audit) |
 | 1760200 | Wind Lash | changed, awaiting in-game test (#175) |
-| 1544910 | Wraithweaver: Shadow Orbs | changed, awaiting in-game test (#175) |
+| 1544910 | Wraithweaver: Shadow Orbs | changed on an unmerged branch (#175) |
 
-Copy totals (all 305): changed, awaiting in-game test: 201, unchanged: working: 81, changed on an unmerged branch: 8, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.
+Copy totals (all 305): changed, awaiting in-game test: 200, unchanged: working: 81, changed on an unmerged branch: 9, tested: 5, works from its data: 3, handled by the core: 3, works: 2, changed after its last test: 1, handled: 1.
