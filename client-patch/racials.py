@@ -13,6 +13,13 @@ OFF_GCD = [
 ]
 
 START_RECOVERY_CATEGORY, START_RECOVERY_TIME = 205, 206
+RECOVERY_TIME = 29
+
+# Racial cooldowns changed by the race kits (the server makes the same change at start-up, while the racial's setting
+# is on): spell -> cooldown in ms. Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): Arcane Torrent 1 min
+# instead of 2, every player copy CoA keeps.
+COOLDOWNS = {spell: 60000 for spell in (28730, 50613, 814286, 814287, 814288, 814289, 814290, 814291, 814292, 1125046,
+                                        1125047, 1128730, 1150613)}
 
 
 def off_gcd(row):
@@ -21,4 +28,13 @@ def off_gcd(row):
         return row
     row = list(row)
     row[START_RECOVERY_CATEGORY] = row[START_RECOVERY_TIME] = 0
+    return tuple(row)
+
+
+def cooldowns(row):
+    """The row with its cooldown from COOLDOWNS, if listed."""
+    if row[0] not in COOLDOWNS:
+        return row
+    row = list(row)
+    row[RECOVERY_TIME] = COOLDOWNS[row[0]]
     return tuple(row)

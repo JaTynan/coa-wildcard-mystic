@@ -16,7 +16,7 @@ import sys
 from dbc import Dbc, write_dbc
 from mpqwrite import write_mpq
 import custom_spells
-from racials import off_gcd
+from racials import cooldowns, off_gcd
 
 wildcard, area52 = Dbc(sys.argv[1]), Dbc(sys.argv[2])
 enchants = {int(row['spell']) for row in csv.DictReader(open(sys.argv[3]))}
@@ -30,7 +30,7 @@ def client_row(spell):
     row = list(source[spell].rows[spell])
     if spell in added_set:
         row[208] = row[209] = row[210] = row[211] = 0
-    return custom_spells.with_icon(off_gcd(tuple(row)))  # racials off the global cooldown (racials.py), our icons
+    return custom_spells.with_icon(cooldowns(off_gcd(tuple(row))))  # racials off the global cooldown and race-kit cooldowns (racials.py), our icons
 
 
 rows = [client_row(spell) for spell in sorted(source) if spell not in custom_spells.SPELLS]

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Rebuilds patch-ZZW.MPQ from the Spell.dbc already inside it, with the racials in racials.py off the global cooldown,
+"""Rebuilds patch-ZZW.MPQ from the Spell.dbc already inside it, with the racials in racials.py off the global cooldown
+(and its race-kit cooldowns),
 our own spells (custom_spells.py) and our rows added to the client's SpellIcon.dbc (custom_spells.ICONS).
 
 Usage: python3 racials_off_gcd.py <Spell.dbc from the current patch-ZZW.MPQ> <the client's SpellIcon.dbc> [output.MPQ]
@@ -17,7 +18,7 @@ import sys
 from dbc import Dbc, write_dbc
 from mpqwrite import write_mpq
 import custom_spells
-from racials import OFF_GCD, off_gcd
+from racials import OFF_GCD, cooldowns, off_gcd
 
 args = sys.argv[1:]
 icon_files = []
@@ -40,7 +41,7 @@ if '--charges' in args:
     charge_files = [('DBFilesClient\\SpellCharges.dbc', open('SpellCharges.dbc', 'rb').read()),
                     ('DBFilesClient\\SpellChargesCategory.dbc', open('SpellChargesCategory.dbc', 'rb').read())]
 spells = Dbc(args[0])
-rows = [custom_spells.with_icon(off_gcd(spells.rows[spell])) for spell in sorted(spells.rows) if spell not in custom_spells.SPELLS]
+rows = [custom_spells.with_icon(cooldowns(off_gcd(spells.rows[spell]))) for spell in sorted(spells.rows) if spell not in custom_spells.SPELLS]
 rows += [custom_spells.row(spell, spells.fields) for spell in sorted(custom_spells.SPELLS)]  # our buff icons
 write_dbc('Spell.dbc', rows, spells.fields, lambda rec, col: custom_spells.string_of(rec[0], col)
           if rec[0] in custom_spells.SPELLS else spells.string(spells.rows[rec[0]][col]))
