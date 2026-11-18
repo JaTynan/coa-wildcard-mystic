@@ -3,8 +3,8 @@
 -- Gift of Light (1277670): stacks on each Light's Grace renewal that let Divine Favor skip its cooldown.
 -- Stormbound Instinct (1181360): Shocks give Maelstrom Weapon and Stormbound Reflexes and splash 30% of their damage;
 -- Primal Strike, Lightning Bolt and Chain Lightning make the next Shock free of cooldown.
--- Feeding the Abyss (1154364): Abyssal Hunger stores fully absorbed physical hits for the next Life Tap (150 has its
--- proc and script); the visible "Harm is being stored" buff (1154363) no longer absorbs anything itself.
+-- Feeding the Abyss (1154364) was dropped in review 2026-11-18: the core already does the whole enchant (its own absorb,
+-- store and Life Tap eruption), so ours ran a second absorb roll and a second payoff.
 -- Nether Portal (1180440): its portal buff (1180443) summons a demon per Shadow Bolt, Soul Fire or Incinerate, and one
 -- more for Soul Fire during Decimation.
 -- Dark Surgeon (978209): its own design instead of twin 1573136 (003 no longer links them): Hippocratic Oath, 30% less
@@ -28,8 +28,6 @@ INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFami
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1277670, 'spell_wcme_gift_of_light'),
 (1181360, 'spell_wcme_stormbound_instinct'),
-(1154364, 'spell_wcme_feeding_the_abyss'),
-(1154363, 'spell_wcme_feeding_the_abyss_store'),
 (1180443, 'spell_wcme_nether_portal'),
 (978209, 'spell_wcme_dark_surgeon'),
 (978640, 'spell_wcme_dark_transfusion'),

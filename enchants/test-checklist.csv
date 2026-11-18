@@ -554,3 +554,4 @@ audit,919572,Improved Mend Pet,1175790,probably already works,.aura 919572; chec
 020,1181400,Blazing Flame,0,core+action,".aura 1181400; Blast Wave (any rank); Scorch twice","Blazing Speed on Blast Wave; each Scorch adds 2 sec"
 018,1570700,Shadow Visions (core fragments),0,core+proc,".aura 1570700; channel Mind Flay on a dummy and count Soul Fragments","one fragment per Mind Flay tick (not two); Shadow Visions at full fragments; next Mind Blast +50%"
 037,1571951,Overflow (stock Regrowth),0,hook,".aura 1571951 as a druid with the stock Regrowth (8936); cast it 3 times; then Healing Touch near allies","3 Overflow stacks; Healing Touch spends them and heals 3 more allies"
+027,1154364,Feeding the Abyss (core),0,core,".aura 1154364 as a warlock; take melee hits from a dummy NPC for 10 sec; then Life Tap","about 10% + Shadow crit of hits fully absorbed (not double that); one Abyssal Eruption on the Life Tap, not two"

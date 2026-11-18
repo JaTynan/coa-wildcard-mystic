@@ -26,7 +26,7 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 277082,Electrical Discharge,Epic,,SpellAuraEffects.cpp,resolved,"ours removed (core does it, hard-coded)"
 277460,Physics in Practice,Epic,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core damage hook)
 282040,Blind Rage,Uncommon,script aura_wildcard_skillcard_proc,AscensionSkillcardProcRules.h,to review,
-1154364,Feeding the Abyss,Legendary,,AscensionMysticEnchantScripts.cpp,to review,
+1154364,Feeding the Abyss,Legendary,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core does the whole enchant; ours gave a second absorb roll and a second Life Tap payoff)
 1180030,Lone Wolf,Epic,coa_mystic_enchant_bonus,,resolved,"damage doubled (core bonus +10% and 1180031 +10%): 1180031's damage effect zeroed, it keeps armour penetration; pet test matches the core's"
 1180200,Precision Impact,Epic,coa_mystic_enchant_bonus,,resolved,twin link removed (a different enchant: Meteor reset); the core does the enchant's own bonuses
 1180420,Elemental Torrent,Epic,coa_mystic_enchant_minion_aura,,resolved,ours removed (core minion listener)
@@ -44,7 +44,7 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1568152,Explosive Charge,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed in #178 (core enchant rule); doubled until then
 1570700,Shadow Visions,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,our fragment-building removed (doubled the core's: Visions twice as fast); the buff's effects stay ours
 1571951,Overflow,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling; version gap fixed (stock Regrowth/Nourish now give stacks)
-1573649,Cremation,Legendary,,AscensionScalingBaseData.h,to review,
+1573649,Cremation,Legendary,,AscensionScalingBaseData.h,queued,"core teaches its own (unscripted) Cremation and we teach the twin's; script 1573650, then drop our teach (option 1)"
 1575124,Critical Time,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +5% crit; ours doubled it)
 1577402,Pyroclasmic Shadows,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +20% crit; ours doubled it)
 1581647,Pious Strikes,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)

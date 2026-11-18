@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..6f99d80
+index 0000000..ab3def9
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14639 @@
+@@ -0,0 +1,14519 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -4138,127 +4138,10 @@ index 0000000..6f99d80
 +    }
 +};
 +
-+// Feeding the Abyss (1154364): your dodge is gone (the data's own -100% dodge). While the enchant is on, Abyssal Hunger
-+// (9990020, hidden) has a chance equal to 10% plus your spell critical strike chance to absorb a physical hit fully,
-+// storing the damage. The first stored hit shows Feeding the Abyss (1154363, "Harm is being stored...", 10 sec; its
-+// own 1-point absorb is switched off by spell_wcme_feeding_the_abyss_store). When it fades the store is fed to the
-+// abyss: your next Life Tap spends it as Shadow damage (1154363) split between up to 5 enemies within 10 yards, and
-+// heals you and your pet for half of the damage it dealt each.
-+class spell_wcme_feeding_the_abyss : public AuraScript
-+{
-+    PrepareAuraScript(spell_wcme_feeding_the_abyss);
-+
-+    static constexpr uint32 HUNGER = 9990020;
-+
-+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-+    {
-+        if (!GetTarget()->HasAura(HUNGER))
-+            GetTarget()->AddAura(HUNGER, GetTarget());
-+    }
-+
-+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
-+    {
-+        GetTarget()->RemoveAurasDueToSpell(HUNGER);
-+    }
-+
-+    void Register() override
-+    {
-+        AfterEffectApply += AuraEffectApplyFn(spell_wcme_feeding_the_abyss::HandleApply, EFFECT_2, SPELL_AURA_MOD_DODGE_PERCENT, AURA_EFFECT_HANDLE_REAL);
-+        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_feeding_the_abyss::HandleRemove, EFFECT_2, SPELL_AURA_MOD_DODGE_PERCENT, AURA_EFFECT_HANDLE_REAL);
-+    }
-+};
-+
-+class spell_wcme_feeding_the_abyss_store : public AuraScript
-+{
-+    PrepareAuraScript(spell_wcme_feeding_the_abyss_store);
-+
-+    void Absorb(AuraEffect* /*aurEff*/, DamageInfo& /*dmgInfo*/, uint32& absorbAmount)
-+    {
-+        PreventDefaultAction();
-+        absorbAmount = 0;
-+    }
-+
-+    void Register() override
-+    {
-+        OnEffectAbsorb += AuraEffectAbsorbFn(spell_wcme_feeding_the_abyss_store::Absorb, EFFECT_0);
-+    }
-+};
-+
-+class spell_wcme_abyssal_hunger : public AuraScript
-+{
-+    PrepareAuraScript(spell_wcme_abyssal_hunger);
-+
-+    static constexpr uint32 FEED = 1154363;
-+    int64 _stored = 0;
-+
-+    void CalcAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
-+    {
-+        amount = -1;
-+    }
-+
-+    void Absorb(AuraEffect* /*aurEff*/, DamageInfo& dmgInfo, uint32& absorbAmount)
-+    {
-+        Unit* owner = GetTarget();
-+        float chance = 10.0f;
-+        if (Player* player = owner->ToPlayer())
-+            chance += player->GetFloatValue(uint16(PLAYER_SPELL_CRIT_PERCENTAGE1) + uint16(SPELL_SCHOOL_SHADOW));
-+        if (!dmgInfo.GetDamage() || !roll_chance_f(chance))
-+        {
-+            absorbAmount = 0;
-+            return;
-+        }
-+        absorbAmount = dmgInfo.GetDamage();
-+        if (!_stored && !owner->HasAura(FEED))
-+            owner->AddAura(FEED, owner);
-+        _stored += absorbAmount;
-+    }
-+
-+    bool CheckProc(ProcEventInfo& eventInfo)
-+    {
-+        return _stored > 0 && !GetTarget()->HasAura(FEED) && WcmeNamed(eventInfo.GetSpellInfo(), "Life Tap") &&
-+            (eventInfo.GetSpellPhaseMask() & PROC_SPELL_PHASE_CAST);
-+    }
-+
-+    void HandleProc(ProcEventInfo& /*eventInfo*/)
-+    {
-+        Unit* owner = GetTarget();
-+        SpellInfo const* feed = sSpellMgr->GetSpellInfo(FEED);
-+        int64 const stored = _stored;
-+        std::list<Unit*> enemies = WcmeEnemiesNear(owner, owner, 10.0f, 5);
-+        if (!feed || enemies.empty())
-+            return;
-+        _stored = 0;
-+        int64 dealt = 0;
-+        int32 const share = int32(std::min<int64>(stored / int64(enemies.size()), INT32_MAX));
-+        for (Unit* enemy : enemies)
-+        {
-+            SpellNonMeleeDamage log(owner, enemy, feed, feed->GetSchoolMask());
-+            owner->CalculateSpellDamageTaken(&log, share, feed);
-+            dealt += log.damage;
-+            owner->SendSpellNonMeleeDamageLog(&log);
-+            owner->DealSpellDamage(&log, false);
-+        }
-+        uint32 const heal = uint32(std::min<int64>(dealt / 2, INT32_MAX));
-+        if (!heal)
-+            return;
-+        HealInfo self(owner, owner, heal, feed, feed->GetSchoolMask());
-+        owner->HealBySpell(self);
-+        if (Pet* pet = owner->ToPlayer() ? owner->ToPlayer()->GetPet() : nullptr)
-+            if (pet->IsAlive())
-+            {
-+                HealInfo petHeal(owner, pet, heal, feed, feed->GetSchoolMask());
-+                owner->HealBySpell(petHeal);
-+            }
-+    }
-+
-+    void Register() override
-+    {
-+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_abyssal_hunger::CalcAmount, EFFECT_0, SPELL_AURA_SCHOOL_ABSORB);
-+        OnEffectAbsorb += AuraEffectAbsorbFn(spell_wcme_abyssal_hunger::Absorb, EFFECT_0);
-+        DoCheckProc += AuraCheckProcFn(spell_wcme_abyssal_hunger::CheckProc);
-+        OnProc += AuraProcFn(spell_wcme_abyssal_hunger::HandleProc);
-+    }
-+};
++// Feeding the Abyss (1154364) used to be here (with Abyssal Hunger 9990020 and a script on 1154363); review 2026-11-18
++// found the core already does the whole enchant (AscensionMysticEnchantScripts: physical hits swallowed at 10% plus
++// Shadow spell crit, stored 10 sec in 1154365, then the next Life Tap casts Abyssal Eruption 1154367), so players had
++// two absorb rolls and two payoffs.
 +
 +// Dark Surgeon (978209): teaches Hippocratic Oath (978430: healing power from 20% of attack power); the core's own
 +// replacement turns Holy Nova into Dark Transfusion (978640, spell_wcme_dark_transfusion). Healing taken is 30% lower
@@ -14527,9 +14410,6 @@ index 0000000..6f99d80
 +    RegisterSpellScript(spell_wcme_predators_wrath_buff);
 +    RegisterSpellScript(spell_wcme_gift_of_light);
 +    RegisterSpellScript(spell_wcme_stormbound_instinct);
-+    RegisterSpellScript(spell_wcme_feeding_the_abyss);
-+    RegisterSpellScript(spell_wcme_feeding_the_abyss_store);
-+    RegisterSpellScript(spell_wcme_abyssal_hunger);
 +    RegisterSpellScript(spell_wcme_dark_surgeon);
 +    RegisterSpellScript(spell_wcme_dark_transfusion);
 +    RegisterSpellScript(spell_wcme_dark_transfusion_heal);

@@ -100,4 +100,10 @@ Our SQL must not replace the core's own `spell_proc` row for an enchant the core
 from that row (usually 0, meaning the spell's own chance), so a row of ours at 100% makes the core's rule fire every
 time. `enchants/core-proc-row-replacements.csv` lists the six places we did it (found while reviewing Soul Erosion).
 
+The same doubling happens through our teach table (`wcme_enchant_teach`, file 006): the core learns every spell an
+enchant's text teaches, so where we teach a twin's version of the ability instead, players know both.
+`enchants/taught-spell-doubles.csv` lists the 55 enchants where this happens, sorted by whether the core-taught spell can
+work as it stands (a rough first sort: dummy auras aren't caught, so each needs a look). Decision (James, 2026-11-18,
+option 1): own spell only once it works, then our teach goes (found while reviewing Cremation).
+
 ## Enchants
