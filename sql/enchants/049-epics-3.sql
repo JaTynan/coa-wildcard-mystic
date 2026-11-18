@@ -1,9 +1,10 @@
 -- Epic enchants, batch 3 and the held-back epics (needs the build with this version of mystic-enchants-scripts.patch
 -- and patches/69-iron-guard-block.ps1; no client patch change).
--- Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Moon's Wrath (1180590), Critical Time (1575124),
--- Unstoppable Force (911167), Pyroclasmic Shadows (1577402), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415),
+-- Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415),
 -- Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389),
 -- Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+-- Moon's Wrath (1180590), Critical Time (1575124) and Pyroclasmic Shadows (1577402) were dropped in review 2026-11-18:
+-- the core's bonus table already gives their crit bonuses.
 -- Core patch 69: Iron Guard (1181340).
 -- With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression
 -- (1181300: no rows since review 2026-11-18, the core's aura link keeps its helpers; the script hook stays),

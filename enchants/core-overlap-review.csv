@@ -31,7 +31,7 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1180200,Precision Impact,Epic,coa_mystic_enchant_bonus,,resolved,twin link removed (a different enchant: Meteor reset); the core does the enchant's own bonuses
 1180420,Elemental Torrent,Epic,coa_mystic_enchant_minion_aura,,resolved,ours removed (core minion listener)
 1180480,Soul Erosion,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
-1180590,Moon's Wrath,Epic,coa_mystic_enchant_bonus,,to review,
+1180590,Moon's Wrath,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +8% crit; ours doubled it)
 1180640,Searing Flames,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,"ours trimmed: core's rule only covers effect 1 (pet crit stacks), so our splash, one-target rule and crit-stack use-up stay; our duplicate pet stacks removed"
 1180900,Shadow Funnel,Epic,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core gives the Voidwalker 1180901 while Health Funnelled; Void Nova on auto attacks)
 1181300,Controlled Aggression,Epic,coa_mystic_enchant_aura_link,,resolved,"our 1181301 grant removed (core link does it); 1181302 has no class mask so the doubling stays ours, now exact and with the Shield Slam reset"
@@ -45,13 +45,17 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1570700,Shadow Visions,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 1571951,Overflow,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,to review,
 1573649,Cremation,Legendary,,AscensionScalingBaseData.h,to review,
-1575124,Critical Time,Epic,coa_mystic_enchant_bonus,,to review,
-1577402,Pyroclasmic Shadows,Epic,coa_mystic_enchant_bonus,,to review,
+1575124,Critical Time,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +5% crit; ours doubled it)
+1577402,Pyroclasmic Shadows,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +20% crit; ours doubled it)
 1581647,Pious Strikes,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
 1584166,Fire Walk With Me,Epic,,SpellInfo.cpp Unit.cpp,to review,
 1584997,Holy Servitude,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
 1587962,Abjurer's Ward: Arcane,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
 1587982,Abjurer's Ward: Fire,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
 1588050,Abjurer's Ward: Frost,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
-1590974,Blood-Soaked Mutilation,Epic,coa_mystic_enchant_bonus,AscensionMysticEnchantMechanics.cpp,to review,
+1590974,Blood-Soaked Mutilation,Epic,coa_mystic_enchant_bonus,AscensionMysticEnchantMechanics.cpp,resolved,our Mutilate bonus removed (core bonus does it); Crimson Tempest/Garrote parts stay ours
 1988300,Omen of Doom,Epic,,AscensionMysticEnchantScripts.cpp,to review,
+852174,Shadow Siphon,Rare,core teaches its spell (TaughtSpells),,needs decision,"linked to a twin (003) and the addon shows the twin's tooltip, but the core also teaches the enchant's own spell, so players get both"
+850093,Cauterize,Epic,core teaches its spell (TaughtSpells),,needs decision,"linked to a twin (003) and the addon shows the twin's tooltip, but the core also teaches the enchant's own spell, so players get both"
+851989,Frost Shot,Rare,core teaches its spell (TaughtSpells),,needs decision,"linked to a twin (003) and the addon shows the twin's tooltip, but the core also teaches the enchant's own spell, so players get both"
+852412,Hammerstorm,Rare,core teaches its spell (TaughtSpells),,needs decision,"linked to a twin (003) and the addon shows the twin's tooltip, but the core also teaches the enchant's own spell, so players get both"

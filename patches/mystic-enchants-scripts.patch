@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..5cffe39
+index 0000000..035db86
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14670 @@
+@@ -0,0 +1,14654 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -12138,10 +12138,12 @@ index 0000000..5cffe39
 +};
 +
 +// Spell-side parts (casts and critical strike chance):
-+// - Moon's Wrath (1180590): Wrath and Starsurge +8% crit chance on targets with your Moonfire.
-+// - Critical Time (1575124): your spells +5% crit chance on targets with your Living Bomb.
++// - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table
++//   already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so
++//   ours doubled them.
 +// - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target.
-+// - Pyroclasmic Shadows (1577402): while your Pyroclasm buff is up, Shadow Bolt +20% crit chance (1577382's value).
++// - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable
++//   Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18).
 +// - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you
 +//   cast adds half its cast time to Starfall.
 +// - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner.
@@ -12167,14 +12169,8 @@ index 0000000..5cffe39
 +        SpellInfo const* info = spell ? spell->GetSpellInfo() : nullptr;
 +        if (!caster || !target || !info || caster == target)
 +            return;
-+        if (caster->HasAura(1180590) && WcmeNamedAny(info, { "Wrath", "Starsurge" }) && WcmeAuraFromNamed(target, caster, "Moonfire"))
-+            chance += 8.0f;
-+        if (caster->HasAura(1575124) && WcmeAuraFromNamed(target, caster, "Living Bomb"))
-+            chance += 5.0f;
 +        if (caster->HasAura(911167) && WcmeNamed(info, "Slam") && WcmeIncapacitatedOrImmobilized(target))
 +            chance = 100.0f;
-+        if (caster->HasAura(1577402) && WcmeNamed(info, "Shadow Bolt") && WcmeHasAuraNamed(caster, "Pyroclasm", SPELLFAMILY_WARLOCK))
-+            chance += 20.0f;
 +        if (caster->HasAura(81181) && info->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && WcmeHasAuraNamed(caster, "Starfall", SPELLFAMILY_DRUID))
 +            chance += 5.0f;
 +    }
@@ -12817,7 +12813,8 @@ index 0000000..5cffe39
 +//   on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours
 +//   added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive
 +//   Shot from outside the Hunter family.
-+// - Blood-Soaked Mutilation (1590974): Mutilate +6% per bleed of yours on the target; the out-of-Stealth Garrote's
++// - Blood-Soaked Mutilation (1590974): (Mutilate +6% per bleed of yours is the core's bonus table; ours doubled it and
++//   was removed in review 2026-11-18.) The out-of-Stealth Garrote's
 +//   silence is removed.
 +// - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in
 +//   AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash.
@@ -12835,19 +12832,6 @@ index 0000000..5cffe39
 +        if (attacker->HasAura(271125) && WcmeNamed(spell, "Explosive Shot") && WcmeAuraFromNamed(target, attacker, "Living Bomb") &&
 +            !(spell->SpellFamilyName == SPELLFAMILY_HUNTER && target->GetAuraOfRankedSpellOrTwin(44457, attacker->GetGUID())))
 +            value = value * (target->IsPlayer() ? 120 : 130) / 100;
-+        if (attacker->HasAura(1590974) && WcmeNamed(spell, "Mutilate"))
-+        {
-+            int32 bleeds = 0;
-+            for (auto const& [id, app] : target->GetAppliedAuras())
-+            {
-+                Aura const* aura = app->GetBase();
-+                SpellInfo const* info = aura->GetSpellInfo();
-+                if (aura->GetCasterGUID() == attacker->GetGUID() && (info->Mechanic == MECHANIC_BLEED ||
-+                    (info->GetAllEffectsMechanicMask() & (1ULL << MECHANIC_BLEED))))
-+                    ++bleeds;
-+            }
-+            value = value * (100 + 6 * bleeds) / 100;
-+        }
 +        return value;
 +    }
 +

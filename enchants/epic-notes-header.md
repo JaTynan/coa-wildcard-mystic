@@ -91,4 +91,9 @@ Twin links (`spell_linked_spell` rows in files 001-005) put a twin's aura on you
 Where we later wrote our own script for the enchant's text, the link has to go, or both run (found while reviewing
 Blood and Guts: Compound Power, Frozen Chaos and Elemental Assassin were doubled; Blood and Guts keeps its link on purpose).
 
+The core also teaches the spell an enchant's own text teaches ("Teaches you: ..."), whatever we link. Four enchants that
+link a twin for that reason (Cauterize 850093, Frost Shot 851989, Shadow Siphon 852174, Hammerstorm 852412) therefore
+give both the twin's effect and their own spell, while the addon shows only the twin's tooltip; listed in
+`enchants/core-overlap-review.csv` as needing a decision (found while reviewing Moon's Wrath and Critical Time).
+
 ## Enchants

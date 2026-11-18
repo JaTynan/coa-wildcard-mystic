@@ -542,3 +542,7 @@ audit,919572,Improved Mend Pet,1175790,probably already works,.aura 919572; chec
 004,978229,Elemental Assassin (link fix),0,proc,.aura 978229; Backstab; then Flame Shock,"only Elemental Assassin 978642 appears (not 274679); Flame Shock +110%"
 015,301000,Circle of Life (Halo cuts),0,action,".aura 301000; use Halo (Circle of Life); cast Flash Heal, then Circle of Healing","Halo's cooldown drops 4 sec, then 3 sec"
 003,1180200,Precision Impact (link fix),0,core,".aura 1180200; Fireball a dummy, then Scorch it; cast Meteor and Fireball repeatedly","Scorch +20% while Fireball's burn is up; Meteor's cooldown is never reset by these casts; .list auras shows no 290200"
+049,1180590,Moon's Wrath (core),0,core,".aura 1180590; Moonfire a dummy; note Wrath crit rate","about +8% crit on Wrath (not +16%)"
+049,1575124,Critical Time (core),0,core,".aura 1575124; Living Bomb a dummy; note spell crit rate","about +5% crit (not +10%)"
+049,1577402,Pyroclasmic Shadows (core),0,core,".aura 1577402; get Pyroclasm; Shadow Bolt","about +20% crit while Pyroclasm is up (not +40%)"
+050,1590974,Blood-Soaked Mutilation (Mutilate part),0,core,".aura 1590974; Rupture and Garrote a dummy; Mutilate","Mutilate +12% with 2 bleeds (not +24%)"
