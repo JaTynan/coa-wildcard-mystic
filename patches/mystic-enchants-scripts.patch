@@ -1,9 +1,9 @@
 diff --git a/src/server/coa/WcmeEnchantScripts.cpp b/src/server/coa/WcmeEnchantScripts.cpp
 new file mode 100644
-index 0000000..3482956
+index 0000000..e7a2c3f
 --- /dev/null
 +++ b/src/server/coa/WcmeEnchantScripts.cpp
-@@ -0,0 +1,14498 @@
+@@ -0,0 +1,14552 @@
 +/*
 + * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
 + */
@@ -12555,6 +12555,59 @@ index 0000000..3482956
 +    static inline std::unordered_map<ObjectGuid, TimePoint> _quietGarrote;
 +    bool _inMending = false;
 +};
++// Abjurer's Ward: Arcane, Fire and Frost (each in three copies): absorbing damage with a Ward (Fire Ward or Frost Ward, any
++// rank or version) takes the enchant's own value (10 sec) off Presence of Mind, Combustion or Cold Snap. The core does
++// this itself for 1587962, 1587982 and 1588050, but only when one of its 18 CoA Ward ranks absorbs and only for the CoA
++// versions of the three spells (spell_ascension_mystic_abjurers_ward). Review 2026-11-18: our old action rows fired as
++// well (20 sec off in that case), counted Mana Shield as a Ward, and couldn't tell which shield absorbed. This script, on
++// every Ward, does everything except exactly what the core already did, so each absorb takes 10 sec off once.
++class spell_wcme_abjurers_ward : public AuraScript
++{
++    PrepareAuraScript(spell_wcme_abjurers_ward);
++
++    static bool CoreWard(uint32 id)
++    {
++        static std::unordered_set<uint32> const wards = { 1100543, 1106143, 1108457, 1108458, 1108461, 1108462, 1110177,
++            1110223, 1110225, 1115041, 1115044, 1125641, 1127128, 1128609, 1132796, 1137844, 1143010, 1143012 };
++        return wards.contains(id);
++    }
++
++    void AfterAbsorb(AuraEffect* /*aurEff*/, DamageInfo& /*dmgInfo*/, uint32& absorbAmount)
++    {
++        Player* player = GetTarget()->ToPlayer();
++        if (!player || !absorbAmount)
++            return;
++        struct Ward { uint32 enchants[3]; uint32 coreEnchant; char const* spell; uint32 coreSpells[2]; };
++        static Ward const kinds[] = {
++            { { 1587962, 284711, 982567 }, 1587962, "Presence of Mind", { 1112043, 1212043 } },
++            { { 1587982, 284716, 982572 }, 1587982, "Combustion", { 1111129, 1211129 } },
++            { { 1588050, 284752, 982605 }, 1588050, "Cold Snap", { 1111958, 1211958 } },
++        };
++        bool const coreWard = CoreWard(GetId());
++        for (Ward const& kind : kinds)
++            for (uint32 enchant : kind.enchants)
++            {
++                AuraEffect const* effect = player->GetAuraEffect(enchant, EFFECT_0);
++                if (!effect || !effect->GetAmount())
++                    continue;
++                bool const coreDid = coreWard && enchant == kind.coreEnchant;
++                std::vector<uint32> cut;
++                for (auto const& [spellId, known] : player->GetSpellMap())
++                    if (known->State != PLAYERSPELL_REMOVED && player->HasSpellCooldown(spellId) &&
++                        WcmeNamed(sSpellMgr->GetSpellInfo(spellId), kind.spell) &&
++                        !(coreDid && (spellId == kind.coreSpells[0] || spellId == kind.coreSpells[1])))
++                        cut.push_back(spellId);
++                for (uint32 spellId : cut)
++                    player->ModifySpellCooldown(spellId, effect->GetAmount());
++            }
++    }
++
++    void Register() override
++    {
++        AfterEffectAbsorb += AuraEffectAbsorbFn(spell_wcme_abjurers_ward::AfterAbsorb, EFFECT_0);
++    }
++};
++
 +// Starburst Barrage (979137) for Starsurge. Its text names Starfire, Starsurge and Arcane Barrage, but the core's
 +// aura_hero_druid_starburst_barrage (2 November) lets only Starfire and Arcane Barrage through, and with two scripts on
 +// one aura its filter also blocked ours, so Starsurge gave nothing. This gives the stack (979138) for a Starsurge cast.
@@ -14282,6 +14335,7 @@ index 0000000..3482956
 +    new wcme_shadow_crash_versions();
 +    new wcme_overflow_versions();
 +    new wcme_starburst_barrage_starsurge();
++    RegisterSpellScript(spell_wcme_abjurers_ward);
 +    new wcme_epic_batch4_spells();
 +    new wcme_epic_batch4_hooks();
 +    RegisterSpellScript(spell_wcme_area_keeper);

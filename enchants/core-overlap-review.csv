@@ -50,9 +50,9 @@ spell,name,quality,core_tables,core_cpp,status,outcome
 1581647,Pious Strikes,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
 1584166,Fire Walk With Me,Epic,,SpellInfo.cpp Unit.cpp,resolved,our Scorch helper removed (core does cast-while-moving and -10 yards; Scorch lost 20); Flamestrike field stays ours
 1584997,Holy Servitude,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
-1587962,Abjurer's Ward: Arcane,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
-1587982,Abjurer's Ward: Fire,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
-1588050,Abjurer's Ward: Frost,Rare,,AscensionMysticEnchantMechanics.cpp,to review,
+1587962,Abjurer's Ward: Arcane,Rare,,AscensionMysticEnchantMechanics.cpp,resolved,"our action rows replaced by spell_wcme_abjurers_ward on every Fire/Frost Ward: the core cuts 10 sec only for its CoA Wards and CoA spells, ours cut again (20 sec), counted Mana Shield, and missed nothing else; now each absorb cuts once, every version"
+1587982,Abjurer's Ward: Fire,Rare,,AscensionMysticEnchantMechanics.cpp,resolved,"our action rows replaced by spell_wcme_abjurers_ward on every Fire/Frost Ward: the core cuts 10 sec only for its CoA Wards and CoA spells, ours cut again (20 sec), counted Mana Shield, and missed nothing else; now each absorb cuts once, every version"
+1588050,Abjurer's Ward: Frost,Rare,,AscensionMysticEnchantMechanics.cpp,resolved,"our action rows replaced by spell_wcme_abjurers_ward on every Fire/Frost Ward: the core cuts 10 sec only for its CoA Wards and CoA spells, ours cut again (20 sec), counted Mana Shield, and missed nothing else; now each absorb cuts once, every version"
 1590974,Blood-Soaked Mutilation,Epic,coa_mystic_enchant_bonus,AscensionMysticEnchantMechanics.cpp,resolved,our Mutilate bonus removed (core bonus does it); Crimson Tempest/Garrote parts stay ours
 1988300,Omen of Doom,Epic,,AscensionMysticEnchantScripts.cpp,resolved,our aura link removed (core casts the timed buff on druid Clearcasting; ours watched every class and cut the buff short)
 852174,Shadow Siphon,Rare,core teaches its spell (TaughtSpells),,resolved,twin link and tooltip entry removed (James chose option 1): the core teaches and now scripts its own Shadow Siphon
