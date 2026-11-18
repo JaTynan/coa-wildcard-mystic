@@ -1,5 +1,13 @@
 -- Batch 3: broken enchants whose working twin is a redesigned version (its tooltip differs from ours).
 -- The WildcardEnchants addon shows the twin's tooltip for these, so the text matches what they do.
+-- Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our
+-- scripts do their own text in full, and the twins' core rules doubled it (two more combo points; Frozen Chaos back to 4
+-- charges on every crit, since re-applying an aura with charges resets them).
+-- Precision Impact (1180200) no longer links twin 290200 either: the core's bonus table does this enchant's own two
+-- damage bonuses, and the twin is a different effect (a 20% chance to reset Meteor) the text never mentions.
+-- Shadow Siphon (852174) no longer links twin 1180660: the core teaches its own spell (Shadow Siphon 913222, a Death
+-- Strike that heals 5% per disease), which it now scripts, so players had both. Cauterize (850093), Frost Shot (851989) and
+-- Hammerstorm (852412) have the same double, but their own spells still need code; their links go once that is done.
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (283140, 1583677, 2, 'WCME: Mass Killing Spree uses twin 1583677 (standard, tooltip 0.69 alike)'),
 (118123, 55440, 2, 'WCME: Glyph of Healing Wave uses twin 55440 (scripted, tooltip 0.68 alike)'),
@@ -9,7 +17,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (118033, 54824, 2, 'WCME: Glyph of Swiftmend uses twin 54824 (standard, tooltip 0.62 alike)'),
 (281402, 1579878, 2, 'WCME: Pack Alpha uses twin 1579878 (standard, tooltip 0.61 alike)'),
 (282093, 1581956, 2, 'WCME: Frugal Disposition uses twin 1581956 (scripted, tooltip 0.56 alike)'),
-(980673, 275614, 2, 'WCME: Frozen Chaos uses twin 275614 (standard, tooltip 0.56 alike)'),
 (283541, 1584951, 2, 'WCME: Primal Frenzy uses twin 1584951 (scripted, tooltip 0.53 alike)'),
 (81139, 1579878, 2, 'WCME: Pack Alpha uses twin 1579878 (standard, tooltip 0.51 alike)'),
 (81472, 270561, 2, 'WCME: Dominant Word: Shield uses twin 270561 (standard, tooltip 0.51 alike)'),
@@ -24,7 +31,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (913976, 1313980, 2, 'WCME: Initiative uses twin 1313980 (standard, tooltip 0.39 alike)'),
 (983730, 285387, 2, 'WCME: Spot Weakness uses twin 285387 (standard, tooltip 0.38 alike)'),
 (986075, 1590006, 2, 'WCME: Power Loop uses twin 1590006 (standard, tooltip 0.38 alike)'),
-(1180200, 290200, 2, 'WCME: Precision Impact uses twin 290200 (scripted, tooltip 0.37 alike)'),
 (81513, 1581956, 2, 'WCME: Frugal Disposition uses twin 1581956 (scripted, tooltip 0.36 alike)'),
 (978709, 284000, 2, 'WCME: Master of Arms uses twin 284000 (standard, tooltip 0.36 alike)'),
 (1356337, 956333, 2, 'WCME: T.N.T. uses twin 956333 (standard, tooltip 0.35 alike)'),
@@ -33,7 +39,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (81497, 270631, 2, 'WCME: Atonement uses twin 270631 (scripted, tooltip 0.33 alike)'),
 (81503, 1581832, 2, 'WCME: Desperation uses twin 1581832 (standard, tooltip 0.32 alike)'),
 (851989, 982145, 2, 'WCME: Frost Shot uses twin 982145 (standard, tooltip 0.32 alike)'),
-(979740, 275317, 2, 'WCME: Compound Power uses twin 275317 (standard, tooltip 0.30 alike)'),
 (274209, 1573136, 2, 'WCME: Dark Surgeon uses twin 1573136 (standard, tooltip 0.28 alike)'),
 (277049, 1578501, 2, 'WCME: En Garde! uses twin 1578501 (standard, tooltip 0.28 alike)'),
 (954359, 272057, 2, 'WCME: Hydromancer uses twin 272057 (standard, tooltip 0.28 alike)'),
@@ -41,7 +46,6 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (977711, 1585375, 2, 'WCME: Unstable Void uses twin 1585375 (standard, tooltip 0.22 alike)'),
 (978226, 274526, 2, 'WCME: Knight of the Eclipse uses twin 274526 (standard, tooltip 0.21 alike)'),
 (1328332, 911189, 2, 'WCME: Frost Warding uses twin 911189 (standard, tooltip 0.20 alike)'),
-(852174, 1180660, 2, 'WCME: Shadow Siphon uses twin 1180660 (standard, tooltip 0.19 alike)'),
 (118055, 54845, 2, 'WCME: Glyph of Starfire uses twin 54845 (standard, tooltip 0.19 alike)'),
 (1329076, 929074, 2, 'WCME: Master of Elements uses twin 929074 (standard, tooltip 0.18 alike)'),
 (1355340, 955339, 2, 'WCME: Torment the Weak uses twin 955339 (standard, tooltip 0.15 alike)'),

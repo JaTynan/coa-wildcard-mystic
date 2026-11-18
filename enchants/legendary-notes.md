@@ -62,9 +62,20 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 - Epic copies reported broken in talent testing (Demonic Reoccurence 272730, issue #148; Demonic Persistence 276506,
   issue #149) are separate enchants and are not covered here.
 
+## Tooltip differences to review
+
+Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate
+call (see its Decisions and Assumptions); check them again at every review, and fix the tooltip in the client
+patch or the mechanic when there is a chance.
+
+- Explosive Charge (1568152): The core's helper (1568153) is an area around the target, so the target itself also takes the extra 25%; the tooltip says other enemies only.
+- Hot Hands (1575104): Our Hot Streak has no Pyroblast bonus, so "only 35% against monsters" is applied as a +35% bonus against monsters.
+- Hot Hands (979765): Our Hot Streak has no Pyroblast bonus, so "only 35% against monsters" is applied as a +35% bonus against monsters.
+- Mana Fiend (977870): The client tooltip says Delirium is 5% of Intellect and restores 14% base mana per stack; the server follows the player descriptions (10% of Intellect, drained mana back over 12 sec) and uses +25% Intellect.
+
 ## Enchants
 
-### Abiding Fel Energy (84805)
+### Abiding Fel Energy (84805, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -84,7 +95,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Adorned by Light (991030)
+### Adorned by Light (991030, Legendary)
 
 **Status:** works (checked in #171)
 
@@ -96,7 +107,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Aimed Explosive Shot (81448)
+### Aimed Explosive Shot (81448, Legendary)
 
 **Status:** changed, awaiting in-game test (through its shot 81449, #171)
 
@@ -104,7 +115,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Amal'thazad's Curse (84512)
+### Amal'thazad's Curse (84512, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -118,9 +129,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Ambidextrous (977771)
+### Ambidextrous (977771, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -129,11 +140,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Ambidextrous (977771): with Single-Minded Fury, off-hand auto attacks trigger Dominant Strike (main hand); Bloodthirst, Execute and Rend trigger Southpaw Strike (off hand). Each has its own 16 sec cooldown.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -142,14 +154,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Apostle of Eredath (902185)
+### Apostle of Eredath (902185, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -166,7 +178,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Arcane Gunslinger (978227)
+### Arcane Gunslinger (978227, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -176,13 +188,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Arcane Reverberation (1100170)
+### Arcane Reverberation (1100170, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 29253a1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 29253a1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -194,19 +206,20 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Arcane Thunder Seer (997055)
+### Arcane Thunder Seer (997055, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Arcane Thunder Seer (997055): Arcane Missiles damage grants Arcane Thunder, one extra stack per Thunder Seer stack; Missile Barrage cannot activate while it is equipped.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -214,7 +227,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Armor of Faith (1582341)
+### Armor of Faith (1582341, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -224,9 +237,17 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Aspect of the Fox (1143164)
+### Aspect of the Fox (1143164, Legendary)
 
 **Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
+
+**What the pull requests said:**
+
+- #177: Aspect of the Fox:** Auto Shot keeps firing while moving (core patch 68; Steady Shot already worked). Reverses the earlier "leave it" decision. If the game client itself refuses Auto Shot while moving, the server can't fix that.
 
 **Assumptions:** Steady Shot already worked while moving through the aspect's own aura. Auto Shot needed a core change (patch 68). If the game client itself refuses Auto Shot while moving, the server cannot fix that; test it in game.
 
@@ -236,7 +257,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Assuaging Shadows (1571129)
+### Assuaging Shadows (1571129, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -251,13 +272,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Assuaging Shadows (965334)
+### Assuaging Shadows (965334, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -270,13 +291,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Astral Bomber (978235)
+### Astral Bomber (978235, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -292,14 +313,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Astral Storm (832617)
+### Astral Storm (832617, Legendary)
 
 **Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -312,7 +333,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** works; tooltip numbers broken. Enemies hit out of combat vanish briefly and return with Astral Realm (likely its design) | 2026-11-03
 
-### Astral Tempest (81479)
+### Astral Tempest (81479, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -332,7 +353,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Atonement (81497)
+### Atonement (81497, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -342,7 +363,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Bane of Havoc (1180019)
+### Bane of Havoc (1180019, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -360,7 +381,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Battle Fervor (84459)
+### Battle Fervor (84459, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -370,7 +391,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Battlemage (81258)
+### Battlemage (81258, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -380,7 +401,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Beast and Blade (978237)
+### Beast and Blade (978237, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -401,9 +422,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Benevolent Crusader (81251)
+### Benevolent Crusader (81251, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -411,11 +432,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bbb213c | #165 Bring 33 dead Legendary enchants to life | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Benevolent Crusader (81251): direct heals grant a stack of Benevolent Crusader; Smite, Holy Fire, Penance or Exorcism damage triggers a Holy Nova at the target, at most once every 3 sec.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -424,7 +446,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Blademaster (965862)
+### Blademaster (965862, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -445,7 +467,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Blazing Flame (1181400)
+### Blazing Flame (1181400, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -457,9 +479,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 - #171: Blazing Flame:** Blast Wave and Dragon's Breath grant Blazing Speed.
 
+**Assumptions:** Review 2026-11-18: no doubling. The core's rule and our action row both give Blazing Speed (1181401) on Blast Wave and Dragon's Breath; it doesn't stack, so it is one buff, and ours also covers rank 1 of the stock Blast Wave (11113) and Dragon's Breath (31661), which the core's list misses. The +2 sec per Scorch or Pyroblast (016, 1181404) is ours alone, and the core's effect 177 adds the time as it should.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Blessing of the Divines (965476)
+### Blessing of the Divines (965476, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -479,7 +505,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Blood Tracker: Deadly Bite (1570395)
+### Blood Tracker: Deadly Bite (1570395, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -494,7 +520,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Blood Venom (978219)
+### Blood Venom (978219, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -509,14 +535,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Blood and Guts (977906)
+### Blood and Guts (977906, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -529,7 +555,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Blood for the Blood God (983070)
+### Blood for the Blood God (983070, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -547,14 +573,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Bloodbath (1398215)
+### Bloodbath (1398215, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -567,7 +593,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Blooming Growth (965280)
+### Blooming Growth (965280, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -582,7 +608,23 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Bulwark (1590962)
+### Booming Thunder (965305, Legendary)
+
+**Status:** changed, awaiting in-game test (core patch 71)
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-17 | 508789d | not merged yet | none yet | - |
+
+**Assumptions:** Its 'Chain Lightning loses 10% less damage per jump' (a flat +10 on the jump multiplier) was added by the core as +10 to the 0.7-ish multiplier, so every jump hit about 10 times harder than the last. Core patch 71 (epic batch 5-7 review, PR #178) reads flat jump-multiplier modifiers as percentage points.
+
+**Sources:** our client spell data (Spell.dbc); core source (SpellInfo.cpp, Player::ApplySpellMod)
+
+**Decisions:** 2026-11-17 James: fix the base problems found in the review.
+
+**Testing:** nothing recorded yet
+
+### Bulwark (1590962, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -592,7 +634,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Bulwark (978724)
+### Bulwark (978724, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -602,7 +644,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Burning Darkness (990190)
+### Burning Darkness (990190, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -617,7 +659,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Carnage Incarnate (1590982)
+### Carnage Incarnate (1590982, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -627,7 +669,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Carnage Incarnate (986008)
+### Carnage Incarnate (986008, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -637,13 +679,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Cauterizing Flames (86460)
+### Cauterizing Flames (86460, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -661,14 +703,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Champion of Justice (986000)
+### Champion of Justice (986000, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | d5ec19a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | d5ec19a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -683,7 +725,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Chosen of Elune (1398174)
+### Chosen of Elune (1398174, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -693,23 +735,32 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Circle of Life (301000)
+### Circle of Life (301000, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 015-runaway-procs.sql: Review 2026-11-18: Circle of Life (301000) also gets its own Halo (Circle of Life) cooldown cuts (rules 1 and 2): its twin's core rule only cuts a different Halo (2304803), so nothing did them before.
 
 **What the pull requests said:**
 
 - #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
 
+**Assumptions:** Review 2026-11-18: the Halo (Circle of Life) cooldown cuts (4 sec from Flash Heal or Greater Heal, 3 sec from Circle of Healing or Prayer of Mending) were done by nobody: the linked twin 1568799's core rule cuts a different Halo (2304803). Two action rows (015, rules 1 and 2) now do them. The twin link stays (harmless).
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Colossus Smash (1186362)
+### Colossus Smash (1186362, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -719,39 +770,46 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Compound Power (979740)
+### Compound Power (979740, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Compound Power (979740): successful Steady Shots and Arcane Shots award 2 combo points (the data's own trigger gave 1).
+- 003-twin-links-close.sql: Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our scripts do their own text in full, and the twins' core rules doubled it (two more combo points;
 
 **What the pull requests said:**
 
 - #171: Compound Power:** Steady Shot and Arcane Shot award 2 combo points.
 
+**Assumptions:** Review 2026-11-18: our script gives the 2 combo points on each damaging Steady Shot or Arcane Shot; file 003 also linked twin 275317, whose core rules give 2 more, so each shot gave 4. The link is removed (and the addon now shows this enchant's own tooltip).
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Consecrated Strikes (965295)
+### Consecrated Strikes (965295, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Consecrated Strikes (965295): Crusader Strike, Divine Storm and Hammer of the Righteous have a chance to create Consecrated Ground. No proc chance survives in any record; 35% is assumed (James: near-constant uptime with slow weapons, no extra clutter with fast ones).
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -761,9 +819,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Controlled Burn (81407)
+### Controlled Burn (81407, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -772,11 +830,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Controlled Burn (81407): Chaos Bolt refreshes Immolate; Chaos Bolt, Incinerate, Searing Pain and Scorch grant Controlled Burn, which keeps Immolate on the target through the next Conflagrate; Conflagrate applies Heating Up!; Scorch deals 20% more to targets with your Conflagrate on them.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -785,13 +844,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Corrupted Bear Form (99634)
+### Corrupted Bear Form (99634, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -805,7 +864,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Crazy Cultist (1568195)
+### Crazy Cultist (1568195, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -820,7 +879,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Crazy Cultist (84529)
+### Crazy Cultist (84529, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -835,7 +894,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Cremation (1573649)
+### Cremation (1573649, Legendary)
 
 **Status:** tested (see test notes)
 
@@ -843,9 +902,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
+**Assumptions:** Review 2026-11-18, queued (option 1): the core teaches this enchant's own Cremation (1573650: 2x the remaining Ignite, Pyroblast and Living Bomb damage over 1573651), but nothing scripts its dummy, so it does nothing; file 006 also teaches the twin's Cremation (278067: 7x Fireball, Pyroblast, Living Bomb or Searing Brand), which the core scripts. Players see both. The core's script is hard-wired to 278067's numbers, so 1573650 needs its own code; once that's done, our teach of 278067 goes.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** pass (with Living Bomb) | 2026-11-03
 
-### Crimson Champion (977727)
+### Crimson Champion (977727, Legendary)
 
 **Status:** tested (see test notes)
 
@@ -855,7 +918,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** pass (duel) | 2026-11-03
 
-### Crimson Defense (1572131)
+### Crimson Defense (1572131, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -874,7 +937,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Cryotherapist (86576)
+### Cryotherapist (86576, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -884,9 +947,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Curse of Arugal (982806)
+### Curse of Arugal (982806, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -896,11 +959,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Curse of Arugal (982806): Cat finishing moves have a 20% chance per combo point to grant Goldrinn's Guile: your next Mind Blast or Vampiric Touch is instant and deals 20% more damage (the builder tooltip's number; the client data has 40%), awards 2 combo points and a stack of Goldrinn's Focus, and spends it. While Goldrinn's Fury is up, Cat ability damage applies a stack of Arugal's Gift. Darkness (no Ascension data survives; James's design): bleed or Shadow periodic damage, and combo point generators in Cat Form, build Darkness, at most one stack every 2.5 sec, up to 5, lasting 15 sec after the last gain. Mind Blast spends it all for 4% more damage per stack (20% at 5, on par with Goldrinn's Guile's 20%; James chose it), as extra Shadow damage.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -910,13 +974,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Dark Ranger (997115)
+### Dark Ranger (997115, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -934,15 +998,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Dark Surgeon (978209)
+### Dark Surgeon (978209, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -956,13 +1020,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Darkmaster (983180)
+### Darkmaster (983180, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -982,7 +1046,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Deadly Bite (965292)
+### Deadly Bite (965292, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1010,7 +1074,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Deathbringer (965501)
+### Deathbringer (965501, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1028,13 +1092,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Defias Gunslinger (997047)
+### Defias Gunslinger (997047, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1053,15 +1117,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Demolisher (977864)
+### Demolisher (977864, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1075,13 +1139,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Demonic Influence (965313)
+### Demonic Influence (965313, Legendary)
 
 **Status:** handled (PvE by its data, PvP part by patch 65)
 
 **Testing:** nothing recorded yet
 
-### Demonic Persistence (990130)
+### Demonic Persistence (990130, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1089,6 +1153,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 |---|---|---|---|---|
 | 2026-11-16 | ead73f1 | #173 Medium legendary fixes, batch 2 | build47 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | b01de40 | #173 Medium legendary fixes, batch 2 | build47 (2026-11-15) | 2026-11-16 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1100,6 +1165,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 - #173: `65-enchant-tuning-auras.ps1` (core):** the core only applies Ascension's PvE and PvP damage auras (341 and 322) to an allowlist of spells. This adds Pack Tactics, Demonic Persistence, Demonic Influence and Gurubashi Berserker. That fully fixes Demonic Influence; the others still need their scripts.
 - #173: Demonic Persistence:** Incinerate or Mind Blast sacrifices your weakest Wild Imp. It explodes for Fire damage and empowers your demon (+20% damage against creatures, up to 4 stacks).
+- #177: Demonic Persistence (990130):** Wild Imps get the client's own pet aura (990131). Their critical strikes take 1 sec off Hand of Gul'dan and restore 3% of your demon's mana, at most once a second.
 
 **Assumptions:** Imp crits: 1 sec off Hand of Gul'dan and 3% of your demon's mana, at most once a second (tooltip numbers), through the client's own pet aura 990131. The tooltip's "deteriorate over time" gives no rate, so it is taken to be the imps' summon duration.
 
@@ -1109,18 +1175,23 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Demonic Reoccurence (1570995)
+### Demonic Reoccurence (1570995, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Demonic Reoccurence (1570995): Metamorphosis' cooldown cut and its smaller armor bonus are the enchant's own data. In exchange, Metamorphosis no longer lowers your chance to be critically hit or the duration of stuns and snares: those parts of the form (54879 / 1154879 and 54817 / 1154817) are removed while you have the enchant, checked every 0.25 sec.
 - 046-legendary-gaps.sql: Demonic Reoccurence (1570995): Metamorphosis no longer lowers critical hit chance taken or stun / snare duration.
+
+**What the pull requests said:**
+
+- #177: Demonic Reoccurence (1570995):** its cooldown cut and smaller armor bonus already worked from data. The trade-off was missing: Metamorphosis no longer lowers your chance to be critically hit or stun / snare duration.
 
 **Assumptions:** The cooldown cut and smaller armor bonus already worked from its data (they target the Wildcard Metamorphosis 1147241). Only the trade-off was missing: the form's crit-taken and stun / snare parts (54879 / 1154879, 54817 / 1154817) are now removed. Your talent test of the epic copy 272730 (issue #148) found it doing nothing; that copy's modifiers name no spell and are not fixed here.
 
@@ -1130,7 +1201,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Demonology Mastery (1134965)
+### Demonology Mastery (1134965, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1148,7 +1219,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Deranged Druid (1568216)
+### Deranged Druid (1568216, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1163,7 +1234,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Deranged Druid (84531)
+### Deranged Druid (84531, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1178,13 +1249,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Disciple of Arugal (982980)
+### Disciple of Arugal (982980, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1203,14 +1274,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Disciple of the Tides (978234)
+### Disciple of the Tides (978234, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1227,17 +1298,21 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Discipline Mastery (1134969)
+### Discipline Mastery (1134969, Legendary)
 
 **Status:** works from its data (checked in #171 and again 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
 
 **Assumptions:** Its mana cost cut (Power Word: Shield, Flash Heal, Penance) and Divine Aegis +5 points are ordinary spell modifiers the core applies; the core recalculates the Divine Aegis talent when the modifier arrives. Only its placeholder dummy does nothing.
 
@@ -1245,9 +1320,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Divine Purpose (965421)
+### Divine Purpose (965421, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -1255,11 +1330,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Divine Purpose (965421): Penance damage grants Divine Purpose, Penance healing grants Divine Judgement.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -1268,7 +1344,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Dominant Word: Shield (81472)
+### Dominant Word: Shield (81472, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1278,7 +1354,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Double Down (978742)
+### Double Down (978742, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1293,14 +1369,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Dragon Roar (1590910)
+### Dragon Roar (1590910, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1315,14 +1391,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Dragon Warrior (954252)
+### Dragon Warrior (954252, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1336,7 +1412,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Eccentric Elementalist (1568237)
+### Eccentric Elementalist (1568237, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1351,7 +1427,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Eccentric Elementalist (84533)
+### Eccentric Elementalist (84533, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1366,13 +1442,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Edge of Fury (986234)
+### Edge of Fury (986234, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1389,9 +1465,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Eldritch Knight (81116)
+### Eldritch Knight (81116, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -1399,11 +1475,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Eldritch Knight (81116): melee abilities while Eldritch Weapon is up grant Eldritch Knight (Eldritch Wrath grants it itself); Eldritch Wrath hits apply Eldritch Condemnation. While Eldritch Knight is up, melee abilities restore mana and add a stack of Anomaly; full stacks become Eldritch Horror.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -1412,26 +1489,30 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Elemental Assassin (978229)
+### Elemental Assassin (978229, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 8da4ad7 | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Elemental Assassin (978229): Backstab grants Elemental Assassin (978642, up to 2 stacks; its bonus is a dummy in the data). A stack makes your next Flame Shock or Earth Shock deal 110% more direct damage, or Ice Shock 70% more (the builder tooltip's numbers), and spending it takes 5 sec off Stormstrike's cooldown. Shaman Shocks grant the Elemental Blade of their element: Flame Shock the Fire blade (978646), Frost Shock and Ice Shock the Ice blade (978648), Earth Shock the Earth blade (978644). Each blade carries a hidden helper (978844 / 978845 / 978651) that lets Backstab be used from any side (aura 334, handled by the core); the blades' Stormstrike bonus is their own data (misc 38 / 36, applied in wcme_kit_target_mods). Each unique blade adds 33% to Backstab (12% against players) and, with all three, Backstab and Stormstrike hits deal 40% more as Elemental damage (985319) within 5 yards (wcme_last_legendary_hooks). Reverberation's Echoes of Earth gives +40 (60% in all) and Booming Echoes' capstone buff +10 (15%) while the enchant is on.
-- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
+- Damage parts of the last legendaries. Explosive Charge (1568152) used to be here; review 2026-11-18 found the core already does it (coa_mystic_enchant_proc rule on every Explosive Shot version, ticks included, run by spell_ascension_mystic_enchant_proc), so ours made its splash happen twice and was removed. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
+- 004-twin-links-dedup.sql: Review 2026-11-18: Elemental Assassin (978229) no longer links twin 274673; file 046's scripts give its own Backstab buff (978642), and the twin's 274679 doubled the next Shock's bonus.
 - 046-legendary-gaps.sql: Elemental Assassin (978229): Shocks grant the Elemental Blade of their element (978644 / 978646 / 978648), each with its Backstab-from-any-side helper;
 
 **What the pull requests said:**
 
 - #171: Elemental Assassin:** Backstab stacks it (up to 2). The next Flame or Earth Shock deals 110% more and Ice Shock 70% more, and spending a stack takes 5 sec off Stormstrike.
+- #177: Elemental Assassin (978229):** the earlier note was wrong: the Elemental Blades do exist in our client (978644 / 978646 / 978648).
 
-**Assumptions:** Blade per Shock: Flame Shock gives Fire, Frost Shock and Ice Shock give Ice, Earth Shock gives Earth. Backstab +33% per unique blade (the tooltip's number) and 12% against players (taken from the standard Elemental Blade 274678, since this version's player value is level-scaled data we cannot read). The all-three burst (40% within 5 yards) applies to Backstab and Stormstrike. Reverberation's next-Shock bonus becomes 60% and Booming Echoes' school bonus 15%, from the data's +40 / +10. The earlier note that the blades had no spells in our client was wrong: 978644, 978646 and 978648 are there.
+**Assumptions:** Blade per Shock: Flame Shock gives Fire, Frost Shock and Ice Shock give Ice, Earth Shock gives Earth. Backstab +33% per unique blade (the tooltip's number) and 12% against players (taken from the standard Elemental Blade 274678, since this version's player value is level-scaled data we cannot read). The all-three burst (40% within 5 yards) applies to Backstab and Stormstrike. Reverberation's next-Shock bonus becomes 60% and Booming Echoes' school bonus 15%, from the data's +40 / +10. The earlier note that the blades had no spells in our client was wrong: 978644, 978646 and 978648 are there. Review 2026-11-18: file 004 linked twin 274673, whose core rule gives 274679 (+130% to your next Shaman Shock) on Backstab and Ambush, on top of our own Backstab buff 978642 (+110% Flame/Earth Shock, +70% Ice Shock), so the next Shock got both. The link is removed; 004's placeholder (the enchant's own trigger) stays, since our script gives 978642.
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc) (Elemental Blade 300010 text; blades 978644 / 978646 / 978648; helpers 978651 / 978844 / 978845; 985318 / 985319 / 985325 / 985326); standard version 274673-274678
 
@@ -1439,7 +1520,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Elemental Destruction (978231)
+### Elemental Destruction (978231, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1449,7 +1530,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Elemental Lord (990200)
+### Elemental Lord (990200, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1470,7 +1551,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Endless Agony (1570908)
+### Endless Agony (1570908, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1485,7 +1566,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Endless Agony  (965311)
+### Endless Agony  (965311, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1495,7 +1576,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Enslave Demon (1398164)
+### Enslave Demon (1398164, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1505,7 +1586,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Evoker (953308)
+### Evoker (953308, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1520,7 +1601,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 **What the server does (from the code and SQL comments):**
 
 - Evoker (953308): casting Arcane Missiles with Missile Barrage up (spending it) grants Arcane Evoked (better Brain Freeze chance); casting Fireball with Brain Freeze up grants Fire Evoked (better Missile Barrage chance); either grants Frost Evoked (faster Frostbolt, which then grants Evoker).
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -1529,46 +1610,59 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Explosive Charge (1568152)
+### Explosive Charge (1568152, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** handled by the core (checked 2026-11-18)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
+| 2026-11-18 | d8f9215 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
-- 045-last-legendaries.sql: Explosive Charge (1568152): 25% of Explosive Shot's damage to other enemies within 5 yards (its aura 354 had no handler for this enchant; done in the damage hook wcme_last_legendary_hooks, so it needs no rows here).
+- Damage parts of the last legendaries. Explosive Charge (1568152) used to be here; review 2026-11-18 found the core already does it (coa_mystic_enchant_proc rule on every Explosive Shot version, ticks included, run by spell_ascension_mystic_enchant_proc), so ours made its splash happen twice and was removed. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
+- 045-last-legendaries.sql: Explosive Charge (1568152): was done in the damage hook wcme_last_legendary_hooks; review 2026-11-18 found the core already does it (its own enchant rule), so the hook was removed.
 
-**Assumptions:** Explosive Shot's ticks are triggered casts that raise no procs, so the splash is done in a damage hook on every Explosive Shot hit; the 25% is taken from the hit before critical strikes and mitigation.
+**What the pull requests said:**
+
+- #177: Explosive Charge (1568152):** every Explosive Shot hit (its ticks included) also deals 25% of its damage to other enemies within 5 yards. Its aura 354 had no handler. Explosive Shot's ticks are triggered casts that raise no procs, so this runs in a damage hook.
+- #177: Assumptions for these four are in `enchants/legendary-notes.csv`: Bile doesn't spend stacks; the disease bonus applies per stack to diseases and Insect Swarm (Plague); the Explosive Charge share is taken before crits and mitigation; only other players count for Social Distancing.
+
+**Assumptions:** Review 2026-11-18: the core already does this enchant (coa_mystic_enchant_proc rule on every Explosive Shot version, ticks included because its proc row lets triggered spells proc; spell_ascension_mystic_enchant_proc casts Explosive Charge 1568153 with 25% of each hit). Our #177 damage hook did the splash a second time and is removed in #178; until a build with #178 is installed, other enemies take 50% instead of 25%. The earlier note here was wrong twice: Explosive Shot's ticks can proc, and aura 354 does have a handler (the core's enchant script).
 
 **Sources:** our client spell data (Spell.dbc)
 
+**Tooltip differs from what the server does (review):** The core's helper (1568153) is an area around the target, so the target itself also takes the extra 25%; the tooltip says other enemies only.
+
 **Testing:** nothing recorded yet
 
-### Feeding the Abyss (1154364)
+### Feeding the Abyss (1154364, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-18 | 02714a7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Feeding the Abyss (1154364): your dodge is gone (the data's own -100% dodge). While the enchant is on, Abyssal Hunger (9990020, hidden) has a chance equal to 10% plus your spell critical strike chance to absorb a physical hit fully, storing the damage. The first stored hit shows Feeding the Abyss (1154363, "Harm is being stored...", 10 sec; its own 1-point absorb is switched off by spell_wcme_feeding_the_abyss_store). When it fades the store is fed to the abyss: your next Life Tap spends it as Shadow damage (1154363) split between up to 5 enemies within 10 yards, and heals you and your pet for half of the damage it dealt each.
-- 027-medium-legendaries-4.sql: Feeding the Abyss (1154364): Abyssal Hunger stores fully absorbed physical hits for the next Life Tap (150 has its proc and script); the visible "Harm is being stored" buff (1154363) no longer absorbs anything itself.
+- Feeding the Abyss (1154364) used to be here (with Abyssal Hunger 9990020 and a script on 1154363); review 2026-11-18 found the core already does the whole enchant (AscensionMysticEnchantScripts: physical hits swallowed at 10% plus Shadow spell crit, stored 10 sec in 1154365, then the next Life Tap casts Abyssal Eruption 1154367), so players had two absorb rolls and two payoffs.
+- 027-medium-legendaries-4.sql: Feeding the Abyss (1154364) was dropped in review 2026-11-18: the core already does the whole enchant (its own absorb, store and Life Tap eruption), so ours ran a second absorb roll and a second payoff.
 
 **What the pull requests said:**
 
 - #175: Feeding the Abyss (1154364):** new hidden custom spell Abyssal Hunger (9990020), with a chance of 10% plus your spell crit to absorb a physical hit fully and store it. The first stored hit shows "Harm is being stored..." for 10 sec; when it fades, your next Life Tap deals the store as Shadow damage split between up to 5 enemies within 10 yards, and heals you and your pet for half of the damage dealt each.
 
+**Assumptions:** Review 2026-11-18: the core already does the whole enchant (AscensionMysticEnchantScripts: physical melee and spell hits are swallowed at 10% plus your Shadow spell crit and stored; after 10 sec (1154365) the next Life Tap casts Abyssal Eruption 1154367, its data's damage and heals plus 31% of the stored damage, capped at your max health). Our version (Abyssal Hunger 9990020 and scripts on 1154364 and 1154363) ran its own absorb roll and its own Life Tap payoff on top, so players had about twice the absorb chance and two payoffs. Ours is removed; 9990020 keeps its spell row (the client patch has it) but nothing applies it.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Fel Charge (92438)
+### Fel Charge (92438, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1579,14 +1673,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Fel Corruption (984165)
+### Fel Corruption (984165, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 89a6e34 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 89a6e34 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1600,7 +1694,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Fel Strike (84806)
+### Fel Strike (84806, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1622,7 +1716,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Felborne (101086)
+### Felborne (101086, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1642,7 +1736,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Feral Frenzy (1180240)
+### Feral Frenzy (1180240, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1652,7 +1746,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Fingers of Death (978208)
+### Fingers of Death (978208, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1667,14 +1761,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Fire Watch (978220)
+### Fire Watch (978220, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | f9806da | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1686,19 +1781,23 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Flame Ascendance (1398169)
+### Flame Ascendance (1398169, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Flame Ascendance (1398169): teaches Flame Ascendance (2110000: form, Chain Lightning as Lava Beam and Lava Burst's cooldown halved are its own data). While in the form, casting Flame Shock finishes the cooldowns of Lava Burst and Lava Beam (2110123, 2110124). Lava Burst's critical chance above 100% is added to its critical damage (in wcme_kit6_hooks).
-- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
+- Damage parts of the last legendaries. Explosive Charge (1568152) used to be here; review 2026-11-18 found the core already does it (coa_mystic_enchant_proc rule on every Explosive Shot version, ticks included, run by spell_ascension_mystic_enchant_proc), so ours made its splash happen twice and was removed. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 - 045-last-legendaries.sql: Flame Ascendance (1398169): Flame Shock in the form finishes Lava Burst and Lava Beam;
+
+**What the pull requests said:**
+
+- #177: Flame Ascendance (1398169):** in the form, Flame Shock finishes Lava Burst and Lava Beam; Lava Burst's critical chance above 100% adds to its critical damage.
 
 **Assumptions:** Excess critical chance above 100% adds the same percentage of the hit to the critical damage; Lava Beam cooldowns finished by spell id (2110123, 2110124).
 
@@ -1706,7 +1805,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Flame On! (965293)
+### Flame On! (965293, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1720,7 +1819,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Flare Strike (1591051)
+### Flare Strike (1591051, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1730,7 +1829,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Flashpoint Operative (984448)
+### Flashpoint Operative (984448, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1745,7 +1844,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Forbidden Technique (954326)
+### Forbidden Technique (954326, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1753,7 +1852,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1772,7 +1871,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Frost Bomb (1590912)
+### Frost Bomb (1590912, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1789,7 +1888,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Frost Bomb (954262)
+### Frost Bomb (954262, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1806,7 +1905,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Frost Lich (965504)
+### Frost Lich (965504, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1822,7 +1921,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Frost Mastery (1134961)
+### Frost Mastery (1134961, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1840,36 +1939,46 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Frozen Chaos (980673)
+### Frozen Chaos (980673, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 99174fa | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Frozen Chaos (980673): Frostbolt, Ice Lance, Cone of Cold and Frost Shock critical hits give a charge of Frozen Chaos (275616: next Chaos Bolt has no cooldown and deals more damage; up to 4 charges) and reset Chaos Bolt's cooldown. Casting Conflagrate grants Splintered Chaos (980678) and, if you know Fingers of Frost, Fingers of Frost.
+- 003-twin-links-close.sql: Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our scripts do their own text in full, and the twins' core rules doubled it (two more combo points;
 
 **What the pull requests said:**
 
 - #171: Frozen Chaos:** frost crits give Frozen Chaos charges (up to 4) and reset Chaos Bolt. Conflagrate gives Splintered Chaos, and Fingers of Frost if known.
 
+**Assumptions:** Review 2026-11-18: our script gives one charge of Frozen Chaos per crit (up to 4) and resets Chaos Bolt; file 003 also linked twin 275614, whose core rules cast 275616 again on Frostbolt, Frostfire Bolt, Ice Lance and Cone of Cold crits, which put it back to 4 charges every time (re-applying an aura with charges resets them) and added Frostfire Bolt, which this text doesn't name. The link is removed (and the addon now shows this enchant's own tooltip).
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Fury Mastery (1134994)
+### Fury Mastery (1134994, Legendary)
 
 **Status:** works from its data (checked 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
 
 **Assumptions:** Off-hand hit chance (aura 356) is handled in Unit::MeleeSpellMissChance and crit chance (aura 290) by the core.
 
@@ -1877,15 +1986,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Fury of the Titans (977810)
+### Fury of the Titans (977810, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1902,14 +2011,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Gift of Light (1277670)
+### Gift of Light (1277670, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1922,7 +2031,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Glimmer of Light (1180300)
+### Glimmer of Light (1180300, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -1932,16 +2041,16 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Grove Ranger (997124)
+### Grove Ranger (997124, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 33ea415 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | d62d6b6 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e1f3868 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1961,13 +2070,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Growing Light (81520)
+### Growing Light (81520, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1980,17 +2089,21 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Guardians of the Grove (1567585)
+### Guardians of the Grove (1567585, Legendary)
 
 **Status:** handled by the core (checked 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
 
 **Assumptions:** AscensionMysticEnchantMechanics.cpp handles this copy (Treants heal).
 
@@ -1998,7 +2111,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Guardians of the Grove (81467)
+### Guardians of the Grove (81467, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2009,7 +2122,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Gurubashi Berserker (983135)
+### Gurubashi Berserker (983135, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2031,17 +2144,22 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Hand of Gul'dan (1398206)
+### Hand of Gul'dan (1398206, Legendary)
 
 **Status:** works from its data (checked 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
+- #177: Demonic Persistence (990130):** Wild Imps get the client's own pet aura (990131). Their critical strikes take 1 sec off Hand of Gul'dan and restore 3% of your demon's mana, at most once a second.
 
 **Assumptions:** The taught Hand of Gul'dan (2304611) uses effects the core handles (delayed trigger 183, damage, summon of 4 Wild Imps 855352). The enchant's three modifiers name no target spell, so they do nothing; treated as placeholders. Needs an in-game check that the Wild Imps appear.
 
@@ -2049,7 +2167,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Harbinger of Flame (965505)
+### Harbinger of Flame (965505, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2066,18 +2184,22 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Harbinger of Pestilence (990020)
+### Harbinger of Pestilence (990020, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Harbinger of Pestilence (990020): Insect Swarm becomes Insect Swarm (Plague) (the core's transform rule). Wrath and Haunt hits give Harbinger of Pestilence (990022, up to 5; 2 stacks when the target is a player). Wrath has a 20% chance to trigger Nightfall (Shadow Trance, 17941) if you know Nightfall. Haunt cast while you have stacks: Harbinger's Bile (990024) on up to 5 enemies near the target, its damage times your stacks; each stack also takes 0.2 sec off that Haunt's cooldown. The stacks' +22% disease damage (misc 38, "versus creatures") is applied in wcme_kit_target_mods to diseases and Insect Swarm (Plague).
 - 045-last-legendaries.sql: Harbinger of Pestilence (990020): Wrath / Haunt stacks, Nightfall from Wrath, Harbinger's Bile on Haunt, Haunt cooldown per stack, disease damage per stack against creatures (its proc had no proc flags).
+
+**What the pull requests said:**
+
+- #177: Harbinger of Pestilence (990020):** Wrath and Haunt hits give Harbinger stacks (2 against players), Wrath has 20% to trigger Nightfall if you know it, and Haunt with stacks casts Harbinger's Bile on up to 5 enemies (damage times stacks) and takes 0.2 sec per stack off Haunt's cooldown. The stacks' +22% disease damage applies against creatures. Its proc had no proc flags.
 
 **Assumptions:** Harbinger's Bile deals its damage times your stacks and does not spend them; the +22% disease damage applies per stack against creatures only (misc 38) to diseases and Insect Swarm (Plague); Haunt cooldown -0.2 sec per stack at cast.
 
@@ -2085,7 +2207,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Healing Rain (1398222)
+### Healing Rain (1398222, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2095,7 +2217,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Heavyweight (977700)
+### Heavyweight (977700, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2114,7 +2236,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Holy Spirit (977921)
+### Holy Spirit (977921, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2129,7 +2251,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Holy Supernova (81190)
+### Holy Supernova (81190, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2139,13 +2261,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Holy Templar (1554908)
+### Holy Templar (1554908, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2162,13 +2284,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Hoplite (978217)
+### Hoplite (978217, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2185,18 +2307,19 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Hot Hands (1575104)
+### Hot Hands (1575104, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 1d8de01 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Hot Hands (979765 / 1575104): Pyroblast counts toward Hot Streak (patches/66-enchant-core-hooks.ps1 and sql 026), and a Pyroblast cast with Hot Streak up costs no mana and, against monsters, deals 35% more (wcme_last_legendary_hooks; players get no bonus). Your spells crit 8% more often on targets with your Living Bomb (Hot Hands mark 9990019, kept as long as the bomb). Fireball or Fire Blast hits on a Living Bomb target add a stack of Living Fire (979848: +8% damage and crit for your next Pyroblast, up to 5), used up by that Pyroblast. Instant Pyroblasts add a stack of Superheated (984658: +3% Fire damage and haste, up to 8) without refreshing its duration.
-- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
+- Damage parts of the last legendaries. Explosive Charge (1568152) used to be here; review 2026-11-18 found the core already does it (coa_mystic_enchant_proc rule on every Explosive Shot version, ticks included, run by spell_ascension_mystic_enchant_proc), so ours made its splash happen twice and was removed. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 - 026-medium-legendaries-3-extras.sql: Hot Hands (979765 / 1575104): Pyroblast joins Hot Streak's spell mask (the core's Hot Streak script still ignores Pyroblast unless Hot Hands is on you, so nothing changes for anyone else), Living Fire, Superheated, the Living Bomb crit mark and free Hot Streak Pyroblasts.
 
 **What the pull requests said:**
@@ -2204,6 +2327,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 - #174: Hot Hands (979765 / 1575104)**:
 - #174: Pyroblast counts toward Hot Streak. The core already supported this for a different Hot Hands spell; patch 66 adds ours, and `026` adds Pyroblast to Hot Streak's proc mask. For anyone without Hot Hands, the core's own check still ignores Pyroblast, so nothing changes for them.
 - #174: Targets with your Living Bomb get a new mark, Hot Hands (9990019): +8% spell crit for you, lasting as long as the bomb.
+- #177: Hot Hands:** a Hot Streak Pyroblast deals 35% more to monsters, none to players. Our Hot Streak has no Pyroblast bonus of its own, so this is the tooltip's number applied as a bonus.
 
 **Assumptions:** Our Hot Streak gives Pyroblast no damage bonus, so the tooltip's "only 35% against monsters" is applied as +35% against monsters (none against players) to the first Pyroblast hit within 5 sec of a Hot Streak cast.
 
@@ -2211,20 +2335,23 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Decisions:** 2026-11-17 James: fix every known gap.
 
+**Tooltip differs from what the server does (review):** Our Hot Streak has no Pyroblast bonus, so "only 35% against monsters" is applied as a +35% bonus against monsters.
+
 **Testing:** nothing recorded yet
 
-### Hot Hands (979765)
+### Hot Hands (979765, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 1d8de01 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Hot Hands (979765 / 1575104): Pyroblast counts toward Hot Streak (patches/66-enchant-core-hooks.ps1 and sql 026), and a Pyroblast cast with Hot Streak up costs no mana and, against monsters, deals 35% more (wcme_last_legendary_hooks; players get no bonus). Your spells crit 8% more often on targets with your Living Bomb (Hot Hands mark 9990019, kept as long as the bomb). Fireball or Fire Blast hits on a Living Bomb target add a stack of Living Fire (979848: +8% damage and crit for your next Pyroblast, up to 5), used up by that Pyroblast. Instant Pyroblasts add a stack of Superheated (984658: +3% Fire damage and haste, up to 8) without refreshing its duration.
-- Damage parts of the last legendaries: - Explosive Charge (1568152): every Explosive Shot hit (any version, its ticks included; the ticks are triggered casts, which raise no procs, so this is a damage hook) also deals 25% of its damage (the data's own amount) to every other enemy within 5 yards of the target, as Explosive Charge (1568153). The data's aura 354 has no handler for this enchant. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
+- Damage parts of the last legendaries. Explosive Charge (1568152) used to be here; review 2026-11-18 found the core already does it (coa_mystic_enchant_proc rule on every Explosive Shot version, ticks included, run by spell_ascension_mystic_enchant_proc), so ours made its splash happen twice and was removed. - Flame Ascendance (1398169): when Lava Burst's critical chance on the target is above 100% (so it always crits), the excess is added to its critical damage bonus (+1% of the hit per 1% excess). - Harbinger of Pestilence stacks (990022): +22% per stack to diseases and Insect Swarm (Plague) against creatures (its misc 38, which the core ignores). - Hot Hands (979765 / 1575104): a Pyroblast cast with Hot Streak deals 35% more to monsters (the first hit within 5 sec of the cast). - Elemental Assassin (978229): Backstab +33% per unique Elemental Blade (12% against players); with all three blades, Backstab and Stormstrike hits also deal 40% as Elemental Blade damage (985319) to enemies within 5 yards of the target. Echoes of Earth (965977, from Reverberation) +40 and Booming Echoes' buff (863375) +10 while it is on.
 - 026-medium-legendaries-3-extras.sql: Hot Hands (979765 / 1575104): Pyroblast joins Hot Streak's spell mask (the core's Hot Streak script still ignores Pyroblast unless Hot Hands is on you, so nothing changes for anyone else), Living Fire, Superheated, the Living Bomb crit mark and free Hot Streak Pyroblasts.
 
 **What the pull requests said:**
@@ -2232,6 +2359,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 - #174: Hot Hands (979765 / 1575104)**:
 - #174: Pyroblast counts toward Hot Streak. The core already supported this for a different Hot Hands spell; patch 66 adds ours, and `026` adds Pyroblast to Hot Streak's proc mask. For anyone without Hot Hands, the core's own check still ignores Pyroblast, so nothing changes for them.
 - #174: Targets with your Living Bomb get a new mark, Hot Hands (9990019): +8% spell crit for you, lasting as long as the bomb.
+- #177: Hot Hands:** a Hot Streak Pyroblast deals 35% more to monsters, none to players. Our Hot Streak has no Pyroblast bonus of its own, so this is the tooltip's number applied as a bonus.
 
 **Assumptions:** Our Hot Streak gives Pyroblast no damage bonus, so the tooltip's "only 35% against monsters" is applied as +35% against monsters (none against players) to the first Pyroblast hit within 5 sec of a Hot Streak cast.
 
@@ -2239,9 +2367,11 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Decisions:** 2026-11-17 James: fix every known gap.
 
+**Tooltip differs from what the server does (review):** Our Hot Streak has no Pyroblast bonus, so "only 35% against monsters" is applied as a +35% bonus against monsters.
+
 **Testing:** nothing recorded yet
 
-### Hydromancer (954359)
+### Hydromancer (954359, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2251,7 +2381,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Hydromancer: Water Bolt (1569697)
+### Hydromancer: Water Bolt (1569697, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2270,7 +2400,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Ice Barrage (1570523)
+### Ice Barrage (1570523, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2280,7 +2410,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Ice Barrage (965294)
+### Ice Barrage (965294, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2290,9 +2420,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Ice Lash (977764)
+### Ice Lash (977764, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2302,11 +2432,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Ice Lash (977764): Ice Lash grants Solid Ice when the off-hand weapon carries Frostbrand; consuming Fingers of Frost has a 33% chance to trigger Ice Crash (Ice Lash's cooldown reset, more damage and targets).
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -2317,7 +2448,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Incarnation: King of the Jungle (1180220)
+### Incarnation: King of the Jungle (1180220, Legendary)
 
 **Status:** unchanged: working (audit)
 
@@ -2325,7 +2456,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Knight of the Eclipse (978226)
+### Knight of the Eclipse (978226, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2335,7 +2466,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Lava Sweep (1590905)
+### Lava Sweep (1590905, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2345,14 +2476,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Lava Sweep (417700)
+### Lava Sweep (417700, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | e093e44 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | e093e44 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2365,13 +2496,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Legacy of the Arcanist (984117)
+### Legacy of the Arcanist (984117, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 809628e | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 809628e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2384,13 +2515,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Lei Shen's Legacy (997129)
+### Lei Shen's Legacy (997129, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2407,7 +2538,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Light of the Guardian (1591146)
+### Light of the Guardian (1591146, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2417,13 +2548,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Locust Ranger (954044)
+### Locust Ranger (954044, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b184b57 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-17 | f2e0a37 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2442,7 +2574,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Low Tide (81404)
+### Low Tide (81404, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2461,15 +2593,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Mana Fiend (977870)
+### Mana Fiend (977870, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 2029a99 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 2029a99 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2486,11 +2618,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Decisions:** 2026-11-16 James: rework to the player descriptions. 2026-11-16 James: Intellect bonus 25% (was 30%) to match the wiki.
 
+**Tooltip differs from what the server does (review):** The client tooltip says Delirium is 5% of Intellect and restores 14% base mana per stack; the server follows the player descriptions (10% of Intellect, drained mana back over 12 sec) and uses +25% Intellect.
+
 **Testing:** nothing recorded yet
 
-### Martial Crescendo (84752)
+### Martial Crescendo (84752, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2499,11 +2633,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Martial Crescendo (84752) and Tools of War (84750): each different direct-damage Physical ability adds a stack (not "on next swing" abilities); no refresh at full stacks; any non-Physical damage removes all stacks.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -2512,7 +2647,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Master of Shadows (980046)
+### Master of Shadows (980046, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2533,7 +2668,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Mending Tide (965309)
+### Mending Tide (965309, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2554,7 +2689,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Midnight Flames (978228)
+### Midnight Flames (978228, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2564,7 +2699,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Nature's Fervor (1570238)
+### Nature's Fervor (1570238, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2581,9 +2716,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Nature's Fervor (965283)
+### Nature's Fervor (965283, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2593,11 +2728,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Nature's Fervor (965283): fully stacking Lacerate on a target empowers the next Feral ability.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -2607,14 +2743,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Nether Portal (1180440)
+### Nether Portal (1180440, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2627,7 +2763,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### One With The Light (1575034)
+### One With The Light (1575034, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2644,7 +2780,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### One With The Light (979748)
+### One With The Light (979748, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2658,13 +2794,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Oracle of the Eclipse (979240)
+### Oracle of the Eclipse (979240, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | b67659e | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | b67659e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2677,20 +2813,24 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Overflow (1571951)
+### Overflow (1571951, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | cd1c3e0 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-17 | 2a15355 | not merged yet | none yet | - |
+| 2026-11-18 | 2d391f3 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Overflow (977710): its own design instead of twin 1571951 (003 no longer links them). Healing Touch also heals the most injured other ally within 12 yards for 50% of the amount healed (954283), always plants Living Seed (48504: 30% of the heal) if you know Living Seed, and gives a stack of Flowing (986112); the third stack becomes Overflowing (986113): the next Chain Heal heals 50% more (the data's own spell mod), plants Living Seed on each target and grants Nature's Grace (16886) if you know it or are in Random mode (973827). Living Seed blooming restores 1% of your base mana, and each Chain Heal target healed takes 1 sec off Tranquility.
 - Overflow (enchant 1571951, whose Regrowth and Nourish casts already give Overflow stacks 1571954 through the core's enchant procs): your next Healing Touch spends the stacks. It always plants Living Seed (48504: 30% of the heal) if you know Living Seed, and heals one more ally within 12 yards per stack for 30% of the amount healed (1571952), the most injured first. The stacks' cast time and mana cut is the data's own spell mod.
+- Overflow (1571951) for the Regrowth and Nourish versions the core misses. The core's rules (effects 1 and 2) give an Overflow stack (1571954) on casting Regrowth or Nourish, but list only the CoA versions (1108936 ..., 1150464); the stock ones (8936 and its ranks, 50464), also learnable here, never gave a stack. This gives the stack for those, so the two never both fire. (The rules' other helper, 1571955, is an inert dummy.)
+- Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 032-overflow.sql: Overflow (977710): its own design instead of twin 1571951 (003 no longer links them): Healing Touch overflow heal, Living Seed and Flowing;
 - 037-overflow-stacks-astral-storm.sql: Overflow (enchant 1571951): its stacks (1571954) are spent by the next Healing Touch for Living Seed and extra ally heals.
 
@@ -2700,20 +2840,26 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 - #175: Overflow (enchant 1571951):** Regrowth/Nourish stacks (from the core's enchant procs) are now spent by the next Healing Touch: Living Seed if known, plus one extra ally within 12 yd per stack healed for 30%.
 - #175: Already handled before: Aspect of the Fox (left as is, by decision), Demonic Influence (PvP aura in patch 65), Overflow (both copies, above).
 
+**Assumptions:** Review 2026-11-18: no doubling. The core's rules give the Overflow stacks (1571954) on Regrowth and Nourish casts; our script on the stacks spends them on the next Healing Touch (Living Seed, extra ally heals), and the core's other helper (1571955) is an inert dummy, so Living Seed is ours alone. Version gap fixed: the core's rules list only the CoA Regrowth and Nourish, so the stock ones (8936 and its ranks, 50464), also learnable here, never gave a stack; wcme_overflow_versions now gives it for those.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Overflow (977710)
+### Overflow (977710, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 978cedc | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-17 | 2a15355 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Overflow (977710): its own design instead of twin 1571951 (003 no longer links them). Healing Touch also heals the most injured other ally within 12 yards for 50% of the amount healed (954283), always plants Living Seed (48504: 30% of the heal) if you know Living Seed, and gives a stack of Flowing (986112); the third stack becomes Overflowing (986113): the next Chain Heal heals 50% more (the data's own spell mod), plants Living Seed on each target and grants Nature's Grace (16886) if you know it or are in Random mode (973827). Living Seed blooming restores 1% of your base mana, and each Chain Heal target healed takes 1 sec off Tranquility.
+- Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 032-overflow.sql: Overflow (977710): its own design instead of twin 1571951 (003 no longer links them): Healing Touch overflow heal, Living Seed and Flowing;
 
 **What the pull requests said:**
@@ -2724,7 +2870,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Overheating (81119)
+### Overheating (81119, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2742,7 +2888,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Overloaded Froststorm (81122)
+### Overloaded Froststorm (81122, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2761,7 +2907,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Paratrooper (956445)
+### Paratrooper (956445, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2771,7 +2917,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Plague Bearer (81399)
+### Plague Bearer (81399, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2787,13 +2933,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Prayer of Preservation (986033)
+### Prayer of Preservation (986033, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2806,7 +2952,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Predator's Wrath (977802)
+### Predator's Wrath (977802, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2827,18 +2973,22 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Predator's Wrath: Wrathful Strikes (1572260)
+### Predator's Wrath: Wrathful Strikes (1572260, Legendary)
 
 **Status:** handled by the core (checked 2026-11-16)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
-| 2026-11-16 | 6976f48 | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
+| 2026-11-16 | 6976f48 | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - 045-last-legendaries.sql: Checked and left as they are (already work from their data or the core): Discipline Mastery (1134969), Fury Mastery (1134994), Hand of Gul'dan (1398206), Guardians of the Grove (1567585) and Predator's Wrath: Wrathful Strikes (1572260); see enchants/legendary-notes.md.
+
+**What the pull requests said:**
+
+- #177: Checked, no change needed:** Discipline Mastery and Fury Mastery work from their data. Hand of Gul'dan's taught spell uses supported effects; its three modifiers name no spell. Guardians of the Grove (1567585) and Wrathful Strikes (1572260) are handled by the core. Aimed Explosive Shot, King of the Jungle and Void Herald were already fixed through their shot, proc or summon spell.
 
 **Assumptions:** AscensionMysticEnchantMechanics.cpp handles this copy (Wrath in Cat Form from Predator's Swiftness).
 
@@ -2846,9 +2996,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Primordial Fury (977717)
+### Primordial Fury (977717, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2858,11 +3008,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Primordial Fury (977717): during Shamanistic Rage, non-periodic spell and ability critical hits spend 50 rage to deal Elemental damage and grant a stack of Elemental Rage. Nothing happens without the rage.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -2874,7 +3025,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Prophet of Wrath (979796)
+### Prophet of Wrath (979796, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2892,7 +3043,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Purification By Light (84508)
+### Purification By Light (84508, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2906,7 +3057,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Raging Blow (1398220)
+### Raging Blow (1398220, Legendary)
 
 **Status:** tested (see test notes)
 
@@ -2916,7 +3067,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** instant damage works; no attack animation | 2026-11-03
 
-### Razor Claws (977817)
+### Razor Claws (977817, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2931,7 +3082,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Relentless (986052)
+### Relentless (986052, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2949,13 +3100,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Righteous Flames (81298)
+### Righteous Flames (81298, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 17cb553 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -2968,7 +3119,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Righteous Zealot (965502)
+### Righteous Zealot (965502, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -2985,9 +3136,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Rush of Blood (1587050)
+### Rush of Blood (1587050, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -2996,11 +3147,11 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Rush of Blood (1587050): Hemorrhage twice in a row makes the next Ambush usable outside Stealth; a third Hemorrhage restores energy. Any other ability starts the count again.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- Rush of Blood (1587050) used to be here; review 2026-11-18 found the core has done it since 3 November (spell_ascension_mystic_rush_of_blood, which also takes the free Ambush away when another ability breaks the sequence), so both counted Hemorrhages and the third gave the energy twice.
 
 **What the pull requests said:**
 
@@ -3009,7 +3160,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Seed of Life (965937)
+### Seed of Life (965937, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3019,7 +3170,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Seething Flames (84515)
+### Seething Flames (84515, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3033,14 +3184,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Serpent Form (982400)
+### Serpent Form (982400, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3057,7 +3208,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Shadow Blades (1180002)
+### Shadow Blades (1180002, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3072,7 +3223,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Shadow Counter (977967)
+### Shadow Counter (977967, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3082,7 +3233,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Shadow Crash (1572059)
+### Shadow Crash (1572059, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3092,28 +3243,34 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Shadow Visions (1570700)
+### Shadow Visions (1570700, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-15 | 653817c | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
 | 2026-11-16 | b570a98 | #167 Code the next 20 broken Legendary enchants | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2d391f3 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Shadow Visions (965299: 9 fragments; 1570700: 6 fragments): Mind Flay damage adds a Soul Fragment; enough of them become Shadow Visions (15 sec), which empowers your next Vampiric Touch, Devouring Plague or Mind Blast. 965299, as its tooltip says: Vampiric Touch puts Engulfing Shadows on the target (12% more Shadow damage and 15% more Vampiric Touch damage from you, 15 sec). Devouring Plague lasts 6 sec longer and ticks twice as fast (the buff's own spell modifiers, which the core applies), explodes for Shadow damage on enemies around the target, and goes on a 12 sec cooldown. Mind Blast deals 65% more damage (25% against players), and your next Mind Flay deals 25% more damage, 1% less for each tick (Mind Sear is above this server's level cap). 1570700, as its own data says: Devouring Plague lasts 12 sec longer; Mind Blast deals 50% more damage and your next Mind Flay deals 30% more; Vampiric Touch marks the target to take 20% more periodic damage from you.
+- Shadow Visions (965299: 9 fragments; 1570700: 6 fragments): Mind Flay damage adds a Soul Fragment; enough of them become Shadow Visions (15 sec), which empowers your next Vampiric Touch, Devouring Plague or Mind Blast. 965299, as its tooltip says: Vampiric Touch puts Engulfing Shadows on the target (12% more Shadow damage and 15% more Vampiric Touch damage from you, 15 sec). Devouring Plague lasts 6 sec longer and ticks twice as fast (the buff's own spell modifiers, which the core applies), explodes for Shadow damage on enemies around the target, and goes on a 12 sec cooldown. Mind Blast deals 65% more damage (25% against players), and your next Mind Flay deals 25% more damage, 1% less for each tick (Mind Sear is above this server's level cap). 1570700's fragments and the buff itself come from the core's rules; what the buff does is ours. 1570700, as its own data says: Devouring Plague lasts 12 sec longer; Mind Blast deals 50% more damage and your next Mind Flay deals 30% more; Vampiric Touch marks the target to take 20% more periodic damage from you.
+- 1570700's Soul Fragments (1570701) and its Shadow Visions at full fragments are the core's own rules (review 2026-11-18: ours added a second fragment on every tick, so Shadow Visions came twice as fast).
 
 **What the pull requests said:**
 
 - #167: Shadow Visions (both) | Mind Flay damage adds Soul Fragments; 9 (or 6) become Shadow Visions |
 - #167: Shadow Visions:** empowered Vampiric Touch, Devouring Plague and Mind Blast, as each version describes.
 
+**Assumptions:** Review 2026-11-18: the Soul Fragments (1570701) and Shadow Visions itself (1570702, at 5+ fragments, which the core then uses up) are the core's own rules, covering every learnable Mind Flay. Our script added a second fragment on every Mind Flay tick, so Shadow Visions came twice as fast; it no longer builds fragments for this enchant. What Shadow Visions does to your next Vampiric Touch, Devouring Plague, Mind Blast and Mind Flay stays ours (the core has no rules for the buff). The other enchant on this script (965299) keeps our fragments (965899), which the core doesn't touch. Shadow Visions (272524) links this enchant, so it gets the same fix.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Shadow Visions (965299)
+### Shadow Visions (965299, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3124,7 +3281,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **What the server does (from the code and SQL comments):**
 
-- Shadow Visions (965299: 9 fragments; 1570700: 6 fragments): Mind Flay damage adds a Soul Fragment; enough of them become Shadow Visions (15 sec), which empowers your next Vampiric Touch, Devouring Plague or Mind Blast. 965299, as its tooltip says: Vampiric Touch puts Engulfing Shadows on the target (12% more Shadow damage and 15% more Vampiric Touch damage from you, 15 sec). Devouring Plague lasts 6 sec longer and ticks twice as fast (the buff's own spell modifiers, which the core applies), explodes for Shadow damage on enemies around the target, and goes on a 12 sec cooldown. Mind Blast deals 65% more damage (25% against players), and your next Mind Flay deals 25% more damage, 1% less for each tick (Mind Sear is above this server's level cap). 1570700, as its own data says: Devouring Plague lasts 12 sec longer; Mind Blast deals 50% more damage and your next Mind Flay deals 30% more; Vampiric Touch marks the target to take 20% more periodic damage from you.
+- Shadow Visions (965299: 9 fragments; 1570700: 6 fragments): Mind Flay damage adds a Soul Fragment; enough of them become Shadow Visions (15 sec), which empowers your next Vampiric Touch, Devouring Plague or Mind Blast. 965299, as its tooltip says: Vampiric Touch puts Engulfing Shadows on the target (12% more Shadow damage and 15% more Vampiric Touch damage from you, 15 sec). Devouring Plague lasts 6 sec longer and ticks twice as fast (the buff's own spell modifiers, which the core applies), explodes for Shadow damage on enemies around the target, and goes on a 12 sec cooldown. Mind Blast deals 65% more damage (25% against players), and your next Mind Flay deals 25% more damage, 1% less for each tick (Mind Sear is above this server's level cap). 1570700's fragments and the buff itself come from the core's rules; what the buff does is ours. 1570700, as its own data says: Devouring Plague lasts 12 sec longer; Mind Blast deals 50% more damage and your next Mind Flay deals 30% more; Vampiric Touch marks the target to take 20% more periodic damage from you.
 
 **What the pull requests said:**
 
@@ -3133,7 +3290,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Sinister Flurry (1585038)
+### Sinister Flurry (1585038, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3143,7 +3300,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Snowblind (990055)
+### Snowblind (990055, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3163,18 +3320,23 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Social Distancing (81102)
+### Social Distancing (81102, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 895b7ae | not merged yet | none yet | - |
+| 2026-11-16 | 895b7ae | #177 The last legendaries, every recorded gap, and a history of every legendary enchant | build51 (2026-11-16) | 2026-11-18 |
 
 **What the server does (from the code and SQL comments):**
 
 - Social Distancing (81102): 20% resistance to diseases (the chance a disease fails to land) while no other player is within 6 yards. Its only effect (a proc with nothing to trigger) becomes that resistance in Validate; it is checked every second.
 - 045-last-legendaries.sql: Social Distancing (81102): 20% disease resistance while no other player is within 6 yards (its proc had nothing to trigger).
+
+**What the pull requests said:**
+
+- #177: Social Distancing (81102):** 20% disease resistance (the chance a disease fails to land) while no other player is within 6 yards; checked every second. Its proc had nothing to trigger.
+- #177: Assumptions for these four are in `enchants/legendary-notes.csv`: Bile doesn't spend stacks; the disease bonus applies per stack to diseases and Insect Swarm (Plague); the Explosive Charge share is taken before crits and mitigation; only other players count for Social Distancing.
 
 **Assumptions:** "Disease resistance" means the chance that a disease fails to land (debuff resistance against diseases); only other players count, not pets or NPCs.
 
@@ -3182,15 +3344,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Son of Gruul (984200)
+### Son of Gruul (984200, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3210,27 +3372,36 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Soul Erosion (1180480)
+### Soul Erosion (1180480, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | f9806da | not merged yet | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 020-quick-legendaries.sql: Soul Erosion (1180480) is the core's own (review 2026-11-18): its rule empowers the next Drain Soul on Unstable Affliction or Curse of Agony damage, at the spell's own 8% chance.
 
 **What the pull requests said:**
 
 - #171: Soul Erosion:** Unstable Affliction or Curse of Agony damage has an 8% chance to empower the next Drain Soul.
 
+**Assumptions:** Review 2026-11-18: the core already does this (its proc rule casts 1180481 on Unstable Affliction or Curse of Agony damage, ticks included, covering every learnable version; its proc row leaves the chance to the spell's own 8%). File 020 replaced the core's proc row with ours at 100%, so the core's rule empowered Drain Soul on every tick, and our own 8% rule ran on top. Ours is removed and the core's proc row is put back exactly as it ships (SQL only).
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Soul Harvest (1398159)
+### Soul Harvest (1398159, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3243,7 +3414,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Spell Shredder (978233)
+### Spell Shredder (978233, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3266,7 +3437,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Spell Slinger (965503)
+### Spell Slinger (965503, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3284,7 +3455,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Spirit of the Forest (1591060)
+### Spirit of the Forest (1591060, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3294,15 +3465,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Steward of Eternity (986162)
+### Steward of Eternity (986162, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 3b4a34a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 3b4a34a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3313,7 +3484,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 - #175: Steward of Eternity (986162):** Moonfire → Align, Renew → Time-bind, Arcane Missiles → Synchronize; each drains energy (5 / 30 / 70), adds Temporal Distortion and triggers final-rank Borrowed Time; your heals on an Aligned target heal 10% more; emptying energy releases Eternity (healing wave +13% per stack; buff for 2 sec + 0.6 sec per stack, from the class version 276347/276373); Time-bind absorbs 30% of each hit (15% of hits from players) and heals it back over time after 6 sec; Synchronize heals only Aligned / Time-bound allies, holds Align and uses Missile Barrage (data).
 
-**Assumptions:** Eternity lasts 2 sec + 0.6 sec per stack (class version 276347 / 276373); Borrowed Time only if you know it.
+**Assumptions:** Eternity lasts 2 sec + 0.6 sec per stack (class version 276347 / 276373); Borrowed Time only if you know it. The +10% heal on Aligned targets only worked for heal-over-time ticks until the heal-order fix in epic batch 5 (051, PR #178); direct heals now get it too.
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc); player descriptions supplied by James (2026-11-16); core class (Chronomancer) versions of the spells
 
@@ -3321,7 +3492,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Stormborn (977991)
+### Stormborn (977991, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3339,14 +3510,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Stormbound Instinct (1181360)
+### Stormbound Instinct (1181360, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3357,9 +3528,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 - #175: Stormbound Instinct (1181360):** Shocks deal bonus threat, give a stack of Maelstrom Weapon (if you have the talent) and Stormbound Reflexes (+20% dodge until the next attack on you), and 30% of their damage hits other enemies within 10 yards of the target. Primal Strike, Lightning Bolt and Chain Lightning make the next Shock trigger no cooldown.
 
+**Assumptions:** Review 2026-11-18: no doubling. The core's rule gives the 'next Shock has no cooldown' aura (2414024, through 1181361) on Lightning Bolt, Chain Lightning and Primal Strike, and ours gives the same aura; it doesn't stack, so it is one aura either way. Everything else (threat, Maelstrom Weapon, Stormbound Reflexes, the 30% splash) is ours only. Our proc row still lets the core's rule see those casts.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Stormbringer (965500)
+### Stormbringer (965500, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3373,7 +3548,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Stormhammer (977928)
+### Stormhammer (977928, Legendary)
 
 **Status:** works (checked in #171)
 
@@ -3385,14 +3560,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Swashbuckler: Bloodsail Captain (997127)
+### Swashbuckler: Bloodsail Captain (997127, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a572d66 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 672e3c1 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3411,7 +3586,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Tame Dragonkin (1398163)
+### Tame Dragonkin (1398163, Legendary)
 
 **Status:** tested (see test notes)
 
@@ -3421,7 +3596,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** pass: call, dismiss, revive | 2026-11-03
 
-### Templar of Flame (954424)
+### Templar of Flame (954424, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3438,9 +3613,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 - #172: Templar of Flame:** while Seal of Fervor is active, direct Holy or Fire damage has a 30% chance to grant Fiery Fervor (8% less damage taken). The 30% is borrowed from its sister enchant, Fiery Fervor. Judgements open the 6 sec window where Flamestrike cuts Blast Wave and Dragon's Breath.
 
+**Assumptions:** Review 2026-11-18: twin 272101 (linked in 003) also gives 272095 on Judgement through its core rule; ours does too, but it is the same aura refreshed, so nothing doubles, and ours covers Judgement versions the core's list lacks. No change.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Temporal Shift (977972)
+### Temporal Shift (977972, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3468,7 +3647,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Tether Elemental (1398162)
+### Tether Elemental (1398162, Legendary)
 
 **Status:** tested (see test notes)
 
@@ -3478,14 +3657,15 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** pass: raise, revive, dismiss | 2026-11-03
 
-### Thermal Void (983739)
+### Thermal Void (983739, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 | 2026-11-16 | 292e4be | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
 
 **What the pull requests said:**
 
@@ -3493,7 +3673,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Thunder Slam (978236)
+### Thunder Slam (978236, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3508,7 +3688,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Tidecaller (954074)
+### Tidecaller (954074, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3523,7 +3703,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Time Warp (965245)
+### Time Warp (965245, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3544,9 +3724,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Titanic Mutilate (954067)
+### Titanic Mutilate (954067, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3554,11 +3734,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Titanic Mutilate (954067): dealing damage with Whirlwind triggers Bloodrage if you know it, once per Whirlwind; that Enrage does not grant a rage charge (Raging Blow).
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -3567,9 +3748,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Tools of War (84750)
+### Tools of War (84750, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3578,11 +3759,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Martial Crescendo (84752) and Tools of War (84750): each different direct-damage Physical ability adds a stack (not "on next swing" abilities); no refresh at full stacks; any non-Physical damage removes all stacks.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -3591,7 +3773,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Touch of the Magi (1591076)
+### Touch of the Magi (1591076, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3610,9 +3792,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Transcendental Embrace (1583831)
+### Transcendental Embrace (1583831, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed, awaiting in-game test (core patch 71)
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3623,16 +3805,22 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 - #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
 
+**Assumptions:** Its Transcendental Embrace buff (1583832) makes the next Chain Heal lose 20% less per jump (a flat +20 on the jump multiplier); the core added 20 to the 0.8 multiplier, so jumps healed about 21 times the last. Fixed by core patch 71 (PR #178).
+
+**Sources:** our client spell data (Spell.dbc); core source (SpellInfo.cpp, Player::ApplySpellMod)
+
+**Decisions:** 2026-11-17 James: fix the base problems found in the review.
+
 **Testing:** nothing recorded yet
 
-### Tree of Wrath (86438)
+### Tree of Wrath (86438, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3649,9 +3837,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Twilight Paragon (977824)
+### Twilight Paragon (977824, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3660,11 +3848,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Twilight Paragon (977824): direct damage with Smite and Holy Fire, and with Penance against creatures, grants Paragon of Light. Casting Exorcism spends every stack: one Twilight Torment on the target per stack, then Paragon of Darkness for 1 sec per stack.
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -3674,7 +3863,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Unbounded Deathbringer (84506)
+### Unbounded Deathbringer (84506, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3691,7 +3880,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Unbounded Spell Slinger (84510)
+### Unbounded Spell Slinger (84510, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3709,7 +3898,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Unchained (978727)
+### Unchained (978727, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3719,7 +3908,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Undaunted (978721)
+### Undaunted (978721, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3734,7 +3923,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Unrelenting Wrath (965288)
+### Unrelenting Wrath (965288, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3756,13 +3945,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Vampire Lord (997126)
+### Vampire Lord (997126, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3779,14 +3968,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Verdant Convergence (902122)
+### Verdant Convergence (902122, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3803,13 +3992,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Void Eruption (1398184)
+### Void Eruption (1398184, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3822,7 +4011,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Void Herald: Whispers of the Old Gods (1571327)
+### Void Herald: Whispers of the Old Gods (1571327, Legendary)
 
 **Status:** unchanged: working (audit)
 
@@ -3830,7 +4019,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Wacky Wizardry (1571306)
+### Wacky Wizardry (1571306, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3845,7 +4034,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Wacky Wizardry (965442)
+### Wacky Wizardry (965442, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3860,7 +4049,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Warcry (965337)
+### Warcry (965337, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3876,14 +4065,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Warden of Demonreach (997113)
+### Warden of Demonreach (997113, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3900,7 +4089,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Whispers of the Old Gods (965445)
+### Whispers of the Old Gods (965445, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3911,14 +4100,14 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### White Walker (978202)
+### White Walker (978202, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
-| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-16 | 7128e1e | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3937,13 +4126,13 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Wind Lash (1760200)
+### Wind Lash (1760200, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3956,7 +4145,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Wind Rager (978232)
+### Wind Rager (978232, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -3966,9 +4155,9 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Words of Healing (81470)
+### Words of Healing (81470, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
@@ -3977,11 +4166,12 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 | 2026-11-15 | bf0733e | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
 | 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Words of Healing (81470): effective direct heals add a stack of Premonition; at full stacks it becomes Clairvoyant. (Its heal crit bonus while Borrowed Time is up is an aura link, sql/enchants/016.)
-- 017-enchant-scripts.sql: Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+- 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 
 **What the pull requests said:**
 
@@ -3990,33 +4180,38 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Wraithweaver: Shadow Orbs (1544910)
+### Wraithweaver: Shadow Orbs (1544910, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-18 | 06d67c5 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Wraithweaver: Shadow Orbs (1544910; its own orb effects use effect 188, which the core does not handle): each tick of your Shadow Word: Pain, Devouring Plague or Vampiric Touch has a 20% chance to give a Shadow Orb (1544913, up to 3: Mind Blast +10% per orb, the data's own spell mod). A Mind Blast hit with 3 orbs spends them and sends a Shadowy Apparition (1544915) that reaches the target 1 sec later and deals 320 (at level 60) + 32% SP Shadow damage to every enemy within 5 yards of it.
-- 038-core-handlers-and-visuals.sql: Wraithweaver: Shadow Orbs (1544910): orbs from DoT ticks and the Shadowy Apparition, scripted around effect 188.
+- Wraithweaver: Shadow Orbs (1544910). The orbs themselves are the core's: its rule (effect 2) casts 1544912 on 20% of your Shadow Word: Pain, Devouring Plague and Vampiric Touch damage (the spell's own chance, through the core's proc row), and 1544912 adds a Shadow Orb (1544913, up to 3: Mind Blast +10% per orb). Review 2026-11-18: this used to be a proc script with its own proc row at 100%, which made the core's rule give an orb on every tick, with our own 20% on top; the core's row is back. What the core lacks stays here, outside the proc (the 20% chance would gate it): a Mind Blast hit with 3 orbs spends them and sends a Shadowy Apparition (1544915) that reaches the target 1 sec later and deals 320 (at level 60) + 32% SP Shadow damage to every enemy within 5 yards of it.
+- 038-core-handlers-and-visuals.sql: Wraithweaver: Shadow Orbs (1544910): the orbs are the core's own rule (review 2026-11-18: our proc row here was at 100%, so the core gave an orb on every tick; the core's row is put back below).
 
 **What the pull requests said:**
 
 - #175: Wraithweaver: Shadow Orbs (1544910):** its orb effects use effect 188, which the core does not handle, so it is scripted instead: SW:P / Devouring Plague / Vampiric Touch ticks have a 20% chance to give a Shadow Orb (up to 3, Mind Blast +10% each); a Mind Blast hit at 3 orbs spends them for a Shadowy Apparition (320 at level 60 + 32% SP to enemies within 5 yd of the target, 1 sec later).
 
+**Assumptions:** Review 2026-11-18: the orbs are the core's own rule (effect 2 casts 1544912 on Shadow Word: Pain, Devouring Plague or Vampiric Touch damage, covering every learnable version; 1544912 adds a Shadow Orb, 1544913, up to 3; the chance is the spell's own 20% through the core's proc row). File 038 replaced the core's proc row with ours at 100%, so the core gave an orb on every tick, and our own 20% roll added more. The core's row is restored and our orb gain removed. The Mind Blast part (3 orbs spent, Shadowy Apparition after 1 sec, 320 at level 60 + 32% SP to enemies within 5 yards) stays ours, now as a damage hook, since a proc script would be gated by that 20% too. Effect 188 on 1544912 is still unhandled by the core; it isn't needed for the orb.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** nothing recorded yet
 
-### Zandalari Windreaver (902137)
+### Zandalari Windreaver (902137, Legendary)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | none yet | - |
+| 2026-11-16 | 7cbb369 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4033,7 +4228,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Zany Zealot (1568174)
+### Zany Zealot (1568174, Legendary)
 
 **Status:** changed, awaiting in-game test
 
@@ -4048,7 +4243,7 @@ Nothing in the legendaries is knowingly left undone after #177. What is still op
 
 **Testing:** nothing recorded yet
 
-### Zany Zealot (84527)
+### Zany Zealot (84527, Legendary)
 
 **Status:** changed, awaiting in-game test
 

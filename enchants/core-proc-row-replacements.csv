@@ -1,0 +1,12 @@
+spell,name,core_flags,core_chance,our_flags,our_chance,spell_chance,status
+55441,Glyph of Mana Tide,0x55550,0,0x5400,0,100,reviewed: chance same; narrows to Mana Tide Totem; no doubling
+1180480,Soul Erosion,0x55550,0,0x40000,100,8,"fixed: ours removed, core row restored"
+1181360,Stormbound Instinct,0x15550,0,0x10038,100,100,chance same; core rule still sees its casts
+1181400,Blazing Flame,0x15550,0,0x15510,100,100,"reviewed: chance same, no doubling (buff does not stack)"
+1544910,Wraithweaver: Shadow Orbs,0x55550,0,0x50000,100,20,fixed: core row restored; our Mind Blast part moved to a hook
+1570700,Shadow Visions,0x55550,0,0x50000,0,100,reviewed: chance same; our fragment-building removed
+276302,Relentless Reflexes,87376 (finish phase),100,87312 (cast phase),0,100,"fixed: ours removed, core row restored"
+282040,Blind Rage,340 (hit: miss),100,340 (hit: miss/dodge/parry),0,100,fixed: core row restored (result unchanged)
+285100,Hellish Pursuit,332116,100,262144,0,100,fixed: core row restored (result unchanged)
+979137,Starburst Barrage,0x10000,100,87312,0,100,fixed: core row restored; Starsurge fill-in added
+1587050,Rush of Blood,0x15510,100,87312,0,100,"fixed: ours removed (double energy), core row restored"

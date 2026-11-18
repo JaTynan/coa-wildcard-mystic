@@ -3,9 +3,8 @@
 -- action-table rule an earlier file may give it (015, 016): the rows here remove that rule. On a server without the
 -- build these enchants do nothing until it is installed (unknown script names are only logged).
 -- Deadly Bite's own copy (965292) loses the rule 015 gave it: 004 made it a placeholder, its twin carries the bleed.
--- Rush of Blood 1587050, Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
+-- Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES
-('spell_proc', 1587050),
 ('spell_proc', 84752),
 ('spell_proc', 84750),
 ('spell_proc', 982806),
@@ -33,7 +32,6 @@ DELETE FROM `wcme_enchant_action` WHERE `enchant_spell` IN (1587050, 84752, 8475
 DELETE FROM `spell_script_names` WHERE `spell_id` IN (1587050, 84752, 84750, 982806, 977717, 977764, 81470, 977771, 965283, 81407, 81116, 274921, 977824, 965295, 977848, 954067, 272353, 986003, 997055, 997056, 965421, 81251, 1568060, 953308, 965292, 59887, 59888, 59889, 59890, 59891, 276407, 1159887, 1159888, 1159889, 1159890, 1159891, 1259887, 1259888, 1259889, 1259890, 1259891, 1576968, 982815) AND `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE FROM `spell_proc` WHERE `SpellId` IN (1587050, 84752, 84750, 982806, 977717, 977764, 81470, 977771, 965283, 81407, 81116, 274921, 977824, 965295, 977848, 954067, 272353, 986003, 997055, 997056, 965421, 81251, 1568060, 953308, 965292);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
-(1587050, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 0, 0, 0),
 (84752, 0, 0, 0, 0, 0, 332048, 1, 2, 0, 2, 0, 0, 0, 0, 0),
 (84750, 0, 0, 0, 0, 0, 332048, 1, 2, 0, 2, 0, 0, 0, 0, 0),
 (982806, 0, 0, 0, 0, 0, 349456, 0, 3, 0, 0, 0, 0, 0, 0, 0),
@@ -60,7 +58,6 @@ INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFami
 -- Borrowed Time (the buff) is kept, not used up, while Words of Healing is active. Darkness (982815) is Curse of Arugal's
 -- stack counter; its own proc is switched off.
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
-(1587050, 'spell_wcme_rush_of_blood'),
 (84752, 'spell_wcme_unique_physical_stacks'),
 (84750, 'spell_wcme_unique_physical_stacks'),
 (982806, 'spell_wcme_curse_of_arugal'),
@@ -102,3 +99,7 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1259891, 'spell_wcme_borrowed_time_kept'),
 (1576968, 'spell_wcme_borrowed_time_kept'),
 (982815, 'spell_wcme_darkness_counter');
+-- Rush of Blood (1587050) is the core's own since 3 November (spell_ascension_mystic_rush_of_blood); ours counted
+-- Hemorrhages too, so the third gave its energy twice (review 2026-11-18). The core's proc row, as it ships:
+REPLACE INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
+(1587050, 0, 0, 0, 0, 0, 0x15510, 0x7, 0x1, 0x0, 0x0, 0x6, 0, 100, 0, 0);

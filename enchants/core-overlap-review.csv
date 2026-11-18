@@ -1,0 +1,65 @@
+spell,name,quality,core_tables,core_cpp,status,outcome
+55441,Glyph of Mana Tide,Rare,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,spell_shaman.cpp,resolved,"no doubling: the core's rule and class script do it; our proc row (005) only narrows it to Mana Tide Totem, same chance, both learnable versions match; the mana-cost buff doesn't stack"
+55675,Glyph of Circle of Healing,Rare,,spell_priest.cpp,resolved,no overlap: the core's Circle of Healing script (both learnable rank chains) adds the target; ours only lets the glyph add one to our Lesser Circle of Healing
+56842,Glyph of Trueshot Aura,Rare,coa_mystic_enchant_bonus,,resolved,no doubling: the core's bonus row picks Aimed Shot by its class mask; the linked twin 118478's override aura is read by nothing
+87498,Accurate Shadow Bolt,Uncommon,,firework_show_Exodar.h,resolved,no overlap: the only core matches are gameobject GUIDs in the GatherMate node files (coincidental)
+88626,Hardy Mark of the Wild,Uncommon,,firework_show_BootyBay.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+90098,Concentrated Hibernate,Uncommon,,firework_show_Shattrath.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+91266,Hasty Feign Death,Uncommon,,firework_show_ThunderBluff.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+91346,Concentrated Bear Form,Uncommon,,firework_show_Orgrimmar.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+93776,Brutal Lava Burst,Uncommon,,firework_show_Orgrimmar.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+95654,Hardy Water Shield,Uncommon,,firework_show_Orgrimmar.h,resolved,no overlap: the only core match is a gameobject template id in a spawn fix (coincidental)
+96765,Concentrated Avenger's Shield,Uncommon,,firework_show_Undercity.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+97364,Brutal Mangle (Cat),Uncommon,,firework_show_Orgrimmar.h,resolved,no overlap: the only core match was a fireworks show file (a coincidental number)
+270661,Growing Light,Epic,,AscensionWildcardReconstruction.cpp,resolved,ours removed (core wildcard_growing_light does the 20% splash; ours doubled it)
+271125,Pyroclasmic Ignition,Epic,,Unit.cpp,resolved,ours now runs only when the core's test fails (other Living Bomb versions on the hero class model); was +69%
+271547,Decimation by Pyro,Epic,,AscensionWildcardReconstruction.cpp,resolved,"our aura link removed (core does it; ours watched the talent too, so it was permanent)"
+271907,Dragon Warrior,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no overlap: ours is the same-named enchant 954252 with its own helpers
+273418,Flowing,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours trimmed to the 3rd-stack Overflowing only (core builds the stacks)
+273458,Shadow Crash,Epic,,AscensionShadowfuryShadowCrash.cpp,resolved,our teach row removed (an unrelated ability); gap-filler for the CoA Shadowfury ranks the core can't see
+273786,Demolisher,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no overlap: ours is the same-named enchant 977864
+273885,Blood and Guts,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling: our 977906 links it on purpose and only adds what the core lacks
+274205,Trauma Care,Epic,script aura_wildcard_trauma_care,AscensionWildcardReconstruction.cpp,resolved,ours removed (core script; buff data gives the extra target)
+274918,Disciple of the Tides,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,"no overlap: the core builds the buff, ours spends it on Penance"
+276302,Relentless Reflexes,Uncommon,script aura_wildcard_relentless_reflexes,,resolved,"ours removed, core's row restored: the core's 4 Nov script adds a stack per finisher without refreshing the duration (as the text says); ours refreshed it, and our proc row hid the core's"
+276551,Pyroclasmic Shadows,Epic,,firework_show_Exodar.h,resolved,no overlap: the core match was a fireworks file. Our link no longer watches the Pyroclasm talents (was permanent)
+277082,Electrical Discharge,Epic,,SpellAuraEffects.cpp,resolved,"ours removed (core does it, hard-coded)"
+277460,Physics in Practice,Epic,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core damage hook)
+282040,Blind Rage,Uncommon,script aura_wildcard_skillcard_proc,AscensionSkillcardProcRules.h,resolved,core's row restored; ours hid it without changing the result (the core's skill-card script only lets true misses through)
+1154364,Feeding the Abyss,Legendary,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core does the whole enchant; ours gave a second absorb roll and a second Life Tap payoff)
+1180030,Lone Wolf,Epic,coa_mystic_enchant_bonus,,resolved,"damage doubled (core bonus +10% and 1180031 +10%): 1180031's damage effect zeroed, it keeps armour penetration; pet test matches the core's"
+1180200,Precision Impact,Epic,coa_mystic_enchant_bonus,,resolved,twin link removed (a different enchant: Meteor reset); the core does the enchant's own bonuses
+1180420,Elemental Torrent,Epic,coa_mystic_enchant_minion_aura,,resolved,ours removed (core minion listener)
+1180480,Soul Erosion,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,"ours removed and the core's proc row restored (ours had set 100% chance, so the core's rule fired on every tick)"
+1180590,Moon's Wrath,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +8% crit; ours doubled it)
+1180640,Searing Flames,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,"ours trimmed: core's rule only covers effect 1 (pet crit stacks), so our splash, one-target rule and crit-stack use-up stay; our duplicate pet stacks removed"
+1180900,Shadow Funnel,Epic,,AscensionMysticEnchantScripts.cpp,resolved,ours removed (core gives the Voidwalker 1180901 while Health Funnelled; Void Nova on auto attacks)
+1181300,Controlled Aggression,Epic,coa_mystic_enchant_aura_link,,resolved,"our 1181301 grant removed (core link does it); 1181302 has no class mask so the doubling stays ours, now exact and with the Shield Slam reset"
+1181340,Iron Guard,Epic,,Unit.cpp,resolved,core patch 69 trimmed to blocked spells (core does melee/ranged)
+1181360,Stormbound Instinct,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling: the shared 'no cooldown' aura doesn't stack; the rest is ours only
+1181400,Blazing Flame,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling: Blazing Speed doesn't stack; ours also covers two stock ranks the core misses
+1544910,Wraithweaver: Shadow Orbs,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,core proc row restored (ours at 100% gave an orb every tick); our orb gain removed; Mind Blast/Apparition kept as a hook
+1554908,Holy Templar,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,noted earlier as handled by the core; no code of ours
+1556008,Savage Momentum,Epic,coa_mystic_enchant_minion_aura,,resolved,ours trimmed to the shot versions the core misses; Stampede extension fixed to add 2 sec (core's refresh effect would set it to 2 sec)
+1568152,Explosive Charge,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed in #178 (core enchant rule); doubled until then
+1570700,Shadow Visions,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,our fragment-building removed (doubled the core's: Visions twice as fast); the buff's effects stay ours
+1571951,Overflow,Legendary,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,no doubling; version gap fixed (stock Regrowth/Nourish now give stacks)
+1573649,Cremation,Legendary,,AscensionScalingBaseData.h,queued,"core teaches its own (unscripted) Cremation and we teach the twin's; script 1573650, then drop our teach (option 1)"
+1575124,Critical Time,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +5% crit; ours doubled it)
+1577402,Pyroclasmic Shadows,Epic,coa_mystic_enchant_bonus,,resolved,ours removed (core bonus gives the +20% crit; ours doubled it)
+1581647,Pious Strikes,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
+1584166,Fire Walk With Me,Epic,,SpellInfo.cpp Unit.cpp,resolved,our Scorch helper removed (core does cast-while-moving and -10 yards; Scorch lost 20); Flamestrike field stays ours
+1584997,Holy Servitude,Epic,coa_mystic_enchant_proc script spell_ascension_mystic_enchant_proc,,resolved,ours removed (core enchant rule)
+1587962,Abjurer's Ward: Arcane,Rare,,AscensionMysticEnchantMechanics.cpp,resolved,"our action rows replaced by spell_wcme_abjurers_ward on every Fire/Frost Ward: the core cuts 10 sec only for its CoA Wards and CoA spells, ours cut again (20 sec), counted Mana Shield, and missed nothing else; now each absorb cuts once, every version"
+1587982,Abjurer's Ward: Fire,Rare,,AscensionMysticEnchantMechanics.cpp,resolved,"our action rows replaced by spell_wcme_abjurers_ward on every Fire/Frost Ward: the core cuts 10 sec only for its CoA Wards and CoA spells, ours cut again (20 sec), counted Mana Shield, and missed nothing else; now each absorb cuts once, every version"
+1588050,Abjurer's Ward: Frost,Rare,,AscensionMysticEnchantMechanics.cpp,resolved,"our action rows replaced by spell_wcme_abjurers_ward on every Fire/Frost Ward: the core cuts 10 sec only for its CoA Wards and CoA spells, ours cut again (20 sec), counted Mana Shield, and missed nothing else; now each absorb cuts once, every version"
+1590974,Blood-Soaked Mutilation,Epic,coa_mystic_enchant_bonus,AscensionMysticEnchantMechanics.cpp,resolved,our Mutilate bonus removed (core bonus does it); Crimson Tempest/Garrote parts stay ours
+1988300,Omen of Doom,Epic,,AscensionMysticEnchantScripts.cpp,resolved,our aura link removed (core casts the timed buff on druid Clearcasting; ours watched every class and cut the buff short)
+852174,Shadow Siphon,Rare,core teaches its spell (TaughtSpells),,resolved,twin link and tooltip entry removed (James chose option 1): the core teaches and now scripts its own Shadow Siphon
+850093,Cauterize,Epic,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
+851989,Frost Shot,Rare,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
+852412,Hammerstorm,Rare,core teaches its spell (TaughtSpells),,queued,"James chose option 1: fix its own taught spell in a later batch, then remove the twin link and tooltip entry"
+285100,Hellish Pursuit,Rare,core skill-card script + proc row (27 Oct); our 005 proc row replaces it,,resolved,"core's row restored; ours only narrowed the core's rule to Hellfire ticks (same chance, no script of ours). 983065's link to it is a deliberate swap (the addon shows its tooltip)"
+979137,Starburst Barrage,Epic,core script aura_hero_druid_starburst_barrage + proc row (2 Nov); our 007 action row and proc row on top,,resolved,"ours removed, core's row restored; the core's filter (Starfire, Arcane Barrage) blocked our Starsurge, so a fill-in now gives the Starsurge stack the text names"
+1587050,Rush of Blood,Rare,core script spell_ascension_mystic_rush_of_blood + proc row (3 Nov); our 017 script and proc row on top,,resolved,"ours removed, core's row restored: both scripts counted Hemorrhages, so the third gave its energy twice; the core's also takes the free Ambush away when the sequence breaks"
+99634,Corrupted Bear Form,Legendary,"core script aura_ascension_wildcard_corrupted_bear_form on Bear Form (5487) and Dire Bear Form (9634), Feral Swiftness scripts on the CoA forms",AscensionWildcardCorruptedBear.cpp,resolved,"no overlap: the core's Corrupted Bear script is for a different enchant (271403, buff 271408); ours (99634) gives 954340; nothing links them and both only react to the form starting or ending"

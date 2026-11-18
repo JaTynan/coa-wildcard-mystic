@@ -1,5 +1,7 @@
 -- Batch 6 (needs the build with wcme_enchant_teach): broken enchants whose twin teaches a working spell.
 -- While the enchant is active the player knows that spell, as with the twin.
+-- Shadow Crash (273458) was removed in review 2026-11-18: the core already does its own effect (AscensionShadowfuryShadowCrash),
+-- and the twin's spell (1572039) is a different ability the enchant's text never mentions.
 INSERT INTO `wcme_enchant_teach` (`enchant_spell`, `taught_spell`, `comment`) VALUES
 (983165, 1589093, 'Absolute Zero teaches Absolute Zero, as twin 1591127 does'),
 (982545, 1587933, 'Arcanist''s Explosion teaches Arcanist''s Explosion, as twin 1591112 does'),
@@ -57,7 +59,6 @@ INSERT INTO `wcme_enchant_teach` (`enchant_spell`, `taught_spell`, `comment`) VA
 (982348, 1587522, 'Saber Slash teaches Saber Slash, as twin 1591073 does'),
 (81225, 286356, 'Scorched Earth teaches Scorched Earth, as twin 852434 does'),
 (982440, 284547, 'Screams of the Past teaches Screams of the Past, as twin 852373 does'),
-(273458, 1572039, 'Shadow Crash teaches Shadow Crash, as twin 1572059 does'),
 (982330, 1587489, 'Shadow Waste Bolt teaches Shadow Waste Bolt, as twin 1591072 does'),
 (982534, 1587796, 'Shadowfall teaches Shadowfall, as twin 1591109 does'),
 (977807, 1585745, 'Spirit of the Forest teaches Spirit of the Forest, as twin 1591060 does'),

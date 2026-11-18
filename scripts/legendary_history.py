@@ -1,13 +1,15 @@
-"""Builds the legendary enchant history: for every legendary copy in enchants/tracker.csv, which commits, pull
+"""Builds the enchant history for one quality tier (legendary by default, or epic): for every copy of that quality in
+enchants/tracker.csv, which commits, pull
 requests and server builds changed it, when that build went live, what testing recorded, and the logic, assumptions
 and sources behind it.
 
-Writes enchants/legendary-history.csv (one row per copy) and enchants/legendary-notes.md (one section per enchant
-we changed). Hand-kept inputs: enchants/legendary-notes.csv (assumptions, sources, decisions, checked verdicts),
+Writes enchants/<tier>-history.csv (one row per copy) and enchants/<tier>-notes.md (one section per enchant we
+changed), where <tier> is legendary or epic. Hand-kept inputs: enchants/<tier>-notes.csv (assumptions, sources,
+decisions, checked verdicts), enchants/<tier>-notes-header.md,
 enchants/test-checklist.csv and the tracker's tested column.
 
 Run from the repository root with the GitHub CLI signed in:
-    python3 -I scripts/legendary_history.py [--patch-night-log path/to/patch-night.log]
+    python3 -I scripts/legendary_history.py [--quality Epic] [--patch-night-log path/to/patch-night.log]
 The patch night log (C:\\Games\\CoA Server\\patch-night\\patch-night.log on the server) adds the date each build was
 installed; without it that column is left empty.
 """
@@ -218,20 +220,26 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--patch-night-log')
     parser.add_argument('--ref', default='HEAD', help='history to read (default: the checked-out branch)')
+    parser.add_argument('--quality', default='Legendary', choices=['Legendary', 'Epic'])
     args = parser.parse_args()
 
     tracker = [r for r in csv.DictReader(open(ROOT / 'enchants/tracker.csv', encoding='utf-8'))
-               if r['quality'] == 'Legendary']
+               if r['quality'] == args.quality]
+    tier = args.quality.lower()
+    if tier == 'epic':
+        names = {r['name'] for r in tracker}
+        tracker += [r for r in csv.DictReader(open(ROOT / 'enchants/tracker.csv', encoding='utf-8'))
+                    if r['quality'] not in ('Epic', 'Legendary') and r['name'] in names]
     ids = {r['spell'] for r in tracker}
     tests = defaultdict(list)
     for row in csv.DictReader(open(ROOT / 'enchants/test-checklist.csv', encoding='utf-8')):
-        if row['result'].strip():
+        if (row.get('result') or '').strip():
             tests[row['spell']].append(row['result'].strip())
     for row in tracker:
         if row['tested'].strip():
             tests[row['spell']].append(row['tested'].strip())
     notes = {}
-    notes_path = ROOT / 'enchants/legendary-notes.csv'
+    notes_path = ROOT / f'enchants/{tier}-notes.csv'
     if notes_path.exists():
         for row in csv.DictReader(open(notes_path, encoding='utf-8')):
             notes[row['spell']] = row
@@ -283,7 +291,7 @@ def main():
         else:
             status = 'unchanged: ' + (row['status'] or 'unknown')
         rows.append({
-            'spell': sid, 'name': row['name'], 'status': status,
+            'spell': sid, 'name': row['name'], 'quality': row['quality'], 'status': status,
             'audit': row['audit'], 'tracker status': row['status'],
             'pull requests': ' '.join(f'#{n}' for n in pr_list),
             'first build with the change': f'build{build_nums[0]}' if build_nums else '',
@@ -295,10 +303,11 @@ def main():
             'assumptions': note.get('assumptions', ''),
             'sources': note.get('sources', ''),
             'decisions': note.get('decisions', ''),
+            'tooltip differs (review)': note.get('tooltip_review', ''),
         })
         if not changes and not note:
             continue
-        lines = [f'### {row["name"]} ({sid})', '', f'**Status:** {status}']
+        lines = [f'### {row["name"]} ({sid}, {row["quality"]})', '', f'**Status:** {status}']
         if changes:
             lines += ['', '| Date | Commit | Pull request | First build with it | Installed on the server |',
                       '|---|---|---|---|---|']
@@ -314,20 +323,29 @@ def main():
         if said:
             lines += ['', '**What the pull requests said:**', '']
             lines += [f'- #{n}: {l}' for n, l in said[:12]]
-        for label, key in (('Assumptions', 'assumptions'), ('Sources', 'sources'), ('Decisions', 'decisions')):
+        for label, key in (('Assumptions', 'assumptions'), ('Sources', 'sources'), ('Decisions', 'decisions'),
+                           ('Tooltip differs from what the server does (review)', 'tooltip_review')):
             if note.get(key):
                 lines += ['', f'**{label}:** {note[key]}']
         lines += ['', f'**Testing:** {" | ".join(tests[sid]) if tests.get(sid) else "nothing recorded yet"}', '']
         sections.append('\n'.join(lines))
 
-    update_reference(rows)
-    with open(ROOT / 'enchants/legendary-history.csv', 'w', newline='', encoding='utf-8') as out:
+    if tier == 'legendary':
+        update_reference(rows)
+    with open(ROOT / f'enchants/{tier}-history.csv', 'w', newline='', encoding='utf-8') as out:
         writer = csv.DictWriter(out, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
-    header = (ROOT / 'enchants/legendary-notes-header.md').read_text(encoding='utf-8')
-    (ROOT / 'enchants/legendary-notes.md').write_text(header.rstrip() + '\n\n' + '\n'.join(sections), encoding='utf-8')
-    print(f'{len(rows)} legendary copies, {len(sections)} with notes')
+    header = (ROOT / f'enchants/{tier}-notes-header.md').read_text(encoding='utf-8')
+    flagged = [r for r in rows if r['tooltip differs (review)']]
+    review = ['## Tooltip differences to review', '',
+              'Enchants whose in-game tooltip says something different from what the server does. Each was a deliberate',
+              'call (see its Decisions and Assumptions); check them again at every review, and fix the tooltip in the client',
+              'patch or the mechanic when there is a chance.', '']
+    review += [f'- {r["name"]} ({r["spell"]}): {r["tooltip differs (review)"]}' for r in flagged] or ['- None.']
+    header = header.rstrip().replace('\n## Enchants', '\n' + '\n'.join(review) + '\n\n## Enchants')
+    (ROOT / f'enchants/{tier}-notes.md').write_text(header.rstrip() + '\n\n' + '\n'.join(sections), encoding='utf-8')
+    print(f'{len(rows)} {tier} copies, {len(sections)} with notes')
 
 
 if __name__ == '__main__':
