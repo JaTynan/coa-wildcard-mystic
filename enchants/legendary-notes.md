@@ -897,6 +897,10 @@ patch or the mechanic when there is a chance.
 |---|---|---|---|---|
 | 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
 
+**Assumptions:** Review 2026-11-18, queued (option 1): the core teaches this enchant's own Cremation (1573650: 2x the remaining Ignite, Pyroblast and Living Bomb damage over 1573651), but nothing scripts its dummy, so it does nothing; file 006 also teaches the twin's Cremation (278067: 7x Fireball, Pyroblast, Living Bomb or Searing Brand), which the core scripts. Players see both. The core's script is hard-wired to 278067's numbers, so 1573650 needs its own code; once that's done, our teach of 278067 goes.
+
+**Sources:** our client spell data (Spell.dbc); the core
+
 **Testing:** pass (with Living Bomb) | 2026-11-03
 
 ### Crimson Champion (977727, Legendary)
@@ -1627,21 +1631,26 @@ patch or the mechanic when there is a chance.
 
 ### Feeding the Abyss (1154364, Legendary)
 
-**Status:** changed, awaiting in-game test
+**Status:** changed on an unmerged branch
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
 | 2026-11-16 | bd04201 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
 | 2026-11-16 | e6a7d7a | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-18 | 02714a7 | not merged yet | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
-- Feeding the Abyss (1154364): your dodge is gone (the data's own -100% dodge). While the enchant is on, Abyssal Hunger (9990020, hidden) has a chance equal to 10% plus your spell critical strike chance to absorb a physical hit fully, storing the damage. The first stored hit shows Feeding the Abyss (1154363, "Harm is being stored...", 10 sec; its own 1-point absorb is switched off by spell_wcme_feeding_the_abyss_store). When it fades the store is fed to the abyss: your next Life Tap spends it as Shadow damage (1154363) split between up to 5 enemies within 10 yards, and heals you and your pet for half of the damage it dealt each.
-- 027-medium-legendaries-4.sql: Feeding the Abyss (1154364): Abyssal Hunger stores fully absorbed physical hits for the next Life Tap (150 has its proc and script); the visible "Harm is being stored" buff (1154363) no longer absorbs anything itself.
+- Feeding the Abyss (1154364) used to be here (with Abyssal Hunger 9990020 and a script on 1154363); review 2026-11-18 found the core already does the whole enchant (AscensionMysticEnchantScripts: physical hits swallowed at 10% plus Shadow spell crit, stored 10 sec in 1154365, then the next Life Tap casts Abyssal Eruption 1154367), so players had two absorb rolls and two payoffs.
+- 027-medium-legendaries-4.sql: Feeding the Abyss (1154364) was dropped in review 2026-11-18: the core already does the whole enchant (its own absorb, store and Life Tap eruption), so ours ran a second absorb roll and a second payoff.
 
 **What the pull requests said:**
 
 - #175: Feeding the Abyss (1154364):** new hidden custom spell Abyssal Hunger (9990020), with a chance of 10% plus your spell crit to absorb a physical hit fully and store it. The first stored hit shows "Harm is being stored..." for 10 sec; when it fades, your next Life Tap deals the store as Shadow damage split between up to 5 enemies within 10 yards, and heals you and your pet for half of the damage dealt each.
+
+**Assumptions:** Review 2026-11-18: the core already does the whole enchant (AscensionMysticEnchantScripts: physical melee and spell hits are swallowed at 10% plus your Shadow spell crit and stored; after 10 sec (1154365) the next Life Tap casts Abyssal Eruption 1154367, its data's damage and heals plus 31% of the stored damage, capped at your max health). Our version (Abyssal Hunger 9990020 and scripts on 1154364 and 1154363) ran its own absorb roll and its own Life Tap payoff on top, so players had about twice the absorb chance and two payoffs. Ours is removed; 9990020 keeps its spell row (the client patch has it) but nothing applies it.
+
+**Sources:** our client spell data (Spell.dbc); the core
 
 **Testing:** nothing recorded yet
 
