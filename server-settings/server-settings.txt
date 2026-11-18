@@ -85,6 +85,11 @@ worldserver.conf | Racials.GraveDefiance = 1
 # ranged against spell), the weaker side is raised 30% of the way towards the stronger; each skipped while the build
 # already converts between the two sides for it (Sheath of Light, Mental Quickness and the like). 0 = off.
 worldserver.conf | Racials.Spellsword = 1
+# Gnome Overclock (race kits, replaces the stock Expansive Mind passive): +5% maximum mana, rage, energy and runic
+# power; every 15 sec in combat another step (up to 10): abilities cost 1% less and runes recharge 1% faster per step,
+# and each step tops up every resource by its number in percent (55% in all); resets when combat ends. Escape Artist
+# also gives +60% movement speed for 3 sec. 0 = off (Expansive Mind comes back).
+worldserver.conf | Racials.Overclock = 1
 # Mana-forged Barrier, the full Ascension tank stance (the core only gave the form): absorbs up to 90% of damage with
 # mana (less as mana runs low, half against magic), +160% threat from Magic damage, immune to interrupts, dodge/parry/block while
 # casting, Power Surge mana return; 30% less damage, 40% less healing, double damage from players; leaving it leaves
