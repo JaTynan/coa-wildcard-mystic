@@ -313,6 +313,21 @@ function DatabaseName([string] $key, [string] $fallback) {
     return $fallback
 }
 
+function OnActiveRealm {
+    # A start must open the active realm's characters. From server 0.261119.114 Scripts\manage.py writes the default
+    # databases whatever the realm; launcher_bridge.py puts the active realm's back. Never start the wrong ones.
+    $world = DatabaseName 'WorldDatabaseInfo' 'acore_world'
+    $chars = DatabaseName 'CharacterDatabaseInfo' 'acore_characters'
+    Log "Databases: world $world, characters $chars."
+    $profile = Join-Path $Server 'Settings\realm-profile.json'
+    $active = if (Test-Path $profile) { (Get-Content $profile -Raw | ConvertFrom-Json).active } else { $null }
+    if ($active -eq 'wildcard' -and ($world -ne 'acore_world_wildcard' -or $chars -ne 'acore_characters_wildcard')) {
+        Log "The Wildcard realm is active, but worldserver.conf points at $world and $chars; not starting the server. Start it from the manager." 'FAIL'
+        return $false
+    }
+    return $true
+}
+
 function EnsureCharacterSpellIndexes {
     # The core "deletes a spell from every character" (DELETE FROM character_spell / character_talent WHERE spell = ?)
     # whenever it is asked to teach a spell that does not exist. CoA teaches every character its hidden Reset Talents
@@ -467,6 +482,7 @@ function StartAndCheck([string] $expected) {
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
     # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
     $db = Launcher 'start-mysql' '' 10
+    if (-not (OnActiveRealm)) { return $false }
     if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems; RepriceAuctionsWhenPricesChange; EnsureCharacterSpellIndexes; AllowCrossFactionFriends }
     # The Report Bug window's spool folder (CoABugReport.SpoolDirectory); the world server only uses it if it exists.
     New-Item -ItemType Directory -Force -Path (Join-Path $Server 'BugReports') | Out-Null

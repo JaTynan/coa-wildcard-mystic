@@ -1,8 +1,11 @@
-# Copied unchanged in behaviour from CF-Server-Manager (Corfirean/coa-server-manager),
+# Copied from CF-Server-Manager (Corfirean/coa-server-manager),
 # crates/coa-core/src/launcher_bridge.py, licensed under the GNU AGPL v3.0.
-# The manager runs Scripts\manage.py through this bridge; patch night runs it the same way.
+# The manager runs Scripts\manage.py through this bridge; patch night runs it the same way. One Wildcard
+# addition, marked below: a start keeps worldserver.conf on the active realm's databases.
 # Usage: python -B launcher_bridge.py <path to Scripts\manage.py> <verb>
 
+import json
+import re
 import runpy
 import sys
 import time
@@ -30,6 +33,45 @@ def wait_ready(name, port, seconds=180):
 
 
 launcher["start_mysql"].__globals__["wait_ready"] = wait_ready
+
+# Wildcard addition (not in the manager's bridge): from server 0.261119.114, Scripts\manage.py writes the default
+# acore_world and acore_characters into worldserver.conf whatever realm is active; the manager app puts the active
+# realm's databases back itself, so patch night must too, or a start from here opens the wrong realm's characters.
+REALM_DATABASES = {"wildcard": ("acore_world_wildcard", "acore_characters_wildcard")}
+server_root = Path(script).resolve().parents[1]
+
+
+def point_at_active_realm():
+    try:
+        active = json.loads((server_root / "Settings" / "realm-profile.json").read_text(encoding="utf-8")).get("active")
+    except (OSError, ValueError, AttributeError):
+        return
+    names = REALM_DATABASES.get(active)
+    # Only when the realm's databases exist (a fresh install has none until the manager creates them).
+    if not names or not all((server_root / "mysql" / "data" / name).is_dir() for name in names):
+        return
+    conf = server_root / "Core" / "configs" / "worldserver.conf"
+    if not conf.exists():
+        return
+    text = conf.read_text(encoding="utf-8")
+    fixed = text
+    for key, name in zip(("WorldDatabaseInfo", "CharacterDatabaseInfo"), names):
+        fixed = re.sub(r'(?m)^(\s*' + key + r'\s*=\s*"[^"\n]*;)[A-Za-z0-9_]+(")',
+                       lambda match: match.group(1) + name + match.group(2), fixed)
+    if fixed != text:
+        conf.write_text(fixed, encoding="utf-8", newline="\n")
+        print("Pointed worldserver.conf at the " + active + " realm's databases: " + ", ".join(names) + ".")
+
+
+prepare_globals = launcher["main"].__globals__
+if "prepare" in prepare_globals:
+    original_prepare = prepare_globals["prepare"]
+
+    def prepare(config):
+        original_prepare(config)
+        point_at_active_realm()
+
+    prepare_globals["prepare"] = prepare
 if sys.argv[1] == "stop-all":
     shutdown = launcher["stop_all"].__globals__
     if "ra" in shutdown:
