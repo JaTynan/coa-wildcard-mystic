@@ -252,8 +252,11 @@ jobs:
         shell: pwsh
         working-directory: core
         run: |
+          # Response files, as the official build does: with mod-dungeon-clear the compiler's include list passed the
+          # Windows command line limit ("CreateProcess: The parameter is incorrect", 19 November).
           cmake -S . -B build -G Ninja `
             -DCMAKE_BUILD_TYPE=RelWithDebInfo `
+            -DCMAKE_NINJA_FORCE_RESPONSE_FILE=ON `
             -DAPPS_BUILD=all -DTOOLS_BUILD=none `
             -DSCRIPTS=static -DMODULES=static `
             -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 `
