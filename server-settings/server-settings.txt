@@ -116,6 +116,10 @@ worldserver.conf | Wildcard.WorldforgedDropChance = 1
 # only work with that primary stat: the chosen Wildcard stat path, or on realms without paths the highest of Strength,
 # Agility, Intellect and Spirit. 0 = the requirement is ignored.
 worldserver.conf | Wildcard.EnchantPrimaryStat = 1
+# Gold price of applying a Mystic Enchant from the collection, as a percent of the core's (19 Nov, James: with no
+# Mystic Rune source, gold is the only way to apply one; patches/79-mystic-enchant-gold-cost.ps1). 1 = 30s uncommon,
+# 60s rare, 1g epic, 2g 50s legendary and artifact (from 30g, 60g, 100g, 250g). 100 = the core's prices.
+worldserver.conf | Wildcard.MysticEnchantGoldCostPct = 1
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100
