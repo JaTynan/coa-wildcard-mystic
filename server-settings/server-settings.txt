@@ -104,6 +104,10 @@ worldserver.conf | Racials.ProspectorsSpirit = 1
 # casting, Power Surge mana return; 30% less damage, 40% less healing, double damage from players; leaving it leaves
 # 10 sec of Mana-forged Mindset. 0 = off (the stance is just its form again).
 worldserver.conf | Wildcard.ManaforgedBarrier = 1
+# Faster mana while resting (19 Nov, James: triple; patches/77-resting-mana-regen.ps1): no spell cast in the last 5 sec
+# (standing, drinking, travelling) regenerates this many times the normal rate; casting (the 5-second rule) is unchanged.
+# 1 = the stock rate. Read at server start.
+worldserver.conf | Wildcard.RestingManaRate = 3
 # Mystic Enchants with a "Primary Stat" requirement (Son of Gruul: Strength; Grove Ranger: the healing path / Spirit)
 # only work with that primary stat: the chosen Wildcard stat path, or on realms without paths the highest of Strength,
 # Agility, Intellect and Spirit. 0 = the requirement is ignored.
