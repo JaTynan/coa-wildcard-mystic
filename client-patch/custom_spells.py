@@ -346,39 +346,39 @@ SPELLS = {
     ARCANE_HUNGER_WARD: ('Arcane Hunger', 'Damage taken reduced by 0.5% for each stack of Arcane Hunger.', '', 3384, 0,
                          [(MOD_DAMAGE_PERCENT_TAKEN, 0, ALL_SCHOOLS)], {4: HIDDEN}),
     BOOK_PROSPECTOR: ('Prospector\'s Spirit',
-                      'Natural explorers: each kind of find gives its own buff, stacking up to 3 times and lasting 2 '
-                      'hours (finding more adds a stack and starts the 2 hours again). Mining a vein: 2% more Stamina '
+                      'Natural explorers: each kind of find gives its own buff, stacking up to 3 times and lasting 8 '
+                      'hours (finding more adds a stack and starts the 8 hours again). Mining a vein: 2% more Stamina '
                       'per stack. Herbalism: 2% more Intellect and Spirit. Skinning: 2% more Strength and Agility. '
                       'Treasure, from opening a chest that Find Treasure shows or discovering a new area: 2% more damage '
                       'and healing. Fishing a catch: 3% more running and swim speed, and at 3 stacks you can breathe '
                       'underwater. Discovering a new area also gives 50% more experience.',
                       '', 12202, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     PROSPECT_MINING: ('Prospector\'s Spirit: Mining',
-                      'Stamina increased by 2% per stack, up to 3. Mining another vein adds a stack and starts the 2 '
+                      'Stamina increased by 2% per stack, up to 3. Mining another vein adds a stack and starts the 8 '
                       'hours again.',
                       'Stamina increased by $s1% per stack.',
                       12199, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_STAMINA)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_earth
     PROSPECT_HERBALISM: ('Prospector\'s Spirit: Herbalism',
                          'Intellect and Spirit increased by 2% per stack, up to 3. Gathering another herb adds a stack and '
-                         'starts the 2 hours again.',
+                         'starts the 8 hours again.',
                          'Intellect and Spirit increased by $s1% per stack.',
                          12201, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_INTELLECT),
                                     (MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_SPIRIT)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_life
     PROSPECT_SKINNING: ('Prospector\'s Spirit: Skinning',
                         'Strength and Agility increased by 2% per stack, up to 3. Skinning another creature adds a stack '
-                        'and starts the 2 hours again.',
+                        'and starts the 8 hours again.',
                         'Strength and Agility increased by $s1% per stack.',
                         12200, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_STRENGTH),
                                    (MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_AGILITY)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_fire
     PROSPECT_TREASURE: ('Prospector\'s Spirit: Treasure',
                         'Damage and healing done increased by 2% per stack, up to 3. Opening another chest that Find '
-                        'Treasure shows, or discovering a new area, adds a stack and starts the 2 hours again.',
+                        'Treasure shows, or discovering a new area, adds a stack and starts the 8 hours again.',
                         'Damage and healing done increased by $s1% per stack.',
                         12202, 3, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 2, 0)],
                         {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_shadow
     PROSPECT_FISHING: ('Prospector\'s Spirit: Fishing',
                        'Running speed on foot and swim speed increased by 3% per stack, up to 3; at 3 stacks you can '
-                       'also breathe underwater. Another catch adds a stack and starts the 2 hours again.',
+                       'also breathe underwater. Another catch adds a stack and starts the 8 hours again.',
                        'Running and swim speed increased by $s1% per stack. At 3 stacks you can breathe underwater.',
                        12203, 3, [(MOD_SPEED_ALWAYS, 3, 0), (MOD_INCREASE_SWIM_SPEED, 3, 0)],
                        {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_water

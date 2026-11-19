@@ -95,7 +95,7 @@ worldserver.conf | Racials.Overclock = 1
 # damage taken, +2% ability costs per stack; falls off after 5 sec without an ability. Arcane Torrent eats the stacks for 2% of every resource
 # each, and its cooldown is 1 min (read at server start). 0 = off.
 worldserver.conf | Racials.ArcaneHunger = 1
-# Dwarf Prospector's Spirit (race kits): a buff per kind of find, up to 3 stacks, 2 hours: mining +2% Stamina,
+# Dwarf Prospector's Spirit (race kits): a buff per kind of find, up to 3 stacks, 8 hours: mining +2% Stamina,
 # herbalism +2% Intellect and Spirit, skinning +2% Strength and Agility, treasure (Find Treasure chests or discovering
 # an area) +2% damage and healing, fishing +3% run and swim speed (water breathing at 3). Discovering an area gives
 # 50% more exploration experience. 0 = off.
