@@ -369,6 +369,11 @@ modules\coa.conf | CoA.AllowRemoteClients = 1
 # Start with patch-night\Start-Server.cmd (or let patch night start it) to keep SQUID's bots on.
 modules\playerbots.conf | AiPlayerbot.Enabled = 1
 modules\mod_coa_playerbots.conf | CoaBots.Enable = 0
+# Dungeon Clear (19 Nov, James): a bot tank leads its party through a dungeon, boss to boss, pulling trash, handling
+# scripted events, looting, resting, and pausing to resurrect the dead. Driven with "dc" in party chat or .dc (the
+# mod-dungeon-clear-addon is optional). Part of the official build since server-0.261119.114 but off there; needs SQUID's
+# bots on (above). Read at server start only.
+modules\mod_dungeon_clear.conf | DungeonClear.Enable = 1
 
 # ---------------------------------------------------------------- PvP rewards
 # Double honor: honorable kills (world PvP and battlegrounds) and the battleground win/loss bonuses.
