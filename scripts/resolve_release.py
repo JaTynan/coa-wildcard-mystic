@@ -63,6 +63,29 @@ def main():
         outputs[f"{name}_sha"] = part["sha"]
     outputs["squid_tag"] = release["components"]["squid"].get("ref", "")
 
+    # Since server-0.261119.114 the official build also patches SQUID (its own auction house bot off, because the
+    # core's mod-ah-bot-plus owns .ahbot: two sets of .ahbot commands stop the world at start-up) and adds
+    # mod-dungeon-clear with a patch of its own. The patches live in the build repository at the listed commit.
+    # Older releases list neither, and the outputs stay empty.
+    components = release["components"]
+    for name, key, repository in (("squid", "squid", None), ("dungeon-clear", "dungeon", "Zyth45/mod-dungeon-clear")):
+        part = components.get(name) or {}
+        if name != "squid" and part:
+            if part.get("repository") != repository or not part.get("sha"):
+                sys.exit(f"Release {release['tag']}: {name} comes from {part.get('repository')}, "
+                         f"expected {repository}. The build recipe needs checking.")
+            outputs[f"{key}_sha"] = part["sha"]
+        if part.get("patch"):
+            if not part.get("patchSha256"):
+                sys.exit(f"Release {release['tag']}: the {name} patch has no checksum.")
+            outputs[f"{key}_patch"] = part["patch"]
+            outputs[f"{key}_patch_sha256"] = part["patchSha256"]
+    if any(key.endswith("_patch") for key in outputs):
+        build = components.get("build") or {}
+        if build.get("repository") != "Corfirean/coa-server-build" or not build.get("sha"):
+            sys.exit(f"Release {release['tag']} lists module patches but no build repository commit.")
+        outputs["build_sha"] = build["sha"]
+
     for key, value in outputs.items():
         print(f"{key}={value}")
     if os.environ.get("GITHUB_OUTPUT"):
