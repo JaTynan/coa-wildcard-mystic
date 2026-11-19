@@ -62,8 +62,9 @@ worldserver.conf | Battleground.InsigniaGoldPerLevel = 100
 # Tauren Plainsrunning (race kits): running on foot builds up to level + 40% speed over 60 sec, on top of other speed
 # effects; drains in 6 sec when you stop. Not mounted; held while carrying a flag. 0 = off.
 worldserver.conf | Racials.Plainsrunning = 1
-# Orc Bloodrush (race kits): +2% damage and haste per enemy in combat with you (up to 5); +30% speed for 6 sec on a
-# killing blow. 0 = off.
+# Orc Bloodrush (race kits): +2% damage per enemy in combat with you (up to 5); each killing blow adds a stack of Rush
+# (up to 5, 15 sec, each kill restarts it): +10% speed on foot and +2% haste per stack, and 2% more damage taken.
+# 0 = off.
 worldserver.conf | Racials.Bloodrush = 1
 # Night Elf Ambush (race kits): entering stealth readies your next ability, 10% cheaper and 50% more damage or
 # healing; at most once every 20 sec. 0 = off.

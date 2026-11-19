@@ -80,6 +80,8 @@ PROSPECT_TREASURE = 9990052        # +2% damage and healing per stack
 PROSPECT_FISHING = 9990053         # +3% running and swim speed per stack
 PROSPECT_WATER_BREATHING = 9990054  # hidden: with 3 stacks of the fishing buff
 BOOK_PROSPECTOR = 9990055          # its spellbook entry
+# Orc Bloodrush's Rush (patches/56-racial-bloodrush.ps1): BLOODRUSH_SPEED's stacks
+BLOODRUSH_RECKLESS = 9990056       # hidden: 2% more damage taken per stack of Rush (kept at Rush's stacks)
 MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
 STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
 
@@ -145,14 +147,17 @@ SPELLS = {
                     'Running faster. The number is your bonus running speed in percent.',
                     3542, 100, [(DUMMY, 0, 0)]),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
     BLOODRUSH: ('Bloodrush',
-                'For each enemy in combat with you, +2% damage and +2% haste, up to 5 enemies. Each killing blow '
-                'gives +30% movement speed for 6 sec. The stacks go out of combat.',
-                'Damage and haste increased by $s1%. One stack per enemy in combat with you.',
-                6200, 5, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS), (HASTE_ALL, 2, 0)]),  # achievement_bg_interruptx_flagcapture_attempts_1game
-    BLOODRUSH_SPEED: ('Bloodrush',
-                      'Movement speed increased by 30% for 6 sec after a killing blow.',
-                      'Movement speed increased by $s1%.',
-                      516, 0, [(MOD_INCREASE_SPEED, 30, 0)]),  # Ability_Rogue_Sprint
+                'For each enemy in combat with you, +2% damage, up to 5 enemies. The stacks go out of combat.',
+                'Damage increased by $s1%. One stack per enemy in combat with you.',
+                6200, 5, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS)]),  # achievement_bg_interruptx_flagcapture_attempts_1game
+    BLOODRUSH_SPEED: ('Rush',
+                      'Each killing blow adds a stack, up to 5, for 15 sec: 10% more movement speed on foot and 2% more '
+                      'haste per stack, and 2% more damage taken. Each kill starts the 15 sec again.',
+                      'Movement speed increased by $s1% and haste by $s2%. Damage taken increased by 2% per stack. '
+                      'Another killing blow adds a stack and starts the 15 sec again.',
+                      516, 5, [(MOD_SPEED_ALWAYS, 10, 0), (HASTE_ALL, 2, 0)]),  # Ability_Rogue_Sprint
+    BLOODRUSH_RECKLESS: ('Rush', 'Damage taken increased by 2% per stack of Rush.', '', 516, 5,
+                         [(MOD_DAMAGE_PERCENT_TAKEN, 2, ALL_SCHOOLS)], {4: HIDDEN}),
     AMBUSH: ('Ambush',
              'Entering stealth readies your next ability: it costs 10% less and deals or heals 50% more. At most once '
              'every 20 sec.',
@@ -212,8 +217,10 @@ SPELLS = {
                          'while mounted; paused while carrying a battleground flag.',
                          '', 3542, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_BLOODRUSH: ('Bloodrush',
-                     'For each enemy in combat with you, +2% damage and +2% haste, up to 5 enemies. Gone when combat '
-                     'ends. Each killing blow also gives +30% movement speed for 6 sec.',
+                     'Relentless but reckless. For each enemy in combat with you, +2% damage, up to 5 enemies, gone '
+                     'when combat ends. Each killing blow adds a stack of Rush, up to 5, for 15 sec (each kill starts '
+                     'the 15 sec again): per stack, 10% more movement speed on foot and 2% more haste, but you take 2% '
+                     'more damage.',
                      '', 6200, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_AMBUSH: ('Ambush',
                   'Entering stealth (Shadowmeld or a class stealth) readies your next ability: it costs 10% less and '
