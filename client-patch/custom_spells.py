@@ -292,23 +292,25 @@ SPELLS = {
                            [(MOD_RATING, 0, 1 << CR_HIT_MELEE), (MOD_RATING, 0, 1 << CR_HIT_RANGED)], {4: HIDDEN}),
     BOOK_OVERCLOCK: ('Overclock',
                      'Gnomes learn their enemy and plan their next move. Maximum mana, rage, energy and runic power '
-                     'increased by 5%. Every 15 sec in combat, another step, up to 10: abilities cost 1% less per step '
-                     '(whatever resource they use) and runes recharge 1% faster per step, and each step tops up every '
-                     'resource you have by its number in percent (1% at the first step, up to 10% at the tenth: 55% in '
-                     'all over 2 min 30 sec). The steps reset when combat ends. Escape Artist also gives 60% more '
-                     'movement speed for 3 sec. Replaces Expansive Mind.',
+                     'increased by 5%. In combat Overclock boosts and cools down like an engine: every 5 sec another '
+                     'step, up to 10, and after 10 sec at 10 steps it cools down and climbs again (one cycle a minute). '
+                     'Each step makes abilities cost 1% less (whatever resource they use) and runes recharge 1% faster, '
+                     'and tops up 1% of every resource you have. Out of combat the steps hold where they are, ready for '
+                     'the next fight. Escape Artist also gives 60% more movement speed for 3 sec. Replaces Expansive '
+                     'Mind.',
                      '', ICON_OVERCLOCK, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     OVERCLOCK: ('Overclock',
                 'Maximum mana, rage, energy and runic power increased by 5%.',
                 'Maximum mana, rage, energy and runic power increased by 5%.',
                 ICON_OVERCLOCK, 0, [(MOD_INCREASE_ENERGY_PERCENT, 5, POWER_MANA),
                                     (MOD_INCREASE_ENERGY_PERCENT, 5, POWER_RAGE),
-                                    (MOD_INCREASE_ENERGY_PERCENT, 5, POWER_ENERGY)], {7: KEPT_THROUGH_DEATH}),
+                                    (MOD_INCREASE_ENERGY_PERCENT, 5, POWER_ENERGY)], {4: HIDDEN, 7: KEPT_THROUGH_DEATH}),
     OVERCLOCK_RUNIC: ('Overclock', 'Maximum runic power increased by 5%.', '', ICON_OVERCLOCK, 0,
                       [(MOD_INCREASE_ENERGY_PERCENT, 5, POWER_RUNIC_POWER)], {4: HIDDEN, 7: KEPT_THROUGH_DEATH}),
     OVERCLOCK_STEPS: ('Overclock',
-                      'Every 15 sec in combat, another step, up to 10. Each step makes abilities cost 1% less and '
-                      'runes recharge 1% faster, and tops up every resource by its number in percent.',
+                      'Every 5 sec in combat, another step, up to 10; after 10 sec at 10 it cools down and climbs '
+                      'again. Each step makes abilities cost 1% less and runes recharge 1% faster, and tops up 1% of '
+                      'every resource. Out of combat the steps hold.',
                       'Abilities cost 1% less and runes recharge 1% faster for each step. The number is the steps.',
                       ICON_OVERCLOCK_STEPS, 10, [(MOD_POWER_COST_PCT, -1, ALL_SCHOOLS),
                                                  (MOD_POWER_REGEN_PERCENT, 1, POWER_RUNE),

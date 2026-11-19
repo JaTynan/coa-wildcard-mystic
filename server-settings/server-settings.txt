@@ -86,9 +86,10 @@ worldserver.conf | Racials.GraveDefiance = 1
 # already converts between the two sides for it (Sheath of Light, Mental Quickness and the like). 0 = off.
 worldserver.conf | Racials.Spellsword = 1
 # Gnome Overclock (race kits, replaces the stock Expansive Mind passive): +5% maximum mana, rage, energy and runic
-# power; every 15 sec in combat another step (up to 10): abilities cost 1% less and runes recharge 1% faster per step,
-# and each step tops up every resource by its number in percent (55% in all); resets when combat ends. Escape Artist
-# also gives +60% movement speed for 3 sec. 0 = off (Expansive Mind comes back).
+# power (no buff shown); in combat a step every 5 sec (up to 10), 10 sec at 10, then it cools down and climbs again
+# (a minute a cycle): abilities cost 1% less and runes recharge 1% faster per step, and each step tops up 1% of every
+# resource; out of combat the steps hold for the next fight. Escape Artist also gives +60% movement speed for 3 sec.
+# 0 = off (Expansive Mind comes back).
 worldserver.conf | Racials.Overclock = 1
 # Blood Elf Arcane Hunger (race kits): each ability adds a stack (up to 10): +1.5% damage and healing, 0.5% less
 # damage taken, +2% ability costs per stack; falls off after 5 sec without an ability. Arcane Torrent eats the stacks for 2% of every resource
