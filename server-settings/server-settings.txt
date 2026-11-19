@@ -108,6 +108,10 @@ worldserver.conf | Wildcard.ManaforgedBarrier = 1
 # (standing, drinking, travelling) regenerates this many times the normal rate; casting (the 5-second rule) is unchanged.
 # 1 = the stock rate. Read at server start.
 worldserver.conf | Wildcard.RestingManaRate = 3
+# Worldforged Mystic Enchants (19 Nov, James; patches/78-worldforged-enchants.ps1): percent chance per kill of an enemy
+# above level 10 worth experience to drop a rare worldforged enchant of the enemy's family, for an ability the looter
+# knows. 0 = no drops (the enchants still work). Read on every kill.
+worldserver.conf | Wildcard.WorldforgedDropChance = 1
 # Mystic Enchants with a "Primary Stat" requirement (Son of Gruul: Strength; Grove Ranger: the healing path / Spirit)
 # only work with that primary stat: the chosen Wildcard stat path, or on realms without paths the highest of Strength,
 # Agility, Intellect and Spirit. 0 = the requirement is ignored.
