@@ -1,6 +1,7 @@
 name: Build patched worldserver
 # Builds the same Windows world server the CF-Server-Manager installs (same core, CoA bots,
-# Content Scaling and SQUID's Playerbots commits, same build settings), with the patches in
+# Content Scaling, SQUID's Playerbots and Dungeon Clear commits with the official build's module patches, same
+# build settings), with the patches in
 # patches/ applied, and publishes it as a release of this repository ready for the VM.
 # Runs by itself every day for the manager's newest release, and only builds a release once;
 # patch night on the VM installs it. Run it by hand from the Actions tab for a specific release.
@@ -36,6 +37,12 @@ jobs:
       scaling_sha: ${{ steps.lock.outputs.scaling_sha }}
       squid_sha: ${{ steps.lock.outputs.squid_sha }}
       squid_tag: ${{ steps.lock.outputs.squid_tag }}
+      squid_patch: ${{ steps.lock.outputs.squid_patch }}
+      squid_patch_sha256: ${{ steps.lock.outputs.squid_patch_sha256 }}
+      dungeon_sha: ${{ steps.lock.outputs.dungeon_sha }}
+      dungeon_patch: ${{ steps.lock.outputs.dungeon_patch }}
+      dungeon_patch_sha256: ${{ steps.lock.outputs.dungeon_patch_sha256 }}
+      build_sha: ${{ steps.lock.outputs.build_sha }}
     steps:
       - uses: actions/checkout@v7
       - name: Look up the release's exact commits
@@ -111,12 +118,55 @@ jobs:
           ref: ${{ needs.check.outputs.scaling_sha }}
           path: _scaling
 
-      - name: SQUID's Playerbots, unchanged
+      - name: SQUID's Playerbots
         uses: actions/checkout@v7
         with:
           repository: Zyth45/mod-playerbots
           ref: ${{ needs.check.outputs.squid_sha }}
           path: core/modules/mod-playerbots
+
+      - name: Dungeon Clear module (in the official build since the release lists it)
+        if: needs.check.outputs.dungeon_sha != ''
+        uses: actions/checkout@v7
+        with:
+          repository: Zyth45/mod-dungeon-clear
+          ref: ${{ needs.check.outputs.dungeon_sha }}
+          path: core/modules/mod-dungeon-clear
+
+      - name: The official build's module patches (its repository at the release's commit)
+        if: needs.check.outputs.build_sha != ''
+        uses: actions/checkout@v7
+        with:
+          repository: Corfirean/coa-server-build
+          ref: ${{ needs.check.outputs.build_sha }}
+          path: _build
+          sparse-checkout: patches
+
+      - name: Apply the official build's module patches (SQUID's auction house bot off, as the manager's build does)
+        if: needs.check.outputs.build_sha != ''
+        shell: pwsh
+        env:
+          SQUID_PATCH: ${{ needs.check.outputs.squid_patch }}
+          SQUID_PATCH_SHA256: ${{ needs.check.outputs.squid_patch_sha256 }}
+          DUNGEON_PATCH: ${{ needs.check.outputs.dungeon_patch }}
+          DUNGEON_PATCH_SHA256: ${{ needs.check.outputs.dungeon_patch_sha256 }}
+        run: |
+          # Without the SQUID patch, SQUID 3.0 and the core's mod-ah-bot-plus both register .ahbot update/reload/
+          # empty/help, and the world server stops at start-up ("Duplicate blank sub-command"; 19 November).
+          $ErrorActionPreference = 'Stop'
+          foreach ($m in @(@{ Dir = 'core/modules/mod-playerbots'; Patch = $env:SQUID_PATCH; Sha = $env:SQUID_PATCH_SHA256 },
+                           @{ Dir = 'core/modules/mod-dungeon-clear'; Patch = $env:DUNGEON_PATCH; Sha = $env:DUNGEON_PATCH_SHA256 })) {
+            if (-not $m.Patch) { continue }
+            if (-not (Test-Path $m.Dir)) { throw "$($m.Patch) is listed but $($m.Dir) was not checked out." }
+            $file = (Resolve-Path (Join-Path '_build' $m.Patch)).Path
+            $sha = (Get-FileHash $file -Algorithm SHA256).Hash.ToLower()
+            if ($sha -ne $m.Sha) { throw "$($m.Patch) checksum $sha differs from the release's $($m.Sha)." }
+            git -C $m.Dir apply --check $file
+            if ($LASTEXITCODE) { throw "$($m.Patch) does not apply to $($m.Dir)." }
+            git -C $m.Dir apply $file
+            if ($LASTEXITCODE) { throw "Applying $($m.Patch) failed." }
+            Write-Host "Applied $($m.Patch) to $($m.Dir)"
+          }
 
       - name: AI chat for bots (mod-ollama-chat, pinned; off until its config enables it)
         uses: actions/checkout@v7
@@ -245,7 +295,8 @@ jobs:
             "Core:            Corfirean/azerothcore-wotlk-coa ${{ needs.check.outputs.core_sha }}"
             "CoA bots:        Corfirean/mod-coa-playerbots ${{ needs.check.outputs.bots_sha }}"
             "Content Scaling: Corfirean/mod-coa-content-scaling ${{ needs.check.outputs.scaling_sha }}"
-            "SQUID bots:      Zyth45/mod-playerbots ${{ needs.check.outputs.squid_tag }} ${{ needs.check.outputs.squid_sha }}"
+            "SQUID bots:      Zyth45/mod-playerbots ${{ needs.check.outputs.squid_tag }} ${{ needs.check.outputs.squid_sha }} (CoA patch: ${{ needs.check.outputs.squid_patch_sha256 }})"
+            "Dungeon Clear:   Zyth45/mod-dungeon-clear ${{ needs.check.outputs.dungeon_sha }} (CoA patch: ${{ needs.check.outputs.dungeon_patch_sha256 }})"
             "AI chat:         DustinHendrickson/mod-ollama-chat 906eb2a45f5b3b815a281977005371193517eb32"
             "Patches:         $((Get-ChildItem _mine/patches -Filter *.patch | ForEach-Object Name) -join ', ')"
             "This repository: ${{ github.repository }} ${{ github.sha }}"
