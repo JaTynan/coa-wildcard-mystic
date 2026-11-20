@@ -41,7 +41,7 @@ SPELLMOD_RESIST_MISS_CHANCE = 16
 GRAVE_DEFIANCE = 9990027           # below 35% health: stacks = bonus damage and healing in percent
 GRAVE_DEFIANCE_COOLDOWN = 9990028  # 45 sec after the bonus ends
 GRAVE_GHOUL = 9990029              # risen as a ghoul for 10 sec
-GRAVE_GHOUL_COOLDOWN = 9990030     # 5 min from rising
+GRAVE_GHOUL_COOLDOWN = 9990030     # debuff: 10 min from rising, 2 min less per Cannibalize
 BOOK_GRAVE_DEFIANCE = 9990031      # its spellbook entry
 TRANSFORM = 56                     # aura: look like the creature in misc
 RISEN_ALLY = 30230                 # Raise Ally's ghoul (creature), so the same four ghoul models
@@ -246,8 +246,9 @@ SPELLS = {
                           'at 20%, 22% at 10%). It lasts up to 15 sec, then can\'t start again for 45 sec. When a hit '
                           'would kill you, you rise as a ghoul for 10 sec instead, dealing and healing 30% less; the '
                           'ghoul can\'t die or be healed. A killing blow on an enemy worth experience or honor brings '
-                          'you back at 20% health; otherwise you die when it ends. Rising works once every 5 min, and '
-                          'not from falling, lava or drowning, or against your duel opponent.',
+                          'you back at 20% health; otherwise you die when it ends. Rising works once every 10 min, '
+                          'and each Cannibalize takes 2 min off the wait. Not from falling, lava or drowning, or '
+                          'against your duel opponent.',
                           '', 4153, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     # Grave Defiance's buffs (the server sets every timer)
     GRAVE_DEFIANCE: ('Grave Defiance',
@@ -268,10 +269,11 @@ SPELLS = {
                   3254, 0, [(TRANSFORM, 0, RISEN_ALLY), (MOD_DAMAGE_PERCENT_DONE, -30, ALL_SCHOOLS),
                             (MOD_HEALING_DONE_PERCENT, -30, 0)],
                   {4: 0x80000000 | NO_IMMUNITIES}),  # achievement_dungeon_coablackdragonflight
-    GRAVE_GHOUL_COOLDOWN: ('Risen Ghoul (cooldown)',
-                           'You can\'t rise as a ghoul again until this runs out.',
-                           'You can\'t rise as a ghoul again until this runs out.',
-                           3254, 0, [(DUMMY, 0, 0)], {7: KEPT_THROUGH_DEATH}),
+    GRAVE_GHOUL_COOLDOWN: ('Grave Hunger',
+                           'You can\'t rise as a ghoul again until this runs out (10 min). Each Cannibalize takes 2 min '
+                           'off.',
+                           'You can\'t rise as a ghoul again until this runs out. Cannibalize takes 2 min off.',
+                           3254, 0, [(DUMMY, 0, 0)], {4: 0x80000000 | DEBUFF | NO_IMMUNITIES, 7: KEPT_THROUGH_DEATH}),
     BOOK_SPELLSWORD: ('Spellsword',
                       'The experimenter\'s race. For power (attack power against spell power), critical strike chance '
                       '(melee and ranged against spell) and hit chance (melee and ranged against spell), your weaker side '

@@ -80,7 +80,7 @@ worldserver.conf | Racials.RadiantPresence = 1
 # Undead Grave Defiance (race kits): below 35% health, up to +30% damage and healing (more the lower you are), for up
 # to 15 sec, then 45 sec before it can start again. A hit that would kill you raises you as a ghoul for 10 sec instead
 # (30% less damage and healing, can't die or be healed); a killing blow brings you back at 20% health, otherwise you
-# die. Once every 5 min; not from falling, lava, drowning or your duel opponent. 0 = off.
+# die. Once every 10 min, 2 min less per Cannibalize; not from falling, lava, drowning or your duel opponent. 0 = off.
 worldserver.conf | Racials.GraveDefiance = 1
 # Human Spellsword (race kits): for power (attack power against spell power), critical strike and hit (melee and
 # ranged against spell), the weaker side is raised 30% of the way towards the stronger; each skipped while the build
