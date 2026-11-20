@@ -400,6 +400,9 @@ modules\mod_dungeon_clear.conf | DungeonClear.SmartRest = 1
 modules\mod_dungeon_clear.conf | DungeonClear.SmartRestHealthPct = 50
 modules\mod_dungeon_clear.conf | DungeonClear.SmartRestHealerManaPct = 40
 modules\mod_dungeon_clear.conf | DungeonClear.SmartRestDpsManaPct = 20
+# Starts by itself (21 Nov, James; patches/90-dungeon-clear-auto-start.ps1): once the party's tank bot is in a
+# dungeon with you, the run starts and a chat line says how to turn it off (dc off) and on (dc on). 0 = only by hand.
+modules\mod_dungeon_clear.conf | DungeonClear.AutoStart = 1
 
 # ---------------------------------------------------------------- PvP rewards
 # Double honor: honorable kills (world PvP and battlegrounds) and the battleground win/loss bonuses.
