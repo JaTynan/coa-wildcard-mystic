@@ -28,18 +28,22 @@ BERSERKING_TEXT = ('Increases your attack and casting speed by 10% to 30% for $d
                    'similar cast speed increasing effects.')
 TEXTS = {26297: {170: BERSERKING_TEXT}, 1126297: {170: BERSERKING_TEXT}}
 
-# Dwarf Stoneform (patches/89-racial-stoneform.ps1): its buff gives +20% armour, 20% less chance to be critically hit
-# and 8% less spell damage for 8 sec; both copies say so (CoA's own text left out the critical strike part).
-STONEFORM_TEXT = ('Instantly removes all poison, disease and bleed effects. In addition, for 8 sec your armor is increased '
-                  'by 20%, your chance to be critically hit is reduced by 20% and you take 8% less damage from spells.')
-STONEFORM_BUFF = 'Armor increased by 20%. Chance to be critically hit reduced by 20%. Spell damage taken reduced by 8%.'
+# Dwarf Stoneform (patches/89-racial-stoneform.ps1): its buff lasts 10 sec and gives +20% armour, 20% less chance to be
+# critically hit and resistance to every magic school worth about 8% less spell damage; 2 min cooldown. Both copies say
+# so (CoA's own text left out the critical strike part).
+STONEFORM_TEXT = ('Instantly removes all poison, disease and bleed effects. In addition, for 10 sec your armor is '
+                  'increased by 20%, your chance to be critically hit is reduced by 20% and your resistance to all '
+                  'magic schools is increased, for about 8% less spell damage taken.')
+STONEFORM_BUFF = ('Armor increased by 20%. Chance to be critically hit reduced by 20%. Resistance to all magic schools '
+                  'increased.')
 TEXTS.update({spell: {170: STONEFORM_TEXT} for spell in (20594, 1120594)})
 TEXTS.update({spell: {170: STONEFORM_TEXT, 187: STONEFORM_BUFF} for spell in (65116, 1165116)})
 
-# Stock spell values the race kits change, spell -> {column: value}. Stoneform's classless buff: +20% armour (base
-# points 19; the stock copy 65116 already has it).
-EFFECT_BASE_POINTS = 80
-VALUES = {1165116: {EFFECT_BASE_POINTS: 19}}
+# Stock spell values the race kits change, spell -> {column: value}. Stoneform: the buff lasts 10 sec (duration 1),
+# the classless buff's armour is +20% (base points 19, as the stock copy already has), and the classless cleanse has
+# the stock copy's 2 min cooldown.
+EFFECT_BASE_POINTS, DURATION = 80, 40
+VALUES = {1165116: {EFFECT_BASE_POINTS: 19, DURATION: 1}, 65116: {DURATION: 1}, 1120594: {RECOVERY_TIME: 120000}}
 
 # Racial cooldowns changed by the race kits (the server makes the same change at start-up, while the racial's setting
 # is on): spell -> cooldown in ms. Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): Arcane Torrent 1 min
