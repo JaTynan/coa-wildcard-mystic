@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wildcard server</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Server page only */
+  .settings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .setting { padding: 9px 0; border-top: 1px solid var(--line); }
+  .setting:first-of-type { border-top: 0; }
+  .setting b { display: block; font-weight: 600; }
+  .setting .value { color: var(--gold); font-weight: 700; }
+  .setting .why { color: var(--muted); font-size: 14px; }
+  @media (max-width: 900px) { .settings { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 620px) { .settings { grid-template-columns: 1fr; } }
+</style>
+<script src="site.js"></script>
+</head>
+<body data-page="server">
+<main>
+  <header class="page-head">
+    <p class="eyebrow">Server</p>
+    <h1>Status, events and realm settings</h1>
+    <p class="lede">Is it up, what's on this week, and how the realm differs from the usual game. Everything here is
+      read from the live server.</p>
+  </header>
+
+  <div class="stack">
+    <div class="grid">
+      <section class="card" aria-labelledby="status-title">
+        <h2 id="status-title">Status</h2>
+        <dl class="rows">
+          <dt>Login server</dt><dd id="login"><span class="dot"></span>Checking...</dd>
+          <dt>World server</dt><dd id="world"><span class="dot"></span>Checking...</dd>
+          <dt>Players online</dt><dd id="players">-</dd>
+          <dt>Bots in the world</dt><dd id="bots">-</dd>
+          <dt>Up for</dt><dd id="uptime">-</dd>
+          <dt>Server version</dt><dd id="version">-</dd>
+          <dt>Client</dt><dd id="client">-</dd>
+        </dl>
+        <p class="note" id="restart" style="margin-top:14px"></p>
+      </section>
+
+      <section class="card" aria-labelledby="event-title" id="event">
+        <h2 id="event-title">This week's event</h2>
+        <div id="weekend"><p class="note">Loading...</p></div>
+        <p class="note" id="weekend-note" style="margin-top:12px"></p>
+      </section>
+    </div>
+
+    <section class="card" aria-labelledby="settings-title" id="settings">
+      <h2 id="settings-title">Realm settings</h2>
+      <div class="settings" id="settings-list"><p class="note">Loading...</p></div>
+    </section>
+  </div>
+</main>
+<script>
+const { el } = Wildcard;
+const $ = (id) => document.getElementById(id);
+
+function light(id, up, upText, downText) {
+  const cell = $(id);
+  cell.className = up ? "up" : "down";
+  cell.textContent = "";
+  cell.append(el("span", { class: "dot" }), up ? upText : downText);
+}
+
+Wildcard.onStatus((s) => {
+  if (!s) {
+    for (const id of ["login", "world"]) {
+      $(id).className = "";
+      $(id).textContent = "";
+      $(id).append(el("span", { class: "dot" }), "Status unavailable");
+    }
+    if ($("settings-list").textContent.includes("Loading")) {
+      $("settings-list").innerHTML = '<p class="note">Settings unavailable right now; try again in a minute.</p>';
+    }
+    return;
+  }
+  light("login", s.login, "Online", "Offline");
+  light("world", s.world, "Online", s.login ? "Starting or restarting" : "Offline");
+  const n = Wildcard.players(s), b = Wildcard.bots(s);
+  $("players").textContent = n === null ? "-" : n;
+  $("bots").textContent = b === null ? "-" : b.toLocaleString();
+  $("uptime").textContent = s.uptime || "-";
+  const v = s.server || {};
+  $("version").textContent = v.release ? `CoA ${v.release}, Wildcard build ${v.build}` : (v.tag || "-");
+  $("restart").textContent = s.restart || "";
+
+  Wildcard.renderEvent($("weekend"), s.weekend);
+  const w = s.weekend;
+  $("weekend-note").textContent = w && w.current
+    ? `${w.current.allWeek ? "Each event runs Friday to Thursday" : "Each event runs Friday to Sunday"}, on top of the usual rates. Times are in your time zone.`
+    : "";
+
+  const box = $("settings-list");
+  box.textContent = "";
+  for (const group of s.settings || []) {
+    box.append(el("div", {}, el("p", { class: "label" }, group.title),
+      (group.items || []).map((item) => el("div", { class: "setting" },
+        el("b", {}, item.label + " ", el("span", { class: "value" }, item.value)),
+        item.note ? el("span", { class: "why" }, item.note) : null))));
+  }
+});
+
+Promise.all([
+  fetch("manifest.json", { cache: "no-store" }).then((r) => r.json()),
+  fetch("launcher.json", { cache: "no-store" }).then((r) => r.json()),
+]).then(([manifest, launcher]) => {
+  const files = manifest.files || [];
+  const bytes = files.reduce((sum, f) => sum + (f.size || 0), 0);
+  const when = new Date(String(manifest.generated).replace(/\.(\d{3})\d+/, ".$1"));
+  $("client").textContent = `Updated ${when.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}, ` +
+    `${(bytes / 1073741824).toFixed(1)} GB · launcher version ${launcher.launcherVersion}`;
+}).catch(() => { $("client").textContent = "Unavailable right now"; });
+</script>
+</body>
+</html>

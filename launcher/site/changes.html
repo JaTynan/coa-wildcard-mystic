@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wildcard changes</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Changes only */
+  main { max-width: 860px; }
+  .day { display: grid; grid-template-columns: 170px 1fr; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .day:first-child { border-top: 0; padding-top: 0; }
+  .day h2 { font-size: 15px; color: var(--gold); margin: 2px 0 0; position: sticky; top: 76px; align-self: start; }
+  .day ul { margin: 0; }
+  .day li { margin: 0 0 6px; }
+  @media (max-width: 620px) { .day { grid-template-columns: 1fr; gap: 6px; } .day h2 { position: static; } }
+</style>
+<script src="site.js"></script>
+</head>
+<body data-page="changes">
+<main>
+  <header class="page-head">
+    <p class="eyebrow">Changes</p>
+    <h1>What's changed</h1>
+    <p class="lede">Everything that went live in the last week, newest first. Changes arrive with the nightly restart
+      at 4:00 am (Sydney time), sometimes sooner.</p>
+  </header>
+  <section class="card" id="days"><p class="note">Loading...</p></section>
+</main>
+<script>
+const { el } = Wildcard;
+const box = document.getElementById("days");
+Wildcard.changes().then((days) => {
+  box.textContent = "";
+  if (!days.length) { box.append(el("p", { class: "note" }, "Nothing new in the last week.")); return; }
+  for (const day of days) {
+    box.append(el("div", { class: "day" }, el("h2", {}, day.label), el("ul", {}, day.items.map((item) => el("li", {}, item)))));
+  }
+}, () => { box.innerHTML = '<p class="note">The change list is not available right now.</p>'; });
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wildcard leaderboards</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Leaderboards only */
+  .boards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+  .boards .card h2 { font-size: 17px; }
+  .firsts { list-style: none; margin: 0; padding: 0; }
+  .firsts li { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 8px 0; margin: 0;
+               border-top: 1px solid var(--line); }
+  .firsts li:first-child { border-top: 0; }
+  .firsts time { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .firsts .hidden { display: none; }
+  @media (max-width: 520px) { .firsts li { grid-template-columns: 1fr; gap: 0; } }
+</style>
+<script src="site.js"></script>
+</head>
+<body data-page="leaderboards">
+<main>
+  <header class="page-head">
+    <p class="eyebrow">Leaderboards</p>
+    <h1>Who's on top</h1>
+    <p class="lede">The top ten on each board and every server first. Real players only: bots don't count.
+      Updated every five minutes.</p>
+  </header>
+
+  <div class="stack">
+    <div class="boards" id="boards"><p class="note">Loading...</p></div>
+
+    <section class="card" aria-labelledby="firsts-title">
+      <div class="card-head"><h2 id="firsts-title">Server firsts</h2><span class="note" id="firsts-count"></span></div>
+      <ul class="firsts" id="firsts"></ul>
+      <button class="button quiet" id="all-firsts" type="button" hidden style="margin-top:14px">Show all</button>
+    </section>
+  </div>
+</main>
+<script>
+const { el } = Wildcard;
+const $ = (id) => document.getElementById(id);
+const SHOWN = 15;
+
+Wildcard.onStatus((s) => {
+  const data = s && s.leaderboards;
+  const boards = $("boards");
+  if (!data) {
+    if (boards.textContent.includes("Loading")) boards.innerHTML = '<p class="note">Leaderboards unavailable right now; try again in a minute.</p>';
+    return;
+  }
+  boards.textContent = "";
+  for (const board of data.boards || []) {
+    const list = board.rows.length
+      ? el("ol", { class: "ranked" }, board.rows.map((row) =>
+          el("li", {}, el("span", { class: "name" }, row.name), el("span", { class: "value" }, row.value.toLocaleString()))))
+      : el("p", { class: "note" }, "Nobody yet.");
+    boards.append(el("section", { class: "card" }, el("h2", {}, board.title), list));
+  }
+
+  const firsts = $("firsts");
+  const all = data.firsts || [];
+  firsts.textContent = "";
+  $("firsts-count").textContent = all.length ? `${all.length} so far` : "";
+  if (!all.length) firsts.append(el("li", {}, el("span", {}, "No server firsts yet. Be the first!")));
+  all.forEach((first, n) => firsts.append(el("li", { class: n >= SHOWN && !firsts.dataset.all ? "hidden" : null },
+    el("time", {}, first.date), el("span", {}, first.text))));
+  $("all-firsts").hidden = all.length <= SHOWN || !!firsts.dataset.all;
+});
+
+$("all-firsts").addEventListener("click", () => {
+  $("firsts").dataset.all = "1";
+  document.querySelectorAll("#firsts .hidden").forEach((li) => li.classList.remove("hidden"));
+  $("all-firsts").hidden = true;
+});
+</script>
+</body>
+</html>
