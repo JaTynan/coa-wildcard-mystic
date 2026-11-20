@@ -2,7 +2,9 @@
 # (100% at level 60); it drains in 6 sec when you stop; it adds on top of other speed effects (Sprint's +70% and a full
 # +100% make +170%). Nothing while mounted; held, but not applied, while carrying a battleground flag. Group members
 # within 10 yards of a running Tauren get the same bonus while they're on foot (Running with the Herd, 9990058; the
-# highest Tauren's if several; not while carrying a flag; James, 20 November). The buff icon is our spell 9990001 (sql/enchants/150-custom-spells.sql and the client patch, client-patch/custom_spells.py).
+# highest Tauren's if several; not while carrying a flag; James, 20 November). Tauren build faster together: each other
+# Tauren running in the group within 10 yards adds the normal rate again, up to 4 (two build in 30 sec, five in 12).
+# The buff icon is our spell 9990001 (sql/enchants/150-custom-spells.sql and the client patch, client-patch/custom_spells.py).
 # Run by the build (step "Apply our patch scripts") from the workspace root, after 40-battlegrounds.ps1, whose script
 # loader this registers in. Each part throws if its anchor is gone. Listed in CHANGES.md. Racials.Plainsrunning = 0 turns it off.
 $ErrorActionPreference = 'Stop'
@@ -59,6 +61,30 @@ public:
     }
 
     static uint32 Now() { return uint32(GameTime::GetGameTimeMS().count()); }
+
+    static bool IsRunning(Player* player)
+    {
+        bool const onFoot = !player->IsMounted() && !player->GetVehicle() && !player->IsInFlight() && !player->IsFlying() &&
+            !player->isSwimming();
+        return onFoot && !player->IsWalking() && (player->isMoving() || !player->movespline->Finalized());
+    }
+
+    // Other Tauren running in the group within 10 yards, on the same map (up to 4): each adds the normal build rate.
+    static uint32 HerdRunners(Player* tauren)
+    {
+        Group* group = tauren->GetGroup();
+        if (!group)
+            return 0;
+        uint32 runners = 0;
+        for (GroupReference* ref = group->GetFirstMember(); ref && runners < 4; ref = ref->next())
+        {
+            Player* member = ref->GetSource();
+            if (member && member != tauren && member->getRace() == RACE_TAUREN && member->IsInMap(tauren) &&
+                member->IsAlive() && tauren->IsWithinDist(member, HerdRange) && IsRunning(member) && !CarryingFlag(member))
+                ++runners;
+        }
+        return runners;
+    }
 
     // A Tauren's bonus offered to a group member. The member keeps the highest Tauren's; the same Tauren's newer
     // number always replaces its own (so it drains too), and a stale offer gives way to any other.
@@ -128,15 +154,13 @@ public:
 
         bool const carrying = CarryingFlag(player);
         bool const enabled = sConfigMgr->GetOption<bool>("Racials.Plainsrunning", true);
-        bool const onFoot = !player->IsMounted() && !player->GetVehicle() && !player->IsInFlight() && !player->IsFlying() &&
-            !player->isSwimming();
-        bool const running = onFoot && !player->IsWalking() && (player->isMoving() || !player->movespline->Finalized());
+        bool const running = IsRunning(player);
 
         float& charge = player->WcmePlainsrunningCharge;
         if (!enabled || !player->IsAlive())
             charge = 0.0f;
         else if (running && !carrying)
-            charge = std::min(1.0f, charge + elapsed / 60000.0f);
+            charge = std::min(1.0f, charge + elapsed * float(1 + HerdRunners(player)) / 60000.0f);
         else if (!carrying)
             charge = std::max(0.0f, charge - elapsed / 6000.0f);
 

@@ -150,7 +150,7 @@ SPELLS = {
                     'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                     '(100% at level 60), on top of other speed effects. When you stop it drains in 6 sec. Not while '
                     'mounted; held while carrying a flag. Group members within 10 yards run with you at the same '
-                    'bonus.',
+                    'bonus, and each other Tauren running with you builds yours faster (up to 4).',
                     'Running faster. The number is your bonus running speed in percent.',
                     3542, 100, [(DUMMY, 0, 0)]),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
     PLAINSRUNNING_HERD: ('Running with the Herd',
@@ -227,7 +227,9 @@ SPELLS = {
                          'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                          '(100% at level 60), on top of other speed effects. When you stop, it drains in 6 sec. Not '
                          'while mounted; paused while carrying a battleground flag. Group members within 10 yards '
-                         'run with you at the same bonus.',
+                         'run with you at the same bonus. Tauren build faster together: each other Tauren running in '
+                         'your group within 10 yards adds the normal rate again, up to 4 (two reach full speed in 30 '
+                         'sec, five in 12).',
                          '', 3542, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_BLOODRUSH: ('Bloodrush',
                      'Relentless but reckless. For each enemy in combat with you, +2% damage, up to 5 enemies, gone '
