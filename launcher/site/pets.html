@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tameable pets</title>
 <link rel="stylesheet" href="style.css">
+<script src="site.js"></script>
 <style>
   /* Tameable pets only */
   main { max-width: 1100px; }
@@ -42,12 +43,14 @@
   }
 </style>
 </head>
-<body>
+<body data-page="pets">
 <main>
-  <nav class="top"><a href="./">Home</a><a href="how-to-play.html">How to play</a><a href="pets.html" aria-current="page">Tameable pets</a><a href="https://join.jtlab.cc">Create an account</a></nav>
-  <h1>Tameable pets</h1>
-  <p class="tag">Every pet family you can tame on Wildcard: beasts, undead, demons, elementals, dragonkin and
+  <header class="page-head">
+    <p class="eyebrow">Pets</p>
+    <h1>Tameable pets</h1>
+    <p class="lede">Every pet family you can tame on Wildcard: beasts, undead, demons, elementals, dragonkin and
     mechanicals. Each family lists its abilities and one creature you can tame for it, with where to find it.</p>
+  </header>
   <div class="stack">
     <section class="panel">
       <div class="tabs" id="tabs" role="group" aria-label="Pet kind"></div>

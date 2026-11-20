@@ -320,7 +320,7 @@ PAGE = """<!doctype html>
 </head>
 <body>
 <main>
-  <nav class="top"><a href="https://wildcard.jtlab.cc/">Home</a><a href="https://wildcard.jtlab.cc/how-to-play.html">How to play</a><a href="https://wildcard.jtlab.cc/pets.html">Tameable pets</a><a href="/" aria-current="page">Create an account</a></nav>
+  <nav class="top"><a href="https://wildcard.jtlab.cc/">Home</a><a href="https://wildcard.jtlab.cc/how-to-play.html">How to play</a><a href="https://wildcard.jtlab.cc/server.html">Server</a><a href="https://wildcard.jtlab.cc/leaderboards.html">Leaderboards</a><a href="https://wildcard.jtlab.cc/pets.html">Tameable pets</a><a href="https://wildcard.jtlab.cc/changes.html">Changes</a><a href="/" aria-current="page">Create an account</a></nav>
   <h1>Create an account</h1>
   <p class="tag">Make your game account. You need the invite code James gave you.</p>
   <form id="join" class="panel" autocomplete="off">
