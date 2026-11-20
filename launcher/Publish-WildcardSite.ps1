@@ -7,7 +7,7 @@ or by hand after changing the client (for example after a client update in the m
 
   - launcher.json    realm address, first-install archive link and size, current launcher version
   - manifest.json    every client file with its size, MD5 and modified time (personal folders left out)
-  - WildcardLauncher.zip, WildcardLauncher.ps1, WildcardLauncher.py (Linux), and the site folder (index.html, how-to-play.html, images)
+  - WildcardLauncher.zip, WildcardLauncher.ps1, WildcardLauncher.py (Linux), and the site folder (index.html, how-to-play.html, pets.html, images)
   - changelog.json   the last week of merged pull requests, by day, for the homepage's "Recent changes". A PR body
                      line "Changelog: <text>" replaces its title there; "Changelog: skip" leaves it out.
 #>
@@ -70,7 +70,7 @@ $linuxVersion = [int] ((Select-String -Path (Join-Path $PSScriptRoot 'WildcardLa
 
 Copy-Item (Join-Path $PSScriptRoot 'WildcardLauncher.ps1') $Site -Force
 Copy-Item (Join-Path $PSScriptRoot 'WildcardLauncher.py') $Site -Force
-# The whole site folder: pages (index.html, how-to-play.html) and images.
+# The whole site folder: pages (index.html, how-to-play.html, pets.html) and images.
 Copy-Item (Join-Path $PSScriptRoot 'site\*') $Site -Recurse -Force
 
 # ---------------------------------------------------------------- changelog (a GitHub hiccup keeps the last one)

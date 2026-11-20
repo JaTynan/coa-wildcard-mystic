@@ -38,6 +38,7 @@ from pathlib import Path
 # The manager's Python may be the embeddable kind, which does not add the script's folder to the import path.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import WildcardStatus  # noqa: E402
+import WildcardPets  # noqa: E402
 
 DAY = 24 * 60 * 60
 NAME = re.compile(r"[A-Za-z0-9]{3,16}")
@@ -319,7 +320,7 @@ PAGE = """<!doctype html>
 </head>
 <body>
 <main>
-  <nav class="top"><a href="https://wildcard.jtlab.cc/">Home</a><a href="https://wildcard.jtlab.cc/how-to-play.html">How to play</a><a href="/" aria-current="page">Create an account</a></nav>
+  <nav class="top"><a href="https://wildcard.jtlab.cc/">Home</a><a href="https://wildcard.jtlab.cc/how-to-play.html">How to play</a><a href="https://wildcard.jtlab.cc/pets.html">Tameable pets</a><a href="/" aria-current="page">Create an account</a></nav>
   <h1>Create an account</h1>
   <p class="tag">Make your game account. You need the invite code James gave you.</p>
   <form id="join" class="panel" autocomplete="off">
@@ -423,6 +424,15 @@ def handler_for(options):
                 except Exception as error:  # the homepage shows "status unavailable"; the log says why
                     log(f"Status failed: {error!r}")
                     self.send(500, json.dumps({"message": "Status unavailable"}), "application/json", public=True)
+                return
+            if self.path.split("?")[0] == "/api/pets":
+                # The website's Tameable pets page (launcher/site/pets.html), built from the live server.
+                try:
+                    body = json.dumps(WildcardPets.pets(options))
+                    self.send(200, body, "application/json", public=True)
+                except Exception as error:  # the page says the list is unavailable; the log says why
+                    log(f"Pets failed: {error!r}")
+                    self.send(500, json.dumps({"message": "Pets unavailable"}), "application/json", public=True)
                 return
             if self.path.split("?")[0] == "/style.css":
                 # The site's shared stylesheet, from the launcher folder patch night keeps next to these scripts.
@@ -547,6 +557,14 @@ def bug_report_relay(spool):
         time.sleep(30)
 
 
+def warm_pets(options):
+    """Builds the Tameable pets list once at start, so the first visitor doesn't wait for it."""
+    try:
+        WildcardPets.pets(options)
+    except Exception as error:
+        log(f"Pets failed: {error!r}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Wildcard sign-up page")
     parser.add_argument("--server", default=r"C:\Games\CoA Server")
@@ -557,6 +575,7 @@ def main():
     options.manage = options.server / "Scripts" / "manage.py"
     options.bridge = patch_night / "launcher_bridge.py"
     threading.Thread(target=bug_report_relay, args=(options.server / "BugReports",), daemon=True).start()
+    threading.Thread(target=warm_pets, args=(options,), daemon=True).start()
     log(f"Sign-up page listening on port {options.port}" + ("" if settings() else " (not open: fill in signup-settings.json)"))
     ThreadingHTTPServer(("0.0.0.0", options.port), handler_for(options)).serve_forever()
 
