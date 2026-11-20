@@ -5,6 +5,8 @@
 # the client patch (client-patch/custom_spells.py). Run by the build from the workspace root, after
 # 40-battlegrounds.ps1 and 54-racial-plainsrunning.ps1. Throws if an anchor is gone. Listed in CHANGES.md.
 # The in-combat regen and the burst take percentage healing reductions and increases, like a heal.
+# Berserking scales with missing health: 10% haste at full health, 1% more per 3% missing, up to 30% at 40% health or
+# lower, set when it's cast (James, 20 November; the client patch's tooltip says so, client-patch/racials.py).
 # Racials.VoodooRegeneration = 0 turns it off (and gives back the stock passive).
 $ErrorActionPreference = 'Stop'
 
@@ -122,9 +124,34 @@ private:
     }
 };
 
+
+// Wildcard: Troll Berserking scales with missing health (docs/race-kits.md): 10% haste at full health, 1% more for
+// every 3% missing, up to 30% at 40% health or lower (the original Berserking's range), set when it's cast.
+class wcme_berserking : public UnitScript
+{
+public:
+    wcme_berserking() : UnitScript("wcme_berserking", true, {UNITHOOK_ON_AURA_APPLY}) { }
+
+    void OnAuraApply(Unit* unit, Aura* aura) override
+    {
+        Player* player = unit ? unit->ToPlayer() : nullptr;
+        if (!player || !aura || player->getRace() != RACE_TROLL ||
+            (aura->GetId() != 26297 && aura->GetId() != 1126297) ||
+            !sConfigMgr->GetOption<bool>("Racials.VoodooRegeneration", true))
+            return;
+        if (AuraEffect* haste = aura->GetEffect(EFFECT_0))
+            haste->ChangeAmount(Haste(player));
+    }
+
+    static int32 Haste(Player* player)
+    {
+        float const missing = 100.0f - player->GetHealthPct();
+        return std::clamp(int32(std::lround(10.0f + missing / 3.0f)), 10, 30);
+    }
+};
 '@
-$text = $text.Replace($include, $include + "#include `"SpellAuraEffects.h`"`n#include `"SpellInfo.h`"`n")
+$text = $text.Replace($include, $include + "#include `"SpellAuraEffects.h`"`n#include `"SpellInfo.h`"`n#include `"UnitScript.h`"`n#include <algorithm>`n#include <cmath>`n")
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
-$text = $text.Replace($register, $register + "    new wcme_voodoo_regeneration();`n")
+$text = $text.Replace($register, $register + "    new wcme_voodoo_regeneration();`n    new wcme_berserking();`n")
 Set-Content $file $text -NoNewline
 }

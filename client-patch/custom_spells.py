@@ -257,7 +257,8 @@ SPELLS = {
     BOOK_VOODOO: ('Voodoo Regeneration',
                   'Health regenerates 50% faster out of combat. In combat, regenerate 0.3% of maximum health per '
                   'second (half while the burst is on cooldown). Below 35% health, regenerate 28% of maximum health '
-                  'over 5 sec, once every 2 min.',
+                  'over 5 sec, once every 2 min. Berserking gives more haste the lower your health: 10% at full, '
+                  'up to 30% at 40% health or lower.',
                   '', 19697, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_RADIANT: ('Radiant Presence',
                    'In combat, gain a stack of Light every 6 sec, up to 5. Each stack gives you and every ally within '

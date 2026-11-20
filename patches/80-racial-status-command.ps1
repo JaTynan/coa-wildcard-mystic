@@ -121,6 +121,12 @@ private:
                         "; until then your regeneration in combat is halved.");
                 else
                     Say(handler, "Voodoo Regeneration: the burst heal is ready (below 35% health).");
+                if (Amount(player, 26297, EFFECT_0) || Amount(player, 1126297, EFFECT_0))
+                    Say(handler, "Berserking: +" + std::to_string(std::max(Amount(player, 26297, EFFECT_0), Amount(player, 1126297, EFFECT_0))) +
+                        "% haste, " + Time(std::max(Seconds(player, 26297), Seconds(player, 1126297))) + " left.");
+                else
+                    Say(handler, "Berserking would give +" + std::to_string(std::clamp(int32(std::lround(10.0f +
+                        (100.0f - player->GetHealthPct()) / 3.0f)), 10, 30)) + "% haste right now (10% at full health, up to 30% at 40% or lower).");
                 break;
             }
             case RACE_DRAENEI:
@@ -237,7 +243,7 @@ private:
 };
 
 '@
-$text = $text.Replace($include, $include + "#include `"Chat.h`"`n#include `"ChatCommand.h`"`n#include `"CommandScript.h`"`n#include `"SpellAuraEffects.h`"`n#include `"SpellAuras.h`"`n#include <cstdio>`n#include <string>`n")
+$text = $text.Replace($include, $include + "#include `"Chat.h`"`n#include `"ChatCommand.h`"`n#include `"CommandScript.h`"`n#include `"SpellAuraEffects.h`"`n#include `"SpellAuras.h`"`n#include <algorithm>`n#include <cmath>`n#include <cstdio>`n#include <string>`n")
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_racial_command();`n")
 Set-Content $file $text -NoNewline

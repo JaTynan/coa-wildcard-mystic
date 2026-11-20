@@ -21,6 +21,13 @@ INTERRUPT_ON_MOVEMENT = 0x01
 # on). Tauren Plainsrunning (patches/54-racial-plainsrunning.ps1): War Stomp, every player copy CoA keeps.
 MOVABLE = {20549, 46026, 1120549, 1146026}
 
+# Stock spell texts the race kits change, spell -> {column: text} (170 the description, 187 the buff's text). Troll
+# Berserking scales with missing health (patches/58-racial-voodoo-regeneration.ps1), every player copy CoA keeps.
+BERSERKING_TEXT = ('Increases your attack and casting speed by 10% to 30% for $d, more the lower your health: 10% at full '
+                   'health, 1% more for every 3% missing, up to 30% at 40% health or lower. Does not stack with other '
+                   'similar cast speed increasing effects.')
+TEXTS = {26297: {170: BERSERKING_TEXT}, 1126297: {170: BERSERKING_TEXT}}
+
 # Racial cooldowns changed by the race kits (the server makes the same change at start-up, while the racial's setting
 # is on): spell -> cooldown in ms. Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): Arcane Torrent 1 min
 # instead of 2, every player copy CoA keeps.
@@ -53,3 +60,8 @@ def movable(row):
     row = list(row)
     row[INTERRUPT_FLAGS] &= ~INTERRUPT_ON_MOVEMENT
     return tuple(row)
+
+
+def text(spell, col, default):
+    """A stock spell's text: ours from TEXTS if listed, else the client's own."""
+    return TEXTS.get(spell, {}).get(col, default)
