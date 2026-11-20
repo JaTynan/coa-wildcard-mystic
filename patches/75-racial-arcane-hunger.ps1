@@ -116,6 +116,8 @@ public:
                 return;
             if (aura->GetStackAmount() != stacks)
                 aura->SetStackAmount(stacks);
+            if (have < MaxStacks && stacks >= MaxStacks)
+                WcmeFx::Play(player, 1852, 40754); // 10 stacks: an arcane gathering, Clarity of Will's sound on top
             aura->SetMaxDuration(FadeTime);
             aura->SetDuration(FadeTime);
             SetAmounts(player, aura, stacks);

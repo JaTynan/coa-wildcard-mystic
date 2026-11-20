@@ -87,12 +87,15 @@ public:
                 return;
             player->WcmeOverclockTimer = 0; // cooled down: climb again from nothing
             SetSteps(player, 0);
+            WcmeFx::Play(player, 0, 126580); // a small electrical zap
             return;
         }
         if (player->WcmeOverclockTimer < StepTime)
             return;
         player->WcmeOverclockTimer -= StepTime;
         SetSteps(player, player->WcmeOverclockSteps + 1);
+        if (player->WcmeOverclockSteps >= MaxSteps)
+            WcmeFx::Play(player, 2432); // step 10: a spark nova
         // Each step tops up 1% of every resource the player has.
         for (Powers power : {POWER_MANA, POWER_RAGE, POWER_ENERGY, POWER_RUNIC_POWER})
             if (uint32 const max = player->GetMaxPower(power))
@@ -112,6 +115,7 @@ public:
             aura->SetMaxDuration(3000);
             aura->SetDuration(3000);
         }
+        WcmeFx::Play(player, 1168); // the rocket boots' ignition; the speed buff wears their fire hands and trail
     }
 
 private:

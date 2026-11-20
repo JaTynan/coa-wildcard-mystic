@@ -56,6 +56,7 @@ public:
             if (player->AddAura(Ready, player))
             {
                 player->WcmeAmbushCooldown = CooldownMs;
+                WcmeFx::Play(player, 0, 6346); // the wisp's "yes"; the Ambush buff wears the starlight hands
                 if (Aura* recharging = player->AddAura(Recharging, player))
                 {
                     recharging->SetMaxDuration(int32(CooldownMs));

@@ -73,6 +73,21 @@ foreach ($anchor in @($include, $register, $loader)) {
     if (-not $text.Contains($anchor)) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
 }
 $class = @'
+// Wildcard: the racials' effects and sounds (docs/race-kits.md, chosen in game by James on 20 November). A spell
+// visual kit plays on the unit for everyone nearby, and a sound beside it; 0 skips either.
+namespace WcmeFx
+{
+    inline void Play(Unit* unit, uint32 kit, uint32 sound = 0)
+    {
+        if (!unit)
+            return;
+        if (kit)
+            unit->SendPlaySpellVisual(kit);
+        if (sound)
+            unit->PlayDirectSound(sound);
+    }
+}
+
 // Wildcard: Tauren Plainsrunning (docs/race-kits.md).
 class wcme_plainsrunning : public PlayerScript
 {
@@ -83,6 +98,7 @@ public:
     static constexpr uint32 Stomping = 9990060;  // hidden: 80% slower while War Stomp casts
     static constexpr float StompBoost = 0.30f;   // War Stomp: 30% more, past the cap
     static constexpr uint32 StompTime = 5000;
+    static constexpr uint32 FullSpeedFx = 4641; // a yellow shout disc with a drum: full speed, and War Stomp's boost
 
     static bool IsWarStomp(uint32 id) { return id == 20549 || id == 46026 || id == 1120549 || id == 1146026; }
 
@@ -93,6 +109,7 @@ public:
             !sConfigMgr->GetOption<bool>("Racials.Plainsrunning", true))
             return;
         player->WcmeStompBoost = StompTime;
+        WcmeFx::Play(player, FullSpeedFx); // the same yellow shout disc and drum as full speed
         player->WcmePlainsrunningTimer = 250; // the next update shows it
     }
     static constexpr float HerdRange = 10.0f;
@@ -218,6 +235,7 @@ public:
         bool const running = IsRunning(player);
 
         float& charge = player->WcmePlainsrunningCharge;
+        float const before = charge;
         if (!enabled || !player->IsAlive())
             charge = 0.0f;
         else if (running && !carrying)
@@ -227,6 +245,8 @@ public:
 
         float const cap = float(std::min<uint32>(player->GetLevel(), 60) + 40) / 100.0f;
         float const boost = (enabled && player->IsAlive() && player->WcmeStompBoost) ? StompBoost : 0.0f;
+        if (before < 1.0f && charge >= 1.0f && !carrying && !player->IsMounted())
+            WcmeFx::Play(player, FullSpeedFx); // full speed
         float const bonus = (carrying || player->IsMounted()) ? 0.0f : cap * charge + boost;
         float const shown = player->WcmePlainsrunningBonus;
         // Small changes wait until they add up to 1%, except at empty and at full, which always land exactly (the

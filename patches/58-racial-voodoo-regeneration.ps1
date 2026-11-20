@@ -70,6 +70,7 @@ public:
         {
             Lasting(player, Burst, 5000);
             Lasting(player, Cooldown, 120000);
+            WcmeFx::Play(player, 9990101, 3331); // Earthliving's lifebloom (silent copy), Nature Resistance's sound
         }
         player->WcmeVoodooTimer = std::min<uint32>(player->WcmeVoodooTimer + diff, 5000);
         for (; player->WcmeVoodooTimer >= 1000; player->WcmeVoodooTimer -= 1000)

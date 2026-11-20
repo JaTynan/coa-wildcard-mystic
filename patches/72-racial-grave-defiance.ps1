@@ -146,6 +146,7 @@ public:
             if (!defiance)
                 return;
             player->WcmeGraveActive = true;
+            WcmeFx::Play(player, 165101); // necromantic empowerment
         }
         uint8 const bonus = Bonus(player);
         if (defiance->GetStackAmount() != bonus)
@@ -185,6 +186,7 @@ private:
             return;
         killer->WcmeGhoulRevived = true;
         killer->RemoveAurasDueToSpell(Ghoul);
+        WcmeFx::Play(killer, 10297); // back to life: Unholy Presence
         killer->SetHealth(std::max<uint32>(1, killer->CountPctFromMaxHealth(20)));
     }
 };
@@ -238,6 +240,7 @@ public:
             bg->EventPlayerDroppedFlag(player);
         Lasting(player, Ghoul, 10000);
         Lasting(player, GhoulCooldown, GhoulCooldownTime);
+        WcmeFx::Play(player, 258020); // the rise: a necromancy summon; the ghoul buff wears Dark Banish
         return health - 1;
     }
 

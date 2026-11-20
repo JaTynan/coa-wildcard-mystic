@@ -98,6 +98,12 @@ STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
 MOD_DECREASE_SPEED = 33
+# Spell visuals (column 131) for the racials' buffs (James chose them in game, 20 November). Existing client visuals,
+# except VISUAL_AMBUSH_READY, which client-patch/visuals.py adds.
+VISUAL_DEATH_WISH = 4599      # Rush: Death Wish's looping red hands (its flash, kit 4010, the server plays)
+VISUAL_DARK_BANISH = 9652     # Risen Ghoul: Teleport Other's visual, whose looping part is Dark Banish (kit 7427)
+VISUAL_ROCKET_BOOTS = 1223    # Escape Artist's speed: Gnomish Rocket Boots' fire hands and trail (kit 1164)
+VISUAL_AMBUSH_READY = 9990101 # Ambush ready: the starlight hands without their beam sound (visuals.py)
 MOD_THREAT, PERIODIC_ENERGIZE, EFFECT_IMMUNITY, MANA_SHIELD, MOD_ATTACKER_MELEE_CRIT_CHANCE = 10, 24, 37, 97, 187
 DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
     MOD_HEALTH_REGEN_PERCENT, MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 87, 88, 136, 193  # aura types
@@ -175,7 +181,7 @@ SPELLS = {
                       'haste per stack, and 2% more damage taken. Each kill starts the 15 sec again.',
                       'Movement speed increased by $s1% and haste by $s2%. Damage taken increased by 2% per stack. '
                       'Another killing blow adds a stack and starts the 15 sec again.',
-                      516, 5, [(MOD_SPEED_ALWAYS, 10, 0), (HASTE_ALL, 2, 0)]),  # Ability_Rogue_Sprint
+                      516, 5, [(MOD_SPEED_ALWAYS, 10, 0), (HASTE_ALL, 2, 0)], {131: VISUAL_DEATH_WISH}),  # Ability_Rogue_Sprint
     BLOODRUSH_RECKLESS: ('Rush', 'Damage taken increased by 2% per stack of Rush.', '', 516, 5,
                          [(MOD_DAMAGE_PERCENT_TAKEN, 2, ALL_SCHOOLS)], {4: HIDDEN}),
     AMBUSH: ('Ambush',
@@ -184,7 +190,7 @@ SPELLS = {
              'Your next ability costs 10% less and deals or heals 50% more.',
              3701, 0, [(MOD_DAMAGE_PERCENT_DONE, 50, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 50, 0),
                        (MOD_POWER_COST_PCT, -10, ALL_SCHOOLS)],
-             {34: NEXT_ABILITY, 35: 100, 36: 1}),  # achievement_profession_fishing_findfish; one charge
+             {34: NEXT_ABILITY, 35: 100, 36: 1, 131: VISUAL_AMBUSH_READY}),  # achievement_profession_fishing_findfish; one charge
     AMBUSH_RECHARGING: ('Ambush Recharging',
                         'Ambush was readied recently: entering stealth won\'t ready it again until this runs out.',
                         'Entering stealth won\'t ready Ambush again until this runs out.',
@@ -291,9 +297,8 @@ SPELLS = {
                   'this ends.',
                   'Risen as a ghoul. Land a killing blow to come back at 20% health, or die when this ends. Damage '
                   'and healing done reduced by 30%.',
-                  3254, 0, [(TRANSFORM, 0, RISEN_ALLY), (MOD_DAMAGE_PERCENT_DONE, -30, ALL_SCHOOLS),
-                            (MOD_HEALING_DONE_PERCENT, -30, 0)],
-                  {4: 0x80000000 | NO_IMMUNITIES}),  # achievement_dungeon_coablackdragonflight
+                  3254, 0, [(MOD_DAMAGE_PERCENT_DONE, -30, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, -30, 0)],
+                  {4: 0x80000000 | NO_IMMUNITIES, 131: VISUAL_DARK_BANISH}),  # achievement_dungeon_coablackdragonflight
     GRAVE_GHOUL_COOLDOWN: ('Grave Hunger',
                            'You can\'t rise as a ghoul again until this runs out (10 min). Each Cannibalize takes 2 min '
                            'off.',
@@ -359,7 +364,7 @@ SPELLS = {
     OVERCLOCK_ESCAPE: ('Escape Artist',
                        'Movement speed increased by 60% for 3 sec after Escape Artist.',
                        'Movement speed increased by $s1%.',
-                       ICON_ROCKET_BOOTS, 0, [(MOD_INCREASE_SPEED, 60, 0)]),
+                       ICON_ROCKET_BOOTS, 0, [(MOD_INCREASE_SPEED, 60, 0)], {131: VISUAL_ROCKET_BOOTS}),
     BOOK_ARCANE_HUNGER: ('Arcane Hunger',
                          'Each ability or spell you use adds a stack of Arcane Hunger, up to 10. Per stack, abilities '
                          'deal and heal 1.5% more and cost 2% more, and you take 0.5% less damage (at 10: 15% more '

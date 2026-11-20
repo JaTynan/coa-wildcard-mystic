@@ -59,6 +59,7 @@ public:
     static constexpr uint32 Light = 9990008;
     static constexpr uint8 MaxStacks = 5;
     static constexpr float Range = 30.0f;
+    static constexpr uint32 FullLightFx = 2459; // Beacon of Light's burst, at 5 Light
 
     void OnPlayerUpdate(Player* player, uint32 diff) override
     {
@@ -83,6 +84,8 @@ public:
                     player->WcmeRadiantStackTimer -= 6000;
                     ++player->WcmeRadiantStacks;
                     player->WcmeRadiantPulse = 1000; // share the new stack straight away
+                    if (player->WcmeRadiantStacks >= MaxStacks)
+                        WcmeFx::Play(player, FullLightFx);
                 }
             }
             else
@@ -136,6 +139,8 @@ public:
             case 28880: case 59542: case 59543: case 59544: case 59545: case 59547: case 59548: case 814280:
             case 814281: case 814282: case 1128880: case 1159542: case 1159543: case 1159544: case 1159545:
             case 1159547: case 1159548:
+                if (player->WcmeRadiantStacks < MaxStacks)
+                    WcmeFx::Play(player, FullLightFx);
                 player->WcmeRadiantStacks = MaxStacks;
                 player->WcmeRadiantStackTimer = 0;
                 player->WcmeRadiantFade = 0;

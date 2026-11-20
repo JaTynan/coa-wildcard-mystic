@@ -105,12 +105,18 @@ private:
         if (!killer || !Applies(killer) || !killer->IsAlive())
             return;
         Aura* aura = killer->GetAura(Rush);
+        bool const first = !aura;
+        uint8 const had = aura ? aura->GetStackAmount() : 0;
         if (!aura)
             aura = killer->AddAura(Rush, killer);
         else if (aura->GetStackAmount() < MaxRush)
             aura->SetStackAmount(aura->GetStackAmount() + 1);
         if (!aura)
             return;
+        if (first)
+            WcmeFx::Play(killer, 4010); // Death Wish's red flash; the Rush buff then wears its looping red hands
+        else if (had < MaxRush && aura->GetStackAmount() >= MaxRush)
+            WcmeFx::Play(killer, 9990102, 306097); // full Rush: Bloodlust's head burst (silent copy), the modern war shout
         aura->SetMaxDuration(RushTime);
         aura->SetDuration(RushTime);
         FollowRush(killer);

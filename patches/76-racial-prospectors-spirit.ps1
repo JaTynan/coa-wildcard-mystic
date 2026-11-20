@@ -169,6 +169,15 @@ private:
             return;
         aura->SetMaxDuration(Lasts);
         aura->SetDuration(Lasts);
+        switch (spell) // each find shows what it gives
+        {
+            case Mining: WcmeFx::Play(player, 3401); break;            // gem dust and a seismic slam
+            case Herbalism: WcmeFx::Play(player, 254); break;          // Arcane Intellect
+            case Skinning: WcmeFx::Play(player, 542); break;           // Mark of the Wild
+            case Treasure: WcmeFx::Play(player, 10918, 10649); break;     // Honor Among Thieves, Hysteria's sound on top
+            case Fishing: WcmeFx::Play(player, 527); break;            // Water Breathing
+            default: break;
+        }
         if (spell == Fishing && aura->GetStackAmount() >= MaxStacks)
             Lasting(player, WaterBreathing, Lasts);
     }

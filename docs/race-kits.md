@@ -196,6 +196,31 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Dwarf | Prospector's Spirit: Treasure (and discovering areas) | inv_elemental_eternal_shadow | 12202 (done) |
 | Dwarf | Prospector's Spirit: Fishing | inv_elemental_eternal_water | 12203 (done) |
 
+## Effects and sounds
+
+Chosen by James in game on 20 November, themed on what each moment does. The server plays one-off effects and sounds
+(`WcmeFx::Play` in patch 54); a buff's looping look is its spell visual (`client-patch/custom_spells.py`). Three effects
+had their built-in sound swapped, so the client patch adds silent copies of them, and a looping visual for the Ambush
+hands (`client-patch/visuals.py`, kits and visual 9990101 onwards).
+
+| Moment | Effect (kit) | Sound |
+|---|---|---|
+| Tauren: Plainsrunning reaches full speed; War Stomp's boost | yellow shout disc (4641) | its drum |
+| Orc: first Rush stack | red flash (4010); the buff loops red hands (visual 4599) | its own |
+| Orc: 5 Rush stacks | head burst, silent copy (9990102 of 6799) | war shout (306097) |
+| Night Elf: Ambush ready | buff loops starlight hands (visual 9990101, silent copy of kit 833217) | wisp's "yes" (6346) |
+| Troll: Voodoo Regeneration burst | lifebloom, silent copy (9990101 of 10583) | Nature Resistance (3331) |
+| Draenei: 5 Light | Beacon of Light burst (2459) | its own |
+| Undead: the ghoul rises | necromancy summon (258020); the ghoul loops Dark Banish (visual 9652, no more transform) | its own |
+| Undead: the ghoul's killing blow revives | Unholy Presence (10297) | its own |
+| Undead: Grave Defiance starts | necromantic empowerment (165101) | its own |
+| Gnome: Overclock step 10 | spark nova (2432) | its own |
+| Gnome: Overclock resets after the peak | none | electrical zap (126580) |
+| Gnome: Escape Artist | rocket boots ignition (1168); the speed buff loops their trail (visual 1223) | its own |
+| Blood Elf: 10 Arcane Hunger stacks | arcane gathering (1852) | Clarity of Will (40754) |
+| Dwarf: Mining / Herbalism / Skinning / Fishing find | 3401 / 254 / 542 / 527 | their own |
+| Dwarf: Treasure find | Honor Among Thieves (10918) | Hysteria (10649) |
+
 ## Balance notes
 
 - First paper review (13 November): the signatures are big on purpose and fit the server's power level. The ones to
