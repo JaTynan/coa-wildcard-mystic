@@ -18,7 +18,7 @@ import sys
 from dbc import Dbc, write_dbc
 from mpqwrite import write_mpq
 import custom_spells
-from racials import OFF_GCD, cooldowns, movable, off_gcd, text
+from racials import OFF_GCD, cooldowns, movable, off_gcd, text, values
 
 args = sys.argv[1:]
 icon_files = []
@@ -47,7 +47,7 @@ if '--visuals' in args:
     visual_files = visuals.build(args[at + 1], args[at + 2])
     del args[at:at + 3]
 spells = Dbc(args[0])
-rows = [custom_spells.with_icon(movable(cooldowns(off_gcd(spells.rows[spell])))) for spell in sorted(spells.rows) if spell not in custom_spells.SPELLS]
+rows = [custom_spells.with_icon(values(movable(cooldowns(off_gcd(spells.rows[spell]))))) for spell in sorted(spells.rows) if spell not in custom_spells.SPELLS]
 rows += [custom_spells.row(spell, spells.fields) for spell in sorted(custom_spells.SPELLS)]  # our buff icons
 write_dbc('Spell.dbc', rows, spells.fields, lambda rec, col: custom_spells.string_of(rec[0], col)
           if rec[0] in custom_spells.SPELLS else text(rec[0], col, spells.string(spells.rows[rec[0]][col])))

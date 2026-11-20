@@ -28,6 +28,19 @@ BERSERKING_TEXT = ('Increases your attack and casting speed by 10% to 30% for $d
                    'similar cast speed increasing effects.')
 TEXTS = {26297: {170: BERSERKING_TEXT}, 1126297: {170: BERSERKING_TEXT}}
 
+# Dwarf Stoneform (patches/89-racial-stoneform.ps1): its buff gives +20% armour, 20% less chance to be critically hit
+# and 8% less spell damage for 8 sec; both copies say so (CoA's own text left out the critical strike part).
+STONEFORM_TEXT = ('Instantly removes all poison, disease and bleed effects. In addition, for 8 sec your armor is increased '
+                  'by 20%, your chance to be critically hit is reduced by 20% and you take 8% less damage from spells.')
+STONEFORM_BUFF = 'Armor increased by 20%. Chance to be critically hit reduced by 20%. Spell damage taken reduced by 8%.'
+TEXTS.update({spell: {170: STONEFORM_TEXT} for spell in (20594, 1120594)})
+TEXTS.update({spell: {170: STONEFORM_TEXT, 187: STONEFORM_BUFF} for spell in (65116, 1165116)})
+
+# Stock spell values the race kits change, spell -> {column: value}. Stoneform's classless buff: +20% armour (base
+# points 19; the stock copy 65116 already has it).
+EFFECT_BASE_POINTS = 80
+VALUES = {1165116: {EFFECT_BASE_POINTS: 19}}
+
 # Racial cooldowns changed by the race kits (the server makes the same change at start-up, while the racial's setting
 # is on): spell -> cooldown in ms. Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): Arcane Torrent 1 min
 # instead of 2, every player copy CoA keeps.
@@ -65,3 +78,13 @@ def movable(row):
 def text(spell, col, default):
     """A stock spell's text: ours from TEXTS if listed, else the client's own."""
     return TEXTS.get(spell, {}).get(col, default)
+
+
+def values(row):
+    """The row with its numbers from VALUES, if listed."""
+    if row[0] not in VALUES:
+        return row
+    row = list(row)
+    for col, value in VALUES[row[0]].items():
+        row[col] = value
+    return tuple(row)
