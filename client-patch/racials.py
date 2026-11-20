@@ -28,6 +28,40 @@ BERSERKING_TEXT = ('Increases your attack and casting speed by 10% to 30% for $d
                    'similar cast speed increasing effects.')
 TEXTS = {26297: {170: BERSERKING_TEXT}, 1126297: {170: BERSERKING_TEXT}}
 
+# Dwarf Stoneform (patches/89-racial-stoneform.ps1): its buff lasts 10 sec and gives +20% armour, 20% less chance to be
+# critically hit and resistance to every magic school worth about 8% less spell damage; 2 min cooldown. Both copies say
+# so (CoA's own text left out the critical strike part).
+STONEFORM_TEXT = ('Instantly removes all poison, disease and bleed effects. In addition, for 10 sec your armor is '
+                  'increased by 20%, your chance to be critically hit is reduced by 20% and your resistance to all '
+                  'magic schools is increased, for about 8% less spell damage taken.')
+STONEFORM_BUFF = ('Armor increased by 20%. Chance to be critically hit reduced by 20%. Resistance to all magic schools '
+                  'increased.')
+TEXTS.update({spell: {170: STONEFORM_TEXT} for spell in (20594, 1120594)})
+TEXTS.update({spell: {170: STONEFORM_TEXT, 187: STONEFORM_BUFF} for spell in (65116, 1165116)})
+
+# Stock spell values the race kits change, spell -> {column: value}. Stoneform: the buff lasts 10 sec (duration 1),
+# the classless buff's armour is +20% (base points 19, as the stock copy already has), and the classless cleanse has
+# the stock copy's 2 min cooldown.
+EFFECT_BASE_POINTS, DURATION = 80, 40
+VALUES = {1165116: {EFFECT_BASE_POINTS: 19, DURATION: 1}, 65116: {DURATION: 1}, 1120594: {RECOVERY_TIME: 120000}}
+
+# Troll: the stock Regeneration passive (20555 and CoA's copy 1120555) is hidden, since Voodoo Regeneration replaces it
+# (patches/58-racial-voodoo-regeneration.ps1 already takes its effect away): "do not display" keeps it out of the
+# spellbook, so only Voodoo Regeneration shows there, with the same icon.
+ATTRIBUTES, DO_NOT_DISPLAY = 4, 0x80
+VALUES.update({spell: {ATTRIBUTES: 0x50 | DO_NOT_DISPLAY} for spell in (20555, 1120555)})
+
+# Undead Cannibalize (patches/72-racial-grave-defiance.ps1): a 2.5 sec channel (duration 66) healing 2% every half
+# second (amplitude 500, base points 1), then Gorged; each tick is a Grave Feast charge.
+AMPLITUDE = 98
+VALUES[20578] = {DURATION: 66, AMPLITUDE: 500, EFFECT_BASE_POINTS: 1}
+CANNIBALIZE_TEXT = ('Feed on a nearby Humanoid or Undead corpse for 2.5 sec, regenerating 2% of total health, mana, '
+                    'rage, energy and runic power every 0.5 sec. Feeding to the end leaves you Gorged: 3% of total health every second for 10 sec, which '
+                    'moving and fighting don\'t interrupt. Any movement, action or damage taken stops the feeding. '
+                    'Each tick of feeding adds a charge of Grave Feast.')
+TEXTS.update({spell: {170: CANNIBALIZE_TEXT} for spell in (20577, 1120577)})
+TEXTS[20578] = {187: 'Restoring $s1% of total health and resources every $t1 sec.'}
+
 # Racial cooldowns changed by the race kits (the server makes the same change at start-up, while the racial's setting
 # is on): spell -> cooldown in ms. Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): Arcane Torrent 1 min
 # instead of 2, every player copy CoA keeps.
@@ -65,3 +99,13 @@ def movable(row):
 def text(spell, col, default):
     """A stock spell's text: ours from TEXTS if listed, else the client's own."""
     return TEXTS.get(spell, {}).get(col, default)
+
+
+def values(row):
+    """The row with its numbers from VALUES, if listed."""
+    if row[0] not in VALUES:
+        return row
+    row = list(row)
+    for col, value in VALUES[row[0]].items():
+        row[col] = value
+    return tuple(row)
