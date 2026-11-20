@@ -30,6 +30,7 @@ Edit-Core $file $include ($include + @'
 #include "Config.h"
 #include "DcStrategyGate.h"
 #include "Ai/Dungeon/DungeonClear/Util/DcLeaderSignal.h"
+
 '@) 'the DcModuleEnable.h include in DungeonClearModule.cpp'
 
 $addSc = "void AddSC_dungeon_clear_module()`n{`n"
