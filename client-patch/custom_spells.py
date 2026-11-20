@@ -85,6 +85,8 @@ BOOK_PROSPECTOR = 9990055          # its spellbook entry
 # Orc Bloodrush's Rush (patches/56-racial-bloodrush.ps1): BLOODRUSH_SPEED's stacks
 BLOODRUSH_RECKLESS = 9990056       # hidden: 2% more damage taken per stack of Rush (kept at Rush's stacks)
 # Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): after Arcane Torrent
+# Tauren Plainsrunning (patches/54-racial-plainsrunning.ps1): what group members near a running Tauren get
+PLAINSRUNNING_HERD = 9990058       # stacks: the bonus running speed in percent (the server sets it)
 ARCANE_SATIATED = 9990057          # debuff: Arcane Hunger can't build for 15 sec (the server sets the duration)
 MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
 STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
@@ -147,9 +149,15 @@ SPELLS = {
     PLAINSRUNNING: ('Plainsrunning',
                     'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                     '(100% at level 60), on top of other speed effects. When you stop it drains in 6 sec. Not while '
-                    'mounted; held while carrying a flag.',
+                    'mounted; held while carrying a flag. Group members within 10 yards run with you at the same '
+                    'bonus.',
                     'Running faster. The number is your bonus running speed in percent.',
                     3542, 100, [(DUMMY, 0, 0)]),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
+    PLAINSRUNNING_HERD: ('Running with the Herd',
+                         'Running with a Tauren: within 10 yards of a group member\'s Plainsrunning, you run faster by '
+                         'as much as they do. On foot only.',
+                         'Running with the herd. The number is your bonus running speed in percent.',
+                         3542, 100, [(DUMMY, 0, 0)]),
     BLOODRUSH: ('Bloodrush',
                 'For each enemy in combat with you, +2% damage, up to 5 enemies. The stacks go out of combat.',
                 'Damage increased by $s1%. One stack per enemy in combat with you.',
@@ -218,7 +226,8 @@ SPELLS = {
     BOOK_PLAINSRUNNING: ('Plainsrunning',
                          'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                          '(100% at level 60), on top of other speed effects. When you stop, it drains in 6 sec. Not '
-                         'while mounted; paused while carrying a battleground flag.',
+                         'while mounted; paused while carrying a battleground flag. Group members within 10 yards '
+                         'run with you at the same bonus.',
                          '', 3542, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_BLOODRUSH: ('Bloodrush',
                      'Relentless but reckless. For each enemy in combat with you, +2% damage, up to 5 enemies, gone '
