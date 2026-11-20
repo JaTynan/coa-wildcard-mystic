@@ -150,7 +150,8 @@ function showStatus(s) {
   Wildcard.renderEvent($("event"), s.weekend, { compact: true });
 
   const boards = (s.leaderboards && s.leaderboards.boards) || [];
-  const board = boards.find((b) => b.rows && b.rows.length) || boards[0];
+  // Prestige, not level: everyone reaches the top level in the end.
+  const board = boards.find((b) => /prestige/i.test(b.title)) || boards.find((b) => b.rows && b.rows.length) || boards[0];
   const top = $("top");
   top.textContent = "";
   if (board) {
