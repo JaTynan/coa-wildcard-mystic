@@ -94,6 +94,16 @@ PLAINSRUNNING_STOMPING = 9990060   # hidden: 80% slower while War Stomp casts
 GRAVE_FEAST = 9990061              # stacks: Cannibalize charges; rising as a ghoul takes all 20 (the server adds them)
 GORGED = 9990062                   # after a full Cannibalize: 3% of maximum health a second for 10 sec
 OBS_MOD_HEALTH = 20                # aura: heal a percent of maximum health each tick
+# Tauren Juggernaut (patches/54-racial-plainsrunning.ps1): tiers by how full Plainsrunning is (the server keeps them)
+MOMENTUM = 9990063                 # a third: stuns, fears and roots 15% shorter
+UNSTOPPABLE = 9990064              # two thirds: 25% shorter (its guard below: damage taken, slows)
+JUGGERNAUT = 9990065               # full: 40% shorter (its guard below: damage taken, slows and roots)
+UNSTOPPABLE_GUARD = 9990066        # hidden: 5% less damage taken, immune to slows
+JUGGERNAUT_GUARD = 9990067         # hidden: 10% less damage taken, immune to slows and roots
+IMPACT = 9990068                   # full: the next damaging attack or spell deals 30% more (the server adds the knockback)
+MECHANIC_IMMUNITY, MECHANIC_DURATION_MOD = 77, 232  # aura types; misc = the mechanic
+MECHANIC_FEAR, MECHANIC_ROOT, MECHANIC_SNARE, MECHANIC_STUN = 5, 7, 11, 12
+ICON_DEADLY_MOMENTUM, ICON_BULL_RUSH, ICON_IRON_JUGGERNAUT, ICON_OX_CHARGE = 5808, 5722, 5480, 5337
 ARCANE_SATIATED = 9990057          # debuff: Arcane Hunger can't build for 15 sec (the server sets the duration)
 MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
 STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
@@ -167,7 +177,8 @@ def with_icon(row):
 SPELLS = {
     PLAINSRUNNING: ('Plainsrunning',
                     'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
-                    '(100% at level 60), on top of other speed effects. When you stop it drains in 6 sec. Not while '
+                    '(100% at level 60), on top of other speed effects. When you stop it holds for 3 sec, then drains '
+                    'over 10 sec. As it builds you become Unstoppable: see the spellbook entry. Not while '
                     'mounted; held while carrying a flag. Group members within 10 yards run with you at the same '
                     'bonus, and each other Tauren running with you builds yours faster (up to 4). War Stomp adds 30% '
                     'more for 5 sec, past your cap, and can be cast on the move.',
@@ -175,6 +186,34 @@ SPELLS = {
                     3542, 200, [(DUMMY, 0, 0)]),
     PLAINSRUNNING_STOMPING: ('War Stomp', 'Moving 80% slower while War Stomp casts.', '', 129, 0,
                              [(MOD_DECREASE_SPEED, -80, 0)], {4: HIDDEN}),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
+    MOMENTUM: ('Momentum',
+               'Plainsrunning a third of the way to full: stuns, fears and roots on you are 15% shorter.',
+               'Stuns, fears and roots on you are 15% shorter. Keep running: Unstoppable at two thirds.',
+               ICON_DEADLY_MOMENTUM, 0, [(MECHANIC_DURATION_MOD, -15, MECHANIC_STUN), (MECHANIC_DURATION_MOD, -15, MECHANIC_FEAR),
+                                         (MECHANIC_DURATION_MOD, -15, MECHANIC_ROOT)]),
+    UNSTOPPABLE: ('Unstoppable',
+                  'Plainsrunning two thirds of the way to full: stuns, fears and roots on you are 25% shorter, you '
+                  'take 5% less damage and can\'t be slowed.',
+                  'Stuns, fears and roots on you are 25% shorter, 5% less damage taken, immune to slows. Juggernaut '
+                  'at full speed.',
+                  ICON_BULL_RUSH, 0, [(MECHANIC_DURATION_MOD, -25, MECHANIC_STUN), (MECHANIC_DURATION_MOD, -25, MECHANIC_FEAR),
+                                      (MECHANIC_DURATION_MOD, -25, MECHANIC_ROOT)]),
+    JUGGERNAUT: ('Juggernaut',
+                 'Plainsrunning at full speed: stuns, fears and roots on you are 40% shorter, you take 10% less damage '
+                 'and can\'t be slowed or rooted.',
+                 'Stuns, fears and roots on you are 40% shorter, 10% less damage taken, immune to slows and roots.',
+                 ICON_IRON_JUGGERNAUT, 0, [(MECHANIC_DURATION_MOD, -40, MECHANIC_STUN), (MECHANIC_DURATION_MOD, -40, MECHANIC_FEAR),
+                                           (MECHANIC_DURATION_MOD, -40, MECHANIC_ROOT)]),
+    UNSTOPPABLE_GUARD: ('Unstoppable', '5% less damage taken, immune to slows.', '', ICON_BULL_RUSH, 0,
+                        [(MOD_DAMAGE_PERCENT_TAKEN, -5, ALL_SCHOOLS), (MECHANIC_IMMUNITY, 0, MECHANIC_SNARE)], {4: HIDDEN}),
+    JUGGERNAUT_GUARD: ('Juggernaut', '10% less damage taken, immune to slows and roots.', '', ICON_IRON_JUGGERNAUT, 0,
+                       [(MOD_DAMAGE_PERCENT_TAKEN, -10, ALL_SCHOOLS), (MECHANIC_IMMUNITY, 0, MECHANIC_SNARE),
+                        (MECHANIC_IMMUNITY, 0, MECHANIC_ROOT)], {4: HIDDEN}),
+    IMPACT: ('Impact',
+             'At full Plainsrunning speed: your next attack or spell that deals damage deals 30% more and knocks the '
+             'target back (never a boss). Ready again 10 sec after use while you stay at full speed.',
+             'Your next attack or spell that deals damage deals $s1% more and knocks the target back.',
+             ICON_OX_CHARGE, 0, [(MOD_DAMAGE_PERCENT_DONE, 30, ALL_SCHOOLS)]),
     PLAINSRUNNING_HERD: ('Running with the Herd',
                          'Running with a Tauren: within 10 yards of a group member\'s Plainsrunning, you run faster by '
                          'as much as they do. On foot only.',
@@ -251,12 +290,17 @@ SPELLS = {
     # Spellbook entries ("Racial Passive", RANKS below)
     BOOK_PLAINSRUNNING: ('Plainsrunning',
                          'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
-                         '(100% at level 60), on top of other speed effects. When you stop, it drains in 6 sec. Not '
-                         'while mounted; paused while carrying a battleground flag. Group members within 10 yards '
+                         '(100% at level 60), on top of other speed effects. When you stop, it holds for 3 sec, then '
+                         'drains over 10 sec. Not while mounted; paused while carrying a battleground flag. Group members within 10 yards '
                          'run with you at the same bonus. Tauren build faster together: each other Tauren running in '
                          'your group within 10 yards adds the normal rate again, up to 4 (two reach full speed in 30 '
                          'sec, five in 12). War Stomp adds 30% more for 5 sec, past your cap: a running start or a '
-                         'boost mid run. It can be cast on the move, at 80% less speed while it casts.',
+                         'boost mid run. It can be cast on the move, at 80% less speed while it casts. Juggernaut, as '
+                         'the run builds (Tauren only): a third of the way, stuns, fears and roots are 15% shorter '
+                         '(Momentum); two thirds, 25% shorter, 5% less damage taken and immune to slows '
+                         '(Unstoppable); at full speed, 40% shorter, 10% less damage taken, immune to slows and roots '
+                         '(Juggernaut), and your next attack or spell that deals damage deals 30% more and knocks the '
+                         'target back, never a boss (Impact, ready again 10 sec after use while still at full).',
                          '', 3542, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_BLOODRUSH: ('Bloodrush',
                      'Relentless but reckless. For each enemy in combat with you, +2% damage, up to 5 enemies, gone '
