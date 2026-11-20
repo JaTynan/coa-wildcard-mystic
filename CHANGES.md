@@ -114,7 +114,6 @@ Low Tide, ...).
 `022-medium-legendaries-2.sql`: proc rows and script names for the second batch of medium legendary fixes (Master of
 Shadows, Spell Shredder, ...).
 `150-custom-spells.sql`: our own spells for buff icons (Plainsrunning, Bloodrush, Ambush, Voodoo Regeneration, Radiant Presence), the racials' spellbook entries, Mana-forged Barrier's spells, Ambush's spell_proc row and the barrier's spell_script_names row, written by `client-patch/custom_spells.py`.
-
 `130-battleground-dampening.sql`: everyone in a battleground does 20% less healing and gets 20% smaller absorb shields
 (Ascension's "PvP - Battleground - Dampening", which CoA has but never applied).
 `140-talent-fixes.sql`: the proc rows and script names for `55-talent-fixes.ps1`.
