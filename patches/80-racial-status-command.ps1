@@ -96,9 +96,9 @@ private:
                         "Unstoppable: stuns, fears and roots 25% shorter, 5% less damage taken, immune to slows (Juggernaut at full)",
                         "Juggernaut: stuns, fears and roots 40% shorter, 10% less damage taken, immune to slows and roots" };
                     Say(handler, std::string("Juggernaut tier: ") + tiers[std::min<uint8>(player->WcmeMomentumTier, 3)] + ".");
-                    if (player->WcmeMomentumTier >= 3)
-                        Say(handler, player->HasAura(9990068) ? std::string("Impact: ready (next damaging hit +30% and a knockback).")
-                            : "Impact: ready again in " + Time((player->WcmeImpactWait + 999) / 1000) + ".");
+                    Say(handler, player->HasAura(9990068)
+                        ? std::string("Impact: ready (next damaging hit +30% and a knockback; costs 10 sec of building).")
+                        : std::string("Impact: ready at full speed."));
                     if (player->WcmePlainsrunningStill && player->WcmePlainsrunningCharge > 0.0f)
                         Say(handler, player->WcmePlainsrunningStill <= 3000 ? std::string("Stopped: draining starts in ") +
                             Time((3000 - player->WcmePlainsrunningStill + 999) / 1000) + "." : std::string("Stopped: draining."));

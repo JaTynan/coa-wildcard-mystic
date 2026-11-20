@@ -100,7 +100,7 @@ UNSTOPPABLE = 9990064              # two thirds: 25% shorter (its guard below: d
 JUGGERNAUT = 9990065               # full: 40% shorter (its guard below: damage taken, slows and roots)
 UNSTOPPABLE_GUARD = 9990066        # hidden: 5% less damage taken, immune to slows
 JUGGERNAUT_GUARD = 9990067         # hidden: 10% less damage taken, immune to slows and roots
-IMPACT = 9990068                   # full: the next damaging attack or spell deals 30% more (the server adds the knockback)
+IMPACT = 9990068                   # full: the next damaging attack or spell deals 30% more (the server adds the knockback and its cost)
 MECHANIC_IMMUNITY, MECHANIC_DURATION_MOD = 77, 232  # aura types; misc = the mechanic
 MECHANIC_FEAR, MECHANIC_ROOT, MECHANIC_SNARE, MECHANIC_STUN = 5, 7, 11, 12
 ICON_DEADLY_MOMENTUM, ICON_BULL_RUSH, ICON_IRON_JUGGERNAUT, ICON_OX_CHARGE = 5808, 5722, 5480, 5337
@@ -211,7 +211,8 @@ SPELLS = {
                         (MECHANIC_IMMUNITY, 0, MECHANIC_ROOT)], {4: HIDDEN}),
     IMPACT: ('Impact',
              'At full Plainsrunning speed: your next attack or spell that deals damage deals 30% more and knocks the '
-             'target back (never a boss). Ready again 10 sec after use while you stay at full speed.',
+             'target back (never a boss). It spends 10 sec of the run: you drop back to Unstoppable and run back up '
+             'to full for the next.',
              'Your next attack or spell that deals damage deals $s1% more and knocks the target back.',
              ICON_OX_CHARGE, 0, [(MOD_DAMAGE_PERCENT_DONE, 30, ALL_SCHOOLS)]),
     PLAINSRUNNING_HERD: ('Running with the Herd',
@@ -300,7 +301,8 @@ SPELLS = {
                          '(Momentum); two thirds, 25% shorter, 5% less damage taken and immune to slows '
                          '(Unstoppable); at full speed, 40% shorter, 10% less damage taken, immune to slows and roots '
                          '(Juggernaut), and your next attack or spell that deals damage deals 30% more and knocks the '
-                         'target back, never a boss (Impact, ready again 10 sec after use while still at full).',
+                         'target back, never a boss (Impact). Impact spends 10 sec of the run: you drop back to '
+                         'Unstoppable and run back up to full for the next.',
                          '', 3542, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_BLOODRUSH: ('Bloodrush',
                      'Relentless but reckless. For each enemy in combat with you, +2% damage, up to 5 enemies, gone '

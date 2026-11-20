@@ -10,7 +10,9 @@
 # as buffs. A third: Momentum (stuns, fears, roots 15% shorter). Two thirds: Unstoppable (25% shorter, 5% less damage
 # taken, immune to slows; hidden 9990066 carries the last two). Full: Juggernaut (40% shorter, 10% less damage taken,
 # immune to slows and roots; hidden 9990067), and Impact (9990068): the next attack or spell that deals damage deals
-# 30% more and knocks the target back (never a boss), back 10 sec after it's used while still at full.
+# 30% more and knocks the target back (never a boss), and costs 10 sec of building (a sixth of the charge), so the
+# Tauren drops back to Unstoppable and runs back up to full for the next (James: momentum spent on the big hit). Each
+# new tier reached plays the full-speed shout disc and drum.
 # The buff icon is our spell 9990001 (sql/enchants/150-custom-spells.sql and the client patch, client-patch/custom_spells.py).
 # Run by the build (step "Apply our patch scripts") from the workspace root, after 40-battlegrounds.ps1, whose script
 # loader this registers in. Each part throws if its anchor is gone. Listed in CHANGES.md. Racials.Plainsrunning = 0 turns it off.
@@ -25,7 +27,7 @@ $anchor = "public:`n    explicit Player(WorldSession* session);`n"
 if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'Core changed: the Player constructor in Player.h was not found' }
 $add = "    float WcmePlainsrunningCharge = 0.0f;`n    float WcmePlainsrunningBonus = 0.0f;`n    uint32 WcmePlainsrunningTimer = 0;`n" +
     "    float WcmeHerdBonus = 0.0f;`n    float WcmeHerdOffer = 0.0f;`n    ObjectGuid WcmeHerdSource;`n    uint32 WcmeHerdTime = 0;`n" +
-    "    uint32 WcmeStompBoost = 0;`n    uint32 WcmePlainsrunningStill = 0;`n    uint8 WcmeMomentumTier = 0;`n    uint32 WcmeImpactWait = 0;`n"
+    "    uint32 WcmeStompBoost = 0;`n    uint32 WcmePlainsrunningStill = 0;`n    uint8 WcmeMomentumTier = 0;`n"
 Set-Content $file $text.Replace($anchor, $anchor + $add) -NoNewline
 }
 
@@ -112,7 +114,7 @@ public:
     static constexpr uint32 Juggernaut = 9990065;       // full: 40% shorter
     static constexpr uint32 JuggernautGuard = 9990067;  // hidden: 10% less damage taken, immune to slows and roots
     static constexpr uint32 Impact = 9990068;           // full: the next damaging attack or spell, 30% more and a knockback
-    static constexpr uint32 ImpactRecharge = 10000;
+    static constexpr float ImpactCost = 10.0f / 60.0f;  // Impact spends 10 sec of building (alone): back to Unstoppable
 
     static bool IsWarStomp(uint32 id) { return id == 20549 || id == 46026 || id == 1120549 || id == 1146026; }
 
@@ -267,8 +269,6 @@ public:
 
         float const cap = float(std::min<uint32>(player->GetLevel(), 60) + 40) / 100.0f;
         float const boost = (enabled && player->IsAlive() && player->WcmeStompBoost) ? StompBoost : 0.0f;
-        if (before < 1.0f && charge >= 1.0f && !carrying && !player->IsMounted())
-            WcmeFx::Play(player, FullSpeedFx); // full speed
         float const bonus = (carrying || player->IsMounted()) ? 0.0f : cap * charge + boost;
         float const shown = player->WcmePlainsrunningBonus;
         // Small changes wait until they add up to 1%, except at empty and at full, which always land exactly (the
@@ -285,15 +285,14 @@ public:
             else if (Aura* aura = player->HasAura(buff) ? player->GetAura(buff) : player->AddAura(buff, player))
                 aura->SetStackAmount(percent);
         }
-        UpdateJuggernaut(player, (enabled && player->IsAlive() && !carrying && !player->IsMounted()) ? charge : 0.0f,
-                         uint32(elapsed));
+        UpdateJuggernaut(player, (enabled && player->IsAlive() && !carrying && !player->IsMounted()) ? charge : 0.0f);
         if (enabled)
             ShareWithHerd(player);
     }
 
     // Juggernaut: the tier buffs for how full the charge is, kept in place every update (a dispel or a purge doesn't
-    // stick), and Impact at full.
-    static void UpdateJuggernaut(Player* player, float charge, uint32 elapsed)
+    // stick), and Impact at full. Each new tier reached plays the shout disc and drum.
+    static void UpdateJuggernaut(Player* player, float charge)
     {
         uint8 const tier = charge >= 1.0f ? 3 : charge >= 2.0f / 3.0f ? 2 : charge >= 1.0f / 3.0f ? 1 : 0;
         static constexpr std::array<std::array<uint32, 2>, 4> Wanted = {{ {0, 0}, {Momentum, 0},
@@ -310,26 +309,18 @@ public:
             }
         }
         if (tier < 3)
-        {
             player->RemoveAurasDueToSpell(Impact);
-            player->WcmeImpactWait = 0; // reaching full again readies it at once
-        }
         else if (!player->HasAura(Impact))
-        {
-            if (player->WcmeImpactWait > elapsed)
-                player->WcmeImpactWait -= elapsed;
-            else
-            {
-                player->WcmeImpactWait = 0;
-                player->AddAura(Impact, player);
-            }
-        }
+            player->AddAura(Impact, player);
+        if (tier > player->WcmeMomentumTier)
+            WcmeFx::Play(player, FullSpeedFx); // a new tier: Momentum, Unstoppable or Juggernaut
         player->WcmeMomentumTier = tier;
     }
 };
 
 // Wildcard: Juggernaut's Impact (docs/race-kits.md): the hit that uses it (its 30% more damage is the buff's own) knocks
-// the target back, unless it's a boss, immune to being moved, or the hit kills it. Back 10 sec later while still at full.
+// the target back, unless it's a boss, immune to being moved, or the hit kills it, and spends 10 sec of the run's
+// building: the Tauren drops back to Unstoppable and runs back up to full for the next one.
 class wcme_juggernaut_impact : public UnitScript
 {
 public:
@@ -343,7 +334,8 @@ public:
         if (!tauren || !tauren->HasAura(wcme_plainsrunning::Impact))
             return;
         tauren->RemoveAurasDueToSpell(wcme_plainsrunning::Impact);
-        tauren->WcmeImpactWait = wcme_plainsrunning::ImpactRecharge;
+        tauren->WcmePlainsrunningCharge = std::max(0.0f, tauren->WcmePlainsrunningCharge - wcme_plainsrunning::ImpactCost);
+        tauren->WcmePlainsrunningTimer = 250; // the next update shows the lower speed and tier
         Creature* creature = victim->ToCreature();
         bool const boss = creature && (creature->isWorldBoss() || creature->IsDungeonBoss() ||
             creature->GetCreatureTemplate()->rank == CREATURE_ELITE_WORLDBOSS);
@@ -352,7 +344,6 @@ public:
             bool const player = victim->GetTypeId() == TYPEID_PLAYER;
             victim->KnockbackFrom(tauren->GetPositionX(), tauren->GetPositionY(), player ? 6.0f : 10.0f, player ? 3.0f : 5.0f);
         }
-        WcmeFx::Play(tauren, wcme_plainsrunning::FullSpeedFx);
     }
 };
 
