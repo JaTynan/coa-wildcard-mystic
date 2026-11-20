@@ -92,6 +92,8 @@ AMBUSH_RECHARGING = 9990059        # debuff while Ambush can't be readied again 
 # Tauren War Stomp (patches/54-racial-plainsrunning.ps1): moving while it casts
 PLAINSRUNNING_STOMPING = 9990060   # hidden: 80% slower while War Stomp casts
 GRAVE_FEAST = 9990061              # stacks: Cannibalize charges; rising as a ghoul takes all 20 (the server adds them)
+GORGED = 9990062                   # after a full Cannibalize: 3% of maximum health a second for 10 sec
+OBS_MOD_HEALTH = 20                # aura: heal a percent of maximum health each tick
 ARCANE_SATIATED = 9990057          # debuff: Arcane Hunger can't build for 15 sec (the server sets the duration)
 MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
 STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
@@ -312,6 +314,10 @@ SPELLS = {
                   'Cannibalize adds one (5 for a full channel). Kept through death.',
                   'Charges to rise as a ghoul: rising takes all 20. Each Cannibalize tick adds one.',
                   146, 20, [(DUMMY, 0, 0)], {4: 0x80000000 | NO_IMMUNITIES, 7: KEPT_THROUGH_DEATH}),  # Cannibalize's icon
+    GORGED: ('Gorged',
+             'Regenerating 3% of maximum health every second for 10 sec, after a full Cannibalize.',
+             'Regenerating $s1% of maximum health every second.',
+             146, 0, [(OBS_MOD_HEALTH, 3, 0)], {40: 1, 98: 1000}),  # 10 sec, a tick every second
     BOOK_SPELLSWORD: ('Spellsword',
                       'The experimenter\'s race. For power (attack power against spell power), critical strike chance '
                       '(melee and ranged against spell) and hit chance (melee and ranged against spell), your weaker side '
@@ -479,6 +485,7 @@ NOTES = ["-- Abyssal Hunger (9990020) keeps its spell row (the client patch has 
 # spell_script_names rows: id -> script (in the server patch named next to the spell)
 SCRIPTS = {
     BARRIER_SHIELD: 'spell_wcme_manaforged_barrier',  # patches/60-manaforged-barrier.ps1
+    20578: 'spell_wcme_cannibalize',  # Cannibalize's channel: Grave Feast charges and Gorged (patches/72-racial-grave-defiance.ps1)
 }
 
 # spell_proc rows (charges used up by the next ability): id -> (ProcFlags, SpellTypeMask, SpellPhaseMask, Charges)

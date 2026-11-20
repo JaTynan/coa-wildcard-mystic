@@ -6,9 +6,12 @@
 # and healing done). The ghoul can't die and can't be healed: it stays at 1 health. A killing blow by the ghoul on an
 # enemy worth experience or honor brings you back at 20% health; otherwise you die when it ends, credited to whoever
 # dealt the killing hit. Rising takes 20 charges of Grave Feast (9990061, a buff whose stack count is the charges, up to
-# 20, kept through death and logout), all used up when you rise; each tick of a Cannibalize channel adds one (every
-# 2 sec, 5 for a full channel, fewer if interrupted), so about four full channels between rises (James, 21 November;
-# it replaces the 10-minute Grave Hunger debuff 9990030 and Cannibalize taking 2 min off it, 20 November).
+# 20, kept through death and logout), all used up when you rise; each tick of a Cannibalize channel adds one (5 for a
+# full channel, fewer if interrupted), so about four full channels between rises (James, 21 November; it replaces the
+# 10-minute Grave Hunger debuff 9990030 and Cannibalize taking 2 min off it, 20 November).
+# Cannibalize is quicker (James, 21 November): a 2.5 sec channel (was 10) healing 2% of maximum health every half
+# second, and a channel that runs to the end leaves Gorged (9990062): 30% of maximum health over 10 sec that moving and
+# fighting don't break. Something to do between pulls. The cooldown stays 2 min.
 # Not from falling, lava, drowning or fatigue (self damage), not from your duel opponent (the duel ends at 1 health as
 # usual), and not in a vehicle. A battleground flag carrier drops the flag on rising. The spells are in sql/enchants/150-custom-spells.sql and the client patch
 # (client-patch/custom_spells.py). Run by the build from the workspace root, after 40-battlegrounds.ps1. Throws if an
@@ -22,7 +25,7 @@ $file = 'core/src/server/game/Entities/Player/Player.h'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
 $anchor = "public:`n    explicit Player(WorldSession* session);`n"
 if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'Core changed: the Player constructor in Player.h was not found' }
-$add = "    bool WcmeGraveActive = false;`n    bool WcmeGhoulActive = false;`n    bool WcmeGhoulRevived = false;`n    ObjectGuid WcmeGhoulKiller;`n    uint32 WcmeCannibalizeTicks = 0;`n"
+$add = "    bool WcmeGraveActive = false;`n    bool WcmeGhoulActive = false;`n    bool WcmeGhoulRevived = false;`n    ObjectGuid WcmeGhoulKiller;`n"
 Set-Content $file $text.Replace($anchor, $anchor + $add) -NoNewline
 }
 
@@ -46,7 +49,7 @@ namespace WcmeGraveDefiance
     constexpr uint32 RetiredCooldown = 9990030;   // the old 10 min Grave Hunger debuff: taken off where still worn
     constexpr uint32 Feast = 9990061;             // Grave Feast: stacks = charges to rise
     constexpr uint32 FeastNeeded = 20;            // rising takes (and uses) this many; also the most you can hold
-    constexpr uint32 CannibalizeHeal = 20578;     // the healing aura every Cannibalize channels: a charge per tick
+    constexpr uint32 Gorged = 9990062;            // after a full Cannibalize: 30% of maximum health over 10 sec
 
     inline uint32 Charges(Player* player)
     {
@@ -54,23 +57,18 @@ namespace WcmeGraveDefiance
         return feast ? feast->GetStackAmount() : 0;
     }
 
-    // Charges for the Cannibalize ticks since the last look (the aura counts them).
-    inline void CountCannibalize(Player* player)
+    // More Grave Feast charges, up to what rising takes.
+    inline void AddCharges(Player* player, uint32 gained)
     {
-        Aura* heal = player->GetAura(CannibalizeHeal, player->GetGUID());
-        AuraEffect const* effect = heal ? heal->GetEffect(EFFECT_0) : nullptr;
-        uint32 const ticks = effect ? effect->GetTickNumber() : 0;
-        if (ticks > player->WcmeCannibalizeTicks && player->IsAlive())
-        {
-            uint32 const gained = ticks - player->WcmeCannibalizeTicks;
-            uint32 const charges = std::min(FeastNeeded, Charges(player) + gained);
-            Aura* feast = player->GetAura(Feast);
-            if (!feast)
-                feast = player->AddAura(Feast, player);
-            if (feast && feast->GetStackAmount() != charges)
-                feast->SetStackAmount(uint8(charges));
-        }
-        player->WcmeCannibalizeTicks = ticks;
+        if (!gained || !player->IsAlive() || player->getRace() != RACE_UNDEAD_PLAYER ||
+            !sConfigMgr->GetOption<bool>("Racials.GraveDefiance", true))
+            return;
+        uint32 const charges = std::min(FeastNeeded, Charges(player) + gained);
+        Aura* feast = player->GetAura(Feast);
+        if (!feast)
+            feast = player->AddAura(Feast, player);
+        if (feast && feast->GetStackAmount() != charges)
+            feast->SetStackAmount(uint8(charges));
     }
 
     inline bool Enabled()
@@ -116,7 +114,6 @@ public:
             return;
         if (player->HasAura(RetiredCooldown))
             player->RemoveAurasDueToSpell(RetiredCooldown);
-        CountCannibalize(player);
 
         // The ghoul first, even with the setting turned off meanwhile: a ghoul that has risen still ends one way or
         // the other. The aura is the state, so a ghoul that logged out and back in carries on.
@@ -203,6 +200,37 @@ private:
     }
 };
 
+// Wildcard: Cannibalize's channel (20578): each tick is a Grave Feast charge for an Undead; one that runs to the end
+// leaves Gorged, the healing that carries on while moving and fighting. The last tick can fall at the very moment the
+// channel ends, so an ended channel tops the charges up to its full count.
+class spell_wcme_cannibalize : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_cannibalize);
+
+    void HandleTick(AuraEffect const* /*effect*/)
+    {
+        if (Player* player = GetTarget()->ToPlayer())
+            WcmeGraveDefiance::AddCharges(player, 1);
+    }
+
+    void HandleRemove(AuraEffect const* effect, AuraEffectHandleModes /*mode*/)
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE || !GetTarget()->IsAlive())
+            return;
+        if (Player* player = GetTarget()->ToPlayer())
+            WcmeGraveDefiance::AddCharges(player,
+                uint32(std::max<int32>(0, effect->GetTotalTicks() - int32(effect->GetTickNumber()))));
+        GetTarget()->AddAura(WcmeGraveDefiance::Gorged, GetTarget());
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_cannibalize::HandleTick, EFFECT_0, SPELL_AURA_OBS_MOD_HEALTH);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_cannibalize::HandleRemove, EFFECT_0, SPELL_AURA_OBS_MOD_HEALTH,
+            AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
 // Wildcard: Grave Defiance's rise. Runs before a hit lowers health, after absorbs (Cheat Death, Ardent Defender and
 // the like save first), so the killer gets no credit and nothing is lost until the ghoul really dies.
 class wcme_grave_defiance_rise : public UnitScript
@@ -265,8 +293,35 @@ public:
 };
 
 '@
-$text = $text.Replace($include, $include + "#include `"ObjectAccessor.h`"`n#include `"Spell.h`"`n#include `"SpellAuras.h`"`n#include `"SpellInfo.h`"`n#include `"UnitScript.h`"`n#include <cmath>`n#include <optional>`n")
+$text = $text.Replace($include, $include + "#include `"ObjectAccessor.h`"`n#include `"Spell.h`"`n#include `"SpellAuraEffects.h`"`n#include `"SpellAuras.h`"`n#include `"SpellInfo.h`"`n#include `"SpellScript.h`"`n#include `"UnitScript.h`"`n#include <cmath>`n#include <optional>`n")
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
-$text = $text.Replace($register, $register + "    new wcme_grave_defiance();`n    new wcme_grave_defiance_rise();`n")
+$text = $text.Replace($register, $register + "    new wcme_grave_defiance();`n    new wcme_grave_defiance_rise();`n    RegisterSpellScript(spell_wcme_cannibalize);`n")
 Set-Content $file $text -NoNewline
+}
+
+# ---- Cannibalize's channel: 2.5 sec, 2% every half second (the setting is read at server start)
+Write-Host "Patch: a quicker Cannibalize"
+& {
+$file = 'core/src/server/game/Spells/SpellInfoCorrections.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$anchor = "void SpellMgr::LoadSpellInfoCorrections()`n{`n    uint32 oldMSTime = getMSTime();`n"
+if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'CoA changed: LoadSpellInfoCorrections was not found' }
+$fix = @'
+
+    // Wildcard: Undead Grave Defiance (docs/race-kits.md): Cannibalize's channel lasts 2.5 sec and heals 2% of maximum
+    // health every half second; a full channel then leaves Gorged (spell_wcme_cannibalize).
+    if (sConfigMgr->GetOption<bool>("Racials.GraveDefiance", true))
+        ApplySpellFix({ 20578 }, [](SpellInfo* spellInfo)
+        {
+            spellInfo->DurationEntry = sSpellDurationStore.LookupEntry(66); // 2.5 sec
+            spellInfo->Effects[EFFECT_0].Amplitude = 500;
+            spellInfo->Effects[EFFECT_0].BasePoints = 1; // 2% (the die adds 1)
+        });
+'@
+if (-not $text.Contains("#include `"Config.h`"`n")) {
+    $first = "#include `"SpellMgr.h`"`n"
+    if (-not $text.Contains($first)) { throw 'CoA changed: SpellInfoCorrections.cpp has no #include "SpellMgr.h"' }
+    $text = $text.Replace($first, $first + "#include `"Config.h`"`n")
+}
+Set-Content $file $text.Replace($anchor, $anchor + $fix.Replace("`r`n", "`n")) -NoNewline
 }
