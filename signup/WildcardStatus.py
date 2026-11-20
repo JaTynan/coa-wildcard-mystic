@@ -118,6 +118,7 @@ WEEKEND_RATES = [  # the order players read them in
     ("DungeonXPRate", "XP from kills in dungeons and raids"),
     ("DungeonReputationRate", "reputation in dungeons and raids"),
     ("DungeonCacheRate", "random dungeon caches"),
+    ("MysticScrollRate", "Mystic Scrolls from dungeon and raid bosses"),
 ]
 
 

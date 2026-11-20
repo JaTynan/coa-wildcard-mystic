@@ -154,7 +154,8 @@ worldserver.conf | PlayTimeRewards.CasePercent = 25
 #   PvP: triple honour, XP from world PvP kills, Battleground Spoils.
 #   Professions: triple profession XP, herbs/ore/skins/fish per node or catch, profession skill-ups.
 #   Quests: triple quest XP, quest gold, Adventurer's caches from quests, reputation.
-#   Dungeons: triple XP from kills, reputation and the random dungeon cache, inside dungeons and raids.
+#   Dungeons: triple XP from kills, reputation, the random dungeon cache and Mystic Scrolls from bosses, inside dungeons
+#   and raids.
 worldserver.conf | WeekendBonus.Enabled = 1
 worldserver.conf | WeekendBonus.Days = "0,1,2,3,4,5,6"
 worldserver.conf | WeekendBonus.Rotation = "PvP,Professions,Quests,Dungeons"
@@ -178,6 +179,8 @@ worldserver.conf | WeekendBonus.Dungeons.Title = "Pull-a-palooza"
 worldserver.conf | WeekendBonus.Dungeons.DungeonXPRate = 3
 worldserver.conf | WeekendBonus.Dungeons.DungeonReputationRate = 3
 worldserver.conf | WeekendBonus.Dungeons.DungeonCacheRate = 3
+# Mystic Scrolls from dungeon and raid bosses (21 Nov, James; patches/91-weekly-event-mystic-scrolls.ps1).
+worldserver.conf | WeekendBonus.Dungeons.MysticScrollRate = 3
 # Supplies (food, potions, trade goods) in Adventurer's Caches, quest caches and Battleground Spoils come as a
 # stack of 20 (or the most the item stacks to) instead of 1 to 3. Gear is unchanged. Needs the build with the patch.
 worldserver.conf | AdventurerCache.SupplyStack = 20
