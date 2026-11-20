@@ -391,6 +391,15 @@ modules\mod_coa_playerbots.conf | CoaBots.Enable = 0
 # mod-dungeon-clear-addon is optional). Part of the official build since server-0.261119.114 but off there; needs SQUID's
 # bots on (above). Read at server start only.
 modules\mod_dungeon_clear.conf | DungeonClear.Enable = 1
+# Smart Rest (21 Nov, James): the party goes pack to pack without eating or drinking (it stopped to top up at
+# about 80%) until someone falls under a trigger: any member under 50% health, a healer under 40% mana, a damage
+# dealer or tank under 20% mana. Then everyone rests to full and the run carries on. Before a boss the party always
+# drinks back to about 90% mana first. The tank still holds when anyone is more than 25 yards behind
+# (DungeonClear.PartyMaxSpread, unchanged).
+modules\mod_dungeon_clear.conf | DungeonClear.SmartRest = 1
+modules\mod_dungeon_clear.conf | DungeonClear.SmartRestHealthPct = 50
+modules\mod_dungeon_clear.conf | DungeonClear.SmartRestHealerManaPct = 40
+modules\mod_dungeon_clear.conf | DungeonClear.SmartRestDpsManaPct = 20
 
 # ---------------------------------------------------------------- PvP rewards
 # Double honor: honorable kills (world PvP and battlegrounds) and the battleground win/loss bonuses.
