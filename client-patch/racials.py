@@ -55,12 +55,12 @@ VALUES.update({spell: {ATTRIBUTES: 0x50 | DO_NOT_DISPLAY} for spell in (20555, 1
 # second (amplitude 500, base points 1), then Gorged; each tick is a Grave Feast charge.
 AMPLITUDE = 98
 VALUES[20578] = {DURATION: 66, AMPLITUDE: 500, EFFECT_BASE_POINTS: 1}
-CANNIBALIZE_TEXT = ('Feed on a nearby Humanoid or Undead corpse for 2.5 sec, regenerating 2% of total health every '
-                    '0.5 sec. Feeding to the end leaves you Gorged: 3% of total health every second for 10 sec, which '
+CANNIBALIZE_TEXT = ('Feed on a nearby Humanoid or Undead corpse for 2.5 sec, regenerating 2% of total health, mana, '
+                    'rage, energy and runic power every 0.5 sec. Feeding to the end leaves you Gorged: 3% of total health every second for 10 sec, which '
                     'moving and fighting don\'t interrupt. Any movement, action or damage taken stops the feeding. '
                     'Each tick of feeding adds a charge of Grave Feast.')
 TEXTS.update({spell: {170: CANNIBALIZE_TEXT} for spell in (20577, 1120577)})
-TEXTS[20578] = {187: 'Regenerating $s1% of total health every $t1 sec.'}
+TEXTS[20578] = {187: 'Restoring $s1% of total health and resources every $t1 sec.'}
 
 # Racial cooldowns changed by the race kits (the server makes the same change at start-up, while the racial's setting
 # is on): spell -> cooldown in ms. Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): Arcane Torrent 1 min

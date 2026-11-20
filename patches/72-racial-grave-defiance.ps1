@@ -10,7 +10,7 @@
 # full channel, fewer if interrupted), so about four full channels between rises (James, 21 November; it replaces the
 # 10-minute Grave Hunger debuff 9990030 and Cannibalize taking 2 min off it, 20 November).
 # Cannibalize is quicker (James, 21 November): a 2.5 sec channel (was 10) healing 2% of maximum health every half
-# second, and a channel that runs to the end leaves Gorged (9990062): 30% of maximum health over 10 sec that moving and
+# second (and 2% of mana, rage, energy and runic power each tick), and a channel that runs to the end leaves Gorged (9990062): 30% of maximum health over 10 sec that moving and
 # fighting don't break. Something to do between pulls. The cooldown stays 2 min.
 # Not from falling, lava, drowning or fatigue (self damage), not from your duel opponent (the duel ends at 1 health as
 # usual), and not in a vehicle. A battleground flag carrier drops the flag on rising. The spells are in sql/enchants/150-custom-spells.sql and the client patch
@@ -209,8 +209,15 @@ class spell_wcme_cannibalize : public AuraScript
 
     void HandleTick(AuraEffect const* /*effect*/)
     {
-        if (Player* player = GetTarget()->ToPlayer())
-            WcmeGraveDefiance::AddCharges(player, 1);
+        Player* player = GetTarget()->ToPlayer();
+        if (!player)
+            return;
+        WcmeGraveDefiance::AddCharges(player, 1);
+        // Every tick restores 2% of each resource too, not just health.
+        for (Powers power : { POWER_MANA, POWER_RAGE, POWER_ENERGY, POWER_RUNIC_POWER })
+            if (uint32 const max = player->GetMaxPower(power))
+                if (uint32 const amount = CalculatePct(max, 2))
+                    player->EnergizeBySpell(player, GetId(), amount, power);
     }
 
     void HandleRemove(AuraEffect const* effect, AuraEffectHandleModes /*mode*/)
