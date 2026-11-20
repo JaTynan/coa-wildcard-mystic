@@ -45,6 +45,12 @@ TEXTS.update({spell: {170: STONEFORM_TEXT, 187: STONEFORM_BUFF} for spell in (65
 EFFECT_BASE_POINTS, DURATION = 80, 40
 VALUES = {1165116: {EFFECT_BASE_POINTS: 19, DURATION: 1}, 65116: {DURATION: 1}, 1120594: {RECOVERY_TIME: 120000}}
 
+# Troll: the stock Regeneration passive (20555 and CoA's copy 1120555) is hidden, since Voodoo Regeneration replaces it
+# (patches/58-racial-voodoo-regeneration.ps1 already takes its effect away): "do not display" keeps it out of the
+# spellbook, so only Voodoo Regeneration shows there, with the same icon.
+ATTRIBUTES, DO_NOT_DISPLAY = 4, 0x80
+VALUES.update({spell: {ATTRIBUTES: 0x50 | DO_NOT_DISPLAY} for spell in (20555, 1120555)})
+
 # Racial cooldowns changed by the race kits (the server makes the same change at start-up, while the racial's setting
 # is on): spell -> cooldown in ms. Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): Arcane Torrent 1 min
 # instead of 2, every player copy CoA keeps.

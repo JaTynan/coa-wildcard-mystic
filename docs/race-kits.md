@@ -187,8 +187,8 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Undead | Grave Defiance (below 35%) | achievement_boss_devourerofsouls | 4153 (done) |
 | Undead | Ghoul on death (and its Grave Hunger debuff) | achievement_dungeon_coablackdragonflight | 3254 (done) |
 | Undead | Grave Defiance on cooldown | inv_helmet_168 | 13716 (done) |
-| Troll | Voodoo Regeneration burst | inv_offhand_zulaman_d_01 | 19697 |
-| Troll | Voodoo Regeneration on cooldown | achievement_dungeon_drak'tharon_heroic | 3234 |
+| Troll | Voodoo Regeneration (spellbook entry and burst; the stock Regeneration is hidden, 21 November) | spell_nature_regenerate | 149 |
+| Troll | Voodoo Regeneration on cooldown: the same icon in red (`client-patch/regen_icons.py`) | wcme_regen_cooldown | add (done: SpellIcon 9990010) |
 | Blood Elf | Arcane Hunger stacks | achievement_bg_wineos | 3384 (done) |
 | Dwarf | Prospector's Spirit: Mining | inv_elemental_eternal_earth | 12199 (done) |
 | Dwarf | Prospector's Spirit: Herbalism | inv_elemental_eternal_life | 12201 (done) |

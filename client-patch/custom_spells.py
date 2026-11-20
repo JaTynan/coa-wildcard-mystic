@@ -123,6 +123,10 @@ ICON_BANNER_DRAENEI = 9990001
 ICON_REND_FROST, ICON_REND_FIRE, ICON_REND_NATURE = 9990002, 9990003, 9990004
 ICON_SPELLSWORD, ICON_SPELLSWORD_IDLE = 9990005, 9990006  # Human Spellsword (James's picks, 14 November)
 ICON_OVERCLOCK, ICON_OVERCLOCK_STEPS, ICON_ROCKET_BOOTS = 9990007, 9990008, 9990009  # Gnome Overclock (James's picks)
+# Troll Voodoo Regeneration (James, 21 November): the stock Regeneration icon for the racial and its burst, and this
+# red copy of it (regen_icons.py makes it; racials_off_gcd.py --icons adds it) for the cooldown.
+ICON_REGENERATION = 149  # Spell_Nature_Regenerate, the client's own
+ICON_REGEN_COOLDOWN = 9990010
 ICONS = {
     ICON_BANNER_DRAENEI: 'Interface\\Icons\\inv_misc_tournaments_banner_draenei',
     ICON_REND_FROST: 'Interface\\Icons\\wcme_rend_frost',
@@ -133,6 +137,7 @@ ICONS = {
     ICON_OVERCLOCK: 'Interface\\Icons\\inv_misc_enggizmos_23',
     ICON_OVERCLOCK_STEPS: 'Interface\\Icons\\achievement_bg_tophealer_wsg',
     ICON_ROCKET_BOOTS: 'Interface\\Icons\\inv_gizmo_rocketboot_destroyed_02',
+    ICON_REGEN_COOLDOWN: 'Interface\\Icons\\wcme_regen_cooldown',
 }
 # Client spells that get one of our icons in place of their own: spell -> icon (both the icon and the active icon)
 ICON_OVERRIDES = {
@@ -200,15 +205,15 @@ SPELLS = {
              '(half while the burst is on cooldown). Below 35% health, regenerate 28% of maximum health over '
              '5 sec, once every 2 min.',
              'Health regeneration increased by $s1% out of combat.',
-             19697, 0, [(MOD_HEALTH_REGEN_PERCENT, 50, 0)], {4: PASSIVE}),
+             ICON_REGENERATION, 0, [(MOD_HEALTH_REGEN_PERCENT, 50, 0)], {4: PASSIVE}),
     VOODOO_BURST: ('Voodoo Regeneration',
                    'Regenerating 28% of maximum health over 5 sec.',
                    'Regenerating 28% of maximum health over 5 sec.',
-                   19697, 0, [(DUMMY, 0, 0)]),  # inv_offhand_zulaman_d_01
+                   ICON_REGENERATION, 0, [(DUMMY, 0, 0)]),
     VOODOO_COOLDOWN: ('Voodoo Regeneration (cooldown)',
                       'The burst can\'t happen again until this ends, and in-combat regeneration is halved.',
                       'The burst is on cooldown; in-combat regeneration halved.',
-                      3234, 0, [(DUMMY, 0, 0)]),  # achievement_dungeon_drak'tharon_heroic
+                      ICON_REGEN_COOLDOWN, 0, [(DUMMY, 0, 0)]),  # the Regeneration icon in red
     RADIANT: ('Radiant Presence',
               'In combat, the Draenei gains a stack of Light every 6 sec, up to 5. Each stack gives them and allies '
               'within 30 yards +1% damage and healing and 1% less damage taken. Fades 10 sec after combat. A second '
@@ -265,7 +270,7 @@ SPELLS = {
                   'second (half while the burst is on cooldown). Below 35% health, regenerate 28% of maximum health '
                   'over 5 sec, once every 2 min. Berserking gives more haste the lower your health: 10% at full, '
                   'up to 30% at 40% health or lower.',
-                  '', 19697, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
+                  '', ICON_REGENERATION, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_RADIANT: ('Radiant Presence',
                    'In combat, gain a stack of Light every 6 sec, up to 5. Each stack gives you and every ally within '
                    '30 yards (pets and guardians too) +1% damage and healing and 1% less damage taken. The Light '
