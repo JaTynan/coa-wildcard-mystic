@@ -148,10 +148,10 @@ private:
                     Say(handler, "Grave Defiance: can start again in " + Time(wait) + ".");
                 else
                     Say(handler, "Grave Defiance: ready (below 35% health).");
-                if (uint32 const hunger = Seconds(player, 9990030))
-                    Say(handler, "Rising as a ghoul: ready again in " + Time(hunger) + " (each Cannibalize takes 2 min off).");
+                if (uint32 const charges = Stacks(player, 9990061); charges >= 20)
+                    Say(handler, "Rising as a ghoul: ready (Grave Feast 20 of 20).");
                 else
-                    Say(handler, "Rising as a ghoul: ready.");
+                    Say(handler, "Rising as a ghoul: Grave Feast " + std::to_string(charges) + " of 20 (each Cannibalize tick adds one).");
                 break;
             }
             case RACE_HUMAN:

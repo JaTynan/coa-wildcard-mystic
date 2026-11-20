@@ -41,7 +41,7 @@ SPELLMOD_RESIST_MISS_CHANCE = 16
 GRAVE_DEFIANCE = 9990027           # below 35% health: stacks = bonus damage and healing in percent
 GRAVE_DEFIANCE_COOLDOWN = 9990028  # 45 sec after the bonus ends
 GRAVE_GHOUL = 9990029              # risen as a ghoul for 10 sec
-GRAVE_GHOUL_COOLDOWN = 9990030     # debuff: 10 min from rising, 2 min less per Cannibalize
+GRAVE_GHOUL_COOLDOWN = 9990030     # retired (21 November): the old 10 min debuff, kept so worn copies load and go
 BOOK_GRAVE_DEFIANCE = 9990031      # its spellbook entry
 TRANSFORM = 56                     # aura: look like the creature in misc
 RISEN_ALLY = 30230                 # Raise Ally's ghoul (creature), so the same four ghoul models
@@ -91,6 +91,7 @@ PLAINSRUNNING_HERD = 9990058       # stacks: the bonus running speed in percent 
 AMBUSH_RECHARGING = 9990059        # debuff while Ambush can't be readied again (the server sets the duration)
 # Tauren War Stomp (patches/54-racial-plainsrunning.ps1): moving while it casts
 PLAINSRUNNING_STOMPING = 9990060   # hidden: 80% slower while War Stomp casts
+GRAVE_FEAST = 9990061              # stacks: Cannibalize charges; rising as a ghoul takes all 20 (the server adds them)
 ARCANE_SATIATED = 9990057          # debuff: Arcane Hunger can't build for 15 sec (the server sets the duration)
 MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
 STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
@@ -282,9 +283,9 @@ SPELLS = {
                           'at 20%, 22% at 10%). It lasts up to 15 sec, then can\'t start again for 45 sec. When a hit '
                           'would kill you, you rise as a ghoul for 10 sec instead, dealing and healing 30% less; the '
                           'ghoul can\'t die or be healed. A killing blow on an enemy worth experience or honor brings '
-                          'you back at 20% health; otherwise you die when it ends. Rising works once every 10 min, '
-                          'and each Cannibalize takes 2 min off the wait. Not from falling, lava or drowning, or '
-                          'against your duel opponent.',
+                          'you back at 20% health; otherwise you die when it ends. Rising takes 20 charges of Grave '
+                          'Feast, all used up: each tick of Cannibalize adds one (5 for a full channel). Not from '
+                          'falling, lava or drowning, or against your duel opponent.',
                           '', 4153, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     # Grave Defiance's buffs (the server sets every timer)
     GRAVE_DEFIANCE: ('Grave Defiance',
@@ -304,11 +305,13 @@ SPELLS = {
                   'and healing done reduced by 30%.',
                   3254, 0, [(MOD_DAMAGE_PERCENT_DONE, -30, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, -30, 0)],
                   {4: 0x80000000 | NO_IMMUNITIES, 131: VISUAL_DARK_BANISH}),  # achievement_dungeon_coablackdragonflight
-    GRAVE_GHOUL_COOLDOWN: ('Grave Hunger',
-                           'You can\'t rise as a ghoul again until this runs out (10 min). Each Cannibalize takes 2 min '
-                           'off.',
-                           'You can\'t rise as a ghoul again until this runs out. Cannibalize takes 2 min off.',
-                           3254, 0, [(DUMMY, 0, 0)], {4: 0x80000000 | DEBUFF | NO_IMMUNITIES, 7: KEPT_THROUGH_DEATH}),
+    GRAVE_GHOUL_COOLDOWN: ('Grave Hunger', 'No longer used.', '', 3254, 0, [(DUMMY, 0, 0)],
+                           {4: 0x80000000 | DEBUFF | NO_IMMUNITIES | HIDDEN, 7: KEPT_THROUGH_DEATH}),
+    GRAVE_FEAST: ('Grave Feast',
+                  'Charges to rise as a ghoul when a hit would kill you: rising takes all 20. Each tick of '
+                  'Cannibalize adds one (5 for a full channel). Kept through death.',
+                  'Charges to rise as a ghoul: rising takes all 20. Each Cannibalize tick adds one.',
+                  146, 20, [(DUMMY, 0, 0)], {4: 0x80000000 | NO_IMMUNITIES, 7: KEPT_THROUGH_DEATH}),  # Cannibalize's icon
     BOOK_SPELLSWORD: ('Spellsword',
                       'The experimenter\'s race. For power (attack power against spell power), critical strike chance '
                       '(melee and ranged against spell) and hit chance (melee and ranged against spell), your weaker side '

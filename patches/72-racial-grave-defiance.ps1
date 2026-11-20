@@ -5,8 +5,10 @@
 # When a hit would kill you, you rise as a ghoul for 10 sec instead (9990029: Raise Ally's ghoul model, 30% less damage
 # and healing done). The ghoul can't die and can't be healed: it stays at 1 health. A killing blow by the ghoul on an
 # enemy worth experience or honor brings you back at 20% health; otherwise you die when it ends, credited to whoever
-# dealt the killing hit. Once every 10 min (debuff 9990030, Grave Hunger, kept through death and logout and not
-# stripped by immunities); each Cannibalize takes 2 min off it (James, 20 November).
+# dealt the killing hit. Rising takes 20 charges of Grave Feast (9990061, a buff whose stack count is the charges, up to
+# 20, kept through death and logout), all used up when you rise; each tick of a Cannibalize channel adds one (every
+# 2 sec, 5 for a full channel, fewer if interrupted), so about four full channels between rises (James, 21 November;
+# it replaces the 10-minute Grave Hunger debuff 9990030 and Cannibalize taking 2 min off it, 20 November).
 # Not from falling, lava, drowning or fatigue (self damage), not from your duel opponent (the duel ends at 1 health as
 # usual), and not in a vehicle. A battleground flag carrier drops the flag on rising. The spells are in sql/enchants/150-custom-spells.sql and the client patch
 # (client-patch/custom_spells.py). Run by the build from the workspace root, after 40-battlegrounds.ps1. Throws if an
@@ -20,7 +22,7 @@ $file = 'core/src/server/game/Entities/Player/Player.h'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
 $anchor = "public:`n    explicit Player(WorldSession* session);`n"
 if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'Core changed: the Player constructor in Player.h was not found' }
-$add = "    bool WcmeGraveActive = false;`n    bool WcmeGhoulActive = false;`n    bool WcmeGhoulRevived = false;`n    ObjectGuid WcmeGhoulKiller;`n"
+$add = "    bool WcmeGraveActive = false;`n    bool WcmeGhoulActive = false;`n    bool WcmeGhoulRevived = false;`n    ObjectGuid WcmeGhoulKiller;`n    uint32 WcmeCannibalizeTicks = 0;`n"
 Set-Content $file $text.Replace($anchor, $anchor + $add) -NoNewline
 }
 
@@ -41,11 +43,35 @@ namespace WcmeGraveDefiance
     constexpr uint32 Defiance = 9990027;          // the low-health bonus; stacks = percent
     constexpr uint32 DefianceCooldown = 9990028;  // 45 sec after the bonus ends
     constexpr uint32 Ghoul = 9990029;             // risen: Raise Ally's ghoul, 30% less damage and healing done
-    constexpr uint32 GhoulCooldown = 9990030;     // debuff: 10 min from rising
-    constexpr int32 GhoulCooldownTime = 600000;
-    constexpr int32 CannibalizeCut = 120000;      // each Cannibalize takes 2 min off
+    constexpr uint32 RetiredCooldown = 9990030;   // the old 10 min Grave Hunger debuff: taken off where still worn
+    constexpr uint32 Feast = 9990061;             // Grave Feast: stacks = charges to rise
+    constexpr uint32 FeastNeeded = 20;            // rising takes (and uses) this many; also the most you can hold
+    constexpr uint32 CannibalizeHeal = 20578;     // the healing aura every Cannibalize channels: a charge per tick
 
-    inline bool IsCannibalize(uint32 id) { return id == 20577 || id == 1120577; }
+    inline uint32 Charges(Player* player)
+    {
+        Aura const* feast = player->GetAura(Feast);
+        return feast ? feast->GetStackAmount() : 0;
+    }
+
+    // Charges for the Cannibalize ticks since the last look (the aura counts them).
+    inline void CountCannibalize(Player* player)
+    {
+        Aura* heal = player->GetAura(CannibalizeHeal, player->GetGUID());
+        AuraEffect const* effect = heal ? heal->GetEffect(EFFECT_0) : nullptr;
+        uint32 const ticks = effect ? effect->GetTickNumber() : 0;
+        if (ticks > player->WcmeCannibalizeTicks && player->IsAlive())
+        {
+            uint32 const gained = ticks - player->WcmeCannibalizeTicks;
+            uint32 const charges = std::min(FeastNeeded, Charges(player) + gained);
+            Aura* feast = player->GetAura(Feast);
+            if (!feast)
+                feast = player->AddAura(Feast, player);
+            if (feast && feast->GetStackAmount() != charges)
+                feast->SetStackAmount(uint8(charges));
+        }
+        player->WcmeCannibalizeTicks = ticks;
+    }
 
     inline bool Enabled()
     {
@@ -81,14 +107,16 @@ namespace WcmeGraveDefiance
 class wcme_grave_defiance : public PlayerScript
 {
 public:
-    wcme_grave_defiance() : PlayerScript("wcme_grave_defiance", {PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_CREATURE_KILL, PLAYERHOOK_ON_PVP_KILL,
-        PLAYERHOOK_ON_SPELL_CAST}) { }
+    wcme_grave_defiance() : PlayerScript("wcme_grave_defiance", {PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_CREATURE_KILL, PLAYERHOOK_ON_PVP_KILL}) { }
 
     void OnPlayerUpdate(Player* player, uint32 /*diff*/) override
     {
         using namespace WcmeGraveDefiance;
         if (player->getRace() != RACE_UNDEAD_PLAYER)
             return;
+        if (player->HasAura(RetiredCooldown))
+            player->RemoveAurasDueToSpell(RetiredCooldown);
+        CountCannibalize(player);
 
         // The ghoul first, even with the setting turned off meanwhile: a ghoul that has risen still ends one way or
         // the other. The aura is the state, so a ghoul that logged out and back in carries on.
@@ -153,22 +181,6 @@ public:
             defiance->SetStackAmount(bonus);
     }
 
-    // Each Cannibalize (a real cast: it needs a corpse) takes 2 min off the wait to rise again.
-    void OnPlayerSpellCast(Player* player, Spell* spell, bool /*skipCheck*/) override
-    {
-        using namespace WcmeGraveDefiance;
-        if (player->getRace() != RACE_UNDEAD_PLAYER || !spell || spell->IsTriggered() ||
-            !IsCannibalize(spell->GetSpellInfo()->Id))
-            return;
-        Aura* cooldown = player->GetAura(GhoulCooldown);
-        if (!cooldown)
-            return;
-        if (cooldown->GetDuration() <= CannibalizeCut)
-            player->RemoveAura(cooldown);
-        else
-            cooldown->SetDuration(cooldown->GetDuration() - CannibalizeCut);
-    }
-
     void OnPlayerCreatureKill(Player* killer, Creature* killed) override { Revive(killer, killed); }
     void OnPlayerPVPKill(Player* killer, Player* killed) override
     {
@@ -221,7 +233,7 @@ public:
             return health - 1;
         }
 
-        if (!Enabled() || !player->IsAlive() || player->HasAura(GhoulCooldown) || player->GetVehicle() ||
+        if (!Enabled() || !player->IsAlive() || Charges(player) < FeastNeeded || player->GetVehicle() ||
             player->HasSpiritOfRedemptionAura() || player->GetCommandStatus(CHEAT_GOD) ||
             player->HasPlayerFlag(PLAYER_FLAGS_IS_OUT_OF_BOUNDS))
             return damage;
@@ -239,7 +251,7 @@ public:
         if (Battleground* bg = player->GetBattleground())
             bg->EventPlayerDroppedFlag(player);
         Lasting(player, Ghoul, 10000);
-        Lasting(player, GhoulCooldown, GhoulCooldownTime);
+        player->RemoveAurasDueToSpell(Feast); // rising uses every charge
         WcmeFx::Play(player, 258020); // the rise: a necromancy summon; the ghoul buff wears Dark Banish
         return health - 1;
     }
