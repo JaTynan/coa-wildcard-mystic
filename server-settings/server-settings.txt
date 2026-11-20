@@ -93,7 +93,7 @@ worldserver.conf | Racials.Spellsword = 1
 worldserver.conf | Racials.Overclock = 1
 # Blood Elf Arcane Hunger (race kits): each ability adds a stack (up to 10): +1.5% damage and healing, 0.5% less
 # damage taken, +2% ability costs per stack; falls off after 5 sec without an ability. Arcane Torrent eats the stacks for 2% of every resource
-# each, and its cooldown is 1 min (read at server start). 0 = off.
+# each, then leaves you Satiated (no new stacks) for 15 sec; its cooldown is 1 min (read at server start). 0 = off.
 worldserver.conf | Racials.ArcaneHunger = 1
 # Dwarf Prospector's Spirit (race kits): a buff per kind of find, up to 3 stacks, 8 hours: mining +2% Stamina,
 # herbalism +2% Intellect and Spirit, skinning +2% Strength and Agility, treasure (Find Treasure chests or discovering

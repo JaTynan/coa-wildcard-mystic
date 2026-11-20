@@ -82,6 +82,8 @@ PROSPECT_WATER_BREATHING = 9990054  # hidden: with 3 stacks of the fishing buff
 BOOK_PROSPECTOR = 9990055          # its spellbook entry
 # Orc Bloodrush's Rush (patches/56-racial-bloodrush.ps1): BLOODRUSH_SPEED's stacks
 BLOODRUSH_RECKLESS = 9990056       # hidden: 2% more damage taken per stack of Rush (kept at Rush's stacks)
+# Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): after Arcane Torrent
+ARCANE_SATIATED = 9990057          # debuff: Arcane Hunger can't build for 15 sec (the server sets the duration)
 MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
 STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
 
@@ -333,7 +335,8 @@ SPELLS = {
                          'damage and healing, 5% less damage taken, 20% more cost). Go 5 sec without using an ability '
                          'and the stacks fall off. Arcane Torrent eats every stack: '
                          'besides its usual effects, it restores 2% of every resource you have (mana, rage, energy, '
-                         'runic power) per stack eaten, 20% at 10. Arcane Torrent\'s cooldown is 1 min.',
+                         'runic power) per stack eaten, 20% at 10, and leaves you Satiated: no new stacks for 15 sec. '
+                         'Arcane Torrent\'s cooldown is 1 min.',
                          '', 3384, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     ARCANE_HUNGER: ('Arcane Hunger',
                     'Each ability or spell adds a stack: abilities deal and heal 1.5% more and cost 2% more per stack, '
@@ -343,6 +346,10 @@ SPELLS = {
                     'costs increased by 2%. Fades after 5 sec without using an ability.',
                     3384, 10, [(MOD_DAMAGE_PERCENT_DONE, 0, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 0, 0),
                                (MOD_POWER_COST_PCT, 2, ALL_SCHOOLS)]),  # achievement_bg_wineos
+    ARCANE_SATIATED: ('Satiated',
+                      'After Arcane Torrent, your hunger for magic is sated: Arcane Hunger can\'t build for 15 sec.',
+                      'Your hunger for magic is sated. Arcane Hunger can\'t build.',
+                      87, 0, [(DUMMY, 0, 0)], {4: 0x80000000 | 0x04000000}),  # Arcane Torrent's icon; shown as a debuff
     ARCANE_HUNGER_WARD: ('Arcane Hunger', 'Damage taken reduced by 0.5% for each stack of Arcane Hunger.', '', 3384, 0,
                          [(MOD_DAMAGE_PERCENT_TAKEN, 0, ALL_SCHOOLS)], {4: HIDDEN}),
     BOOK_PROSPECTOR: ('Prospector\'s Spirit',
