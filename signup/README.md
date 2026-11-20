@@ -12,6 +12,10 @@ human check (Turnstile). The account is created through the server manager's own
 - The same service answers `GET /api/status` for the homepage (wildcard.jtlab.cc): login and world server up or
   down, players, bots, uptime and the installed build, plus the rates and features read from the live config files.
   Public, read-only, cached 30 seconds (players: 60).
+- And `GET /api/pets` for the Tameable pets page (wildcard.jtlab.cc/pets.html, `WildcardPets.py`): every tameable
+  pet family (beast, undead, demon, elemental, dragonkin, mechanical) with its abilities from the server's DBC files,
+  and one tameable creature from the world database with its level and where it spawns (from the map files). Public,
+  read-only, built at start and cached six hours.
 
 ## Setting it up
 

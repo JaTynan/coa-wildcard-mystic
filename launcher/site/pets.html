@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tameable pets</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Tameable pets only */
+  main { max-width: 1100px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+  .tabs button { font: inherit; font-size: 15px; color: var(--text); background: var(--field); border: 1px solid #44444e;
+                 border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: #111; font-weight: 700; }
+  .tabs button span { opacity: .7; font-weight: 400; margin-left: 4px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin: 0 0 14px; }
+  .tools input[type=search] { max-width: 320px; margin: 0; }
+  .tools label { font-weight: 400; margin: 0; color: var(--muted); font-size: 15px; display: flex; gap: 6px; align-items: center; }
+  .tools input[type=checkbox] { width: auto; margin: 0; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+       font-weight: 600; padding: 0 10px 8px; border-bottom: 1px solid var(--line); }
+  td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr.none td { color: var(--muted); }
+  td.family { font-weight: 700; color: var(--gold); white-space: nowrap; }
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip { background: var(--field); border-radius: 6px; padding: 1px 8px; font-size: 14px; white-space: nowrap; }
+  .chip[title] { cursor: help; border-bottom: 1px dotted var(--muted); }
+  .chip.passive { font-style: italic; color: var(--muted); }
+  .tagword { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; border-radius: 4px;
+             padding: 0 5px; margin-left: 6px; vertical-align: 1px; }
+  .elite { color: var(--gold); border: 1px solid var(--gold); }
+  .exotic { color: #c9a0ff; border: 1px solid #c9a0ff; }
+  .where { color: var(--muted); font-size: 14px; }
+  @media (max-width: 720px) {
+    thead { display: none; }
+    tr, td { display: block; }
+    tr { border-bottom: 1px solid var(--line); padding: 8px 0; }
+    td { border: 0; padding: 4px 0; }
+    td[data-label]::before { content: attr(data-label) ": "; color: var(--muted); font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <nav class="top"><a href="./">Home</a><a href="how-to-play.html">How to play</a><a href="pets.html" aria-current="page">Tameable pets</a><a href="https://join.jtlab.cc">Create an account</a></nav>
+  <h1>Tameable pets</h1>
+  <p class="tag">Every pet family you can tame on Wildcard: beasts, undead, demons, elementals, dragonkin and
+    mechanicals. Each family lists its abilities and one creature you can tame for it, with where to find it.</p>
+  <div class="stack">
+    <section class="panel">
+      <div class="tabs" id="tabs" role="group" aria-label="Pet kind"></div>
+      <div class="tools">
+        <input type="search" id="search" placeholder="Search a family, ability or creature" aria-label="Search">
+        <label><input type="checkbox" id="all"> Also show families with nothing to tame in the world</label>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Family</th><th>Abilities</th><th>Tame one</th><th>Where</th></tr></thead>
+          <tbody id="rows"><tr><td colspan="4" class="note">Loading...</td></tr></tbody>
+        </table>
+      </div>
+      <p class="note" id="count" style="margin-top:12px"></p>
+    </section>
+    <section class="panel">
+      <h2>Reading the table</h2>
+      <ul class="note">
+        <li>Hover an ability for what it does (numbers are for its strongest rank). Italic ones are passive.</li>
+        <li><span class="tagword elite">Elite</span> creatures are tougher; <span class="tagword exotic">Exotic</span> ones need the ability to tame exotic pets.</li>
+        <li>"Tame one" is one example: the lowest-level ordinary creature of that family out in the world. Most
+          families have several; the number after it says how many kinds can be tamed.</li>
+        <li>Each kind needs its own taming spell (Tame Beast, Tame Undead and so on). This page reads the live
+          server, so it follows patches by itself.</li>
+      </ul>
+    </section>
+  </div>
+</main>
+<script>
+const API = "https://join.jtlab.cc/api/pets";
+const $ = (id) => document.getElementById(id);
+let data = null;
+let current = "Beast";
+
+function el(tag, attrs = {}, text) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function tag(kind, word) {
+  return el("span", { class: "tagword " + kind }, word);
+}
+
+function matches(family, words) {
+  if (!words) return true;
+  const hay = [family.name, ...family.abilities.map((a) => a.name),
+               family.example ? family.example.name + " " + family.example.where : ""].join(" ").toLowerCase();
+  return words.split(/\s+/).every((w) => hay.includes(w));
+}
+
+function showTabs() {
+  const box = $("tabs");
+  box.textContent = "";
+  const all = $("all").checked;
+  for (const category of data.categories) {
+    const count = data.families.filter((f) => f.category === category && (all || f.example)).length;
+    const button = el("button", { type: "button", "aria-pressed": String(category === current) }, category);
+    button.append(el("span", {}, count));
+    button.onclick = () => { current = category; showTabs(); showRows(); };
+    box.append(button);
+  }
+}
+
+function showRows() {
+  const body = $("rows");
+  body.textContent = "";
+  const words = $("search").value.trim().toLowerCase();
+  const all = $("all").checked;
+  // A search looks through every kind; otherwise the chosen tab.
+  const list = data.families.filter((f) => (words || f.category === current) && (all || f.example) && matches(f, words));
+  for (const family of list) {
+    const row = el("tr", family.example ? {} : { class: "none" });
+    const name = el("td", { class: "family" }, family.name);
+    if (words) name.append(el("div", { class: "where" }, family.category));
+    const abilities = el("td", { "data-label": "Abilities" });
+    const chips = el("div", { class: "chips" });
+    for (const ability of family.abilities) {
+      const attrs = { class: "chip" + (ability.passive ? " passive" : "") };
+      if (ability.text) attrs.title = ability.text;
+      chips.append(el("span", attrs, ability.name));
+    }
+    if (!family.abilities.length) chips.append(el("span", { class: "note" }, "None listed"));
+    abilities.append(chips);
+    const tame = el("td", { "data-label": "Tame one" });
+    const where = el("td", { class: "where", "data-label": "Where" });
+    if (family.example) {
+      const e = family.example;
+      tame.append(document.createTextNode(e.name));
+      if (e.elite) tame.append(tag("elite", "Elite"));
+      if (e.exotic) tame.append(tag("exotic", "Exotic"));
+      tame.append(el("div", { class: "where" }, "Level " + e.level +
+        (family.tameable > 1 ? " · " + family.tameable + " kinds tameable" : "")));
+      where.textContent = e.where;
+    } else {
+      tame.textContent = family.tameable ? "None spawned in the world" : "Nothing tameable yet";
+      where.textContent = "-";
+    }
+    row.append(name, abilities, tame, where);
+    body.append(row);
+  }
+  if (!list.length) {
+    const row = el("tr");
+    row.append(el("td", { colspan: "4", class: "note" }, "No family matches."));
+    body.append(row);
+  }
+  $("count").textContent = list.length + (list.length === 1 ? " family" : " families") +
+    (words ? " match your search." : " shown.") + " Updated " + new Date(data.updated).toLocaleString() + ".";
+}
+
+async function load() {
+  try {
+    const reply = await fetch(API, { cache: "no-store" });
+    if (!reply.ok) throw new Error(reply.status);
+    data = await reply.json();
+  } catch (error) {
+    $("rows").innerHTML = '<tr><td colspan="4" class="note">The pet list is unavailable right now. Try again in a minute.</td></tr>';
+    return;
+  }
+  const wanted = decodeURIComponent(location.hash.slice(1));
+  if (data.categories.includes(wanted)) current = wanted;
+  showTabs();
+  showRows();
+}
+
+$("search").addEventListener("input", showRows);
+$("all").addEventListener("change", () => { showTabs(); showRows(); });
+load();
+</script>
+</body>
+</html>
