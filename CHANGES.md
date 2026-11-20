@@ -89,6 +89,7 @@ for good by deleting its part from the script.
 | `86-scrolls-of-fortune-redeem-themselves.ps1` | Scrolls of Fortune (I to XII, Abilities and Talents) redeem themselves: at login and every 2 sec any stack in the backpack or bags is added to its specialization's scroll count exactly as using it would, with one chat line, so nobody clicks hundreds of stacks | always on |
 | `87-wildcard-bots-revive-pets.ps1` | CoA and Wildcard bots bring their pets back: out of combat with a dead or missing pet, they cast their own Call Pet or Summon Demon (a stored pet) or a Revive spell (Pet, Demon, Undead, Elemental, Dragonkin, Mechanical, Giant, Aberration, Any Kind), whichever the server's cast check accepts. Only Hunters had this before | always on |
 | `88-dungeon-finder-refusal-log.ps1` | Every refused dungeon finder join logs one line to Server.log: the player, group size, result code, dungeons asked for, and each member the server holds locked out with their lock code per dungeon (the client only shows the player's own padlocks) | always on |
+| `90-dungeon-clear-auto-start.ps1` | Dungeon Clear starts by itself: once a real player's tank bot is in a 5-player dungeon with them (alive, within 60 yards, out of combat), the group gets `dc on`, and the player gets a chat line on `dc off` / `dc on` / `dc pause` / `dc skip` in party chat. Once per instance, so `dc off` sticks for that run; not in raids or Manastorms | `DungeonClear.AutoStart` |
 | `63-enchant-target-cooldowns.ps1` | Mystic Enchant procs listed in `wcme_proc_target_cooldown` get a cooldown per target plus a 0.1 sec shared one (one proc per attack), instead of one shared cooldown: Deathbringer, Unbounded Deathbringer, Harbinger of Flame, Righteous Zealot | — |
 
 ## Settings (summary)
@@ -96,7 +97,7 @@ for good by deleting its part from the script.
 Grouped and explained line by line in `server-settings.txt`: Wildcard realm (ability pool, no Pete Arr), experience
 (3x, prestige, exploring, quests, gathering, world PvP, rested), progression earned not handed out, professions and drops, faster respawns (90 s
 mobs, 2 min nodes), Auction House bot (stock, skipped items, prices), play with friends, SQUID's bots (world PvP,
-load, waking, zones), PvP rewards, AI chat, MySQL and world server performance, view distance.
+load, waking, zones, Dungeon Clear with Smart Rest: pack to pack until someone runs low), PvP rewards, AI chat, MySQL and world server performance, view distance.
 
 ## Database
 
