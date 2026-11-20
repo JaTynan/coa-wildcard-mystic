@@ -474,6 +474,15 @@ modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.GoCity = 30
 # created or re-randomised; the rest roll 1-60 as before (so newbies and 60s stay). Builds from 7 Nov on.
 modules\playerbots.conf | AiPlayerbot.WildcardLevelNearPlayersPct = 70
 
+# ---------------------------------------------------------------- Logging (lag, 20 Nov)
+# Lag spikes with about 880 bots in the world (95% under 69 ms, 99% 586 ms, worst 2.9 s). Every log line was written
+# in line with the world update, and the console got every Wildcard roll (dozens per bot as it builds) and every
+# challenge packet sent to a bot; world-console.log had grown to 2.9 GB. Logging now runs on its own thread, and those
+# two categories stay off the console: rolls still go to Server.log at Info, challenge packets only from Warning.
+worldserver.conf | Log.Async.Enable = 1
+worldserver.conf | Logger.coa = 4,Server
+worldserver.conf | Logger.module.coa_challenges = 3,Console Server
+
 # ---------------------------------------------------------------- Wildcard Mystic Enchants
 # Needs the patched world server (Install.cmd); the official one ignores it
 modules\coa.conf | CoA.MysticEnchants.AllowWildcard = 1
