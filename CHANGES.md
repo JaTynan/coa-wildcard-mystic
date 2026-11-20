@@ -122,6 +122,7 @@ Shadows, Spell Shredder, ...).
 `130-battleground-dampening.sql`: everyone in a battleground does 20% less healing and gets 20% smaller absorb shields
 (Ascension's "PvP - Battleground - Dampening", which CoA has but never applied).
 `140-talent-fixes.sql`: the proc rows and script names for `55-talent-fixes.ps1`.
+`161-wisdomball-tiraxis.sql`: the Wondrous Wisdomball (the pet that offers your dungeon quests) is back on Tiraxis' Convenience Items list for 800 Bazaar Tokens; the core had made it unobtainable.
 `016-dead-triggers.sql`: 33 Legendary enchants whose trigger never fired now work: 31 fire from the abilities their
 tooltip names (through the enchant action table; missing chances and sequences are best guesses, marked in each
 row's comment), and 2 grant their bonus while an aura is up (Frost Bomb's Fingers of Frost, Words of Healing).
