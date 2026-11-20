@@ -5,7 +5,8 @@
 # 12, 14, 15%; damage taken -1, 1, 2, 2, 3, 3, 4, 4, 5, 5%. Stop using abilities for 5 sec and the stacks fall off
 # (casting or channelling keeps them). Arcane Torrent
 # eats every stack: besides its own effects (the silence and CoA's restore), it restores 2% of every resource you have
-# (mana, rage, energy, runic power) per stack eaten (20% at 10), and its cooldown drops from 2 min to 1 min.
+# (mana, rage, energy, runic power) per stack eaten (20% at 10), and its cooldown drops from 2 min to 1 min. It also
+# leaves you Satiated (debuff 9990057, 15 sec): no new stacks while it lasts; immunities like Divine Shield don't strip it (James, 20 November).
 # A stack is added just after the ability, so it counts from the next one. Not counted: triggered spells, passives,
 # items (potions, trinkets), auto attack and auto-repeat shots, and Arcane Torrent itself.
 # The buff is in sql/enchants/150-custom-spells.sql and the client patch (client-patch/custom_spells.py; the client
@@ -70,6 +71,8 @@ public:
 
     static constexpr uint32 Hunger = 9990046;  // per stack: +1.5% damage and healing done, +2% ability costs
     static constexpr uint32 Ward = 9990048;    // per stack: 0.5% less damage taken
+    static constexpr uint32 Satiated = 9990057; // after Arcane Torrent: no new stacks
+    static constexpr int32 SatiatedTime = 15000;
     static constexpr uint8 MaxStacks = 10;
     static constexpr int32 FadeTime = 5000;
 
@@ -113,6 +116,8 @@ public:
                 return;
             if (aura->GetStackAmount() != stacks)
                 aura->SetStackAmount(stacks);
+            if (have < MaxStacks && stacks >= MaxStacks)
+                WcmeFx::Play(player, 1852, 40754); // 10 stacks: an arcane gathering, Clarity of Will's sound on top
             aura->SetMaxDuration(FadeTime);
             aura->SetDuration(FadeTime);
             SetAmounts(player, aura, stacks);
@@ -133,6 +138,8 @@ public:
             return;
         if (!IsArcaneTorrent(info->Id))
         {
+            if (player->HasAura(Satiated))
+                return; // sated: no new stacks
             ++player->WcmeHungerPending; // added just after this ability, so it counts from the next one
             return;
         }
@@ -146,6 +153,11 @@ public:
         }
         if (player->HasAura(Ward))
             player->RemoveAurasDueToSpell(Ward);
+        if (Aura* sated = player->AddAura(Satiated, player))
+        {
+            sated->SetMaxDuration(SatiatedTime);
+            sated->SetDuration(SatiatedTime);
+        }
         eaten = std::min<uint32>(eaten, MaxStacks);
         if (!eaten)
             return;

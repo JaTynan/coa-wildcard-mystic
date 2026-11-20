@@ -1,5 +1,5 @@
 # Dwarf signature racial: Prospector's Spirit (docs/race-kits.md). Natural explorers: each kind of find gives its own
-# buff, stacking up to 3 times and lasting 2 hours (gathering more adds a stack and refreshes it; kept through death):
+# buff, stacking up to 3 times and lasting 8 hours (gathering more adds a stack and refreshes it; kept through death):
 #   Mining a vein (9990049): +2% Stamina per stack.
 #   Herbalism (9990050): +2% Intellect and Spirit per stack.
 #   Skinning (9990051): +2% Strength and Agility per stack.
@@ -50,7 +50,7 @@ public:
     static constexpr uint32 Fishing = 9990053;
     static constexpr uint32 WaterBreathing = 9990054;  // with Fishing at 3 stacks
     static constexpr uint8 MaxStacks = 3;
-    static constexpr int32 Lasts = 2 * HOUR * IN_MILLISECONDS;
+    static constexpr int32 Lasts = 8 * HOUR * IN_MILLISECONDS;
 
     static bool Applies(Player* player)
     {
@@ -155,7 +155,7 @@ private:
         }
     }
 
-    // One more stack (up to 3), and a fresh 2 hours.
+    // One more stack (up to 3), and a fresh 8 hours.
     static void Gain(Player* player, uint32 spell)
     {
         if (!player->IsAlive())
@@ -169,6 +169,15 @@ private:
             return;
         aura->SetMaxDuration(Lasts);
         aura->SetDuration(Lasts);
+        switch (spell) // each find shows what it gives
+        {
+            case Mining: WcmeFx::Play(player, 3401); break;            // gem dust and a seismic slam
+            case Herbalism: WcmeFx::Play(player, 254); break;          // Arcane Intellect
+            case Skinning: WcmeFx::Play(player, 542); break;           // Mark of the Wild
+            case Treasure: WcmeFx::Play(player, 10918, 10649); break;     // Honor Among Thieves, Hysteria's sound on top
+            case Fishing: WcmeFx::Play(player, 527); break;            // Water Breathing
+            default: break;
+        }
         if (spell == Fishing && aura->GetStackAmount() >= MaxStacks)
             Lasting(player, WaterBreathing, Lasts);
     }

@@ -5,7 +5,8 @@
 # When a hit would kill you, you rise as a ghoul for 10 sec instead (9990029: Raise Ally's ghoul model, 30% less damage
 # and healing done). The ghoul can't die and can't be healed: it stays at 1 health. A killing blow by the ghoul on an
 # enemy worth experience or honor brings you back at 20% health; otherwise you die when it ends, credited to whoever
-# dealt the killing hit. Once every 5 min (marker 9990030, kept through death and logout).
+# dealt the killing hit. Once every 10 min (debuff 9990030, Grave Hunger, kept through death and logout and not
+# stripped by immunities); each Cannibalize takes 2 min off it (James, 20 November).
 # Not from falling, lava, drowning or fatigue (self damage), not from your duel opponent (the duel ends at 1 health as
 # usual), and not in a vehicle. A battleground flag carrier drops the flag on rising. The spells are in sql/enchants/150-custom-spells.sql and the client patch
 # (client-patch/custom_spells.py). Run by the build from the workspace root, after 40-battlegrounds.ps1. Throws if an
@@ -40,7 +41,11 @@ namespace WcmeGraveDefiance
     constexpr uint32 Defiance = 9990027;          // the low-health bonus; stacks = percent
     constexpr uint32 DefianceCooldown = 9990028;  // 45 sec after the bonus ends
     constexpr uint32 Ghoul = 9990029;             // risen: Raise Ally's ghoul, 30% less damage and healing done
-    constexpr uint32 GhoulCooldown = 9990030;     // 5 min from rising
+    constexpr uint32 GhoulCooldown = 9990030;     // debuff: 10 min from rising
+    constexpr int32 GhoulCooldownTime = 600000;
+    constexpr int32 CannibalizeCut = 120000;      // each Cannibalize takes 2 min off
+
+    inline bool IsCannibalize(uint32 id) { return id == 20577 || id == 1120577; }
 
     inline bool Enabled()
     {
@@ -76,7 +81,8 @@ namespace WcmeGraveDefiance
 class wcme_grave_defiance : public PlayerScript
 {
 public:
-    wcme_grave_defiance() : PlayerScript("wcme_grave_defiance", {PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_CREATURE_KILL, PLAYERHOOK_ON_PVP_KILL}) { }
+    wcme_grave_defiance() : PlayerScript("wcme_grave_defiance", {PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_CREATURE_KILL, PLAYERHOOK_ON_PVP_KILL,
+        PLAYERHOOK_ON_SPELL_CAST}) { }
 
     void OnPlayerUpdate(Player* player, uint32 /*diff*/) override
     {
@@ -140,10 +146,27 @@ public:
             if (!defiance)
                 return;
             player->WcmeGraveActive = true;
+            WcmeFx::Play(player, 165101); // necromantic empowerment
         }
         uint8 const bonus = Bonus(player);
         if (defiance->GetStackAmount() != bonus)
             defiance->SetStackAmount(bonus);
+    }
+
+    // Each Cannibalize (a real cast: it needs a corpse) takes 2 min off the wait to rise again.
+    void OnPlayerSpellCast(Player* player, Spell* spell, bool /*skipCheck*/) override
+    {
+        using namespace WcmeGraveDefiance;
+        if (player->getRace() != RACE_UNDEAD_PLAYER || !spell || spell->IsTriggered() ||
+            !IsCannibalize(spell->GetSpellInfo()->Id))
+            return;
+        Aura* cooldown = player->GetAura(GhoulCooldown);
+        if (!cooldown)
+            return;
+        if (cooldown->GetDuration() <= CannibalizeCut)
+            player->RemoveAura(cooldown);
+        else
+            cooldown->SetDuration(cooldown->GetDuration() - CannibalizeCut);
     }
 
     void OnPlayerCreatureKill(Player* killer, Creature* killed) override { Revive(killer, killed); }
@@ -163,6 +186,7 @@ private:
             return;
         killer->WcmeGhoulRevived = true;
         killer->RemoveAurasDueToSpell(Ghoul);
+        WcmeFx::Play(killer, 10297); // back to life: Unholy Presence
         killer->SetHealth(std::max<uint32>(1, killer->CountPctFromMaxHealth(20)));
     }
 };
@@ -215,7 +239,8 @@ public:
         if (Battleground* bg = player->GetBattleground())
             bg->EventPlayerDroppedFlag(player);
         Lasting(player, Ghoul, 10000);
-        Lasting(player, GhoulCooldown, 300000);
+        Lasting(player, GhoulCooldown, GhoulCooldownTime);
+        WcmeFx::Play(player, 258020); // the rise: a necromancy summon; the ghoul buff wears Dark Banish
         return health - 1;
     }
 
@@ -228,7 +253,7 @@ public:
 };
 
 '@
-$text = $text.Replace($include, $include + "#include `"ObjectAccessor.h`"`n#include `"SpellAuras.h`"`n#include `"UnitScript.h`"`n#include <cmath>`n#include <optional>`n")
+$text = $text.Replace($include, $include + "#include `"ObjectAccessor.h`"`n#include `"Spell.h`"`n#include `"SpellAuras.h`"`n#include `"SpellInfo.h`"`n#include `"UnitScript.h`"`n#include <cmath>`n#include <optional>`n")
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_grave_defiance();`n    new wcme_grave_defiance_rise();`n")
 Set-Content $file $text -NoNewline

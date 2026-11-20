@@ -41,11 +41,13 @@ SPELLMOD_RESIST_MISS_CHANCE = 16
 GRAVE_DEFIANCE = 9990027           # below 35% health: stacks = bonus damage and healing in percent
 GRAVE_DEFIANCE_COOLDOWN = 9990028  # 45 sec after the bonus ends
 GRAVE_GHOUL = 9990029              # risen as a ghoul for 10 sec
-GRAVE_GHOUL_COOLDOWN = 9990030     # 5 min from rising
+GRAVE_GHOUL_COOLDOWN = 9990030     # debuff: 10 min from rising, 2 min less per Cannibalize
 BOOK_GRAVE_DEFIANCE = 9990031      # its spellbook entry
 TRANSFORM = 56                     # aura: look like the creature in misc
 RISEN_ALLY = 30230                 # Raise Ally's ghoul (creature), so the same four ghoul models
-NO_IMMUNITIES = 0x20000000         # Attributes: shows over a shapeshift form's model too
+NO_IMMUNITIES = 0x20000000         # Attributes: shows over a shapeshift form's model too; immunities (Divine Shield, Ice
+                                   # Block) don't strip it
+DEBUFF = 0x04000000                # Attributes: shown and treated as a debuff (the stock Sated and Forbearance)
 KEPT_THROUGH_DEATH = 0x00100000    # AttributesEx3 (column 7): death doesn't remove it
 # Human Spellsword (patches/73-racial-spellsword.ps1): the server sets every amount
 SPELLSWORD = 9990032               # the buff: at work
@@ -80,11 +82,28 @@ PROSPECT_TREASURE = 9990052        # +2% damage and healing per stack
 PROSPECT_FISHING = 9990053         # +3% running and swim speed per stack
 PROSPECT_WATER_BREATHING = 9990054  # hidden: with 3 stacks of the fishing buff
 BOOK_PROSPECTOR = 9990055          # its spellbook entry
+# Orc Bloodrush's Rush (patches/56-racial-bloodrush.ps1): BLOODRUSH_SPEED's stacks
+BLOODRUSH_RECKLESS = 9990056       # hidden: 2% more damage taken per stack of Rush (kept at Rush's stacks)
+# Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): after Arcane Torrent
+# Tauren Plainsrunning (patches/54-racial-plainsrunning.ps1): what group members near a running Tauren get
+PLAINSRUNNING_HERD = 9990058       # stacks: the bonus running speed in percent (the server sets it)
+# Night Elf Ambush (patches/57-racial-ambush.ps1): its 20 sec, shown
+AMBUSH_RECHARGING = 9990059        # debuff while Ambush can't be readied again (the server sets the duration)
+# Tauren War Stomp (patches/54-racial-plainsrunning.ps1): moving while it casts
+PLAINSRUNNING_STOMPING = 9990060   # hidden: 80% slower while War Stomp casts
+ARCANE_SATIATED = 9990057          # debuff: Arcane Hunger can't build for 15 sec (the server sets the duration)
 MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
 STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
+MOD_DECREASE_SPEED = 33
+# Spell visuals (column 131) for the racials' buffs (James chose them in game, 20 November). Existing client visuals,
+# except VISUAL_AMBUSH_READY, which client-patch/visuals.py adds.
+VISUAL_DEATH_WISH = 4599      # Rush: Death Wish's looping red hands (its flash, kit 4010, the server plays)
+VISUAL_DARK_BANISH = 9652     # Risen Ghoul: Teleport Other's visual, whose looping part is Dark Banish (kit 7427)
+VISUAL_ROCKET_BOOTS = 1223    # Escape Artist's speed: Gnomish Rocket Boots' fire hands and trail (kit 1164)
+VISUAL_AMBUSH_READY = 9990101 # Ambush ready: the starlight hands without their beam sound (visuals.py)
 MOD_THREAT, PERIODIC_ENERGIZE, EFFECT_IMMUNITY, MANA_SHIELD, MOD_ATTACKER_MELEE_CRIT_CHANCE = 10, 24, 37, 97, 187
 DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
     MOD_HEALTH_REGEN_PERCENT, MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 87, 88, 136, 193  # aura types
@@ -141,25 +160,41 @@ SPELLS = {
     PLAINSRUNNING: ('Plainsrunning',
                     'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                     '(100% at level 60), on top of other speed effects. When you stop it drains in 6 sec. Not while '
-                    'mounted; held while carrying a flag.',
+                    'mounted; held while carrying a flag. Group members within 10 yards run with you at the same '
+                    'bonus, and each other Tauren running with you builds yours faster (up to 4). War Stomp adds 30% '
+                    'more for 5 sec, past your cap, and can be cast on the move.',
                     'Running faster. The number is your bonus running speed in percent.',
-                    3542, 100, [(DUMMY, 0, 0)]),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
+                    3542, 200, [(DUMMY, 0, 0)]),
+    PLAINSRUNNING_STOMPING: ('War Stomp', 'Moving 80% slower while War Stomp casts.', '', 129, 0,
+                             [(MOD_DECREASE_SPEED, -80, 0)], {4: HIDDEN}),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
+    PLAINSRUNNING_HERD: ('Running with the Herd',
+                         'Running with a Tauren: within 10 yards of a group member\'s Plainsrunning, you run faster by '
+                         'as much as they do. On foot only.',
+                         'Running with the herd. The number is your bonus running speed in percent.',
+                         3542, 200, [(DUMMY, 0, 0)]),
     BLOODRUSH: ('Bloodrush',
-                'For each enemy in combat with you, +2% damage and +2% haste, up to 5 enemies. Each killing blow '
-                'gives +30% movement speed for 6 sec. The stacks go out of combat.',
-                'Damage and haste increased by $s1%. One stack per enemy in combat with you.',
-                6200, 5, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS), (HASTE_ALL, 2, 0)]),  # achievement_bg_interruptx_flagcapture_attempts_1game
-    BLOODRUSH_SPEED: ('Bloodrush',
-                      'Movement speed increased by 30% for 6 sec after a killing blow.',
-                      'Movement speed increased by $s1%.',
-                      516, 0, [(MOD_INCREASE_SPEED, 30, 0)]),  # Ability_Rogue_Sprint
+                'For each enemy in combat with you, +2% damage, up to 5 enemies. The stacks go out of combat.',
+                'Damage increased by $s1%. One stack per enemy in combat with you.',
+                6200, 5, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS)]),  # achievement_bg_interruptx_flagcapture_attempts_1game
+    BLOODRUSH_SPEED: ('Rush',
+                      'Each killing blow (and Blood Fury) adds a stack, up to 5, for 15 sec: 10% more movement speed on foot and 2% more '
+                      'haste per stack, and 2% more damage taken. Each kill starts the 15 sec again.',
+                      'Movement speed increased by $s1% and haste by $s2%. Damage taken increased by 2% per stack. '
+                      'Another killing blow adds a stack and starts the 15 sec again.',
+                      516, 5, [(MOD_SPEED_ALWAYS, 10, 0), (HASTE_ALL, 2, 0)], {131: VISUAL_DEATH_WISH}),  # Ability_Rogue_Sprint
+    BLOODRUSH_RECKLESS: ('Rush', 'Damage taken increased by 2% per stack of Rush.', '', 516, 5,
+                         [(MOD_DAMAGE_PERCENT_TAKEN, 2, ALL_SCHOOLS)], {4: HIDDEN}),
     AMBUSH: ('Ambush',
              'Entering stealth readies your next ability: it costs 10% less and deals or heals 50% more. At most once '
              'every 20 sec.',
              'Your next ability costs 10% less and deals or heals 50% more.',
              3701, 0, [(MOD_DAMAGE_PERCENT_DONE, 50, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 50, 0),
                        (MOD_POWER_COST_PCT, -10, ALL_SCHOOLS)],
-             {34: NEXT_ABILITY, 35: 100, 36: 1}),  # achievement_profession_fishing_findfish; one charge
+             {34: NEXT_ABILITY, 35: 100, 36: 1, 131: VISUAL_AMBUSH_READY}),  # achievement_profession_fishing_findfish; one charge
+    AMBUSH_RECHARGING: ('Ambush Recharging',
+                        'Ambush was readied recently: entering stealth won\'t ready it again until this runs out.',
+                        'Entering stealth won\'t ready Ambush again until this runs out.',
+                        3701, 0, [(DUMMY, 0, 0)], {4: 0x80000000 | DEBUFF | NO_IMMUNITIES, 7: KEPT_THROUGH_DEATH}),
     VOODOO: ('Voodoo Regeneration',
              'Health regenerates 50% faster out of combat. In combat, regenerate 0.3% of maximum health per second '
              '(half while the burst is on cooldown). Below 35% health, regenerate 28% of maximum health over '
@@ -209,34 +244,42 @@ SPELLS = {
     BOOK_PLAINSRUNNING: ('Plainsrunning',
                          'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                          '(100% at level 60), on top of other speed effects. When you stop, it drains in 6 sec. Not '
-                         'while mounted; paused while carrying a battleground flag.',
+                         'while mounted; paused while carrying a battleground flag. Group members within 10 yards '
+                         'run with you at the same bonus. Tauren build faster together: each other Tauren running in '
+                         'your group within 10 yards adds the normal rate again, up to 4 (two reach full speed in 30 '
+                         'sec, five in 12). War Stomp adds 30% more for 5 sec, past your cap: a running start or a '
+                         'boost mid run. It can be cast on the move, at 80% less speed while it casts.',
                          '', 3542, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_BLOODRUSH: ('Bloodrush',
-                     'For each enemy in combat with you, +2% damage and +2% haste, up to 5 enemies. Gone when combat '
-                     'ends. Each killing blow also gives +30% movement speed for 6 sec.',
+                     'Relentless but reckless. For each enemy in combat with you, +2% damage, up to 5 enemies, gone '
+                     'when combat ends. Each killing blow adds a stack of Rush, up to 5, for 15 sec (each kill starts '
+                     'the 15 sec again): per stack, 10% more movement speed on foot and 2% more haste, but you take 2% '
+                     'more damage. Blood Fury adds a stack too.',
                      '', 6200, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_AMBUSH: ('Ambush',
                   'Entering stealth (Shadowmeld or a class stealth) readies your next ability: it costs 10% less and '
-                  'deals or heals 50% more. At most once every 20 sec.',
+                  'deals or heals 50% more. At most once every 20 sec (Ambush Recharging shows the wait).',
                   '', 3701, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_VOODOO: ('Voodoo Regeneration',
                   'Health regenerates 50% faster out of combat. In combat, regenerate 0.3% of maximum health per '
                   'second (half while the burst is on cooldown). Below 35% health, regenerate 28% of maximum health '
-                  'over 5 sec, once every 2 min.',
+                  'over 5 sec, once every 2 min. Berserking gives more haste the lower your health: 10% at full, '
+                  'up to 30% at 40% health or lower.',
                   '', 19697, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_RADIANT: ('Radiant Presence',
                    'In combat, gain a stack of Light every 6 sec, up to 5. Each stack gives you and every ally within '
                    '30 yards (pets and guardians too) +1% damage and healing and 1% less damage taken. The Light '
-                   'fades 10 sec after combat. A second Draenei doesn\'t add more. Your auras and totems reach 50% '
-                   'further.',
+                   'fades 10 sec after combat. A second Draenei doesn\'t add more. Gift of the Naaru fills your Light '
+                   'to 5 at once. Your auras and totems reach 50% further.',
                    '', ICON_BANNER_DRAENEI, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_GRAVE_DEFIANCE: ('Grave Defiance',
                           'Below 35% health, you deal and heal more, rising evenly to 30% more at 1% health (about 13% '
                           'at 20%, 22% at 10%). It lasts up to 15 sec, then can\'t start again for 45 sec. When a hit '
                           'would kill you, you rise as a ghoul for 10 sec instead, dealing and healing 30% less; the '
                           'ghoul can\'t die or be healed. A killing blow on an enemy worth experience or honor brings '
-                          'you back at 20% health; otherwise you die when it ends. Rising works once every 5 min, and '
-                          'not from falling, lava or drowning, or against your duel opponent.',
+                          'you back at 20% health; otherwise you die when it ends. Rising works once every 10 min, '
+                          'and each Cannibalize takes 2 min off the wait. Not from falling, lava or drowning, or '
+                          'against your duel opponent.',
                           '', 4153, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     # Grave Defiance's buffs (the server sets every timer)
     GRAVE_DEFIANCE: ('Grave Defiance',
@@ -254,13 +297,13 @@ SPELLS = {
                   'this ends.',
                   'Risen as a ghoul. Land a killing blow to come back at 20% health, or die when this ends. Damage '
                   'and healing done reduced by 30%.',
-                  3254, 0, [(TRANSFORM, 0, RISEN_ALLY), (MOD_DAMAGE_PERCENT_DONE, -30, ALL_SCHOOLS),
-                            (MOD_HEALING_DONE_PERCENT, -30, 0)],
-                  {4: 0x80000000 | NO_IMMUNITIES}),  # achievement_dungeon_coablackdragonflight
-    GRAVE_GHOUL_COOLDOWN: ('Risen Ghoul (cooldown)',
-                           'You can\'t rise as a ghoul again until this runs out.',
-                           'You can\'t rise as a ghoul again until this runs out.',
-                           3254, 0, [(DUMMY, 0, 0)], {7: KEPT_THROUGH_DEATH}),
+                  3254, 0, [(MOD_DAMAGE_PERCENT_DONE, -30, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, -30, 0)],
+                  {4: 0x80000000 | NO_IMMUNITIES, 131: VISUAL_DARK_BANISH}),  # achievement_dungeon_coablackdragonflight
+    GRAVE_GHOUL_COOLDOWN: ('Grave Hunger',
+                           'You can\'t rise as a ghoul again until this runs out (10 min). Each Cannibalize takes 2 min '
+                           'off.',
+                           'You can\'t rise as a ghoul again until this runs out. Cannibalize takes 2 min off.',
+                           3254, 0, [(DUMMY, 0, 0)], {4: 0x80000000 | DEBUFF | NO_IMMUNITIES, 7: KEPT_THROUGH_DEATH}),
     BOOK_SPELLSWORD: ('Spellsword',
                       'The experimenter\'s race. For power (attack power against spell power), critical strike chance '
                       '(melee and ranged against spell) and hit chance (melee and ranged against spell), your weaker side '
@@ -292,23 +335,25 @@ SPELLS = {
                            [(MOD_RATING, 0, 1 << CR_HIT_MELEE), (MOD_RATING, 0, 1 << CR_HIT_RANGED)], {4: HIDDEN}),
     BOOK_OVERCLOCK: ('Overclock',
                      'Gnomes learn their enemy and plan their next move. Maximum mana, rage, energy and runic power '
-                     'increased by 5%. Every 15 sec in combat, another step, up to 10: abilities cost 1% less per step '
-                     '(whatever resource they use) and runes recharge 1% faster per step, and each step tops up every '
-                     'resource you have by its number in percent (1% at the first step, up to 10% at the tenth: 55% in '
-                     'all over 2 min 30 sec). The steps reset when combat ends. Escape Artist also gives 60% more '
-                     'movement speed for 3 sec. Replaces Expansive Mind.',
+                     'increased by 5%. In combat Overclock boosts and cools down like an engine: every 5 sec another '
+                     'step, up to 10, and after 10 sec at 10 steps it cools down and climbs again (one cycle a minute). '
+                     'Each step makes abilities cost 1% less (whatever resource they use) and runes recharge 1% faster, '
+                     'and tops up 1% of every resource you have. Out of combat the steps hold where they are, ready for '
+                     'the next fight. Escape Artist also gives 60% more movement speed for 3 sec. Replaces Expansive '
+                     'Mind.',
                      '', ICON_OVERCLOCK, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     OVERCLOCK: ('Overclock',
                 'Maximum mana, rage, energy and runic power increased by 5%.',
                 'Maximum mana, rage, energy and runic power increased by 5%.',
                 ICON_OVERCLOCK, 0, [(MOD_INCREASE_ENERGY_PERCENT, 5, POWER_MANA),
                                     (MOD_INCREASE_ENERGY_PERCENT, 5, POWER_RAGE),
-                                    (MOD_INCREASE_ENERGY_PERCENT, 5, POWER_ENERGY)], {7: KEPT_THROUGH_DEATH}),
+                                    (MOD_INCREASE_ENERGY_PERCENT, 5, POWER_ENERGY)], {4: HIDDEN, 7: KEPT_THROUGH_DEATH}),
     OVERCLOCK_RUNIC: ('Overclock', 'Maximum runic power increased by 5%.', '', ICON_OVERCLOCK, 0,
                       [(MOD_INCREASE_ENERGY_PERCENT, 5, POWER_RUNIC_POWER)], {4: HIDDEN, 7: KEPT_THROUGH_DEATH}),
     OVERCLOCK_STEPS: ('Overclock',
-                      'Every 15 sec in combat, another step, up to 10. Each step makes abilities cost 1% less and '
-                      'runes recharge 1% faster, and tops up every resource by its number in percent.',
+                      'Every 5 sec in combat, another step, up to 10; after 10 sec at 10 it cools down and climbs '
+                      'again. Each step makes abilities cost 1% less and runes recharge 1% faster, and tops up 1% of '
+                      'every resource. Out of combat the steps hold.',
                       'Abilities cost 1% less and runes recharge 1% faster for each step. The number is the steps.',
                       ICON_OVERCLOCK_STEPS, 10, [(MOD_POWER_COST_PCT, -1, ALL_SCHOOLS),
                                                  (MOD_POWER_REGEN_PERCENT, 1, POWER_RUNE),
@@ -319,14 +364,15 @@ SPELLS = {
     OVERCLOCK_ESCAPE: ('Escape Artist',
                        'Movement speed increased by 60% for 3 sec after Escape Artist.',
                        'Movement speed increased by $s1%.',
-                       ICON_ROCKET_BOOTS, 0, [(MOD_INCREASE_SPEED, 60, 0)]),
+                       ICON_ROCKET_BOOTS, 0, [(MOD_INCREASE_SPEED, 60, 0)], {131: VISUAL_ROCKET_BOOTS}),
     BOOK_ARCANE_HUNGER: ('Arcane Hunger',
                          'Each ability or spell you use adds a stack of Arcane Hunger, up to 10. Per stack, abilities '
                          'deal and heal 1.5% more and cost 2% more, and you take 0.5% less damage (at 10: 15% more '
                          'damage and healing, 5% less damage taken, 20% more cost). Go 5 sec without using an ability '
                          'and the stacks fall off. Arcane Torrent eats every stack: '
                          'besides its usual effects, it restores 2% of every resource you have (mana, rage, energy, '
-                         'runic power) per stack eaten, 20% at 10. Arcane Torrent\'s cooldown is 1 min.',
+                         'runic power) per stack eaten, 20% at 10, and leaves you Satiated: no new stacks for 15 sec. '
+                         'Arcane Torrent\'s cooldown is 1 min.',
                          '', 3384, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     ARCANE_HUNGER: ('Arcane Hunger',
                     'Each ability or spell adds a stack: abilities deal and heal 1.5% more and cost 2% more per stack, '
@@ -336,42 +382,46 @@ SPELLS = {
                     'costs increased by 2%. Fades after 5 sec without using an ability.',
                     3384, 10, [(MOD_DAMAGE_PERCENT_DONE, 0, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 0, 0),
                                (MOD_POWER_COST_PCT, 2, ALL_SCHOOLS)]),  # achievement_bg_wineos
+    ARCANE_SATIATED: ('Satiated',
+                      'After Arcane Torrent, your hunger for magic is sated: Arcane Hunger can\'t build for 15 sec.',
+                      'Your hunger for magic is sated. Arcane Hunger can\'t build.',
+                      87, 0, [(DUMMY, 0, 0)], {4: 0x80000000 | DEBUFF | NO_IMMUNITIES}),  # Arcane Torrent's icon
     ARCANE_HUNGER_WARD: ('Arcane Hunger', 'Damage taken reduced by 0.5% for each stack of Arcane Hunger.', '', 3384, 0,
                          [(MOD_DAMAGE_PERCENT_TAKEN, 0, ALL_SCHOOLS)], {4: HIDDEN}),
     BOOK_PROSPECTOR: ('Prospector\'s Spirit',
-                      'Natural explorers: each kind of find gives its own buff, stacking up to 3 times and lasting 2 '
-                      'hours (finding more adds a stack and starts the 2 hours again). Mining a vein: 2% more Stamina '
+                      'Natural explorers: each kind of find gives its own buff, stacking up to 3 times and lasting 8 '
+                      'hours (finding more adds a stack and starts the 8 hours again). Mining a vein: 2% more Stamina '
                       'per stack. Herbalism: 2% more Intellect and Spirit. Skinning: 2% more Strength and Agility. '
                       'Treasure, from opening a chest that Find Treasure shows or discovering a new area: 2% more damage '
                       'and healing. Fishing a catch: 3% more running and swim speed, and at 3 stacks you can breathe '
                       'underwater. Discovering a new area also gives 50% more experience.',
                       '', 12202, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     PROSPECT_MINING: ('Prospector\'s Spirit: Mining',
-                      'Stamina increased by 2% per stack, up to 3. Mining another vein adds a stack and starts the 2 '
+                      'Stamina increased by 2% per stack, up to 3. Mining another vein adds a stack and starts the 8 '
                       'hours again.',
                       'Stamina increased by $s1% per stack.',
                       12199, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_STAMINA)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_earth
     PROSPECT_HERBALISM: ('Prospector\'s Spirit: Herbalism',
                          'Intellect and Spirit increased by 2% per stack, up to 3. Gathering another herb adds a stack and '
-                         'starts the 2 hours again.',
+                         'starts the 8 hours again.',
                          'Intellect and Spirit increased by $s1% per stack.',
                          12201, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_INTELLECT),
                                     (MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_SPIRIT)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_life
     PROSPECT_SKINNING: ('Prospector\'s Spirit: Skinning',
                         'Strength and Agility increased by 2% per stack, up to 3. Skinning another creature adds a stack '
-                        'and starts the 2 hours again.',
+                        'and starts the 8 hours again.',
                         'Strength and Agility increased by $s1% per stack.',
                         12200, 3, [(MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_STRENGTH),
                                    (MOD_TOTAL_STAT_PERCENTAGE, 2, STAT_AGILITY)], {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_fire
     PROSPECT_TREASURE: ('Prospector\'s Spirit: Treasure',
                         'Damage and healing done increased by 2% per stack, up to 3. Opening another chest that Find '
-                        'Treasure shows, or discovering a new area, adds a stack and starts the 2 hours again.',
+                        'Treasure shows, or discovering a new area, adds a stack and starts the 8 hours again.',
                         'Damage and healing done increased by $s1% per stack.',
                         12202, 3, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 2, 0)],
                         {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_shadow
     PROSPECT_FISHING: ('Prospector\'s Spirit: Fishing',
                        'Running speed on foot and swim speed increased by 3% per stack, up to 3; at 3 stacks you can '
-                       'also breathe underwater. Another catch adds a stack and starts the 2 hours again.',
+                       'also breathe underwater. Another catch adds a stack and starts the 8 hours again.',
                        'Running and swim speed increased by $s1% per stack. At 3 stacks you can breathe underwater.',
                        12203, 3, [(MOD_SPEED_ALWAYS, 3, 0), (MOD_INCREASE_SWIM_SPEED, 3, 0)],
                        {7: KEPT_THROUGH_DEATH}),  # inv_elemental_eternal_water

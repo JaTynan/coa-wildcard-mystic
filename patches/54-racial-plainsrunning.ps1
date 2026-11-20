@@ -1,7 +1,12 @@
 # Tauren signature racial: Plainsrunning (docs/race-kits.md). Running on foot builds speed over 60 sec up to level + 40%
 # (100% at level 60); it drains in 6 sec when you stop; it adds on top of other speed effects (Sprint's +70% and a full
-# +100% make +170%). Nothing while mounted; held, but not applied, while carrying a battleground flag. The buff icon is our
-# spell 9990001 (sql/enchants/150-custom-spells.sql and the client patch, client-patch/custom_spells.py).
+# +100% make +170%). Nothing while mounted; held, but not applied, while carrying a battleground flag. Group members
+# within 10 yards of a running Tauren get the same bonus while they're on foot (Running with the Herd, 9990058; the
+# highest Tauren's if several; not while carrying a flag; James, 20 November). Tauren build faster together: each other
+# Tauren running in the group within 10 yards adds the normal rate again, up to 4 (two build in 30 sec, five in 12).
+# War Stomp adds 30% more for 5 sec, past the cap, and can be cast on the move at 80% less speed while it casts
+# (hidden 9990060), so it doesn't stop the run: a running start or a boost mid run (James, 20 November).
+# The buff icon is our spell 9990001 (sql/enchants/150-custom-spells.sql and the client patch, client-patch/custom_spells.py).
 # Run by the build (step "Apply our patch scripts") from the workspace root, after 40-battlegrounds.ps1, whose script
 # loader this registers in. Each part throws if its anchor is gone. Listed in CHANGES.md. Racials.Plainsrunning = 0 turns it off.
 $ErrorActionPreference = 'Stop'
@@ -13,7 +18,9 @@ $file = 'core/src/server/game/Entities/Player/Player.h'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
 $anchor = "public:`n    explicit Player(WorldSession* session);`n"
 if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'Core changed: the Player constructor in Player.h was not found' }
-$add = "    float WcmePlainsrunningCharge = 0.0f;`n    float WcmePlainsrunningBonus = 0.0f;`n    uint32 WcmePlainsrunningTimer = 0;`n"
+$add = "    float WcmePlainsrunningCharge = 0.0f;`n    float WcmePlainsrunningBonus = 0.0f;`n    uint32 WcmePlainsrunningTimer = 0;`n" +
+    "    float WcmeHerdBonus = 0.0f;`n    float WcmeHerdOffer = 0.0f;`n    ObjectGuid WcmeHerdSource;`n    uint32 WcmeHerdTime = 0;`n" +
+    "    uint32 WcmeStompBoost = 0;`n"
 Set-Content $file $text.Replace($anchor, $anchor + $add) -NoNewline
 }
 
@@ -24,11 +31,37 @@ $file = 'core/src/server/game/Entities/Unit/Unit.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
 $anchor = "    // Apply strongest slow aura mod to speed`n    int32 slow = GetMaxNegativeAuraModifier(SPELL_AURA_MOD_DECREASE_SPEED);`n"
 if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'Core changed: the slow step in Unit::UpdateSpeed was not found' }
-$add = "    if (mtype == MOVE_RUN && !IsMounted())`n        if (Player const* runner = ToPlayer())`n            speed += runner->WcmePlainsrunningBonus;`n`n"
+$add = "    if (mtype == MOVE_RUN && !IsMounted())`n        if (Player const* runner = ToPlayer())`n            speed += std::max(runner->WcmePlainsrunningBonus, runner->WcmeHerdBonus);`n`n"
 Set-Content $file $text.Replace($anchor, $add + $anchor) -NoNewline
 }
 
 # ---- Build and drain the charge (every 250 ms)
+# ---- War Stomp can be cast on the move (every player copy CoA keeps; the client patch makes the same change, and the
+#      script slows the Tauren 80% while it casts)
+Write-Host "Patch: War Stomp can be cast while moving"
+& {
+$file = 'core/src/server/game/Spells/SpellInfoCorrections.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$anchor = "void SpellMgr::LoadSpellInfoCorrections()`n{`n    uint32 oldMSTime = getMSTime();`n"
+if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw 'CoA changed: LoadSpellInfoCorrections was not found' }
+$fix = @'
+
+    // Wildcard: Tauren Plainsrunning (docs/race-kits.md): War Stomp can be cast while moving. Spell data loads once at
+    // server start, so the setting is read then.
+    if (sConfigMgr->GetOption<bool>("Racials.Plainsrunning", true))
+        ApplySpellFix({ 20549, 46026, 1120549, 1146026 }, [](SpellInfo* spellInfo)
+        {
+            spellInfo->InterruptFlags &= ~SPELL_INTERRUPT_FLAG_MOVEMENT;
+        });
+'@
+if (-not $text.Contains("#include `"Config.h`"`n")) {
+    $first = "#include `"SpellMgr.h`"`n"
+    if (-not $text.Contains($first)) { throw 'CoA changed: SpellInfoCorrections.cpp has no #include "SpellMgr.h"' }
+    $text = $text.Replace($first, $first + "#include `"Config.h`"`n")
+}
+Set-Content $file $text.Replace($anchor, $anchor + $fix.Replace("`r`n", "`n")) -NoNewline
+}
+
 Write-Host "Patch: Plainsrunning for Tauren (Racials.Plainsrunning)"
 & {
 $file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
@@ -40,39 +73,181 @@ foreach ($anchor in @($include, $register, $loader)) {
     if (-not $text.Contains($anchor)) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
 }
 $class = @'
+// Wildcard: the racials' effects and sounds (docs/race-kits.md, chosen in game by James on 20 November). A spell
+// visual kit plays on the unit for everyone nearby, and a sound beside it; 0 skips either.
+namespace WcmeFx
+{
+    inline void Play(Unit* unit, uint32 kit, uint32 sound = 0)
+    {
+        if (!unit)
+            return;
+        if (kit)
+            unit->SendPlaySpellVisual(kit);
+        if (sound)
+            unit->PlayDirectSound(sound);
+    }
+}
+
 // Wildcard: Tauren Plainsrunning (docs/race-kits.md).
 class wcme_plainsrunning : public PlayerScript
 {
 public:
-    wcme_plainsrunning() : PlayerScript("wcme_plainsrunning", {PLAYERHOOK_ON_UPDATE}) { }
+    wcme_plainsrunning() : PlayerScript("wcme_plainsrunning", {PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_SPELL_CAST}) { }
+
+    static constexpr uint32 HerdBuff = 9990058;  // what group members near a running Tauren get
+    static constexpr uint32 Stomping = 9990060;  // hidden: 80% slower while War Stomp casts
+    static constexpr float StompBoost = 0.30f;   // War Stomp: 30% more, past the cap
+    static constexpr uint32 StompTime = 5000;
+    static constexpr uint32 FullSpeedFx = 4641; // a yellow shout disc with a drum: full speed, and War Stomp's boost
+
+    static bool IsWarStomp(uint32 id) { return id == 20549 || id == 46026 || id == 1120549 || id == 1146026; }
+
+    // War Stomp (every player copy CoA keeps): 30% more for 5 sec, past the cap. Shown at once.
+    void OnPlayerSpellCast(Player* player, Spell* spell, bool /*skipCheck*/) override
+    {
+        if (player->getRace() != RACE_TAUREN || !spell || spell->IsTriggered() || !IsWarStomp(spell->GetSpellInfo()->Id) ||
+            !sConfigMgr->GetOption<bool>("Racials.Plainsrunning", true))
+            return;
+        player->WcmeStompBoost = StompTime;
+        WcmeFx::Play(player, FullSpeedFx); // the same yellow shout disc and drum as full speed
+        player->WcmePlainsrunningTimer = 250; // the next update shows it
+    }
+    static constexpr float HerdRange = 10.0f;
+    static constexpr uint32 HerdHold = 600;      // an offer not refreshed for this long has ended (ms)
+
+    static bool CarryingFlag(Player* player)
+    {
+        static constexpr std::array<uint32, 3> flags = { 23333, 23335, 34976 }; // Warsong, Silverwing, Netherstorm
+        return std::any_of(flags.begin(), flags.end(), [player](uint32 id) { return player->HasAura(id); });
+    }
+
+    static uint32 Now() { return uint32(GameTime::GetGameTimeMS().count()); }
+
+    static bool IsRunning(Player* player)
+    {
+        bool const onFoot = !player->IsMounted() && !player->GetVehicle() && !player->IsInFlight() && !player->IsFlying() &&
+            !player->isSwimming();
+        return onFoot && !player->IsWalking() && (player->isMoving() || !player->movespline->Finalized());
+    }
+
+    // Other Tauren running in the group within 10 yards, on the same map (up to 4): each adds the normal build rate.
+    static uint32 HerdRunners(Player* tauren)
+    {
+        Group* group = tauren->GetGroup();
+        if (!group)
+            return 0;
+        uint32 runners = 0;
+        for (GroupReference* ref = group->GetFirstMember(); ref && runners < 4; ref = ref->next())
+        {
+            Player* member = ref->GetSource();
+            if (member && member != tauren && member->getRace() == RACE_TAUREN && member->IsInMap(tauren) &&
+                member->IsAlive() && tauren->IsWithinDist(member, HerdRange) && IsRunning(member) && !CarryingFlag(member))
+                ++runners;
+        }
+        return runners;
+    }
+
+    // A Tauren's bonus offered to a group member. The member keeps the highest Tauren's; the same Tauren's newer
+    // number always replaces its own (so it drains too), and a stale offer gives way to any other.
+    static void Offer(Player* member, Player* tauren, float bonus)
+    {
+        uint32 const now = Now();
+        if (member->WcmeHerdSource == tauren->GetGUID() || bonus >= member->WcmeHerdOffer ||
+            now - member->WcmeHerdTime > HerdHold)
+        {
+            member->WcmeHerdOffer = bonus;
+            member->WcmeHerdSource = tauren->GetGUID();
+            member->WcmeHerdTime = now;
+        }
+    }
+
+    // Shares the Tauren's bonus with group members within 10 yards, on foot, on the same map (so the same thread).
+    static void ShareWithHerd(Player* tauren)
+    {
+        float const bonus = tauren->WcmePlainsrunningBonus;
+        Group* group = tauren->GetGroup();
+        if (bonus <= 0.0f || !group)
+            return;
+        for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+        {
+            Player* member = ref->GetSource();
+            if (!member || member == tauren || !member->IsInMap(tauren) || !member->IsAlive() || member->IsMounted() ||
+                member->GetVehicle() || member->IsInFlight() || !tauren->IsWithinDist(member, HerdRange) ||
+                CarryingFlag(member))
+                continue;
+            Offer(member, tauren, bonus);
+        }
+    }
+
+    // Every player: applies (or ends) what nearby Tauren offer.
+    static void UpdateHerd(Player* player)
+    {
+        uint32 const now = Now();
+        bool const fresh = player->WcmeHerdOffer > 0.0f && now - player->WcmeHerdTime <= HerdHold;
+        float const bonus = fresh ? player->WcmeHerdOffer : 0.0f;
+        if (!fresh)
+        {
+            player->WcmeHerdOffer = 0.0f;
+            player->WcmeHerdSource.Clear();
+        }
+        float const shown = player->WcmeHerdBonus;
+        if (std::fabs(bonus - shown) < 0.01f && (bonus != 0.0f || shown == 0.0f))
+            return;
+        player->WcmeHerdBonus = bonus;
+        player->UpdateSpeed(MOVE_RUN, true);
+        uint8 const percent = uint8(std::min(200.0f, bonus * 100.0f + 0.5f));
+        if (!percent)
+            player->RemoveAurasDueToSpell(HerdBuff);
+        else if (Aura* aura = player->HasAura(HerdBuff) ? player->GetAura(HerdBuff) : player->AddAura(HerdBuff, player))
+            aura->SetStackAmount(percent);
+    }
 
     void OnPlayerUpdate(Player* player, uint32 diff) override
     {
+        UpdateHerd(player);
         if (player->getRace() != RACE_TAUREN)
             return;
+        // Moving while War Stomp casts, 80% slower, instead of the cast stopping the run.
+        Spell const* casting = player->GetCurrentSpell(CURRENT_GENERIC_SPELL);
+        bool const stomping = casting && IsWarStomp(casting->GetSpellInfo()->Id) &&
+            casting->getState() == SPELL_STATE_PREPARING && sConfigMgr->GetOption<bool>("Racials.Plainsrunning", true);
+        if (stomping != player->HasAura(Stomping))
+        {
+            if (stomping)
+                player->AddAura(Stomping, player);
+            else
+                player->RemoveAurasDueToSpell(Stomping);
+        }
+        if (player->WcmeStompBoost)
+        {
+            player->WcmeStompBoost = player->WcmeStompBoost > diff ? player->WcmeStompBoost - diff : 0;
+            if (!player->WcmeStompBoost)
+                player->WcmePlainsrunningTimer = 250; // the boost ends: shown at once
+        }
         player->WcmePlainsrunningTimer += diff;
         if (player->WcmePlainsrunningTimer < 250)
             return;
         float const elapsed = float(player->WcmePlainsrunningTimer);
         player->WcmePlainsrunningTimer = 0;
 
-        static constexpr std::array<uint32, 3> flags = { 23333, 23335, 34976 }; // Warsong, Silverwing, Netherstorm
-        bool const carrying = std::any_of(flags.begin(), flags.end(), [player](uint32 id) { return player->HasAura(id); });
+        bool const carrying = CarryingFlag(player);
         bool const enabled = sConfigMgr->GetOption<bool>("Racials.Plainsrunning", true);
-        bool const onFoot = !player->IsMounted() && !player->GetVehicle() && !player->IsInFlight() && !player->IsFlying() &&
-            !player->isSwimming();
-        bool const running = onFoot && !player->IsWalking() && (player->isMoving() || !player->movespline->Finalized());
+        bool const running = IsRunning(player);
 
         float& charge = player->WcmePlainsrunningCharge;
+        float const before = charge;
         if (!enabled || !player->IsAlive())
             charge = 0.0f;
         else if (running && !carrying)
-            charge = std::min(1.0f, charge + elapsed / 60000.0f);
+            charge = std::min(1.0f, charge + elapsed * float(1 + HerdRunners(player)) / 60000.0f);
         else if (!carrying)
             charge = std::max(0.0f, charge - elapsed / 6000.0f);
 
         float const cap = float(std::min<uint32>(player->GetLevel(), 60) + 40) / 100.0f;
-        float const bonus = (carrying || player->IsMounted()) ? 0.0f : cap * charge;
+        float const boost = (enabled && player->IsAlive() && player->WcmeStompBoost) ? StompBoost : 0.0f;
+        if (before < 1.0f && charge >= 1.0f && !carrying && !player->IsMounted())
+            WcmeFx::Play(player, FullSpeedFx); // full speed
+        float const bonus = (carrying || player->IsMounted()) ? 0.0f : cap * charge + boost;
         float const shown = player->WcmePlainsrunningBonus;
         // Small changes wait until they add up to 1%, except at empty and at full, which always land exactly (the
         // last step to the cap is under 1%, so without this the bonus stopped just short, 49% at level 10).
@@ -82,17 +257,19 @@ public:
             player->UpdateSpeed(MOVE_RUN, true);
             // The buff (our spell 9990001, client patch): its stack count is the bonus in percent.
             constexpr uint32 buff = 9990001;
-            uint8 const percent = uint8(std::min(100.0f, bonus * 100.0f + 0.5f));
+            uint8 const percent = uint8(std::min(200.0f, bonus * 100.0f + 0.5f));
             if (!percent)
                 player->RemoveAurasDueToSpell(buff);
             else if (Aura* aura = player->HasAura(buff) ? player->GetAura(buff) : player->AddAura(buff, player))
                 aura->SetStackAmount(percent);
         }
+        if (enabled)
+            ShareWithHerd(player);
     }
 };
 
 '@
-$text = $text.Replace($include, $include + "#include `"MoveSpline.h`"`n#include `"SpellAuras.h`"`n#include <cmath>`n")
+$text = $text.Replace($include, $include + "#include `"GameTime.h`"`n#include `"Group.h`"`n#include `"MoveSpline.h`"`n#include `"Spell.h`"`n#include `"SpellAuras.h`"`n#include `"SpellInfo.h`"`n#include <cmath>`n")
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_plainsrunning();`n")
 Set-Content $file $text -NoNewline

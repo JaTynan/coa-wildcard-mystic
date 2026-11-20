@@ -21,15 +21,24 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
 | Race | Signature passive | What it does | Notes |
 | --- | --- | --- | --- |
 | Human | Spellsword | The experimenter's race: it lifts the weak half of a physical and spell hybrid, so builds that weren't viable become viable. Your weaker side is raised 30% of the way towards your stronger side for **power** (attack power and spell power), **critical strike chance** (melee and spell) and **hit chance** (melee and spell). Each is skipped where you already have a conversion for it (Sheath of Light, Mental Quickness and the like), so designed hybrids gain little and pure builds nothing. It changes which builds you choose, not how you play them. | hook |
-| Dwarf | Prospector's Spirit | Each kind of gathering gives its own buff, stacking up to 3 times and lasting 2 hours (refreshed by gathering more). **Mining** a vein: +2% Stamina per stack. **Herbalism**: +2% Intellect and Spirit. **Skinning**: +2% Strength and Agility. **Treasure** (opening a chest; Find Treasure shows them): +2% damage and healing. **Fishing** a catch: +3% movement and swim speed, and at 3 stacks water breathing. Discovering a new area also counts as a Treasure find, and gives 50% more exploration XP. Natural explorers: mixing gathering, chests, fishing and discovering between dungeons gives everything; repeating one only gives its 3 stacks. | hooks (gathering, loot and fishing) |
-| Night Elf | Ambush | Entering stealth (Shadowmeld or a class stealth) readies your next ability: 10% cheaper and 50% more damage or healing. At most once every 20 sec. | hook |
-| Gnome | Overclock | The endurance king for resources: gnomes learn their enemy and plan their next move. +5% maximum mana, energy, rage and runic power. Every 15 sec in combat, another step: abilities cost 1% less (whatever resource they use) and runes recharge 1% faster, and you're instantly topped up by that step's number in every resource (1% at the first step, 2% at the second, up to 10% at the tenth). After 10 steps (2 min 30 sec) it stops: the 10% discount stays for the rest of the fight, 55% topped up in all. Resets when combat ends. About 12% of a mana pool in a 1 min fight, 110% in 5 min, 185% in 10 min. Escape Artist also gives +60% movement speed for 3 sec. | hook (reworks the stock Expansive Mind, which gives intellect); Escape Artist gains a speed effect |
-| Draenei | Radiant Presence | Patient, steady, best in a group. In combat, gain a stack of Light every 6 sec, up to 5 (30 sec to fill). Each stack gives you and every ally within 30 yards (pets and guardians included) +1% damage and healing and 1% less damage taken (up to 5%). Stacks fade 10 sec after combat. Your auras and totems reach 50% further. Doesn't stack with a second Draenei. | hook |
-| Orc | Bloodrush | Greedy, fast, best alone. For each enemy in combat with you, +2% damage and +2% haste, up to 5 enemies (+10%). Each killing blow also gives +30% movement speed for 6 sec, which runs its full 6 sec in or out of combat. The damage and haste go out of combat. | hook |
-| Undead | Grave Defiance | Below 35% health you deal and heal more, rising evenly to +30% at 1% health (about +13% at 20%, +22% at 10%). It lasts up to 15 sec at a time; when it ends (time up, or healed above 35%) it can't start again for 45 sec, so bouncing across the line (Drain Life, Life Tap) gains nothing: at most 15 sec in every minute. When you die, you rise as a ghoul for 10 sec and keep fighting, dealing and healing 30% less (the low-health bonus doesn't apply to the ghoul); a killing blow by the ghoul brings you back at 20% health. Once every 5 min. Living dangerously: the opposite of Trolls, who want to heal back up. | hooks; the ghoul wears Raise Ally's ghoul model (you keep your own spells) |
-| Tauren | Plainsrunning | While you keep moving on foot, speed builds to a cap over 60 sec of running. The cap is your level + 40% (41% at level 1, 100% at level 60). When you stop it drains, full to nothing in 6 sec. Adds on top of other speed effects (at full, Sprint's +70% and Plainsrunning's +100% make +170%). Not while mounted; paused while carrying a battleground flag. | hook |
-| Troll | Voodoo Regeneration | The endurance king for health. Out of combat, health regenerates 50% faster. In combat, regenerate 0.3% of maximum health per second (a full bar about every 5.5 min), halved while the burst below is on cooldown. Below 35% health, regenerate 28% of maximum health over 5 sec, once every 2 min. Both take percentage healing reductions and increases (Mortal Strike halves them), but no bonus healing or spell power. Replaces the stock Regeneration passive. | hook |
-| Blood Elf | Arcane Hunger | Each ability or spell you use adds a stack, up to 10. Per stack, abilities deal or heal 1.5% more, you take 0.5% less damage, and abilities cost 2% more (at 10: +15% damage and healing, 5% less damage taken, +20% cost). Stop using abilities for 5 sec (when mana would start regenerating) and the stacks fall off. **Arcane Torrent** eats every stack: besides its silence, it restores 2% of every resource you have (mana, energy, rage, runic power) per stack eaten (20% at 10), and its cooldown drops to 1 min. Keep hitting harder at a growing cost, or cash the stacks in for resources. | hook; Arcane Torrent reworked (cooldown and the refund) |
+| Dwarf | Prospector's Spirit | Each kind of gathering gives its own buff, stacking up to 3 times and lasting 8 hours (refreshed by gathering more, kept through death). **Mining** a vein: +2% Stamina per stack. **Herbalism**: +2% Intellect and Spirit. **Skinning**: +2% Strength and Agility. **Treasure** (opening a chest; Find Treasure shows them): +2% damage and healing. **Fishing** a catch: +3% movement and swim speed, and at 3 stacks water breathing. Discovering a new area also counts as a Treasure find, and gives 50% more exploration XP. Natural explorers: mixing gathering, chests, fishing and discovering between dungeons gives everything; repeating one only gives its 3 stacks. | hooks (gathering, loot and fishing) |
+| Night Elf | Ambush | Entering stealth (Shadowmeld or a class stealth) readies your next ability: 10% cheaper and 50% more damage or healing. At most once every 20 sec, shown by an **Ambush Recharging** debuff. | hook |
+| Gnome | Overclock | The endurance king for resources: gnomes learn their enemy and plan their next move. +5% maximum mana, energy, rage and runic power (always on, no buff shown). In combat it boosts and cools down like a CPU: every 5 sec another step, up to 10, then 10 sec at 10 steps before it cools down to nothing and climbs again, one cycle a minute. Each step makes abilities cost 1% less (whatever resource they use) and runes recharge 1% faster, and tops up 1% of every resource (10% a minute). Out of combat the steps hold where they are, so the next pull starts where the last fight left off: plan pulls around the cycle. Escape Artist also gives +60% movement speed for 3 sec. | hook (reworks the stock Expansive Mind, which gives intellect); Escape Artist gains a speed effect |
+| Draenei | Radiant Presence | Patient, steady, best in a group. In combat, gain a stack of Light every 6 sec, up to 5 (30 sec to fill). Each stack gives you and every ally within 30 yards (pets and guardians included) +1% damage and healing and 1% less damage taken (up to 5%). Stacks fade 10 sec after combat. Your auras and totems reach 50% further. Doesn't stack with a second Draenei. **Gift of the Naaru** fills your Light to 5 at once. | hook |
+| Orc | Bloodrush | Relentless but reckless, best alone. For each enemy in combat with you, +2% damage, up to 5 enemies (+10%), gone out of combat. Each killing blow adds a stack of **Rush**, up to 5, lasting 15 sec in or out of combat (each kill starts the 15 sec again): per stack +10% movement speed on foot (on top of Sprint) and +2% haste, but 2% more damage taken. Clear a pack and run to the next at +50% speed; stop killing for 15 sec and it all drops. **Blood Fury** adds a stack of Rush too. | hook |
+| Undead | Grave Defiance | Below 35% health you deal and heal more, rising evenly to +30% at 1% health (about +13% at 20%, +22% at 10%). It lasts up to 15 sec at a time; when it ends (time up, or healed above 35%) it can't start again for 45 sec, so bouncing across the line (Drain Life, Life Tap) gains nothing: at most 15 sec in every minute. When you die, you rise as a ghoul for 10 sec and keep fighting, dealing and healing 30% less (the low-health bonus doesn't apply to the ghoul); a killing blow by the ghoul brings you back at 20% health. Once every 10 min (a debuff, Grave Hunger, counts it down), and each **Cannibalize** takes 2 min off the wait. Living dangerously: the opposite of Trolls, who want to heal back up. | hooks; the ghoul wears Raise Ally's ghoul model (you keep your own spells) |
+| Tauren | Plainsrunning | While you keep moving on foot, speed builds to a cap over 60 sec of running. The cap is your level + 40% (41% at level 1, 100% at level 60). When you stop it drains, full to nothing in 6 sec. Adds on top of other speed effects (at full, Sprint's +70% and Plainsrunning's +100% make +170%). Not while mounted; paused while carrying a battleground flag. Group members within 10 yards run with you at the same bonus (**Running with the Herd**, on foot): bring the party along. Tauren build faster together: each other Tauren running in your group within 10 yards adds the normal rate again, up to 4 (two reach full speed in 30 sec, five in 12). **War Stomp** adds 30% more for 5 sec, past your cap, and can be cast on the move (80% slower while it casts, so it doesn't stop the run): a running start or a boost mid run. | hook |
+| Troll | Voodoo Regeneration | The endurance king for health. Out of combat, health regenerates 50% faster. In combat, regenerate 0.3% of maximum health per second (a full bar about every 5.5 min), halved while the burst below is on cooldown. Below 35% health, regenerate 28% of maximum health over 5 sec, once every 2 min. Both take percentage healing reductions and increases (Mortal Strike halves them), but no bonus healing or spell power. Replaces the stock Regeneration passive. **Berserking** scales with missing health: 10% haste at full health, 1% more for every 3% missing, up to 30% at 40% health or lower (set when cast; 20% at 70%, as before). | hook |
+| Blood Elf | Arcane Hunger | Each ability or spell you use adds a stack, up to 10. Per stack, abilities deal or heal 1.5% more, you take 0.5% less damage, and abilities cost 2% more (at 10: +15% damage and healing, 5% less damage taken, +20% cost). Stop using abilities for 5 sec (when mana would start regenerating) and the stacks fall off. **Arcane Torrent** eats every stack: besides its silence, it restores 2% of every resource you have (mana, energy, rage, runic power) per stack eaten (20% at 10), and its cooldown drops to 1 min. It then leaves you **Satiated** for 15 sec: no new stacks until it wears off. Keep hitting harder at a growing cost, or cash the stacks in for resources and fight without them for a while. | hook; Arcane Torrent reworked (cooldown and the refund) |
+
+## Checking your racial: .racial
+
+Any player can type `.racial` to see what their signature racial is doing right now, in numbers the buff icons can't
+show (`patches/80-racial-status-command.ps1`, added 20 November at James's request for better information):
+Spellsword's spell power, attack power, critical strike and hit added; Bloodrush's enemies and Rush stacks; Ambush ready
+or recharging; Voodoo's burst cooldown; Radiant Presence's Light and the next stack; Grave Defiance and the ghoul's wait;
+Overclock's step and the time to the next; Arcane Hunger's stacks and what Arcane Torrent would restore; Prospector's
+Spirit's five buffs and their time left; Plainsrunning's speed and charge, and Running with the Herd for anyone.
 
 ## Already done
 
@@ -37,18 +46,44 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
   `patches/52-racials.ps1` and the client patch.
 - Tauren Plainsrunning: `patches/54-racial-plainsrunning.ps1` (`Racials.Plainsrunning`). Buff icon (Arathi Highlands
   achievement icon) whose stack count is the bonus in percent: our spell 9990001 (`client-patch/custom_spells.py`).
+  - Herd added 20 November (James): group members within 10 yards of a running Tauren, on foot and on the same map,
+    get the Tauren's current bonus (buff 9990058, Running with the Herd, stacks = percent), the highest Tauren's if
+    several, ending 0.6 sec after they leave the range or the Tauren's bonus drains. Not to a flag carrier. It takes
+    the higher of a Tauren's own Plainsrunning and the herd's, never both.
+  - Tauren together (James, 20 November): each other Tauren running in the group within 10 yards (same map, on foot, not
+    carrying a flag) adds the normal build rate again, up to 4 others: 60 sec alone, 30 with two, 20 with three, 15
+    with four, 12 with five. Draining is unchanged.
+  - War Stomp (James, 20 November): every player copy (20549, 46026, 1120549, 1146026) can be cast while moving (the
+    movement interrupt is taken off on the server at start-up and in the client patch), with hidden 9990060 slowing the
+    Tauren 80% while it casts. When it goes off, +30% for 5 sec on top of Plainsrunning, past the cap (130% at level
+    60 and full), shared with the herd like the rest of the bonus. The buffs' stack limit is 200 for it.
 - Orc Bloodrush: `patches/56-racial-bloodrush.ps1` (`Racials.Bloodrush`). Buffs 9990002 (stacks = enemies) and 9990003
-  (speed after a killing blow).
+  (Rush: stacks = recent kills), with hidden 9990056 carrying Rush's damage taken.
+  - Reworked 20 November (James): first built as +2% damage and haste per enemy and a flat +30% speed for 6 sec per
+    kill. Now the haste moved to Rush, which stacks from kills (+10% speed on foot, +2% haste, 2% more damage taken per
+    stack, up to 5, 15 sec refreshed by each kill), so chaining packs keeps an Orc moving faster at the cost of taking
+    more damage. Rush's speed multiplies with Sprint-type buffs (the core's always-stacking speed), not mounted speed.
+  - The damage taken is a separate hidden aura kept at Rush's stacks, because a harmful effect inside Rush would show
+    Rush as a debuff; it's put back if something removes it (Divine Shield, say) while Rush lasts.
 - Night Elf Ambush: `patches/57-racial-ambush.ps1` (`Racials.Ambush`). Buff 9990004 with one charge, used up by the
   next ability that deals damage or heals (buffs like Sprint don't use it).
 - Troll Voodoo Regeneration: `patches/58-racial-voodoo-regeneration.ps1` (`Racials.VoodooRegeneration`). Hidden passive
   9990005 (out-of-combat regeneration), burst 9990006 and its cooldown 9990007.
+  - Berserking (James, 20 November): stock 20% flat became 10% at full health plus 1% per 3% missing, capped at
+    30% at 40% health or lower, the original Berserking's range, set when it's cast (later healing doesn't lower it).
+    James first suggested 10% plus 0.5% per 1% missing (35% at half health, up to 60%); capped at 30% instead, as
+    trolls sit low on purpose with Voodoo's burst and 60% haste for 10 sec outdid every other racial. It matches the
+    old 20% at 70% health, and stacks with nothing new (it still doesn't stack with similar haste effects). The
+    client patch rewrites its tooltip (client-patch/racials.py); `.racial` shows what it would give right now.
 - Draenei Radiant Presence: `patches/59-racial-radiant-presence.ps1` (`Racials.RadiantPresence`). Buff 9990008 on
   the Draenei and allies in range (stacks = Light); the client patch adds its banner icon (SpellIcon 9990001).
 - Undead Grave Defiance: `patches/72-racial-grave-defiance.ps1` (`Racials.GraveDefiance`). Buff 9990027 (stacks =
   bonus in percent), its cooldown 9990028, the ghoul 9990029 (Raise Ally's ghoul model, creature 30230, so one of its
-  four looks) and the ghoul's cooldown 9990030. James chose (18 November) that the ghoul is still you, in the ghoul's
+  four looks) and the ghoul's cooldown 9990030 (Grave Hunger). James chose (18 November) that the ghoul is still you, in the ghoul's
   shape with your own spells, not a separate ghoul to control as Raise Ally does. Details settled in the build:
+  - Cooldown changed 20 November (James): 5 min to 10 min, shown as a debuff (Grave Hunger, not stripped by Divine
+    Shield or Ice Block), and each Cannibalize takes 2 min off, for PvP and hard dungeons and to lean on the stock
+    racial. Cannibalizing every time it's ready (2 min cooldown) brings the wait down to about 5 min.
   - The rise happens when a hit would kill you, after absorbs (Cheat Death, Ardent Defender and the like save
     first). Nobody gets kill credit until the ghoul really dies; then whoever landed the last killing hit does.
   - The ghoul stays at 1 health: it can't die from damage and can't be healed (so a ghoul at full health can't die by
@@ -85,13 +120,19 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
     runes get the faster recharge instead). The recharge is per rune type, so death runes follow their base rune.
   - The top-up goes to every resource the character has a pool for (mana, rage, energy, runic power), with combat
     text, and causes threat as any self-energize does.
-  - The first step comes 15 sec into combat; dying resets the steps like leaving combat.
+  - Reworked 20 November (James): first built as a step every 15 sec up to 10, topping up 1% to 10% per step (55%),
+    held at 10 for the rest of the fight and reset when combat ended, with the +5% pools shown as a buff. Now the pools
+    buff is hidden, and the steps run a one-minute cycle (a step every 5 sec, 10 sec at 10, then back to nothing) that
+    only moves in combat and otherwise holds, through death too; each step tops up 1%, since the cycle repeats in long
+    fights. Logging out starts the cycle from nothing (the steps live on the player, not in the database).
   - Escape Artist's speed counts the stock spell (20589) and CoA's copies (1120589, 830589), not its triggered parts,
     and like other speed buffs it doesn't add to a bigger one (Sprint). The rocket boot icon goes on all three.
   - Expansive Mind still shows in the spellbook (as the stock Regeneration does for Trolls); the Overclock entry says
     it replaces it.
 - Blood Elf Arcane Hunger: `patches/75-racial-arcane-hunger.ps1` (`Racials.ArcaneHunger`). Buff 9990046 (stack count =
   stacks; hidden 9990048 carries the damage taken). Details settled in the build:
+  - Satiated added 20 November (James): Arcane Torrent puts debuff 9990057 on you for 15 sec, and abilities add no
+    stacks while it lasts, so cashing in costs a stretch without the bonus instead of restacking at once.
   - Numbers raised 18 November (James): first built at +1% damage and healing per stack, which for a player who runs
     out of resources was a loss (1.10 / 1.20 per point spent) and left Draenei ahead with no drawback. Now +1.5% damage
     and healing and 0.5% less damage taken per stack (tanks too), cost still +2%: resource-bound players lose about 4%
@@ -118,7 +159,9 @@ spellbook entry is our own spell (`client-patch/custom_spells.py`).
   - Fishing's speed is on foot (not mounted). It works on top of Sprint-type buffs, but next to a boot speed enchant
     only the higher of the two counts (the core keeps the bigger of the two kinds). Swim speed takes the best swim
     bonus, like Aquatic Form.
-  - The buffs are kept through death and logout; their 2 hours count while you're online.
+  - The buffs are kept through death and logout; their 8 hours count while you're online.
+  - Lengthened 20 November (James): 2 hours to 8, so filling all five buffs is a play session's work and topping
+    them up is maintenance, not a constant chore.
 - Spellbook entries: `patches/62-racial-spellbook.ps1` teaches each race its "Racial Passive" entry (spells
   9990013-9990017, 9990031, 9990039, 9990045, 9990047 and 9990055, `BOOK_*` in `client-patch/custom_spells.py`). Each new racial adds its entry there too.
 
@@ -142,7 +185,7 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Gnome | Overclock: learning the enemy (steps) | achievement_bg_tophealer_wsg | add (done: SpellIcon 9990008) |
 | Gnome | Escape Artist speed (+60%, 3 sec), and Escape Artist's own spell icon (client patch) | inv_gizmo_rocketboot_destroyed_02 | add (done: SpellIcon 9990009) |
 | Undead | Grave Defiance (below 35%) | achievement_boss_devourerofsouls | 4153 (done) |
-| Undead | Ghoul on death (and its 5 min cooldown) | achievement_dungeon_coablackdragonflight | 3254 (done) |
+| Undead | Ghoul on death (and its Grave Hunger debuff) | achievement_dungeon_coablackdragonflight | 3254 (done) |
 | Undead | Grave Defiance on cooldown | inv_helmet_168 | 13716 (done) |
 | Troll | Voodoo Regeneration burst | inv_offhand_zulaman_d_01 | 19697 |
 | Troll | Voodoo Regeneration on cooldown | achievement_dungeon_drak'tharon_heroic | 3234 |
@@ -152,6 +195,31 @@ SpellIcon.dbc (sent 14 November) matches every number above.
 | Dwarf | Prospector's Spirit: Skinning | inv_elemental_eternal_fire | 12200 (done) |
 | Dwarf | Prospector's Spirit: Treasure (and discovering areas) | inv_elemental_eternal_shadow | 12202 (done) |
 | Dwarf | Prospector's Spirit: Fishing | inv_elemental_eternal_water | 12203 (done) |
+
+## Effects and sounds
+
+Chosen by James in game on 20 November, themed on what each moment does. The server plays one-off effects and sounds
+(`WcmeFx::Play` in patch 54); a buff's looping look is its spell visual (`client-patch/custom_spells.py`). Three effects
+had their built-in sound swapped, so the client patch adds silent copies of them, and a looping visual for the Ambush
+hands (`client-patch/visuals.py`, kits and visual 9990101 onwards).
+
+| Moment | Effect (kit) | Sound |
+|---|---|---|
+| Tauren: Plainsrunning reaches full speed; War Stomp's boost | yellow shout disc (4641) | its drum |
+| Orc: first Rush stack | red flash (4010); the buff loops red hands (visual 4599) | its own |
+| Orc: 5 Rush stacks | head burst, silent copy (9990102 of 6799) | war shout (306097) |
+| Night Elf: Ambush ready | buff loops starlight hands (visual 9990101, silent copy of kit 833217) | wisp's "yes" (6346) |
+| Troll: Voodoo Regeneration burst | lifebloom, silent copy (9990101 of 10583) | Nature Resistance (3331) |
+| Draenei: 5 Light | Beacon of Light burst (2459) | its own |
+| Undead: the ghoul rises | necromancy summon (258020); the ghoul loops Dark Banish (visual 9652, no more transform) | its own |
+| Undead: the ghoul's killing blow revives | Unholy Presence (10297) | its own |
+| Undead: Grave Defiance starts | necromantic empowerment (165101) | its own |
+| Gnome: Overclock step 10 | spark nova (2432) | its own |
+| Gnome: Overclock resets after the peak | none | electrical zap (126580) |
+| Gnome: Escape Artist | rocket boots ignition (1168); the speed buff loops their trail (visual 1223) | its own |
+| Blood Elf: 10 Arcane Hunger stacks | arcane gathering (1852) | Clarity of Will (40754) |
+| Dwarf: Mining / Herbalism / Skinning / Fishing find | 3401 / 254 / 542 / 527 | their own |
+| Dwarf: Treasure find | Honor Among Thieves (10918) | Hysteria (10649) |
 
 ## Balance notes
 

@@ -1,10 +1,12 @@
 # Gnome signature racial: Overclock (docs/race-kits.md), replacing the stock Expansive Mind passive (20591, 5% more
-# Intellect). The endurance king for resources: +5% maximum mana, rage, energy and runic power (buff 9990040, and
-# hidden 9990041 for runic power). Every 15 sec in combat, another step, up to 10 (buff 9990042, whose stack count is
-# the steps; hidden 9990043 carries the frost runes): abilities cost 1% less per step, whatever resource they use, and
-# runes recharge 1% faster per step, and each step tops you up by its number in percent of every resource you have
-# (1% at the first step up to 10% at the tenth, 55% in all). After 10 steps (2 min 30 sec) it stops and the 10% stays
-# for the rest of the fight. Resets when combat ends. Escape Artist also gives +60% movement speed for 3 sec (9990044).
+# Intellect). The endurance king for resources: +5% maximum mana, rage, energy and runic power (hidden buffs 9990040
+# and 9990041, so nothing shows on the buff bar for it). A turbo cycle, like a CPU boosting and cooling down: every
+# 5 sec in combat another step, up to 10 (buff 9990042, whose stack count is the steps; hidden 9990043 carries the frost
+# runes): abilities cost 1% less per step, whatever resource they use, runes recharge 1% faster per step, and each
+# step tops up 1% of every resource you have. After 10 sec at 10 steps it cools down to nothing and climbs again, so a
+# minute of combat is one cycle (10% topped up). The cycle only runs in combat: out of combat it holds where it is,
+# through death too, so the next pull starts where the last fight left off. Logging out starts it from nothing.
+# Escape Artist also gives +60% movement speed for 3 sec (9990044).
 # The spells are in sql/enchants/150-custom-spells.sql and the client patch (client-patch/custom_spells.py, which also
 # gives Escape Artist its rocket boot icon). Run by the build from the workspace root, after 40-battlegrounds.ps1.
 # Throws if an anchor is gone. Listed in CHANGES.md. Racials.Overclock = 0 turns it off (and gives back Expansive Mind).
@@ -44,7 +46,8 @@ public:
     static constexpr uint32 StepsFrost = 9990043;  // per stack: frost runes 1% faster
     static constexpr uint32 Speed = 9990044;       // Escape Artist: +60% movement speed for 3 sec
     static constexpr uint8 MaxSteps = 10;
-    static constexpr uint32 StepTime = 15000;
+    static constexpr uint32 StepTime = 5000;   // a step every 5 sec in combat
+    static constexpr uint32 PeakTime = 10000;  // then 10 sec at 10 steps before it cools down and climbs again
 
     static bool Enabled() { return sConfigMgr->GetOption<bool>("Racials.Overclock", true); }
 
@@ -54,10 +57,10 @@ public:
             return;
         if (!Enabled())
         {
-            for (uint32 spell : {Pools, PoolsRunic, Steps, StepsFrost})
+            for (uint32 spell : {Pools, PoolsRunic})
                 if (player->HasAura(spell))
                     player->RemoveAurasDueToSpell(spell);
-            player->WcmeOverclockSteps = 0;
+            SetSteps(player, 0);
             player->WcmeOverclockTimer = 0;
             for (uint32 stock : StockSpells)
                 if (player->HasSpell(stock) && !player->HasAura(stock))
@@ -68,38 +71,35 @@ public:
             if (player->HasAura(stock))
                 player->RemoveAurasDueToSpell(stock);
         if (!player->IsAlive())
-        {
-            Reset(player);
-            return;
-        }
+            return; // held through death: put back on when alive again
         for (uint32 spell : {Pools, PoolsRunic})
             if (!player->HasAura(spell))
                 player->AddAura(spell, player);
+        SetSteps(player, player->WcmeOverclockSteps); // puts the buff back if something removed it
 
         if (!player->IsInCombat())
+            return; // out of combat the cycle holds where it is
+
+        player->WcmeOverclockTimer += diff;
+        if (player->WcmeOverclockSteps >= MaxSteps)
         {
-            Reset(player);
+            if (player->WcmeOverclockTimer < PeakTime)
+                return;
+            player->WcmeOverclockTimer = 0; // cooled down: climb again from nothing
+            SetSteps(player, 0);
+            WcmeFx::Play(player, 0, 126580); // a small electrical zap
             return;
         }
-        if (player->WcmeOverclockSteps >= MaxSteps)
-            return; // learned all it can: the 10% stays for the rest of the fight
-        player->WcmeOverclockTimer += diff;
         if (player->WcmeOverclockTimer < StepTime)
             return;
         player->WcmeOverclockTimer -= StepTime;
-        uint8 const step = ++player->WcmeOverclockSteps;
-        for (uint32 spell : {Steps, StepsFrost})
-        {
-            Aura* aura = player->GetAura(spell);
-            if (!aura)
-                aura = player->AddAura(spell, player);
-            if (aura && aura->GetStackAmount() != step)
-                aura->SetStackAmount(step);
-        }
-        // Topped up by the step's number in percent of every resource the player has.
+        SetSteps(player, player->WcmeOverclockSteps + 1);
+        if (player->WcmeOverclockSteps >= MaxSteps)
+            WcmeFx::Play(player, 2432); // step 10: a spark nova
+        // Each step tops up 1% of every resource the player has.
         for (Powers power : {POWER_MANA, POWER_RAGE, POWER_ENERGY, POWER_RUNIC_POWER})
             if (uint32 const max = player->GetMaxPower(power))
-                if (uint32 const amount = CalculatePct(max, step))
+                if (uint32 const amount = CalculatePct(max, 1))
                     player->EnergizeBySpell(player, Steps, amount, power);
     }
 
@@ -115,19 +115,30 @@ public:
             aura->SetMaxDuration(3000);
             aura->SetDuration(3000);
         }
+        WcmeFx::Play(player, 1168); // the rocket boots' ignition; the speed buff wears their fire hands and trail
     }
 
 private:
     static constexpr std::array<uint32, 2> StockSpells = {20591, 1120591}; // Expansive Mind (stock, and CoA's copy)
 
-    // Combat over (or death): the steps start again from nothing.
-    static void Reset(Player* player)
+    // The steps, and the buffs that show and carry them (none at 0).
+    static void SetSteps(Player* player, uint8 steps)
     {
-        player->WcmeOverclockSteps = 0;
-        player->WcmeOverclockTimer = 0;
+        player->WcmeOverclockSteps = steps;
         for (uint32 spell : {Steps, StepsFrost})
-            if (player->HasAura(spell))
-                player->RemoveAurasDueToSpell(spell);
+        {
+            if (!steps)
+            {
+                if (player->HasAura(spell))
+                    player->RemoveAurasDueToSpell(spell);
+                continue;
+            }
+            Aura* aura = player->GetAura(spell);
+            if (!aura)
+                aura = player->AddAura(spell, player);
+            if (aura && aura->GetStackAmount() != steps)
+                aura->SetStackAmount(steps);
+        }
     }
 };
 

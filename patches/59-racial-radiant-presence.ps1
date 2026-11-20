@@ -1,7 +1,8 @@
 # Draenei signature racial: Radiant Presence (docs/race-kits.md). In combat, gain a stack of Light every 6 sec, up to 5.
 # Each stack gives you and every ally within 30 yards (group or raid members, their pets and guardians) +1% damage and
 # healing and 1% less damage taken. Stacks fade 10 sec after combat. A second Draenei doesn't add more: everyone keeps
-# the highest count near them. Your auras and totems reach 50% further. The buff is our spell 9990008
+# the highest count near them. Your auras and totems reach 50% further. Gift of the Naaru fills the Light to 5 at once
+# (James, 20 November). The buff is our spell 9990008
 # (sql/enchants/150-custom-spells.sql and the client patch, client-patch/custom_spells.py, which also adds its icon).
 # Run by the build from the workspace root, after 40-battlegrounds.ps1. Throws if an anchor is gone. Listed in CHANGES.md.
 # Racials.RadiantPresence = 0 turns it off.
@@ -53,11 +54,12 @@ $class = @'
 class wcme_radiant_presence : public PlayerScript
 {
 public:
-    wcme_radiant_presence() : PlayerScript("wcme_radiant_presence", {PLAYERHOOK_ON_UPDATE}) { }
+    wcme_radiant_presence() : PlayerScript("wcme_radiant_presence", {PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_SPELL_CAST}) { }
 
     static constexpr uint32 Light = 9990008;
     static constexpr uint8 MaxStacks = 5;
     static constexpr float Range = 30.0f;
+    static constexpr uint32 FullLightFx = 2459; // Beacon of Light's burst, at 5 Light
 
     void OnPlayerUpdate(Player* player, uint32 diff) override
     {
@@ -82,6 +84,8 @@ public:
                     player->WcmeRadiantStackTimer -= 6000;
                     ++player->WcmeRadiantStacks;
                     player->WcmeRadiantPulse = 1000; // share the new stack straight away
+                    if (player->WcmeRadiantStacks >= MaxStacks)
+                        WcmeFx::Play(player, FullLightFx);
                 }
             }
             else
@@ -123,6 +127,30 @@ public:
             Shine(ally, player->WcmeRadiantStacks, left);
     }
 
+    // Gift of the Naaru (every player copy CoA keeps) fills the Light to 5 at once and shares it straight away. Out of
+    // combat it fades 10 sec later as usual.
+    void OnPlayerSpellCast(Player* player, Spell* spell, bool /*skipCheck*/) override
+    {
+        if (player->getRace() != RACE_DRAENEI || !spell || spell->IsTriggered() || !player->IsAlive() ||
+            !sConfigMgr->GetOption<bool>("Racials.RadiantPresence", true))
+            return;
+        switch (spell->GetSpellInfo()->Id)
+        {
+            case 28880: case 59542: case 59543: case 59544: case 59545: case 59547: case 59548: case 814280:
+            case 814281: case 814282: case 1128880: case 1159542: case 1159543: case 1159544: case 1159545:
+            case 1159547: case 1159548:
+                if (player->WcmeRadiantStacks < MaxStacks)
+                    WcmeFx::Play(player, FullLightFx);
+                player->WcmeRadiantStacks = MaxStacks;
+                player->WcmeRadiantStackTimer = 0;
+                player->WcmeRadiantFade = 0;
+                player->WcmeRadiantPulse = 1000; // share it straight away
+                break;
+            default:
+                break;
+        }
+    }
+
 private:
     // One Light buff per unit, cast on itself, so two Draenei never add up: the higher count stays. Every Draenei in
     // range renews it each second; an ally who leaves range keeps it until its timer runs out.
@@ -145,7 +173,7 @@ private:
 };
 
 '@
-$text = $text.Replace($include, $include + "#include `"CellImpl.h`"`n#include `"GridNotifiers.h`"`n#include `"GridNotifiersImpl.h`"`n")
+$text = $text.Replace($include, $include + "#include `"CellImpl.h`"`n#include `"GridNotifiers.h`"`n#include `"GridNotifiersImpl.h`"`n#include `"Spell.h`"`n#include `"SpellInfo.h`"`n")
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_radiant_presence();`n")
 Set-Content $file $text -NoNewline
