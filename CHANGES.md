@@ -78,6 +78,7 @@ for good by deleting its part from the script.
 | `61-bg-bot-whispers.ps1` | Bots in a battleground no longer whisper "I have a master already" to players (or their addons) who whisper them; they refuse quietly | — |
 | `62-racial-spellbook.ps1` | Each signature racial (Plainsrunning, Bloodrush, Ambush, Voodoo Regeneration, Radiant Presence, Grave Defiance, Spellsword, Overclock, Arcane Hunger, Prospector's Spirit) gets a "Racial Passive" spellbook entry that explains it when hovered; learned at login while its setting is on, unlearned when it is off. Radiant Presence's buff now shows a timer: 10 sec in combat, counting down to the fade after | — |
 | `79-mystic-enchant-gold-cost.ps1` | Gold prices for applying a Mystic Enchant from the collection (to a slot or as a scroll item) are a percent of the core's (30g uncommon, 60g rare, 100g epic, 250g legendary and artifact), and are named in the client config so the client shows what the server charges. Mystic Rune prices and the scroll reforge are unchanged | `Wildcard.MysticEnchantGoldCostPct` (percent, default 1) |
+| `82-runes-in-currency-tab.ps1` | Runes of Descension move from the backpack and bags into the currency tab, at login and every 2 sec, joining the stack there. The Wildcard window (Scrolls of Fortune claims, Repurchase Scrolls) counts only the currency tab when it decides whether you can pay, so runes in bags made it say "not enough Marks of Ascension" with plenty owned | always on |
 | `63-enchant-target-cooldowns.ps1` | Mystic Enchant procs listed in `wcme_proc_target_cooldown` get a cooldown per target plus a 0.1 sec shared one (one proc per attack), instead of one shared cooldown: Deathbringer, Unbounded Deathbringer, Harbinger of Flame, Righteous Zealot | — |
 
 ## Settings (summary)
@@ -114,6 +115,8 @@ Low Tide, ...).
 `022-medium-legendaries-2.sql`: proc rows and script names for the second batch of medium legendary fixes (Master of
 Shadows, Spell Shredder, ...).
 `150-custom-spells.sql`: our own spells for buff icons (Plainsrunning, Bloodrush, Ambush, Voodoo Regeneration, Radiant Presence), the racials' spellbook entries, Mana-forged Barrier's spells, Ambush's spell_proc row and the barrier's spell_script_names row, written by `client-patch/custom_spells.py`.
+
+`160-rune-currency.sql`: Runes of Descension (375250) are a currency (the `currencytypes_dbc` row and the item's currency bag family), so new runes go to the currency tab and patch 82 can move old ones there.
 `130-battleground-dampening.sql`: everyone in a battleground does 20% less healing and gets 20% smaller absorb shields
 (Ascension's "PvP - Battleground - Dampening", which CoA has but never applied).
 `140-talent-fixes.sql`: the proc rows and script names for `55-talent-fixes.ps1`.
