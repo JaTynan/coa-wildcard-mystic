@@ -6,7 +6,7 @@
 # (casting or channelling keeps them). Arcane Torrent
 # eats every stack: besides its own effects (the silence and CoA's restore), it restores 2% of every resource you have
 # (mana, rage, energy, runic power) per stack eaten (20% at 10), and its cooldown drops from 2 min to 1 min. It also
-# leaves you Satiated (debuff 9990057, 15 sec): no new stacks while it lasts (James, 20 November).
+# leaves you Satiated (debuff 9990057, 15 sec): no new stacks while it lasts; immunities like Divine Shield don't strip it (James, 20 November).
 # A stack is added just after the ability, so it counts from the next one. Not counted: triggered spells, passives,
 # items (potions, trinkets), auto attack and auto-repeat shots, and Arcane Torrent itself.
 # The buff is in sql/enchants/150-custom-spells.sql and the client patch (client-patch/custom_spells.py; the client

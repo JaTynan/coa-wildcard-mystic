@@ -45,7 +45,9 @@ GRAVE_GHOUL_COOLDOWN = 9990030     # 5 min from rising
 BOOK_GRAVE_DEFIANCE = 9990031      # its spellbook entry
 TRANSFORM = 56                     # aura: look like the creature in misc
 RISEN_ALLY = 30230                 # Raise Ally's ghoul (creature), so the same four ghoul models
-NO_IMMUNITIES = 0x20000000         # Attributes: shows over a shapeshift form's model too
+NO_IMMUNITIES = 0x20000000         # Attributes: shows over a shapeshift form's model too; immunities (Divine Shield, Ice
+                                   # Block) don't strip it
+DEBUFF = 0x04000000                # Attributes: shown and treated as a debuff (the stock Sated and Forbearance)
 KEPT_THROUGH_DEATH = 0x00100000    # AttributesEx3 (column 7): death doesn't remove it
 # Human Spellsword (patches/73-racial-spellsword.ps1): the server sets every amount
 SPELLSWORD = 9990032               # the buff: at work
@@ -349,7 +351,7 @@ SPELLS = {
     ARCANE_SATIATED: ('Satiated',
                       'After Arcane Torrent, your hunger for magic is sated: Arcane Hunger can\'t build for 15 sec.',
                       'Your hunger for magic is sated. Arcane Hunger can\'t build.',
-                      87, 0, [(DUMMY, 0, 0)], {4: 0x80000000 | 0x04000000}),  # Arcane Torrent's icon; shown as a debuff
+                      87, 0, [(DUMMY, 0, 0)], {4: 0x80000000 | DEBUFF | NO_IMMUNITIES}),  # Arcane Torrent's icon
     ARCANE_HUNGER_WARD: ('Arcane Hunger', 'Damage taken reduced by 0.5% for each stack of Arcane Hunger.', '', 3384, 0,
                          [(MOD_DAMAGE_PERCENT_TAKEN, 0, ALL_SCHOOLS)], {4: HIDDEN}),
     BOOK_PROSPECTOR: ('Prospector\'s Spirit',
