@@ -2,7 +2,8 @@
 # damage, up to 5 enemies, gone out of combat. Each killing blow adds a stack of Rush, up to 5, lasting 15 sec in or out
 # of combat (each kill starts the 15 sec again): per stack +10% movement speed on foot (on top of Sprint and the like)
 # and +2% haste, and 2% more damage taken. The buffs are our spells 9990002 (stacks = enemies), 9990003 (Rush, stacks =
-# kills) and hidden 9990056 (Rush's damage taken, kept at Rush's stacks): sql/enchants/150-custom-spells.sql and the client patch
+# kills) and hidden 9990056 (Rush's damage taken, kept at Rush's stacks). Blood Fury also adds a stack of Rush and starts
+# its 15 sec again (James, 20 November): sql/enchants/150-custom-spells.sql and the client patch
 # (client-patch/custom_spells.py). Run by the build from the workspace root, after 40-battlegrounds.ps1, whose script
 # loader this registers in. Throws if an anchor is gone. Listed in CHANGES.md. Racials.Bloodrush = 0 turns it off.
 $ErrorActionPreference = 'Stop'
@@ -22,7 +23,8 @@ $class = @'
 class wcme_bloodrush : public PlayerScript
 {
 public:
-    wcme_bloodrush() : PlayerScript("wcme_bloodrush", {PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_CREATURE_KILL, PLAYERHOOK_ON_PVP_KILL}) { }
+    wcme_bloodrush() : PlayerScript("wcme_bloodrush", {PLAYERHOOK_ON_UPDATE, PLAYERHOOK_ON_CREATURE_KILL, PLAYERHOOK_ON_PVP_KILL,
+        PLAYERHOOK_ON_SPELL_CAST}) { }
 
     static constexpr uint32 Stacks = 9990002;
     static constexpr uint32 Rush = 9990003;      // per stack: +10% speed on foot, +2% haste
@@ -73,6 +75,22 @@ public:
             aura->SetStackAmount(enemies);
     }
 
+    // Blood Fury (every player copy CoA keeps) adds a stack of Rush, as a kill does.
+    void OnPlayerSpellCast(Player* player, Spell* spell, bool /*skipCheck*/) override
+    {
+        if (!spell || spell->IsTriggered())
+            return;
+        switch (spell->GetSpellInfo()->Id)
+        {
+            case 20572: case 33697: case 33702: case 760344: case 814283: case 814284: case 814285: case 1120572:
+            case 1133697: case 1133702:
+                Kill(player);
+                break;
+            default:
+                break;
+        }
+    }
+
     void OnPlayerCreatureKill(Player* killer, Creature* /*killed*/) override { Kill(killer); }
     void OnPlayerPVPKill(Player* killer, Player* killed) override
     {
@@ -119,6 +137,7 @@ private:
 };
 
 '@
+$text = $text.Replace($include, $include + "#include `"Spell.h`"`n#include `"SpellInfo.h`"`n")
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_bloodrush();`n")
 Set-Content $file $text -NoNewline

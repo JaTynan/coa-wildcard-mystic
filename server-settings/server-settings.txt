@@ -62,7 +62,7 @@ worldserver.conf | Battleground.InsigniaGoldPerLevel = 100
 # Tauren Plainsrunning (race kits): running on foot builds up to level + 40% speed over 60 sec, on top of other speed
 # effects; drains in 6 sec when you stop. Not mounted; held while carrying a flag. Group members within 10 yards get
 # the same bonus on foot (Running with the Herd), and each other Tauren running with you builds yours faster (up to 4).
-# 0 = off.
+# War Stomp adds 30% for 5 sec past the cap and can be cast on the move (read at server start). 0 = off.
 worldserver.conf | Racials.Plainsrunning = 1
 # Orc Bloodrush (race kits): +2% damage per enemy in combat with you (up to 5); each killing blow adds a stack of Rush
 # (up to 5, 15 sec, each kill restarts it): +10% speed on foot and +2% haste per stack, and 2% more damage taken.

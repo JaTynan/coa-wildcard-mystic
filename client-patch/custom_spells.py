@@ -87,12 +87,17 @@ BLOODRUSH_RECKLESS = 9990056       # hidden: 2% more damage taken per stack of R
 # Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): after Arcane Torrent
 # Tauren Plainsrunning (patches/54-racial-plainsrunning.ps1): what group members near a running Tauren get
 PLAINSRUNNING_HERD = 9990058       # stacks: the bonus running speed in percent (the server sets it)
+# Night Elf Ambush (patches/57-racial-ambush.ps1): its 20 sec, shown
+AMBUSH_RECHARGING = 9990059        # debuff while Ambush can't be readied again (the server sets the duration)
+# Tauren War Stomp (patches/54-racial-plainsrunning.ps1): moving while it casts
+PLAINSRUNNING_STOMPING = 9990060   # hidden: 80% slower while War Stomp casts
 ARCANE_SATIATED = 9990057          # debuff: Arcane Hunger can't build for 15 sec (the server sets the duration)
 MOD_INCREASE_SWIM_SPEED, WATER_BREATHING, MOD_SPEED_ALWAYS, MOD_TOTAL_STAT_PERCENTAGE = 58, 82, 129, 137
 STAT_STRENGTH, STAT_AGILITY, STAT_STAMINA, STAT_INTELLECT, STAT_SPIRIT = 0, 1, 2, 3, 4
 
 ADD_FLAT_MODIFIER, MOD_CRIT_CHANCE_AGAINST_TARGET, SPELLMOD_CASTING_TIME = 107, 330, 10
 SCHOOL_ABSORB, PHYSICAL, MOD_HEALING_PCT = 69, 1, 118
+MOD_DECREASE_SPEED = 33
 MOD_THREAT, PERIODIC_ENERGIZE, EFFECT_IMMUNITY, MANA_SHIELD, MOD_ATTACKER_MELEE_CRIT_CHANCE = 10, 24, 37, 97, 187
 DUMMY, MOD_INCREASE_SPEED, MOD_POWER_COST_PCT, MOD_DAMAGE_PERCENT_DONE, MOD_DAMAGE_PERCENT_TAKEN, \
     MOD_HEALTH_REGEN_PERCENT, MOD_HEALING_DONE_PERCENT, HASTE_ALL = 4, 31, 72, 79, 87, 88, 136, 193  # aura types
@@ -150,20 +155,23 @@ SPELLS = {
                     'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                     '(100% at level 60), on top of other speed effects. When you stop it drains in 6 sec. Not while '
                     'mounted; held while carrying a flag. Group members within 10 yards run with you at the same '
-                    'bonus, and each other Tauren running with you builds yours faster (up to 4).',
+                    'bonus, and each other Tauren running with you builds yours faster (up to 4). War Stomp adds 30% '
+                    'more for 5 sec, past your cap, and can be cast on the move.',
                     'Running faster. The number is your bonus running speed in percent.',
-                    3542, 100, [(DUMMY, 0, 0)]),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
+                    3542, 200, [(DUMMY, 0, 0)]),
+    PLAINSRUNNING_STOMPING: ('War Stomp', 'Moving 80% slower while War Stomp casts.', '', 129, 0,
+                             [(MOD_DECREASE_SPEED, -80, 0)], {4: HIDDEN}),  # Interface\Icons\Achievement_Zone_ArathiHighlands_01
     PLAINSRUNNING_HERD: ('Running with the Herd',
                          'Running with a Tauren: within 10 yards of a group member\'s Plainsrunning, you run faster by '
                          'as much as they do. On foot only.',
                          'Running with the herd. The number is your bonus running speed in percent.',
-                         3542, 100, [(DUMMY, 0, 0)]),
+                         3542, 200, [(DUMMY, 0, 0)]),
     BLOODRUSH: ('Bloodrush',
                 'For each enemy in combat with you, +2% damage, up to 5 enemies. The stacks go out of combat.',
                 'Damage increased by $s1%. One stack per enemy in combat with you.',
                 6200, 5, [(MOD_DAMAGE_PERCENT_DONE, 2, ALL_SCHOOLS)]),  # achievement_bg_interruptx_flagcapture_attempts_1game
     BLOODRUSH_SPEED: ('Rush',
-                      'Each killing blow adds a stack, up to 5, for 15 sec: 10% more movement speed on foot and 2% more '
+                      'Each killing blow (and Blood Fury) adds a stack, up to 5, for 15 sec: 10% more movement speed on foot and 2% more '
                       'haste per stack, and 2% more damage taken. Each kill starts the 15 sec again.',
                       'Movement speed increased by $s1% and haste by $s2%. Damage taken increased by 2% per stack. '
                       'Another killing blow adds a stack and starts the 15 sec again.',
@@ -177,6 +185,10 @@ SPELLS = {
              3701, 0, [(MOD_DAMAGE_PERCENT_DONE, 50, ALL_SCHOOLS), (MOD_HEALING_DONE_PERCENT, 50, 0),
                        (MOD_POWER_COST_PCT, -10, ALL_SCHOOLS)],
              {34: NEXT_ABILITY, 35: 100, 36: 1}),  # achievement_profession_fishing_findfish; one charge
+    AMBUSH_RECHARGING: ('Ambush Recharging',
+                        'Ambush was readied recently: entering stealth won\'t ready it again until this runs out.',
+                        'Entering stealth won\'t ready Ambush again until this runs out.',
+                        3701, 0, [(DUMMY, 0, 0)], {4: 0x80000000 | DEBUFF | NO_IMMUNITIES, 7: KEPT_THROUGH_DEATH}),
     VOODOO: ('Voodoo Regeneration',
              'Health regenerates 50% faster out of combat. In combat, regenerate 0.3% of maximum health per second '
              '(half while the burst is on cooldown). Below 35% health, regenerate 28% of maximum health over '
@@ -229,17 +241,18 @@ SPELLS = {
                          'while mounted; paused while carrying a battleground flag. Group members within 10 yards '
                          'run with you at the same bonus. Tauren build faster together: each other Tauren running in '
                          'your group within 10 yards adds the normal rate again, up to 4 (two reach full speed in 30 '
-                         'sec, five in 12).',
+                         'sec, five in 12). War Stomp adds 30% more for 5 sec, past your cap: a running start or a '
+                         'boost mid run. It can be cast on the move, at 80% less speed while it casts.',
                          '', 3542, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_BLOODRUSH: ('Bloodrush',
                      'Relentless but reckless. For each enemy in combat with you, +2% damage, up to 5 enemies, gone '
                      'when combat ends. Each killing blow adds a stack of Rush, up to 5, for 15 sec (each kill starts '
                      'the 15 sec again): per stack, 10% more movement speed on foot and 2% more haste, but you take 2% '
-                     'more damage.',
+                     'more damage. Blood Fury adds a stack too.',
                      '', 6200, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_AMBUSH: ('Ambush',
                   'Entering stealth (Shadowmeld or a class stealth) readies your next ability: it costs 10% less and '
-                  'deals or heals 50% more. At most once every 20 sec.',
+                  'deals or heals 50% more. At most once every 20 sec (Ambush Recharging shows the wait).',
                   '', 3701, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_VOODOO: ('Voodoo Regeneration',
                   'Health regenerates 50% faster out of combat. In combat, regenerate 0.3% of maximum health per '
@@ -249,8 +262,8 @@ SPELLS = {
     BOOK_RADIANT: ('Radiant Presence',
                    'In combat, gain a stack of Light every 6 sec, up to 5. Each stack gives you and every ally within '
                    '30 yards (pets and guardians too) +1% damage and healing and 1% less damage taken. The Light '
-                   'fades 10 sec after combat. A second Draenei doesn\'t add more. Your auras and totems reach 50% '
-                   'further.',
+                   'fades 10 sec after combat. A second Draenei doesn\'t add more. Gift of the Naaru fills your Light '
+                   'to 5 at once. Your auras and totems reach 50% further.',
                    '', ICON_BANNER_DRAENEI, 0, [(DUMMY, 0, 0)], {4: BOOK_PASSIVE}),
     BOOK_GRAVE_DEFIANCE: ('Grave Defiance',
                           'Below 35% health, you deal and heal more, rising evenly to 30% more at 1% health (about 13% '
