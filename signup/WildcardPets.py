@@ -17,6 +17,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+import subprocess
+
 import WildcardStatus
 
 CACHE_SECONDS = 6 * 3600
@@ -146,6 +148,21 @@ class _Areas:
         return ", ".join(names) or map_names.get(map_id, f"map {map_id}")
 
 
+def _query(server, sql):
+    """Rows from the server's MySQL client (as WildcardStatus._sql), but a failure raises with MySQL's own message."""
+    client = server / "mysql" / "bin" / "mysql.exe"
+    ini = server / "mysql" / "admin-client.ini"
+    try:
+        result = subprocess.run([str(client), f"--defaults-file={ini}", "--batch", "--skip-column-names", "-e", sql],
+                                capture_output=True, text=True, timeout=60,
+                                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise RuntimeError(f"the world database did not answer: {error!r}")
+    if result.returncode:
+        raise RuntimeError(f"the world database refused the query: {result.stderr.strip()[:300]}")
+    return [line.split("\t") for line in result.stdout.splitlines() if line.strip()]
+
+
 def _build(server):
     configs = server / "Core" / "configs"
     world = WildcardStatus._read_conf(configs / "worldserver.conf")
@@ -194,16 +211,15 @@ def _build(server):
 
     # The creatures players can tame, and one spawn of each per map.
     database = WildcardStatus._database(world, "WorldDatabaseInfo", "acore_world")
-    templates = WildcardStatus._sql(server, (
+    templates = _query(server, (
         f"SELECT entry, family, minlevel, maxlevel, type_flags, `rank`, REPLACE(name, '\\t', ' ') "
         f"FROM `{database}`.creature_template WHERE family <> 0 AND (type_flags & {TYPE_FLAG_TAMEABLE}) <> 0"))
-    spawns = WildcardStatus._sql(server, (
-        f"SELECT c.id1, c.map, c.position_x, c.position_y, m.n FROM `{database}`.creature c JOIN ("
+    # The spawn's creature is `id` on this core (the core's own spawn queries; newer AzerothCore names it id1).
+    spawns = _query(server, (
+        f"SELECT c.id, c.map, c.position_x, c.position_y, m.n FROM `{database}`.creature c JOIN ("
         f"SELECT MIN(c2.guid) AS g, COUNT(*) AS n FROM `{database}`.creature c2 JOIN `{database}`.creature_template t "
-        f"ON t.entry = c2.id1 WHERE t.family <> 0 AND (t.type_flags & {TYPE_FLAG_TAMEABLE}) <> 0 "
-        f"GROUP BY c2.id1, c2.map) m ON m.g = c.guid"))
-    if templates is None or spawns is None:
-        raise RuntimeError("the world database did not answer")
+        f"ON t.entry = c2.id WHERE t.family <> 0 AND (t.type_flags & {TYPE_FLAG_TAMEABLE}) <> 0 "
+        f"GROUP BY c2.id, c2.map) m ON m.g = c.guid"))
 
     where = {}
     for entry, map_id, x, y, count in (row[:5] for row in spawns if len(row) >= 5):
