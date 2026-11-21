@@ -104,6 +104,36 @@ local function HasClass(mask, classID)
 	return mask == 0 or math.floor(mask / 2 ^ (classID - 1)) % 2 == 1
 end
 
+-- Speed (21 Nov): opening the window, turning a page or changing a filter used to
+-- look up all 6,440 enchants (name and info each) and sort them every time, which
+-- froze the game for a moment. Names, order and the fixed filters are now worked
+-- out once; known/unknown is checked only when that filter is on (otherwise only
+-- for the page shown); and the same query repeated within 2 seconds (the window
+-- asks several times while opening) reuses the last answer.
+local index            -- every enchant with its name, sorted best quality first, then by name
+local lastKey, lastTime, lastResults, lastMaxPage
+
+local function Index()
+	if index then
+		return index
+	end
+	index = {}
+	for _, entry in ipairs(WildcardEnchantsData or {}) do
+		local name = GetSpellInfo(entry[1])
+		if name then
+			index[#index + 1] = { spell = entry[1], quality = entry[2], worldforged = entry[3] == 1,
+				mask = entry[4], name = name, lower = name:lower() }
+		end
+	end
+	table.sort(index, function(a, b)
+		if a.quality ~= b.quality then
+			return a.quality > b.quality
+		end
+		return a.name < b.name
+	end)
+	return index
+end
+
 local function QueryEnchants(perPage, page, search, filters)
 	perPage = math.max(1, tonumber(perPage) or 1)
 	page = math.max(1, tonumber(page) or 1)
@@ -121,6 +151,11 @@ local function QueryEnchants(perPage, page, search, filters)
 			active[#active + 1] = value
 		end
 	end
+	table.sort(active)
+	local key = perPage .. "|" .. page .. "|" .. search .. "|" .. table.concat(active, ",")
+	if key == lastKey and GetTime() - lastTime < 2 then
+		return lastResults, lastMaxPage
+	end
 	for _, filter in ipairs(active) do
 		if filter == "RE_FILTER_KNOWN" then wantKnown = true
 		elseif filter == "RE_FILTER_UNKNOWN" then wantUnknown = true
@@ -130,50 +165,48 @@ local function QueryEnchants(perPage, page, search, filters)
 		elseif CLASS_FILTERS[filter] then classes[#classes + 1] = CLASS_FILTERS[filter]; anyClass = true
 		end
 	end
+	local checkKnown = wantKnown ~= wantUnknown
 
 	local matches = {}
-	for _, entry in ipairs(WildcardEnchantsData or {}) do
-		local spellID, quality, worldforged, mask = entry[1], entry[2], entry[3] == 1, entry[4]
-		local keep = (not anyQuality or qualities[quality])
-			and not (wantWorldforged and not worldforged)
-			and not (wantNotWorldforged and worldforged)
+	for _, enchant in ipairs(Index()) do
+		local keep = (not anyQuality or qualities[enchant.quality])
+			and not (wantWorldforged and not enchant.worldforged)
+			and not (wantNotWorldforged and enchant.worldforged)
+			and (search == "" or enchant.lower:find(search, 1, true) ~= nil)
 		if keep and anyClass then
 			keep = false
 			for _, classID in ipairs(classes) do
-				if HasClass(mask, classID) then
+				if HasClass(enchant.mask, classID) then
 					keep = true
 					break
 				end
 			end
 		end
+		if keep and checkKnown then
+			local info = C_MysticEnchant.GetEnchantInfoBySpell(enchant.spell)
+			keep = info ~= nil and (info.Known and true or false) == wantKnown
+		end
 		if keep then
-			local info = C_MysticEnchant.GetEnchantInfoBySpell(spellID)
-			if info then
-				if wantKnown ~= wantUnknown then
-					keep = (info.Known and true or false) == wantKnown
-				end
-				local name = GetSpellInfo(spellID)
-				if keep and name and (search == "" or name:lower():find(search, 1, true)) then
-					matches[#matches + 1] = { info = info, quality = quality, name = name }
-				end
-			end
+			matches[#matches + 1] = enchant
 		end
 	end
-
-	table.sort(matches, function(a, b)
-		if a.quality ~= b.quality then
-			return a.quality > b.quality
-		end
-		return a.name < b.name
-	end)
 
 	local maxPage = #matches > 0 and math.ceil(#matches / perPage) or 0
 	page = math.min(page, math.max(maxPage, 1))
 	local results = {}
-	for index = (page - 1) * perPage + 1, math.min(page * perPage, #matches) do
-		results[#results + 1] = matches[index].info
+	for i = (page - 1) * perPage + 1, math.min(page * perPage, #matches) do
+		local info = C_MysticEnchant.GetEnchantInfoBySpell(matches[i].spell)
+		if info then
+			results[#results + 1] = info
+		end
 	end
+	lastKey, lastTime, lastResults, lastMaxPage = key, GetTime(), results, maxPage
 	return results, maxPage
+end
+
+-- An enchant learned or applied changes what the list shows: forget the last answer.
+local function Forget()
+	lastKey = nil
 end
 
 local function PatchQuery()
@@ -247,12 +280,21 @@ events:RegisterEvent("ADDON_LOADED")
 events:RegisterEvent("PLAYER_LOGIN")
 events:RegisterEvent("PLAYER_ENTERING_WORLD")
 events:RegisterEvent("CHAT_MSG_ADDON")
+for _, event in ipairs({ "MYSTIC_ENCHANT_LEARNED", "MYSTIC_ENCHANT_SLOT_UPDATE", "MYSTIC_ENCHANT_PRESET_SET_ACTIVE_RESULT" }) do
+	pcall(events.RegisterEvent, events, event)   -- names from the Ascension client; skipped if absent
+end
 events:SetScript("OnEvent", function(_, event, name, message, channel, sender)
+	if event ~= "ADDON_LOADED" and event ~= "PLAYER_LOGIN" and event ~= "PLAYER_ENTERING_WORLD"
+		and event ~= "CHAT_MSG_ADDON" then
+		Forget()   -- MYSTIC_ENCHANT_* events
+		return
+	end
 	if event == "CHAT_MSG_ADDON" then
 		if name == PREFIX and channel == "WHISPER" and sender == UnitName("player") then
 			local slots = ParseSlots(message or "")
 			if slots then
 				activeSlots = slots
+				Forget()
 				RefreshWindow()
 			end
 		end
