@@ -107,6 +107,7 @@ load, waking, zones, Dungeon Clear with Smart Rest: pack to pack until someone r
 `sql/enchants/000-015`: Mystic Enchant data fixes (`014`: "your next X" buffs such as Empowered Light are used up
 by that next spell; `015`: 33 Legendary enchants that fired on every hit now fire only from the abilities their
 tooltip names, no more often than its stated cooldown, or at most every 0.1 sec where it states none). `090-mysql-tuning.sql`: MySQL settings that survive the manager.
+`095-slow-query-log.sql`: MySQL logs queries over half a second to `Core\Logs\mysql-slow.log` (performance diagnosis, measuring only).
 `100-rune-rates.sql`: Runes of Descension 250% from quests, 150% from drops.
 `110-manastorm-caches-unstack.sql`: Manastorm caches no longer stack, so each one opens and disappears when emptied.
 `120-battleground-spoils.sql`: Battleground Spoils can be opened (used by the Battleground Spoils patch).

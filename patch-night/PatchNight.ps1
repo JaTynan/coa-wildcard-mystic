@@ -410,6 +410,57 @@ function RepriceAuctionsWhenPricesChange {
     Log "Auction prices changed: removed the Auctioneer's unbid listings (rows: $($removed.Text.Trim())); the bot relists them at the new prices."
 }
 
+function StartDiagnostics {
+    # Performance diagnosis (21 Nov). Measuring only: nothing here changes how the server runs. Runs once the world
+    # is up, so the world server's own counters exist when the counter log starts.
+    # 1. Windows counters every 5 seconds: each core's CPU, the processor queue, memory and paging, disk latency and
+    #    queue, and the world server's and MySQL's own CPU and memory. One CSV per server start in Core\Logs\perf,
+    #    kept 14 days. typeperf needs no admin rights and keeps running after patch night ends; the one from the
+    #    previous start is stopped first, since its world server instance has gone.
+    # 2. Once: every server start banner and slow-update line from world-console.log (gigabytes, the console since
+    #    the realm began) into Core\Logs\console-history.txt, to compare update times before and after the
+    #    19 Nov core update. Line numbers are kept so the order is clear.
+    $perfDir = Join-Path $core 'Logs\perf'
+    New-Item -ItemType Directory -Force -Path $perfDir | Out-Null
+    Get-CimInstance Win32_Process -Filter "Name = 'typeperf.exe'" -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -like "*$perfDir*" } |
+        ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+    $counters = Join-Path $perfDir 'counters.txt'
+    @('\Processor(*)\% Processor Time', '\System\Processor Queue Length', '\System\Context Switches/sec',
+      '\Memory\Available MBytes', '\Memory\Pages/sec', '\Paging File(_Total)\% Usage',
+      '\PhysicalDisk(_Total)\Avg. Disk sec/Read', '\PhysicalDisk(_Total)\Avg. Disk sec/Write',
+      '\PhysicalDisk(_Total)\Current Disk Queue Length', '\PhysicalDisk(_Total)\% Idle Time',
+      '\Process(worldserver)\% Processor Time', '\Process(worldserver)\Working Set',
+      '\Process(worldserver)\Thread Count', '\Process(mysqld)\% Processor Time',
+      '\Process(mysqld)\Working Set') | Set-Content -Path $counters -Encoding ascii
+    $out = Join-Path $perfDir ('perf-{0}.csv' -f (Get-Date -Format 'yyyy-MM-dd_HHmm'))
+    try {
+        Start-Process -FilePath 'typeperf.exe' -WindowStyle Hidden `
+            -ArgumentList @('-cf', "`"$counters`"", '-si', '5', '-f', 'CSV', '-o', "`"$out`"", '-y') | Out-Null
+        Log "Performance counters: every 5 seconds to $out."
+    } catch { Log "Could not start the performance counter log: $_" 'WARN' }
+    Get-ChildItem $perfDir -Filter 'perf-*.csv' -ErrorAction SilentlyContinue |
+        Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-14) } | Remove-Item -Force -ErrorAction SilentlyContinue
+
+    $console = Join-Path $core 'Logs\world-console.log'
+    $history = Join-Path $core 'Logs\console-history.txt'
+    if ((Test-Path $console) -and -not (Test-Path $history)) {
+        try {
+            $reader = [IO.StreamReader]::new([IO.File]::Open($console, 'Open', 'Read', 'ReadWrite'))   # still being written
+            $writer = [IO.StreamWriter]::new($history)
+            $n = 0
+            while ($null -ne ($line = $reader.ReadLine())) {
+                $n++
+                if ($line.Contains('AzerothCore rev.') -or $line.Contains('Update time diff') -or $line.Contains('World Initialized')) {
+                    $writer.WriteLine("${n}: $line")
+                }
+            }
+            $writer.Close(); $reader.Close()
+            Log "Console history: start banners and slow updates from $n lines saved to $history."
+        } catch { Log "Could not read the console history: $_" 'WARN' }
+    }
+}
+
 function RestoreRealmAddress {
     # The launcher resets the realm list to 127.0.0.1 at every start; the manager then writes the "Play with
     # friends" address back (friends.rs, reapply). Do the same, or other computers see the realm but cannot join it.
@@ -505,6 +556,7 @@ function StartAndCheck([string] $expected) {
                 Start-Sleep -Seconds 60
                 if (-not (WorldRunning)) { Log 'The world server stopped within a minute of starting.' 'WARN'; return $false }
                 Log "Server is up on core $running."
+                StartDiagnostics
                 return $true
             }
         }
