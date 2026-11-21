@@ -8,8 +8,10 @@ fixes and settings but leaves new builds for Tuesday. Or by hand (Run-PatchNight
   1. Finds which manager release is installed (from the official world server's revision).
   2. Looks for this repository's patched build of that release (GitHub Releases).
   3. Downloads this repository's current server-settings (edit them on GitHub, they apply here).
-  4. Warns players in game, stops the server, installs the patched build if it is new,
-     applies the settings, starts the server and checks it came up on the expected build.
+  4. Warns players in game and, during the countdown, downloads and unpacks the patched build and writes the
+     settings (staged: the server stays up for all of that). Then restarts only the world server (MySQL and the
+     auth server keep running), installs the build if it is new, starts it and checks it came up on the expected
+     build. Console logs are dated per run (newest 3 kept); the downtime is written to the log.
   5. If the patched server does not come up, puts the official one back and starts that.
 
 Everything is written to patch-night.log next to this script; last-run.txt holds the outcome
@@ -65,6 +67,10 @@ function Log([string] $message, [string] $level = 'INFO') {
 
 function Finish([string] $outcome, [int] $code) {
     $level = if ($code) { 'FAIL' } else { 'OK' }
+    # Players were warned but preparing failed before the stop: the server stays up, so say so in game.
+    if ($code -and $script:announced -and -not $script:stopping -and (WorldRunning)) {
+        try { Ra 'announce Nightly restart cancelled: the server stays up.' | Out-Null } catch { }
+    }
     Log $outcome $level
     "$(Get-Date -Format 'yyyy-MM-dd HH:mm')  $outcome" | Set-Content -Path $lastRun -Encoding utf8
     Log '---- patch night finished ----'
@@ -144,6 +150,73 @@ function StopServer {
     Log 'Server stopped.'
 }
 
+function StopWorld {
+    # Staged patch night (22 Nov): only the world server restarts. MySQL and the auth server keep running, so the
+    # database keeps its cache warm and does not shut down and start again (server-settings never change their
+    # configs). The same console command the manager's Stop All sends; if the world does not go, Stop All does it.
+    if (-not (WorldRunning)) { Log 'Server is already stopped.'; return }
+    Ra 'server shutdown 1s 0' | Out-Null
+    $deadline = (Get-Date).AddMinutes(2)
+    while ((WorldRunning) -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 2 }
+    if (WorldRunning) { Log 'The world server did not stop from its console; stopping everything with the manager.' 'WARN'; StopServer; return }
+    Log 'World server stopped (MySQL and the auth server keep running).'
+}
+
+function ParsesCleanly([string] $path) {
+    $tokens = $null; $errors = $null
+    [void] [System.Management.Automation.Language.Parser]::ParseFile($path, [ref] $tokens, [ref] $errors)
+    return -not $errors
+}
+
+function SaveConsoleHistory([string] $console) {
+    # Every server start banner and slow-update line from the world console, once, into console-history.txt (to
+    # compare update times before and after the 19 Nov core update). Line numbers are kept so the order is clear.
+    $history = Join-Path $core 'Logs\console-history.txt'
+    if (-not (Test-Path $console) -or (Test-Path $history)) { return }
+    try {
+        $reader = [IO.StreamReader]::new([IO.File]::Open($console, 'Open', 'Read', 'ReadWrite'))   # may still be written
+        $writer = [IO.StreamWriter]::new($history)
+        $n = 0
+        while ($null -ne ($line = $reader.ReadLine())) {
+            $n++
+            if ($line.Contains('AzerothCore rev.') -or $line.Contains('Update time diff') -or $line.Contains('World Initialized')) {
+                $writer.WriteLine("${n}: $line")
+            }
+        }
+        $writer.Close(); $reader.Close()
+        Log "Console history: start banners and slow updates from $n lines saved to $history."
+    } catch { Log "Could not read the console history: $_" 'WARN' }
+}
+
+function RotateConsoleLogs {
+    # The manager appends each start's console output to world-console.log and auth-console.log forever (3 GB by
+    # 22 Nov). Once, they are cleared (the history above saved first); from then on each run's file is renamed with
+    # the date and the newest 3 are kept. A file a running server still holds (the auth server's) is left for later.
+    $logs = Join-Path $core 'Logs'
+    $clearedMark = Join-Path $here 'console-logs-cleared.txt'
+    $firstTime = -not (Test-Path $clearedMark)
+    foreach ($name in 'world-console', 'auth-console') {
+        $file = Join-Path $logs "$name.log"
+        if (Test-Path $file) {
+            try {
+                if ($firstTime) {
+                    if ($name -eq 'world-console') { SaveConsoleHistory $file }
+                    $size = [int] ((Get-Item $file).Length / 1MB)
+                    Remove-Item $file -Force -ErrorAction Stop
+                    Log "Cleared $name.log ($size MB), once; from now on each run's console log is dated and the newest 3 kept."
+                } else {
+                    Move-Item $file (Join-Path $logs ('{0}-{1}.log' -f $name, (Get-Date -Format 'yyyy-MM-dd_HHmmss'))) -Force -ErrorAction Stop
+                }
+            } catch { Log "Left $name.log as it is for now (in use): $($_.Exception.Message)" }
+        }
+        Get-ChildItem $logs -Filter "$name-*.log" -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending |
+            Select-Object -Skip 3 | Remove-Item -Force -ErrorAction SilentlyContinue
+    }
+    if ($firstTime -and -not (Test-Path (Join-Path $logs 'world-console.log'))) {
+        (Get-Date -Format 'yyyy-MM-dd HH:mm') | Set-Content -Path $clearedMark -Encoding ascii
+    }
+}
+
 function FetchRepo {
     # Downloads this repository's main branch: the current server-settings (edit them on GitHub, they apply here),
     # the newest installer (returned), and the newest patch-night scripts, used from the next run on.
@@ -157,7 +230,10 @@ function FetchRepo {
         $fresh = Join-Path $repoRoot 'server-settings'
         if (Test-Path (Join-Path $fresh 'server-settings.txt')) {
             New-Item -ItemType Directory -Force -Path $settingsDir | Out-Null
-            Copy-Item (Join-Path $fresh '*') $settingsDir -Force
+            # A settings script from GitHub that does not read cleanly is not used; the current copy stays.
+            Get-ChildItem $fresh -File | Where-Object { $_.Extension -ne '.ps1' -or (ParsesCleanly $_.FullName) -or
+                $(Log "$($_.Name) from GitHub does not read cleanly; keeping the current copy." 'WARN'; $false) } |
+                Copy-Item -Destination $settingsDir -Force
             Log 'Downloaded the current server-settings from GitHub.'
         }
         # The newest Wildcard addons (WildcardEnchants, WildcardMastery, ...) into the VM's client folder, so the
@@ -248,8 +324,15 @@ function FetchRepo {
         }
         $scripts = Join-Path $repoRoot 'patch-night'
         if (Test-Path (Join-Path $scripts 'PatchNight.ps1')) {
-            Get-ChildItem $scripts -File | Copy-Item -Destination $here -Force
-            Log 'Updated the patch-night scripts from GitHub (used from the next run).'
+            # A mistake merged during the day must not take the server down at night: the new scripts replace the
+            # current ones only if every one of them reads cleanly.
+            $broken = @(Get-ChildItem $scripts -Filter '*.ps1' -File | Where-Object { -not (ParsesCleanly $_.FullName) })
+            if ($broken.Count) {
+                Log "The patch-night script(s) $(($broken | ForEach-Object { $_.Name }) -join ', ') from GitHub do not read cleanly; keeping the current copies." 'WARN'
+            } else {
+                Get-ChildItem $scripts -File | Copy-Item -Destination $here -Force
+                Log 'Updated the patch-night scripts from GitHub (used from the next run).'
+            }
         }
         return (Join-Path $repoRoot 'vm\Install-WildcardServer.ps1')
     } catch {
@@ -522,23 +605,7 @@ function StartDiagnostics {
     Get-ChildItem $perfDir -Filter 'perf-*.csv' -ErrorAction SilentlyContinue |
         Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-14) } | Remove-Item -Force -ErrorAction SilentlyContinue
 
-    $console = Join-Path $core 'Logs\world-console.log'
-    $history = Join-Path $core 'Logs\console-history.txt'
-    if ((Test-Path $console) -and -not (Test-Path $history)) {
-        try {
-            $reader = [IO.StreamReader]::new([IO.File]::Open($console, 'Open', 'Read', 'ReadWrite'))   # still being written
-            $writer = [IO.StreamWriter]::new($history)
-            $n = 0
-            while ($null -ne ($line = $reader.ReadLine())) {
-                $n++
-                if ($line.Contains('AzerothCore rev.') -or $line.Contains('Update time diff') -or $line.Contains('World Initialized')) {
-                    $writer.WriteLine("${n}: $line")
-                }
-            }
-            $writer.Close(); $reader.Close()
-            Log "Console history: start banners and slow updates from $n lines saved to $history."
-        } catch { Log "Could not read the console history: $_" 'WARN' }
-    }
+    SaveConsoleHistory (Join-Path $core 'Logs\world-console.log')
 }
 
 function RestoreRealmAddress {
@@ -620,13 +687,13 @@ function StartAndCheck([string] $expected) {
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
-    PublishFriendsSite
     # The world is up when this start's Server.log says so, from the expected build.
     $deadline = (Get-Date).AddMinutes(30)
     while ((Get-Date) -lt $deadline) {
         if ((Test-Path $serverLog) -and (Get-Item $serverLog).LastWriteTime -gt $started) {
             $text = Get-Content $serverLog -Raw
             if ($text -match 'World Initialized In') {
+                if (-not $script:openAt) { $script:openAt = Get-Date }   # the world accepts players from here
                 $first = ($text -split "`r?`n")[0]
                 if ($first -notmatch 'rev\.\s+([0-9a-f]{7,40})') { Log "Cannot read the revision in Server.log: $first" 'WARN'; return $false }
                 $running = $Matches[1]
@@ -637,6 +704,8 @@ function StartAndCheck([string] $expected) {
                 if (-not (WorldRunning)) { Log 'The world server stopped within a minute of starting.' 'WARN'; return $false }
                 Log "Server is up on core $running."
                 StartDiagnostics
+                # After the world is up, so its checksum pass over 43 GB does not compete with the world loading.
+                PublishFriendsSite
                 return $true
             }
         }
@@ -799,7 +868,35 @@ $repoInstaller = if ($repoRoot) { Join-Path $repoRoot.FullName 'vm\Install-Wildc
 $applySettings = Join-Path $settingsDir 'Apply-ServerSettings.ps1'
 if (-not (Test-Path $applySettings)) { Finish "No settings kit at $settingsDir; nothing was changed." 1 }
 
-# Download the patched build before taking the server down.
+# 4. Staged (22 Nov): warn players first, then prepare while the countdown runs, so downloading, unpacking and the
+#    settings no longer add to the wait or to the downtime. The server only goes down once everything is ready;
+#    if preparing fails, players are told the restart is off and the server stays up.
+$restartAt = Get-Date
+$marks = @()
+if (WorldRunning) {
+    $info = Ra 'server info'
+    $players = if ($info -match 'Connected players:\s*(\d+)') { [int] $Matches[1] } else { -1 }
+    # No answer from the console while the world is still loading (or stuck) means nobody can be on it.
+    $worldClosed = $players -lt 0 -and -not (WorldAcceptsPlayers)
+    if ($worldClosed) { Log 'The world is not accepting players (still starting or stuck), so there is nobody to warn.'; $players = 0 }
+    # The scheduled run always counts down the full time (so the restart lands at the same time every night, and
+    # anyone who logs in during the countdown still hears the later warnings); a run by hand skips it if nobody is on.
+    if ($WarnMinutes -gt 0 -and -not $worldClosed -and ($players -ne 0 -or $Unattended)) {
+        Log "Players online: $(if ($players -lt 0) { 'unknown' } else { $players }). Counting down $WarnMinutes minutes while preparing."
+        $restartAt = (Get-Date).AddMinutes($WarnMinutes)
+        $marks = @(@($WarnMinutes) + @(15, 10, 5, 1) | Where-Object { $_ -le $WarnMinutes } | Sort-Object -Descending -Unique)
+    } else {
+        Log 'No players online.'
+    }
+}
+function Announce([int] $minutes) {
+    $text = if ($minutes -eq 1) { 'the server restarts in 1 minute. Find a safe spot! It is back within 5 minutes.' } else { "the server restarts in $minutes minutes for maintenance and is back within 5 minutes." }
+    Ra "announce Nightly restart: $text" | Out-Null
+    $script:announced = $true
+}
+if ($marks.Count) { Announce ([int] $marks[0]) }
+
+$prepared = Get-Date
 $package = $null
 if ($installNeeded) {
     $asset = $release.assets | Where-Object { $_.name -like '*.zip' } | Select-Object -First 1
@@ -812,31 +909,27 @@ if ($installNeeded) {
     Expand-Archive -Path $zip -DestinationPath $package -Force
     if (-not (Test-Path (Join-Path $package 'Install-WildcardServer.ps1'))) { Finish 'The downloaded package has no installer; nothing was changed.' 1 }
 }
+# The servers read their configs only when they start, so the settings can be written while the world still runs.
+Log 'Applying server-settings (used from the restart)...'
+if (RunScript $applySettings @('-Server', "`"$Server`"", '-Unattended')) { Log 'Applying the settings reported a problem.' 'WARN' }
+Log "Prepared in $([int] ((Get-Date) - $prepared).TotalSeconds) s, with the server up."
 
-# 4. Warn players, stop, install, apply settings, start, check.
-if (WorldRunning) {
-    $info = Ra 'server info'
-    $players = if ($info -match 'Connected players:\s*(\d+)') { [int] $Matches[1] } else { -1 }
-    # No answer from the console while the world is still loading (or stuck) means nobody can be on it.
-    $worldClosed = $players -lt 0 -and -not (WorldAcceptsPlayers)
-    if ($worldClosed) { Log 'The world is not accepting players (still starting or stuck), so there is nobody to warn.'; $players = 0 }
-    # The scheduled run always counts down the full time (so the restart lands at the same time every night, and
-    # anyone who logs in during the countdown still hears the later warnings); a run by hand skips it if nobody is on.
-    if ($WarnMinutes -gt 0 -and -not $worldClosed -and ($players -ne 0 -or $Unattended)) {
-        Log "Players online: $(if ($players -lt 0) { 'unknown' } else { $players }). Counting down $WarnMinutes minutes."
-        $marks = @(@($WarnMinutes) + @(15, 10, 5, 1) | Where-Object { $_ -le $WarnMinutes } | Sort-Object -Descending -Unique)
-        for ($i = 0; $i -lt $marks.Count; $i++) {
-            $minutes = [int] $marks[$i]
-            $text = if ($minutes -eq 1) { 'the server restarts in 1 minute. Find a safe spot! It is back within 10 minutes.' } else { "the server restarts in $minutes minutes for maintenance and is back within 10 minutes." }
-            Ra "announce Nightly restart: $text" | Out-Null
-            $next = if ($i + 1 -lt $marks.Count) { [int] $marks[$i + 1] } else { 0 }
-            Start-Sleep -Seconds (60 * ($minutes - $next))
-        }
-    } else {
-        Log 'No players online.'
-    }
+# The rest of the countdown. A warning preparing ran past is skipped, except the last minute, which always comes.
+for ($i = 1; $i -lt $marks.Count; $i++) {
+    $minutes = [int] $marks[$i]
+    $wait = ($restartAt.AddMinutes(-$minutes) - (Get-Date)).TotalSeconds
+    if ($wait -lt 0 -and $minutes -ne 1) { continue }
+    if ($wait -gt 0) { Start-Sleep -Seconds ([int] [math]::Ceiling($wait)) }
+    if ($minutes -eq 1 -and $restartAt -lt (Get-Date).AddMinutes(1)) { $restartAt = (Get-Date).AddMinutes(1) }
+    Announce $minutes
 }
-StopServer
+$wait = ($restartAt - (Get-Date)).TotalSeconds
+if ($wait -gt 0) { Start-Sleep -Seconds ([int] [math]::Ceiling($wait)) }
+
+$script:stopping = $true
+$downFrom = Get-Date
+StopWorld
+RotateConsoleLogs
 
 $expected = $installed
 if ($installNeeded) {
@@ -853,15 +946,15 @@ if ($installNeeded) {
     } else {
         $release.tag_name | Set-Content -Path $releaseRecord -Encoding ascii
         $expected = $releaseCore
+        # The installer sets a few config values itself; the settings list has the last word, as before (seconds).
+        if (RunScript $applySettings @('-Server', "`"$Server`"", '-Unattended')) { Log 'Applying the settings reported a problem.' 'WARN' }
     }
 } elseif ($liveIsOurs -and $release) {
     $expected = $releaseCore
 }
 
-Log 'Applying server-settings...'
-if (RunScript $applySettings @('-Server', "`"$Server`"", '-Unattended')) { Log 'Applying the settings reported a problem.' 'WARN' }
-
 if (StartAndCheck $expected) {
+    if ($script:openAt) { Log "Downtime: $([int] ($script:openAt - $downFrom).TotalSeconds) s from the stop until the world was up (to within 15 s)." }
     $what = if ($installNeeded) { "installed $($release.tag_name)" } elseif ((OfficialExe) -eq $official) { 'patched server unchanged' } else { 'official server (no patched build yet)' }
     Finish "Patch night OK: $what, settings checked, server up on core $expected." 0
 }
