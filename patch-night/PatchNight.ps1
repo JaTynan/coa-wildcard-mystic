@@ -409,30 +409,63 @@ function SkipUnusedAuctionItems {
     # Auctioneer's current listings of them down if nobody has bid. Resilience did not exist up to level 60 in the
     # original game, so any level 1-60 item with it counts as that gear. (MySQL refuses a multi-table DELETE with
     # aliases unless a database is selected, hence the USE.)
+    # Burning Crusade and Wrath items are skipped too (21 Nov): the realm stops at level 60. The required-level limit
+    # in server-settings misses everything with no required level (cloth, ore, herbs, gems, many quest rewards), so an
+    # item counts as later-expansion when it needs level 61+, is gear above item level 92 (Naxxramas is the classic
+    # top), is a recipe needing skill above 300, or sits in the later games' item numbers (from 21800; gear from
+    # 24000) at item level 60 or more, where classic goods stop. The few classic Naxxramas-era goods in that range,
+    # and Outland's low-level pearls, are listed by hand. Custom CoA items (100000 and up) only by required level.
+    # The ids from the DisabledCustomItemIDs line in server-settings.txt (cut gems, high scrolls) are kept as well.
     $world = DatabaseName 'WorldDatabaseInfo' 'acore_world'
     $chars = DatabaseName 'CharacterDatabaseInfo' 'acore_characters'
     $resilience = (1..10 | ForEach-Object { "stat_type$_ = 35" }) -join ' OR '
     $catalogue = Sql "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = '$world' AND TABLE_NAME = 'coa_bloodforged_catalogue';"
     $fromCatalogue = if ($catalogue.Text.Trim() -eq '1') { " OR entry IN (SELECT entry FROM ``$world``.coa_bloodforged_catalogue)" } else { '' }
+    $later = "RequiredLevel > 60 OR (entry < 100000 AND (" +
+        "(class IN (2, 4) AND (ItemLevel > 92 OR (entry >= 24000 AND ItemLevel >= 63)))" +
+        " OR (class = 9 AND RequiredSkillRank > 300)" +
+        " OR (class NOT IN (2, 4, 9) AND ItemLevel >= 60 AND (entry >= 24000 OR (entry >= 21800 AND class IN (0, 1, 3, 6, 7)" +
+        " AND entry NOT IN (22233, 22679, 22682, 23162, 23194, 23195, 23196))))" +
+        " OR entry IN (24478, 24479)))"
     $skip = "(name LIKE BINARY 'UNUSED%' OR name LIKE BINARY 'Bloodforged %' OR name LIKE BINARY 'Sanguine %'" +
-        " OR (RequiredLevel <= 60 AND ($resilience))$fromCatalogue)"
-    $found = Sql "SELECT entry FROM ``$world``.item_template WHERE $skip ORDER BY entry;"
+        " OR (RequiredLevel <= 60 AND ($resilience))$fromCatalogue OR $later)"
+    # Every item with a 1 for skip, so runs of skipped items can be written as ranges (a few thousand items).
+    $found = Sql "SELECT entry, IF($skip, 1, 0) FROM ``$world``.item_template ORDER BY entry;"
     if ($found.Code) { Log "Could not look up the items the auction bot should skip: $($found.Text)" 'WARN'; return }
-    $ids = @($found.Text -split "`r?`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -match '^\d+$' })
-    if (-not $ids.Count) { Log 'No items for the auction bot to skip.'; return }
+    $ranges = [Collections.Generic.List[string]]::new()
+    $count = 0; $first = $null; $last = $null
+    foreach ($row in $found.Text -split "`r?`n") {
+        if ($row -notmatch '^(\d+)\s+([01])$') { continue }
+        if ($Matches[2] -eq '1') {
+            $count++
+            if ($null -eq $first) { $first = $Matches[1] }
+            $last = $Matches[1]
+        } elseif ($null -ne $first) {
+            $ranges.Add($(if ($first -eq $last) { $first } else { "$first-$last" })); $first = $null
+        }
+    }
+    if ($null -ne $first) { $ranges.Add($(if ($first -eq $last) { $first } else { "$first-$last" })) }
+    if (-not $count) { Log 'No items for the auction bot to skip.'; return }
+    $list = Join-Path $settingsDir 'server-settings.txt'
+    $fromSettings = ''
+    if (Test-Path $list) {
+        $line = Get-Content $list | Where-Object { $_ -match '^\s*modules\\mod_ahbot\.conf\s*\|\s*AuctionHouseBot\.DisabledCustomItemIDs\s*=\s*(\S.*)$' } | Select-Object -Last 1
+        if ($line -and $line -match '=\s*(\S.*)$') { $fromSettings = $Matches[1].Trim().Trim(',') }
+    }
     $conf = Join-Path $configs 'modules\mod_ahbot.conf'
     if (-not (Test-Path $conf)) { Log "No $conf; the auction bot never-list was not set." 'WARN'; return }
-    $setting = "AuctionHouseBot.DisabledCustomItemIDs = $($ids -join ',')"
+    $value = (@($fromSettings) + $ranges | Where-Object { $_ }) -join ','
+    $setting = "AuctionHouseBot.DisabledCustomItemIDs = $value"
     $lines = [Collections.Generic.List[string]] @(Get-Content $conf)
     $at = -1
     for ($i = 0; $i -lt $lines.Count; $i++) { if ($lines[$i] -match '^\s*AuctionHouseBot\.DisabledCustomItemIDs\s*=') { $at = $i } }
     if ($at -ge 0) { $lines[$at] = $setting } else { $lines.Add($setting) }
     Set-Content -Path $conf -Value $lines -Encoding ASCII
     $removed = Sql ("USE ``$chars``; DELETE ah, ii FROM ``$chars``.auctionhouse ah JOIN ``$chars``.item_instance ii ON ii.guid = ah.itemguid " +
-        "JOIN ``$chars``.characters c ON c.guid = ah.itemowner JOIN ``$world``.item_template it ON it.entry = ii.itemEntry " +
-        "WHERE c.name = 'Auctioneer' AND ah.buyguid = 0 AND it.entry IN ($($ids -join ',')); SELECT ROW_COUNT();")
+        "JOIN ``$chars``.characters c ON c.guid = ah.itemowner " +
+        "WHERE c.name = 'Auctioneer' AND ah.buyguid = 0 AND ii.itemEntry IN (SELECT entry FROM ``$world``.item_template WHERE $skip); SELECT ROW_COUNT();")
     if ($removed.Code) { Log "Could not remove the Auctioneer's listings of skipped items: $($removed.Text)" 'WARN' }
-    Log "Auction bot skips $($ids.Count) items (UNUSED, Bloodforged, Sanguine, PvP); removed listings (rows): $($removed.Text.Trim())."
+    Log "Auction bot skips $count items (UNUSED, Bloodforged, Sanguine, PvP, Burning Crusade and Wrath) plus the server-settings list; removed listings (rows): $($removed.Text.Trim())."
 }
 
 function RepriceAuctionsWhenPricesChange {

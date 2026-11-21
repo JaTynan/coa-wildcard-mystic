@@ -99,7 +99,7 @@ for good by deleting its part from the script.
 
 Grouped and explained line by line in `server-settings.txt`: Wildcard realm (ability pool, no Pete Arr), experience
 (3x, prestige, exploring, quests, gathering, world PvP, rested), progression earned not handed out, professions and drops, faster respawns (90 s
-mobs, 2 min nodes), Auction House bot (stock, skipped items, prices), play with friends, SQUID's bots (world PvP,
+mobs, 2 min nodes), Auction House bot (stock, skipped items including everything from Burning Crusade and Wrath, prices), play with friends, SQUID's bots (world PvP,
 load, waking, zones, Dungeon Clear with Smart Rest: pack to pack until someone runs low), PvP rewards, AI chat, MySQL and world server performance, view distance.
 
 ## Database
