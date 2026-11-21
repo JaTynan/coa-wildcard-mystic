@@ -481,6 +481,9 @@ worldserver.conf | LoginDatabase.WorkerThreads = 2
 # 1,000 bots (9 Nov, was 1,250): lag spikes with 3 players on (95% under 74 ms, 99% 147 ms, worst 1.3 s).
 modules\playerbots.conf | AiPlayerbot.MinRandomBots = 1000
 modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 1000
+# Manastorm XP (21 Nov, James): the core cuts all Manastorm XP (stage kills after the depth modifiers, and floor
+# completion) to 30%, a 70% reduction. 75% is a 25% reduction, a bit under what it used to give.
+modules\manastorm-endless.conf | Manastorm.ExperienceRate = 0.75
 # Capitals felt empty: bots pick a city visit three times as often (bank, auction house, trainers; 10-30 minutes).
 modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.GoCity = 30
 # Bot levels near the real players: 70% of bots roll within 5 levels of a random online player when they are
