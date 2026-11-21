@@ -15,7 +15,7 @@ $loader = "void AddSC_AscensionAdventurerCache()`n{`n"
 foreach ($anchor in @($include, $register, $loader)) {
     if (-not $text.Contains($anchor)) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
 }
-foreach ($needed in @('WcmePlainsrunningBonus', 'WcmeOverclockSteps', 'WcmeRadiantStacks', 'WcmeAmbushCooldown')) {
+foreach ($needed in @('WcmePlainsrunningBonus', 'WcmeMomentumTier', 'WcmeOverclockSteps', 'WcmeRadiantStacks', 'WcmeAmbushCooldown')) {
     if (-not $text.Contains($needed)) { throw "A racial patch did not run before this one: no $needed in AscensionAdventurerCache.cpp" }
 }
 $class = @'
@@ -89,6 +89,20 @@ private:
                     "% of the way to your cap.");
                 if (player->WcmeStompBoost)
                     Say(handler, "War Stomp boost: +30% for " + Time((player->WcmeStompBoost + 999) / 1000) + " more, included above.");
+                {
+                    static char const* const tiers[] = {
+                        "none yet (Momentum at a third of the way)",
+                        "Momentum: stuns, fears and roots 15% shorter (Unstoppable at two thirds)",
+                        "Unstoppable: stuns, fears and roots 25% shorter, 5% less damage taken, immune to slows (Juggernaut at full)",
+                        "Juggernaut: stuns, fears and roots 40% shorter, 10% less damage taken, immune to slows and roots" };
+                    Say(handler, std::string("Juggernaut tier: ") + tiers[std::min<uint8>(player->WcmeMomentumTier, 3)] + ".");
+                    Say(handler, player->HasAura(9990068)
+                        ? std::string("Impact: ready (next damaging hit +30% and a knockback; costs 10 sec of building).")
+                        : std::string("Impact: ready at full speed."));
+                    if (player->WcmePlainsrunningStill && player->WcmePlainsrunningCharge > 0.0f)
+                        Say(handler, player->WcmePlainsrunningStill <= 3000 ? std::string("Stopped: draining starts in ") +
+                            Time((3000 - player->WcmePlainsrunningStill + 999) / 1000) + "." : std::string("Stopped: draining."));
+                }
                 break;
             }
             case RACE_ORC:
