@@ -256,6 +256,7 @@ $report.Add("Settings check, $(Get-Date -Format 'yyyy-MM-dd HH:mm'): each settin
 $unknown = New-Object System.Collections.Generic.List[string]
 $known = 0; $noDist = @{}
 $distKeys = @{}
+$distSet = @{}
 foreach ($entry in $list) {
     if ($entry -notmatch $pattern) { continue }
     $file = $Matches[1]; $key = $Matches[2]
@@ -265,9 +266,14 @@ foreach ($entry in $list) {
         $dist = Join-Path $configs "$file.dist"
         if (Test-Path $dist) {
             $names = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
-            # Commented-out examples ("#Key = value") count as known as well.
-            foreach ($line in [IO.File]::ReadAllLines($dist)) { if ($line -match '^\s*#?\s*([A-Za-z][\w.\-]*)\s*=') { [void] $names.Add($Matches[1]) } }
+            $set = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+            # Commented-out examples ("#Key = value") count as known as well; only real lines are options it sets.
+            foreach ($line in [IO.File]::ReadAllLines($dist)) {
+                if ($line -match '^\s*#?\s*([A-Za-z][\w.\-]*)\s*=') { [void] $names.Add($Matches[1]) }
+                if ($line -match '^\s*([A-Za-z][\w.\-]*)\s*=') { [void] $set.Add($Matches[1]) }
+            }
             $distKeys[$file] = $names
+            $distSet[$file] = $set
         }
     }
     if ($null -eq $distKeys[$file]) { $noDist[$file] = $true; continue }
@@ -277,26 +283,48 @@ foreach ($entry in $list) {
 # A setting name the world server program contains is one it reads; only the rest are really unknown.
 $ours = New-Object System.Collections.Generic.List[string]
 $exePath = Join-Path $Server 'Core\worldserver.exe'
+# Some names are put together while the server runs ("WeekendBonus." + theme + ".HonorRate", "Battleground.Spoils" +
+# "CasePercent"): such a name counts when the program holds a start of it as one piece and the rest, or its last
+# part, as another. The logging settings (Logger.*, Appender.*) are always read, and some settings are read by our
+# website scripts (patch-night\signup), not the server.
+$NUL = [char] 0
+function Holds([string] $text) { $program.IndexOf("$NUL$text$NUL", [StringComparison]::Ordinal) -ge 0 }
+function ReadByProgram([string] $key) {
+    if ($program.IndexOf($key, [StringComparison]::Ordinal) -ge 0) { return $true }
+    $last = ($key -split '\.')[-1]
+    for ($i = $key.Length - 1; $i -ge 6; $i--) {
+        # The compiler builds short names (up to 15 letters) into the code instead of storing them, so the last part
+        # may also be found as a quoted name in our patch scripts.
+        if ((Holds $key.Substring(0, $i)) -and ((Holds $key.Substring($i)) -or (Holds $last) -or (Holds ".$last") -or
+            $scripts.Contains("`"$last`""))) { return $true }
+    }
+    return $false
+}
 if ($unknown.Count -and (Test-Path $exePath)) {
     $program = [Text.Encoding]::GetEncoding(28591).GetString([IO.File]::ReadAllBytes($exePath))
+    # Our website scripts, and the patch scripts of the repository patch night downloaded.
+    $scripts = (@(Get-ChildItem (Join-Path $Server 'patch-night\signup') -Filter '*.py' -ErrorAction SilentlyContinue) +
+        @(Get-ChildItem (Join-Path $Server 'patch-night\work\repo\*\patches') -Filter '*.ps1' -ErrorAction SilentlyContinue) |
+        ForEach-Object { [IO.File]::ReadAllText($_.FullName) }) -join "`n"
     foreach ($item in @($unknown)) {
-        if ($program.IndexOf(($item -split '\|')[1].Trim(), [StringComparison]::Ordinal) -ge 0) { $ours.Add($item); [void] $unknown.Remove($item) }
+        $key = ($item -split '\|')[1].Trim()
+        if ($key -match '^(Logger|Appender)\.' -or (ReadByProgram $key) -or $scripts.Contains($key)) { $ours.Add($item); [void] $unknown.Remove($item) }
     }
     $program = $null
 }
 $known += $ours.Count
 $report.Add('')
-$report.Add("Known to the server: $known ($($ours.Count) of them read by our patched server only, not in the official .dist).")
+$report.Add("Known to the server: $known ($($ours.Count) of them read by our patched server or website only, not in the official .dist).")
 $report.Add("Unknown, in neither the .dist nor the server program (renamed or removed by an update? the server ignores these): $($unknown.Count).")
 foreach ($line in $unknown) { $report.Add("  $line") }
-if ($ours.Count) { $report.Add(''); $report.Add('Read by our patched server only:'); foreach ($line in $ours) { $report.Add("  $line") } }
+if ($ours.Count) { $report.Add(''); $report.Add('Read by our patched server or website only:'); foreach ($line in $ours) { $report.Add("  $line") } }
 if ($noDist.Count) { $report.Add(''); $report.Add("No .dist to check against (our own module configs): $(($noDist.Keys | Sort-Object) -join ', ').") }
 $newOptions = New-Object System.Collections.Generic.List[string]
 foreach ($file in ($distKeys.Keys | Sort-Object)) {
     if ($null -eq $distKeys[$file]) { continue }
     $live = ReadPath (Targets $file)[-1]
     if ($null -eq $live) { continue }
-    $missing = @($distKeys[$file] | Where-Object { -not $index[(Targets $file)[-1]].ContainsKey($_.ToLowerInvariant()) } | Sort-Object)
+    $missing = @($distSet[$file] | Where-Object { -not $index[(Targets $file)[-1]].ContainsKey($_.ToLowerInvariant()) } | Sort-Object)
     if ($missing.Count) { $newOptions.Add("  $file ($($missing.Count)): $($missing -join ', ')") }
 }
 $report.Add('')
