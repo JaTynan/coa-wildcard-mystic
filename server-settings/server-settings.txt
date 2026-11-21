@@ -600,3 +600,19 @@ modules\mod_ollama_chat.conf | OllamaChat.EmoteReplyChance = 90
 worldserver.conf | CoABugReport.Enable = 1
 worldserver.conf | CoABugReport.SpoolDirectory = "C:\Games\CoA Server\BugReports"
 worldserver.conf | CoABugReport.CooldownSeconds = 120
+
+# ---------------------------------------------------------------- New core options, set on purpose (22 Nov)
+# Options CoA core updates added that ran on their defaults (the settings check and the server's start-up warnings
+# list them in server-settings\settings-report.txt). Reviewed 22 Nov; the rest stay on CoA's defaults, and so does
+# Quests.LogSize (25).
+# Dungeon Finder offers classic dungeons only. At 2 it listed the Burning Crusade dungeons from level 58, which a
+# level-60 realm cannot enter; below 2 the Random Classic Dungeon also stays open at 60 instead of stopping at 59.
+worldserver.conf | DungeonFinder.MaxExpansion = 0
+# Bots do not path across ground steeper than 50 degrees (what a player can walk up); at 0 the mmaps let them climb
+# mountainsides a player slides down.
+worldserver.conf | MoveMaps.Bots.MaxSlope = 50
+# Open-world creatures a quest needs respawn within 3 minutes, so players are not left waiting behind 750 bots.
+# Rares, rare elites and world bosses are never shortened; named quest targets keep their own cap (150 s).
+worldserver.conf | Respawn.QuestTarget.General = 180
+# /who lists only real players; bots are still seen in the world, chat, groups and the friends list.
+worldserver.conf | Who.ShowBots = 0
