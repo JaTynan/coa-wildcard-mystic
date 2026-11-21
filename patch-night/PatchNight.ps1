@@ -166,6 +166,50 @@ function FetchRepo {
                 Log "Updated the $($addon.Name) addon in $addons."
             }
         }
+        # Third-party addons for everyone (addon\third-party-addons.txt), each pinned to a commit of its own GitHub
+        # repository, downloaded only when its pin changes or a folder is missing; only the listed folders are copied.
+        $thirdParty = Join-Path $repoRoot 'addon\third-party-addons.txt'
+        if ((Test-Path $addons) -and (Test-Path $thirdParty)) {
+            $pinsFile = Join-Path $here 'third-party-addons.json'
+            $pins = @{}
+            if (Test-Path $pinsFile) {
+                (Get-Content $pinsFile -Raw | ConvertFrom-Json).PSObject.Properties | ForEach-Object { $pins[$_.Name] = $_.Value }
+            }
+            foreach ($line in Get-Content $thirdParty) {
+                if ($line -match '^\s*(#|$)') { continue }
+                $parts = @($line -split '\|' | ForEach-Object { $_.Trim() })
+                if ($parts.Count -lt 3 -or $parts[1] -notmatch '^[0-9a-f]{40}$') { Log "Skipped a third-party addon line: $line" 'WARN'; continue }
+                $source = $parts[0]; $commit = $parts[1]
+                $folders = @($parts[2] -split ',' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+                $targets = @($folders | ForEach-Object { ($_ -split '=')[0].Trim() })
+                $missing = @($targets | Where-Object { -not (Test-Path (Join-Path $addons $_)) })
+                if ($pins[$source] -eq $commit -and $missing.Count -eq 0) { continue }
+                try {
+                    $name = ($source -split '/')[-1]
+                    $addonZip = Join-Path $work "addon-$name.zip"
+                    $addonDir = Join-Path $work "addon-$name"
+                    Invoke-WebRequest -Uri "https://github.com/$source/archive/$commit.zip" -OutFile $addonZip -UseBasicParsing
+                    if (Test-Path $addonDir) { Remove-Item $addonDir -Recurse -Force }
+                    Expand-Archive -Path $addonZip -DestinationPath $addonDir -Force
+                    $root = Get-ChildItem $addonDir -Directory | Select-Object -First 1 | ForEach-Object { $_.FullName }
+                    foreach ($folder in $folders) {
+                        $target = ($folder -split '=')[0].Trim()
+                        $from = if ($folder -match '=\s*\.\s*$') { $root } else { Join-Path $root $target }
+                        if (-not (Test-Path (Join-Path $from "$target.toc"))) { throw "no $target.toc in $source" }
+                        $to = Join-Path $addons $target
+                        if (Test-Path $to) { Remove-Item $to -Recurse -Force }
+                        Copy-Item $from $to -Recurse -Force
+                    }
+                    $pins[$source] = $commit
+                    Log "Installed the third-party addon(s) $($targets -join ', ') from $source at $($commit.Substring(0, 7)) in $addons."
+                } catch {
+                    Log "Could not install the third-party addon(s) from ${source}: $($_.Exception.Message)" 'WARN'
+                } finally {
+                    Remove-Item $addonZip, $addonDir -Recurse -Force -ErrorAction SilentlyContinue
+                }
+            }
+            $pins | ConvertTo-Json | Set-Content $pinsFile
+        }
         # Mystic Enchant fixes (SQL), applied to the world database before every start.
         $fixes = Join-Path $repoRoot 'sql\enchants'
         $local = Join-Path $here 'enchants'
