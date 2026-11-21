@@ -1,0 +1,6 @@
+## Interface: 30300
+## Title: Wildcard Combat Log Fix
+## Notes: Keeps the combat log (and damage meters like Details! and Skada) working: clears it when it gets stuck, as it does with many units around.
+## Version: 1.0
+## SavedVariables: WildcardCombatLogFixDB
+WildcardCombatLogFix.lua
