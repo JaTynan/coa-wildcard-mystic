@@ -217,7 +217,7 @@ SPELLS = {
              ICON_OX_CHARGE, 0, [(MOD_DAMAGE_PERCENT_DONE, 30, ALL_SCHOOLS)]),
     PLAINSRUNNING_HERD: ('Running with the Herd',
                          'Running with a Tauren: within 18 yards of a group member\'s Plainsrunning, you run faster by '
-                         'as much as they do. On foot only.',
+                         'as much as they do, for 3 sec after you drop out of range. On foot only.',
                          'Running with the herd. The number is your bonus running speed in percent.',
                          3542, 200, [(DUMMY, 0, 0)]),
     BLOODRUSH: ('Bloodrush',

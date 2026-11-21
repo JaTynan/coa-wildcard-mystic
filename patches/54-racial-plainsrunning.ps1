@@ -3,7 +3,8 @@
 # +100% make +170%). Nothing while mounted; held, but not applied, while carrying a battleground flag. Group members
 # within 18 yards of a running Tauren get the same bonus while they're on foot (Running with the Herd, 9990058; the
 # highest Tauren's if several; not while carrying a flag; James, 20 November; 18 yards, was 10, on 21 November: bots
-# follow about 15 yards back, lost it and were left behind; 18 leaves room for latency). Tauren build faster together: each other
+# follow about 15 yards back, lost it and were left behind; 18 leaves room for latency). Out of range, it holds for 3
+# sec (was 0.6), so someone who drops back can catch up (James, 21 November); a flag, death or vehicle ends it at once. Tauren build faster together: each other
 # Tauren running in the group within 10 yards adds the normal rate again, up to 4 (two build in 30 sec, five in 12).
 # War Stomp adds 30% more for 5 sec, past the cap, and can be cast on the move at 80% less speed while it casts
 # (hidden 9990060), so it doesn't stop the run: a running start or a boost mid run (James, 20 November).
@@ -131,7 +132,8 @@ public:
     }
     static constexpr float HerdRange = 10.0f;  // other Tauren running this close add to the build rate
     static constexpr float ShareRange = 18.0f; // group members this close get the bonus (bots follow ~15 yards back)
-    static constexpr uint32 HerdHold = 600;      // an offer not refreshed for this long has ended (ms)
+    static constexpr uint32 HerdHold = 3000;     // an offer not refreshed for this long has ended (ms): a member who
+                                                 // drops out of range keeps the speed 3 sec to catch back up
 
     static bool CarryingFlag(Player* player)
     {
@@ -201,7 +203,8 @@ public:
     static void UpdateHerd(Player* player)
     {
         uint32 const now = Now();
-        bool const fresh = player->WcmeHerdOffer > 0.0f && now - player->WcmeHerdTime <= HerdHold;
+        bool const fresh = player->WcmeHerdOffer > 0.0f && now - player->WcmeHerdTime <= HerdHold &&
+            player->IsAlive() && !player->GetVehicle() && !player->IsInFlight() && !CarryingFlag(player);
         float const bonus = fresh ? player->WcmeHerdOffer : 0.0f;
         if (!fresh)
         {
