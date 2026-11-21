@@ -60,7 +60,25 @@ function Targets([string] $file) {
     return $paths
 }
 
+# Speed (22 Nov): each file is read once and indexed by setting name, so a setting is found by looking it up
+# instead of testing every line of the file against it (261 settings x 2 copies of worldserver.conf took
+# 3 minutes of patch night's downtime). The index lists the lines a setting is on, as KeyPattern would match them:
+# not a comment, the name, optional spaces, then "="; names compare without regard to case, like -match.
 $cache = @{}
+$index = @{}
+$lineKey = '^\s*([^#=\s][^=]*?)\s*='
+function IndexLine([string] $path, [int] $i) {
+    if ($cache[$path][$i] -match $lineKey) {
+        $name = $Matches[1].ToLowerInvariant()
+        if (-not $index[$path].ContainsKey($name)) { $index[$path][$name] = New-Object System.Collections.Generic.List[int] }
+        $index[$path][$name].Add($i)
+    }
+}
+function LinesOf([string] $path, [string] $key) {
+    $found = $index[$path][$key.ToLowerInvariant()]
+    if ($found) { return ,$found }
+    return ,@()
+}
 function ReadPath([string] $path) {
     if (-not $cache.ContainsKey($path)) {
         $cache[$path] = $null
@@ -69,6 +87,8 @@ function ReadPath([string] $path) {
             $lines = New-Object System.Collections.ArrayList
             foreach ($line in @(Get-Content $path)) { [void] $lines.Add($line) }
             $cache[$path] = $lines
+            $index[$path] = @{}
+            for ($i = 0; $i -lt $lines.Count; $i++) { IndexLine $path $i }
         }
     }
     # The comma keeps PowerShell from unrolling the list into a copy, so edits reach the cache.
@@ -156,13 +176,13 @@ foreach ($entry in $list) {
         if ($null -eq $lines) { continue }
         $any = $true
         $found = $false
-        for ($i = 0; $i -lt $lines.Count; $i++) {
+        foreach ($i in (LinesOf $path $key)) {
             if ($lines[$i] -match (KeyPattern $key)) {
                 $found = $true
                 if ((CurrentValue @($lines[$i]) $key) -ne $value) { $lines[$i] = $wanted; $differs = $true; $changedPaths[$path] = $true }
             }
         }
-        if (-not $found) { [void] $lines.Add($wanted); $differs = $true; $changedPaths[$path] = $true }
+        if (-not $found) { [void] $lines.Add($wanted); IndexLine $path ($lines.Count - 1); $differs = $true; $changedPaths[$path] = $true }
     }
     if (-not $any) { Write-Host "  no file:   $file (skipped $key)" -ForegroundColor Yellow; $skipped++; continue }
     if ($differs) { $changed++; Write-Host "  set:       $wanted  ($file)" } else { $same++ }
