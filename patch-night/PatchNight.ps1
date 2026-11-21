@@ -32,6 +32,9 @@ param(
     [switch] $Updated
 )
 $ErrorActionPreference = 'Stop'
+# Speed (22 Nov): Windows PowerShell 5.1 redraws a progress bar for every block it downloads, which made
+# Invoke-WebRequest crawl (the 38 MB build took 2 minutes 20, the 25 MB DragonUI addon 8 minutes). No bar, same files.
+$ProgressPreference = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 $here = $PSScriptRoot
