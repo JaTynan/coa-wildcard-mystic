@@ -56,8 +56,17 @@ log_file = patch_night / "signup.log"
 lock = threading.Lock()
 
 
+def say(line):
+    """The window: everything logged, plus each request. Never stops the page if there is no console."""
+    try:
+        print(line, flush=True)
+    except (OSError, ValueError):
+        pass
+
+
 def log(message):
     line = time.strftime("%Y-%m-%d %H:%M:%S ") + message
+    say(line)
     with open(log_file, "a", encoding="utf-8") as handle:
         handle.write(line + "\n")
 
@@ -473,6 +482,11 @@ def handler_for(options):
         def log_message(self, format, *args):
             pass
 
+        def log_request(self, code="-", size="-"):
+            # One line per request in the window only (signup.log keeps sign-ups and problems): when, who (the
+            # visitor's address as Cloudflare passes it), what and the answer.
+            say(f"{time.strftime('%H:%M:%S')} {self.address():<15} {self.command} {self.path.split('?')[0]} -> {int(code) if str(code).isdigit() or hasattr(code, 'value') else code}")
+
     return Handler
 
 
@@ -565,6 +579,62 @@ def warm_pets(options):
         log(f"Pets failed: {error!r}")
 
 
+def window(title):
+    """Names the console window and minimises it (22 Nov: it opened full size on the desktop at every start).
+    Only on Windows, and only when there is a console window to change."""
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+        ctypes.windll.kernel32.SetConsoleTitleW(title)
+        handle = ctypes.windll.kernel32.GetConsoleWindow()
+        if handle:
+            ctypes.windll.user32.ShowWindow(handle, 6)  # SW_MINIMIZE
+    except Exception:
+        pass
+
+
+def addresses():
+    """This machine's IPv4 addresses, to see which network the page answers on."""
+    import socket
+    found = []
+    try:
+        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
+            if info[4][0] not in found and not info[4][0].startswith("127."):
+                found.append(info[4][0])
+    except OSError:
+        pass
+    return found
+
+
+def startup_report(options, bind):
+    """What the window shows at start, for troubleshooting: versions, folders, settings, what is reachable."""
+    say("=" * 78)
+    say(f"Wildcard sign-up page and website data, started {time.strftime('%Y-%m-%d %H:%M:%S')}")
+    script = Path(__file__).resolve()
+    say(f"  Script:        {script} (updated {time.strftime('%Y-%m-%d %H:%M', time.localtime(script.stat().st_mtime))})")
+    say(f"  Python:        {sys.version.split()[0]} at {sys.executable}")
+    say(f"  Server folder: {options.server}")
+    build = WildcardStatus._build(options.server / "Core")
+    say(f"  Server build:  {build['tag'] or 'official (no patched build recorded)'}")
+    data = raw_settings()
+    missing = [key for key in ("turnstileSiteKey", "turnstileSecret", "inviteCodes") if not data.get(key)]
+    say(f"  Settings:      {settings_file} - " + ("sign-ups OPEN" if settings() else
+        "sign-ups CLOSED (" + (("missing: " + ", ".join(missing)) if missing else "invite code still CHANGE-ME") + ")"))
+    spool = options.server / "BugReports"
+    waiting = len(list(spool.glob("*.report"))) if spool.is_dir() else 0
+    say(f"  Bug reports:   {spool} - " + ("sent to GitHub" if str(data.get("githubToken", "")).strip()
+        else "kept in the folder (no githubToken)") + f", {waiting} waiting")
+    world = WildcardStatus._answers(8085)
+    say(f"  World server:  {'answering' if world else 'not answering'} on port 8085")
+    say(f"  Log file:      {log_file}")
+    say(f"  Listening on:  {bind[0]}:{bind[1]} - this machine's addresses: {', '.join(addresses()) or 'unknown'}")
+    say(f"                 test from the VM: http://127.0.0.1:{bind[1]}/   (the Cloudflare tunnel reaches it from the"
+        " Servers network)")
+    say("=" * 78)
+    say("Requests (time, visitor, request -> answer):")
+
+
 def main():
     parser = argparse.ArgumentParser(description="Wildcard sign-up page")
     parser.add_argument("--server", default=r"C:\Games\CoA Server")
@@ -574,10 +644,35 @@ def main():
     options.python = str(options.server / "Runtime" / "python" / "python.exe")
     options.manage = options.server / "Scripts" / "manage.py"
     options.bridge = patch_night / "launcher_bridge.py"
+    # A console that cannot show a character must not stop the page.
+    try:
+        sys.stdout.reconfigure(errors="replace")
+    except (AttributeError, ValueError):
+        pass
+    window(f"Wildcard sign-up page - port {options.port}")
+    bind = ("0.0.0.0", options.port)
+
+    class Server(ThreadingHTTPServer):
+        # On Windows "reuse address" lets a second program take a port already in use without an error, so a clash
+        # would go unnoticed; off there, a taken port is reported below.
+        allow_reuse_address = sys.platform != "win32"
+
+    try:
+        server = Server(bind, handler_for(options))
+    except OSError as error:
+        # Usually another copy is already running, or something else took the port. The scheduled task tries again
+        # every minute; the message stays in the window until then.
+        log(f"Sign-up page could NOT listen on {bind[0]}:{bind[1]}: {error}. Is another copy running? Retrying in a minute.")
+        time.sleep(60)
+        sys.exit(1)
+    try:
+        startup_report(options, bind)
+    except Exception as error:  # the report is for reading; the page runs regardless
+        say(f"(start-up report incomplete: {type(error).__name__}: {error})")
     threading.Thread(target=bug_report_relay, args=(options.server / "BugReports",), daemon=True).start()
     threading.Thread(target=warm_pets, args=(options,), daemon=True).start()
-    log(f"Sign-up page listening on port {options.port}" + ("" if settings() else " (not open: fill in signup-settings.json)"))
-    ThreadingHTTPServer(("0.0.0.0", options.port), handler_for(options)).serve_forever()
+    log(f"Sign-up page listening on {bind[0]}:{bind[1]}" + ("" if settings() else " (not open: fill in signup-settings.json)"))
+    server.serve_forever()
 
 
 if __name__ == "__main__":

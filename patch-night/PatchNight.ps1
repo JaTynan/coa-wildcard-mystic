@@ -315,12 +315,16 @@ function FetchRepo {
         # The friends' sign-up page; restart it so it runs the new copy (once Register-WildcardSignup has set it up).
         $signup = Join-Path $repoRoot 'signup'
         $localSignup = Join-Path $here 'signup'
-        if (Test-Path $signup) {
+        # The sign-up page restarts only when its scripts changed (it used to restart, and open its window, every run).
+        $fingerprint = { param($dir) (Get-ChildItem $dir -Filter '*.py' -File -ErrorAction SilentlyContinue | Sort-Object Name |
+            ForEach-Object { "$($_.Name)=$((Get-FileHash $_.FullName).Hash)" }) -join ';' }
+        if ((Test-Path $signup) -and ((& $fingerprint $signup) -ne (& $fingerprint $localSignup))) {
             $task = Get-ScheduledTask -TaskName 'Wildcard Sign-up' -ErrorAction SilentlyContinue
             if ($task) { Stop-ScheduledTask -TaskName 'Wildcard Sign-up' -ErrorAction SilentlyContinue; Start-Sleep -Seconds 2 }
             if (Test-Path $localSignup) { Remove-Item $localSignup -Recurse -Force }
             Copy-Item $signup $localSignup -Recurse -Force
             if ($task) { Start-ScheduledTask -TaskName 'Wildcard Sign-up' -ErrorAction SilentlyContinue }
+            Log 'Updated the sign-up page and restarted it.'
         }
         $scripts = Join-Path $repoRoot 'patch-night'
         if (Test-Path (Join-Path $scripts 'PatchNight.ps1')) {
