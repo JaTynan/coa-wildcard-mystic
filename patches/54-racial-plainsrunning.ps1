@@ -1,8 +1,9 @@
 # Tauren signature racial: Plainsrunning (docs/race-kits.md). Running on foot builds speed over 60 sec up to level + 40%
 # (100% at level 60); when you stop it holds for 3 sec, then drains over 10 sec (James, 21 November; was 6 sec); it adds on top of other speed effects (Sprint's +70% and a full
 # +100% make +170%). Nothing while mounted; held, but not applied, while carrying a battleground flag. Group members
-# within 10 yards of a running Tauren get the same bonus while they're on foot (Running with the Herd, 9990058; the
-# highest Tauren's if several; not while carrying a flag; James, 20 November). Tauren build faster together: each other
+# within 30 yards of a running Tauren get the same bonus while they're on foot (Running with the Herd, 9990058; the
+# highest Tauren's if several; not while carrying a flag; James, 20 November; 30 yards, was 10, on 21 November: bots
+# follow further back than 10 yards, lost it and were left behind). Tauren build faster together: each other
 # Tauren running in the group within 10 yards adds the normal rate again, up to 4 (two build in 30 sec, five in 12).
 # War Stomp adds 30% more for 5 sec, past the cap, and can be cast on the move at 80% less speed while it casts
 # (hidden 9990060), so it doesn't stop the run: a running start or a boost mid run (James, 20 November).
@@ -128,7 +129,8 @@ public:
         WcmeFx::Play(player, FullSpeedFx); // the same yellow shout disc and drum as full speed
         player->WcmePlainsrunningTimer = 250; // the next update shows it
     }
-    static constexpr float HerdRange = 10.0f;
+    static constexpr float HerdRange = 10.0f;  // other Tauren running this close add to the build rate
+    static constexpr float ShareRange = 30.0f; // group members this close get the bonus (bots follow well back)
     static constexpr uint32 HerdHold = 600;      // an offer not refreshed for this long has ended (ms)
 
     static bool CarryingFlag(Player* player)
@@ -177,7 +179,7 @@ public:
         }
     }
 
-    // Shares the Tauren's bonus with group members within 10 yards, on foot, on the same map (so the same thread).
+    // Shares the Tauren's bonus with group members within 30 yards, on foot, on the same map (so the same thread).
     static void ShareWithHerd(Player* tauren)
     {
         float const bonus = tauren->WcmePlainsrunningBonus;
@@ -188,7 +190,7 @@ public:
         {
             Player* member = ref->GetSource();
             if (!member || member == tauren || !member->IsInMap(tauren) || !member->IsAlive() || member->IsMounted() ||
-                member->GetVehicle() || member->IsInFlight() || !tauren->IsWithinDist(member, HerdRange) ||
+                member->GetVehicle() || member->IsInFlight() || !tauren->IsWithinDist(member, ShareRange) ||
                 CarryingFlag(member))
                 continue;
             Offer(member, tauren, bonus);
