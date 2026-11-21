@@ -10,3 +10,12 @@ PentSec/DragonUI-CoA | f82f13ea33050782175577fcbb5e5264a9f44204 | DragonUI, Drag
 TheLastDarkthorne/Details-CoA | c0c580065b10b132624ef0fdd3aaaa6b6a5b4f95 | Details, Details_3DModelsPaths, Details_ChartViewer, Details_Compare2, Details_DataStorage, Details_DeathGraphs, Details_EncounterDetails, Details_RaidCheck, Details_Streamer, Details_TargetCaller, Details_TimeLine, Details_TinyThreat
 koops61/ActionBarSaver | d6a168c9d22e03c7574a9934568fb57b0b5b1ccb | ActionBarSaver=.
 Szyler/AtlasLootAscension | 512e914b1c157c322f4b62c5e029bb365fd0f3ba | AtlasLoot, AtlasLoot_Cache
+# Added 21 November (James), checked the same way. SuperDuperMacro says game version 3.0, so players need "Load out of
+# date AddOns" ticked for it. Left out: zarnivoop/skada (the Retail and Classic Skada, game versions 1.16 and 12.x).
+GroDany/clique-compact-raid-fram | 475870ef6aa2c85e60964c4275b708ea7428be90 | Clique
+FlorianBerthold/Decursive | 9521fcc8f8bfa5e5e1ceb6924da6ac4232d5f130 | Decursive
+sirus-addons/MikScrollingBattleText | 2db539ed2d10bef31055921cac46f27706635032 | MikScrollingBattleText, MSBTOptions
+sirus-addons/MoveAnything | 3c29318a2052bbd836916bcb9c419b874b6293b4 | MoveAnything
+FlorianBerthold/Omen | d0c64d75eb9053a2c8dacb7375608eb41a239976 | Omen
+JedborgWoW/OmniBar-3.3.5a | 32645ea0f9a513a8b40389603b665191ffcc9617 | OmniBar=.
+jejkas/SuperDuperMacro-WotLK | b1478a359de60245dfc4868e8e6ec0811e8d3b59 | SuperDuperMacro
