@@ -665,6 +665,22 @@ function RestoreRealmAddress {
     else { Log "Realm list points friends at $address again, from $source (realm $($ids -join ', '))." }
 }
 
+function ReportConfigWarnings([string] $text) {
+    # The world server warns at start about every setting it reads but finds in no config file ("Missing property",
+    # it then uses its default: often an option a core update added) and every value it cannot use ("Bad value",
+    # a setting of ours that is not working). Added to the settings check that Apply-ServerSettings writes.
+    $missing = @([regex]::Matches($text, '> Config: Missing property (\S+) in config file [^\r\n]*?add "[^"=]*=\s*([^"]*)"') |
+        ForEach-Object { "  $($_.Groups[1].Value) (default $($_.Groups[2].Value.Trim()))" } | Sort-Object -Unique)
+    $bad = @([regex]::Matches($text, "> Config: Bad value defined for name '([^']+)', going to use '([^']*)'") |
+        ForEach-Object { "  $($_.Groups[1].Value) (the server used $($_.Groups[2].Value) instead)" } | Sort-Object -Unique)
+    $lines = @('', "The world server's own warnings at this start ($(Get-Date -Format 'yyyy-MM-dd HH:mm')):",
+               "Settings it uses but no config file sets, so it runs on its default ($($missing.Count)):") + $missing +
+             @("Values it could not use ($($bad.Count)):") + $bad
+    try { Add-Content -Path (Join-Path $settingsDir 'settings-report.txt') -Value $lines -Encoding utf8 } catch { }
+    $level = if ($bad.Count) { 'WARN' } else { 'INFO' }
+    Log "Settings: the server runs $($missing.Count) setting(s) on defaults (none set in a config file) and could not use $($bad.Count)$(if ($bad.Count) { ': ' + (($bad | ForEach-Object { $_.Trim() }) -join '; ') }). Full list in server-settings\settings-report.txt." $level
+}
+
 function PublishFriendsSite {
     # Refreshes the friends' download site (launcher, its settings, the client manifest) after the client folder
     # may have changed. Does nothing until Setup-WildcardSite.ps1 has created the site folder.
@@ -703,6 +719,7 @@ function StartAndCheck([string] $expected) {
                 Start-Sleep -Seconds 60
                 if (-not (WorldRunning)) { Log 'The world server stopped within a minute of starting.' 'WARN'; return $false }
                 Log "Server is up on core $running."
+                ReportConfigWarnings $text
                 StartDiagnostics
                 # After the world is up, so its checksum pass over 43 GB does not compete with the world loading.
                 PublishFriendsSite
