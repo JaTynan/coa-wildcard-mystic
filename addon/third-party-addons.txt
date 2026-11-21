@@ -1,0 +1,12 @@
+# Third-party addons that patch night installs into the server's client folder (F:\CoAClient\Interface\AddOns), so the
+# launcher gives them to every player; players only need them enabled. Their code is never kept in this repository.
+# One per line:  owner/repository | commit | folders
+#   commit:  the exact commit to install, checked before it was added here (a branch name would take untested changes).
+#   folders: the addon folders in that repository to copy, comma separated. Name=. copies the repository's root as
+#            Name (an addon kept at the top of its repository).
+# Patch night downloads one again only when its commit here changes (or a folder went missing), replacing the old copy.
+# Added 21 November (James). Checked: all for game version 3.3.5 (Interface 30300), nothing but Lua, XML and art.
+PentSec/DragonUI-CoA | f82f13ea33050782175577fcbb5e5264a9f44204 | DragonUI, DragonUI_Options
+TheLastDarkthorne/Details-CoA | c0c580065b10b132624ef0fdd3aaaa6b6a5b4f95 | Details, Details_3DModelsPaths, Details_ChartViewer, Details_Compare2, Details_DataStorage, Details_DeathGraphs, Details_EncounterDetails, Details_RaidCheck, Details_Streamer, Details_TargetCaller, Details_TimeLine, Details_TinyThreat
+koops61/ActionBarSaver | d6a168c9d22e03c7574a9934568fb57b0b5b1ccb | ActionBarSaver=.
+Szyler/AtlasLootAscension | 512e914b1c157c322f4b62c5e029bb365fd0f3ba | AtlasLoot, AtlasLoot_Cache
