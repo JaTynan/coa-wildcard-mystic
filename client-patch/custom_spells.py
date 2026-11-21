@@ -179,7 +179,7 @@ SPELLS = {
                     'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                     '(100% at level 60), on top of other speed effects. When you stop it holds for 3 sec, then drains '
                     'over 10 sec. As it builds you become Unstoppable: see the spellbook entry. Not while '
-                    'mounted; held while carrying a flag. Group members within 30 yards run with you at the same '
+                    'mounted; held while carrying a flag. Group members within 18 yards run with you at the same '
                     'bonus, and each other Tauren running with you builds yours faster (up to 4). War Stomp adds 30% '
                     'more for 5 sec, past your cap, and can be cast on the move.',
                     'Running faster. The number is your bonus running speed in percent.',
@@ -216,7 +216,7 @@ SPELLS = {
              'Your next attack or spell that deals damage deals $s1% more and knocks the target back.',
              ICON_OX_CHARGE, 0, [(MOD_DAMAGE_PERCENT_DONE, 30, ALL_SCHOOLS)]),
     PLAINSRUNNING_HERD: ('Running with the Herd',
-                         'Running with a Tauren: within 30 yards of a group member\'s Plainsrunning, you run faster by '
+                         'Running with a Tauren: within 18 yards of a group member\'s Plainsrunning, you run faster by '
                          'as much as they do. On foot only.',
                          'Running with the herd. The number is your bonus running speed in percent.',
                          3542, 200, [(DUMMY, 0, 0)]),
@@ -292,7 +292,7 @@ SPELLS = {
     BOOK_PLAINSRUNNING: ('Plainsrunning',
                          'While you keep moving on foot, your running speed builds over 60 sec up to your level + 40% '
                          '(100% at level 60), on top of other speed effects. When you stop, it holds for 3 sec, then '
-                         'drains over 10 sec. Not while mounted; paused while carrying a battleground flag. Group members within 30 yards '
+                         'drains over 10 sec. Not while mounted; paused while carrying a battleground flag. Group members within 18 yards '
                          'run with you at the same bonus. Tauren build faster together: each other Tauren running in '
                          'your group within 10 yards adds the normal rate again, up to 4 (two reach full speed in 30 '
                          'sec, five in 12). War Stomp adds 30% more for 5 sec, past your cap: a running start or a '
