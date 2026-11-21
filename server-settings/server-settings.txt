@@ -575,6 +575,10 @@ modules\mod_ollama_chat.conf | OllamaChat.DisableRepliesInCombat = 0
 modules\mod_ollama_chat.conf | OllamaChat.RaidChatterPct = 25
 modules\mod_ollama_chat.conf | OllamaChat.DungeonChatterPct = 50
 modules\mod_ollama_chat.conf | OllamaChat.RateLimit.ScopePerMinute = 20
+# Bot commands typed in say, party or raid (by hand or by SquidBots Lite's buttons) get no AI reply (21 Nov). The module's
+# own list, plus the commands it missed: co / nc with nothing after them ("co ?"), wcr, stats, mount, focus heal, repair,
+# formation, the role orders (@tank attack, @heal follow) and Dungeon Clear's dc.
+modules\mod_ollama_chat.conf | OllamaChat.BlacklistCommands = autogear,talents,reset botAI,summon,release,revive,leave,attack,follow,flee,stay,runaway,grind,disperse,give leader,spells,cast ,quests,accept,drop,talk,reset,ss ,trainer,rti,rtsc,do ,ll ,e ,ue ,nc ,open,destroy,s ,b ,bank,gb ,u ,co ,ELVUI_VERSIONCHK,Asked,DPSMate_,LibGroupTalents,BLT,oRA3,Skada,HealBot,hbComms,questie,pfQuest,DBMv4-Ver,BWVQ3,add,remove,reset ai,report,state,help,log,stats,tank,offtank,healer,cc ,damage,boost,passive,defensive,aggressive,stay,guard,free,follow,assist,pet,stance,formation,rpg,emote,cheer,applaud,drink,eat,dance,attackers,reset instances,home,zone,who ,pos ,tele,grind,loot,quest,trainer,travel,teleport,homebind,unfollow,invite,uninvite,join,leave,leader,ready,release,save,update,reset talents,gear,trade,mail,ah ,ahscan,ahbid,ahbuy,ahsell,ahcancel,bag,repair,vendor,train,spells,reset spells,learn,unlearn,cast,uncast,use ,move,go ,look,stop,turn,face,wait,party,followleader,stayleader,moveleader,info,distance,debug,reset path,reset state,reset all,reset dungeon,reset raid,zone info,LHC40,RECOUNT,GTFO_v,Altoholic,DS_,DataStore,co,nc,wcr,stats,mount,focus heal,repair,formation,@tank,@dps,@heal,@melee,@ranged,dc
 # Typing like a person (7 Nov, second go): 1.5 s to read, then about 60 ms a character, so a short line takes 2-3 s and a long
 # one up to 7 s. The answer is still generated straight away; only its delivery waits.
 modules\mod_ollama_chat.conf | OllamaChat.EnableTypingSimulation = 1
