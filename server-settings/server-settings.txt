@@ -232,6 +232,14 @@ worldserver.conf | Rate.XP.Profession.Skinning = 1.1
 # The same victim gives nothing again for 5 minutes. Not in battlegrounds, arenas or dungeons. 0 turns it off.
 worldserver.conf | WorldPvP.KillXPPercentOfLevel = 2.15
 worldserver.conf | WorldPvP.KillXPSameVictimSeconds = 300
+# Group kill XP (21 Nov, James; patches/93-group-xp.ps1): in Manastorm, dungeons, raids and battlegrounds a group's kill
+# XP is not split; each member in range gets the full kill XP times the factor for 2, 3, 4 and 5+ alive members (the
+# last holds for bigger groups, so 20 in a Manastorm each get x4). A group Manastorm takes about 4 times as long as
+# solo, so x4 at 5 breaks even; dungeons a little lower so both are worth doing. Battleground kills give XP only with
+# Battleground.GiveXPForKills = 1 (off). Empty = the core's split. Read on every kill: change them any time.
+worldserver.conf | GroupXP.Manastorm = "1.8 2.6 3.3 4.0"
+worldserver.conf | GroupXP.Dungeon = "1.4 1.8 2.2 2.5"
+worldserver.conf | GroupXP.Battleground = "1.4 1.8 2.2 2.5"
 # Bonus rolls: weapons and armour (rings, necklaces and trinkets too) looted (blue and up), given by quests (blue and
 # up), crafted or from caches (green and up) have a 1 in 4 chance of a bonus, and 1 in 4 of those get a second. Each bonus is a gem
 # socket 1 time in 3 (an extra prismatic socket, one at most, so Jewelcrafting gems have a use), otherwise an extra stat
