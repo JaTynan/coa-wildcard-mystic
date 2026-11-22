@@ -33,6 +33,10 @@ modules\wildcard.conf | Wildcard.AbilityPool = "classic"
 modules\wildcard.conf | Wildcard.FreeScrolls = 0
 # Class skills from the Wildcard trainer cost nothing (8 Nov; needs the build with the FreeClassTraining patch).
 modules\wildcard.conf | Wildcard.FreeClassTraining = 1
+# Your Wildcard Hero bots train from the same list and at the same (free) prices as a Hero player (22 Nov, James,
+# issue #233; needs the build with patches/97-alt-bots-wildcard-trainer.ps1). 0 = SQUID's own behaviour: the
+# trainer's stock list at stock prices.
+modules\playerbots.conf | AiPlayerbot.WildcardHeroesUseWildcardTrainer = 1
 # Skill card drops by quality (8 Nov; needs the build with the card patch). Cards were picked evenly from every card,
 # so epics and legendaries dropped as often as commons. Weights common,uncommon,rare,epic,legendary; 3% per kill.
 modules\wildcard.conf | Wildcard.CardDropQualityWeights = "50,28,14,6,2"
