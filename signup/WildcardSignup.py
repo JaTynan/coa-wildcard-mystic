@@ -39,6 +39,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import WildcardStatus  # noqa: E402
 import WildcardPets  # noqa: E402
+import WildcardConsole  # noqa: E402
 
 DAY = 24 * 60 * 60
 NAME = re.compile(r"[A-Za-z0-9]{3,16}")
@@ -576,6 +577,8 @@ def main():
     options.bridge = patch_night / "launcher_bridge.py"
     threading.Thread(target=bug_report_relay, args=(options.server / "BugReports",), daemon=True).start()
     threading.Thread(target=warm_pets, args=(options,), daemon=True).start()
+    # The console window shows a status board for troubleshooting (starts minimised).
+    threading.Thread(target=WildcardConsole.run, args=(options, options.port, lambda: settings() is not None), daemon=True).start()
     log(f"Sign-up page listening on port {options.port}" + ("" if settings() else " (not open: fill in signup-settings.json)"))
     ThreadingHTTPServer(("0.0.0.0", options.port), handler_for(options)).serve_forever()
 
