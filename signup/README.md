@@ -34,8 +34,10 @@ settings file; old codes stop working as soon as you save.
 The game's **Report Bug** window sends reports to the world server (`CoABugReport.Enable` in server-settings), which
 saves each one the player ticked **Public** in `C:\Games\CoA Server\BugReports`. This service turns every file into an
 issue on `JaTynan/coa-wildcard-mystic`, labelled `player report`, and moves the file into `BugReports\sent`. The
-issue shows the player's title and text plus the server context (class, level, map, position, build), never the
-account or character. `signup.log` records each issue number.
+issue shows the player's title and text plus the server context (class, level, map, position, build). It does not
+show the account name or the character's name. A hidden line at the end of the issue holds the report's file name,
+which starts with the account number, so James can go back to the player if more detail is needed. `signup.log`
+records each issue number.
 
 To switch it on, add a GitHub token to `signup-settings.json`:
 

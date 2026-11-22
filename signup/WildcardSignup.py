@@ -480,7 +480,9 @@ def handler_for(options):
 # In-game bug reports (the Report Bug window). The world server (CoABugReport.Enable) saves each report the player
 # ticked Public as a file in the spool folder; this thread turns each file into an issue on our GitHub repository and
 # moves it into "sent". It needs githubToken in signup-settings.json: a fine-grained token for the repository with
-# Issues read and write. Without one, reports wait in the folder. Account numbers never leave the VM.
+# Issues read and write. Without one, reports wait in the folder. The issue's
+# hidden marker carries the report's file name, which starts with the account number (kept on purpose, to go back to
+# the player); account and character names are not sent.
 REPORT_FILE = re.compile(r"[1-9][0-9]{0,9}-[0-9a-f]{16}")
 
 
