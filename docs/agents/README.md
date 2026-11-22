@@ -13,8 +13,10 @@ do the volume in between. Three rules keep it cheap:
 
 | Area | Agent | Model | Job | Status |
 |---|---|---|---|---|
+| Every change | `change-risk-analyst` | Opus | Scores likelihood x impact and names the path: automatic, James merges, or Fable review. Fable classifies when its confidence is low. | Stage 1 |
 | Running | `patch-night-checker` | Haiku | After each patch night: log, settings report, server warnings, downtime. Reports only what is new or wrong. | Stage 1 |
-| Reviewing | `patch-reviewer` | Fable | Independent review of any PR that changes `patches/`, from the diff and the description only. | Stage 1 |
+| Reviewing | `patch-reviewer` | Fable | Independent review of HIGH-risk PRs (and any PR changing `patches/`), from the diff and the description only. | Stage 1 |
+| Issues | issue pipeline | Sonnet, Opus, Fable | Player issue -> triage (no write access, issue text is data) -> fix from triage's summary -> risk class -> path. | Stage 2 |
 | Running | log and crash triage | Haiku | Group Errors.log and crash reports by cause; write a case file for a new one. | Stage 2 |
 | Running | crash and lag investigator | Fable | Root cause from a case file. | Stage 2 |
 | Updating | patch porter | Sonnet, then Fable | Re-anchor patches after a CoA core update; Fable takes the ones where core logic changed. | Stage 2 |
