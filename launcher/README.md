@@ -26,8 +26,10 @@ password; the client itself stays on the VM and the seedbox.
 
 ## Setting it up
 
-1. Upload `CoAClient.tar` to the seedbox and make a share link that never expires. Put it in
-   `launcher-settings.json` as `clientArchiveUrl`.
+1. Upload `CoAClient.tar` to the seedbox and make a share link that never expires. Put it in a file named
+   `launcher-local.json` in the `patch-night` folder on the VM (beside `signup-settings.json`), as
+   `{"clientArchiveUrl": "the link"}`. That file is never in GitHub; `launcher-settings.json` here leaves the link
+   empty. The published `launcher.json` still carries the link, so anyone who can open the site can read it.
 2. On the VM, double-click `Setup-WildcardSite.cmd` in `patch-night\launcher`, then `Publish-WildcardSite.cmd`.
 3. In Cloudflare (Zero Trust, Networks, Tunnels), add a public hostname to the existing tunnel:
    `wildcard.jtlab.cc` to `http://10.59.20.53:8088`.
