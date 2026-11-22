@@ -33,6 +33,20 @@ modules\wildcard.conf | Wildcard.AbilityPool = "classic"
 modules\wildcard.conf | Wildcard.FreeScrolls = 0
 # Class skills from the Wildcard trainer cost nothing (8 Nov; needs the build with the FreeClassTraining patch).
 modules\wildcard.conf | Wildcard.FreeClassTraining = 1
+# Your Wildcard Hero bots train from the same list and at the same (free) prices as a Hero player (22 Nov, James,
+# issue #233; needs the build with patches/97-alt-bots-wildcard-trainer.ps1). 0 = SQUID's own behaviour: the
+# trainer's stock list at stock prices.
+modules\playerbots.conf | AiPlayerbot.WildcardHeroesUseWildcardTrainer = 1
+# Your Hero bots learn from a class book that is out within 30 yards, whoever summoned it, in Manastorm, dungeons
+# and the open world (22 Nov, James, issue #233; needs the build with patches/98-alt-bots-nearby-class-book.ps1 and
+# the line above at 1). Checked every 30 seconds out of combat. Read at server start. 0 = off.
+modules\playerbots.conf | AiPlayerbot.WildcardAltsUseNearbyClassBook = 1
+# Second option when no book is out nearby (23 Nov, James): an alt that owns a class book brings it out by itself
+# after a level up, learns and puts it away. SQUID's own setting (off by default there); it also makes an alt
+# bring out its Book of Artisans when a profession reaches the top of its rank. One alt can opt out with the
+# whisper "pet auto off". Random bots never do this. For a Wildcard Hero it only teaches anything from the build
+# with patch 97 is meant to work; what a Hero alt gets from its book before that build is untested. 0 = only when asked.
+modules\playerbots.conf | AiPlayerbot.CoaPets.AutoBooks = 1
 # Skill card drops by quality (8 Nov; needs the build with the card patch). Cards were picked evenly from every card,
 # so epics and legendaries dropped as often as commons. Weights common,uncommon,rare,epic,legendary; 3% per kill.
 modules\wildcard.conf | Wildcard.CardDropQualityWeights = "50,28,14,6,2"
