@@ -37,6 +37,10 @@ modules\wildcard.conf | Wildcard.FreeClassTraining = 1
 # issue #233; needs the build with patches/97-alt-bots-wildcard-trainer.ps1). 0 = SQUID's own behaviour: the
 # trainer's stock list at stock prices.
 modules\playerbots.conf | AiPlayerbot.WildcardHeroesUseWildcardTrainer = 1
+# Your Hero bots learn from a class book that is out within 30 yards, whoever summoned it, in Manastorm, dungeons
+# and the open world (22 Nov, James, issue #233; needs the build with patches/98-alt-bots-nearby-class-book.ps1 and
+# the line above at 1). Checked every 30 seconds out of combat. Read at server start. 0 = off.
+modules\playerbots.conf | AiPlayerbot.WildcardAltsUseNearbyClassBook = 1
 # Skill card drops by quality (8 Nov; needs the build with the card patch). Cards were picked evenly from every card,
 # so epics and legendaries dropped as often as commons. Weights common,uncommon,rare,epic,legendary; 3% per kill.
 modules\wildcard.conf | Wildcard.CardDropQualityWeights = "50,28,14,6,2"
