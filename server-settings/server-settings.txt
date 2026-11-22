@@ -45,7 +45,7 @@ modules\playerbots.conf | AiPlayerbot.WildcardAltsUseNearbyClassBook = 1
 # after a level up, learns and puts it away. SQUID's own setting (off by default there); it also makes an alt
 # bring out its Book of Artisans when a profession reaches the top of its rank. One alt can opt out with the
 # whisper "pet auto off". Random bots never do this. For a Wildcard Hero it only teaches anything from the build
-# with patch 97; before that the book comes out and goes back with nothing learned. 0 = only when asked.
+# with patch 97 is meant to work; what a Hero alt gets from its book before that build is untested. 0 = only when asked.
 modules\playerbots.conf | AiPlayerbot.CoaPets.AutoBooks = 1
 # Skill card drops by quality (8 Nov; needs the build with the card patch). Cards were picked evenly from every card,
 # so epics and legendaries dropped as often as commons. Weights common,uncommon,rare,epic,legendary; 3% per kill.
