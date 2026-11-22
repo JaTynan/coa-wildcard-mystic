@@ -57,12 +57,13 @@ manager's own world server back.
 After a manager update the official server comes back on its own. Build again for the new
 release and reinstall.
 
-## Patch night (weekly update) and the nightly restart
+## Patch night (every night)
 
-The build runs by itself every day on GitHub and builds each new manager release once. On the
-server PC, `patch-night\Register-PatchNight.cmd` creates two scheduled tasks: patch night (Tuesday 11 pm by default)
-and a nightly restart (countdown from 3:30 am, restart at 4 am) that does the same except installing a new build, so
-merged fixes and settings go live the next morning. Patch night:
+The build runs by itself every day on GitHub and builds each new manager release once (a patch merged after that
+needs a run with **rebuild** ticked). On the server PC, `patch-night\Register-PatchNight.cmd` creates one scheduled
+task, patch night, every night (countdown from 3:30 am, restart at 4 am), so merged fixes and settings go live the
+next morning and a new build is installed the first night it exists. Until 23 November 2026 builds were only
+installed on Tuesday nights. Patch night:
 
 1. reads which release the manager has installed;
 2. downloads the patched build of that release, if there is one, and the current
