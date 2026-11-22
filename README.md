@@ -59,8 +59,8 @@ release and reinstall.
 
 ## Patch night (every night)
 
-The build runs by itself every day on GitHub and builds each new manager release once (a patch merged after that
-needs a run with **rebuild** ticked). On the server PC, `patch-night\Register-PatchNight.cmd` creates one scheduled
+The build runs by itself every evening on GitHub. It builds the manager's newest release when it has no build yet,
+or when `patches/` changed since its newest build, so a merged patch is built the same night. On the server PC, `patch-night\Register-PatchNight.cmd` creates one scheduled
 task, patch night, every night (countdown from 3:30 am, restart at 4 am), so merged fixes and settings go live the
 next morning and a new build is installed the first night it exists. Until 23 November 2026 builds were only
 installed on Tuesday nights. Patch night:

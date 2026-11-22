@@ -3,11 +3,16 @@ name: Build patched worldserver
 # Content Scaling, SQUID's Playerbots and Dungeon Clear commits with the official build's module patches, same
 # build settings), with the patches in
 # patches/ applied, and publishes it as a release of this repository ready for the VM.
-# Runs by itself every day for the manager's newest release, and only builds a release once;
-# patch night on the VM installs it. Run it by hand from the Actions tab for a specific release.
+# Runs by itself every day for the manager's newest release. It builds when that release has no build yet, or when
+# patches/ (or this workflow, or scripts/resolve_release.py) changed since its newest build, so a merged patch is
+# built the same night with nobody ticking "rebuild" (James, 23 Nov 2026). Patch night on the VM installs it at 4 am.
+# Run it by hand from the Actions tab for a specific release.
 on:
   schedule:
-    - cron: '17 3 * * *'   # 03:17 UTC daily, about 2:17 pm in Sydney
+    # Written as 03:17 UTC, but GitHub has started every scheduled run of this repository 6 to 8.5 hours late
+    # (30 Oct to 22 Nov 2026: between 09:37 and 11:50 UTC, which is 8:37 pm to 10:50 pm in Sydney). A 2 to 3 hour
+    # build from then is ready before the 4 am patch night. Check the real start times again before moving this.
+    - cron: '17 3 * * *'
   workflow_dispatch:
     inputs:
       release:
@@ -48,18 +53,34 @@ jobs:
       - name: Look up the release's exact commits
         id: lock
         run: python3 -I scripts/resolve_release.py "${{ inputs.release || 'latest' }}"
-      - name: Build only releases not built before
+      - name: Build a release with no build yet, or whose patches changed since its newest build
         id: decide
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.lock.outputs.tag }}
           REBUILD: ${{ inputs.rebuild || false }}
+          REPO: ${{ github.repository }}
         run: |
-          if [ "$REBUILD" = "true" ]; then echo "build=true" >> "$GITHUB_OUTPUT"; exit 0; fi
-          if gh release list --repo "${{ github.repository }}" --limit 200 --json tagName --jq '.[].tagName' | grep -q "^wcme-$TAG-"; then
-            echo "$TAG is already built; nothing to do."
+          # What decides the program that gets built. Anything else in the repository reaches the VM without a build.
+          INPUTS="patches .github/workflows/build-worldserver.yml scripts/resolve_release.py"
+          if [ "$REBUILD" = "true" ]; then echo "Rebuild asked for."; echo "build=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          # The newest release for this manager release, and the commit it was built from (REST lists newest first).
+          # If GitHub cannot be asked, this step fails and the run shows red: better than guessing either way.
+          line=$(gh api "repos/$REPO/releases?per_page=100" --jq "[.[] | select(.tag_name | startswith(\"wcme-$TAG-\"))] | first // empty | \"\(.tag_name) \(.target_commitish)\"")
+          if [ -z "$line" ]; then echo "$TAG has no build yet."; echo "build=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          newest=${line%% *}; built=${line##* }
+          echo "Newest build of $TAG is $newest, made from commit $built."
+          # If that commit cannot be read, build: a spare build is cheaper than a patch that never ships.
+          if [ -z "$built" ] || ! git fetch --quiet --depth=1 origin "$built"; then
+            echo "Could not read the commit $newest was built from; building to be safe."
+            echo "build=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if git diff --quiet "$built" HEAD -- $INPUTS; then
+            echo "$TAG is already built and the patches have not changed since; nothing to do."
             echo "build=false" >> "$GITHUB_OUTPUT"
           else
+            echo "Changed since $newest:"
+            git diff --stat "$built" HEAD -- $INPUTS | tail -n 20
             echo "build=true" >> "$GITHUB_OUTPUT"
           fi
 
