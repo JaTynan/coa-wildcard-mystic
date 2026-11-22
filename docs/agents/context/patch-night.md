@@ -4,11 +4,12 @@ Read this instead of exploring. Paths are on the server VM unless they start wit
 
 ## What patch night is
 `patch-night/PatchNight.ps1` keeps the server on our patched world server and James's settings.
-- **Nightly restart:** scheduled task "CoA Nightly Restart", countdown from 3:30 am, restart at 4:00 am Sydney time.
-  Applies settings, database fixes, addons and the site. It does **not** install a new build.
-- **Weekly patch night:** task "CoA Patch Night", Tuesday 11:00 pm. Also installs a new patched build.
-- **By hand:** `Run-PatchNight-Now.cmd`. Also installs a new build.
-Both tasks run as James, only while he is signed in on the VM. No log lines at 3:30 am means the task did not run.
+- **Patch night, every night:** scheduled task "CoA Patch Night", countdown from 3:30 am, restart at 4:00 am Sydney
+  time. Applies settings, database fixes, addons and the site, and installs a new patched build when there is one
+  for the installed core (daily since 23 Nov 2026; before that builds were installed on Tuesdays only, and a second
+  task, "CoA Nightly Restart", did the rest). If "CoA Nightly Restart" still exists, the tasks were not re-registered.
+- **By hand:** `Run-PatchNight-Now.cmd`. The same run.
+The task runs as James, only while he is signed in on the VM. No log lines at 3:30 am means the task did not run.
 
 ## Files to read (all under `C:\Games\CoA Server`)
 | File | What it tells you |
@@ -25,13 +26,14 @@ Both tasks run as James, only while he is signed in on the VM. No log lines at 3
 - Ends with `[OK] Patch night OK: ...` and "server up on core <revision>".
 - A "Downtime: N s" line of about 2 minutes (after the staged patch night change). Over 5 minutes is worth a mention.
 - Settings: "0 unknown" and no "Bad value". Settings on defaults are normal; only a change in their number matters.
-- `[WARN]` lines that are normal: "Nightly restart: the new build is left for the weekly patch night" is INFO, not a
-  problem; "No patched build found for this core, but the installed patched server matches it" is fine.
+- Lines that are normal: "No patched build found for this core, but the installed patched server matches it" is
+  fine. "Nightly restart: the new build is left for the weekly patch night" should no longer appear: it means the old
+  nightly task is still registered.
 
 ## What is wrong
 - `[FAIL]`, "Patch night FAILED", "official server is running instead", "did not come up", "installer refused".
 - No run at the scheduled time.
-- The newest release on GitHub differs from the installed build tag for more than a week (a Tuesday run was missed).
+- The newest release on GitHub for the installed core differs from the installed build tag after a night's run.
 - A crash file newer than the last report, or a new kind of line in Errors.log since the last start.
 - Unknown settings, or any "Bad value".
 
