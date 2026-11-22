@@ -1,0 +1,43 @@
+2026-11-17 23:00:03 [INFO] ---- patch night started ----
+2026-11-17 23:00:03 [INFO] Patched build available: wcme-server-0.000000.000-build2.
+2026-11-17 23:00:06 [INFO] Players online: 2. Counting down 10 minutes while preparing.
+2026-11-17 23:00:07 [INFO] Downloading wcme-server-0.000000.000-build2.zip (38 MB)...
+2026-11-17 23:00:53 [INFO] Prepared in 46 s, with the server up.
+2026-11-17 23:10:11 [INFO] Installing wcme-server-0.000000.000-build2...
+2026-11-17 23:10:33 [INFO] Starting the server (this waits until the world is up, up to 25 minutes)...
+2026-11-17 23:12:48 [WARN] The world server is not running.
+2026-11-17 23:12:48 [WARN] Putting the official world server back...
+2026-11-17 23:12:53 [INFO] Starting the server (this waits until the world is up, up to 25 minutes)...
+2026-11-17 23:16:23 [INFO] Server is up on core 000000000000.
+  a continuation line without a timestamp (SYNTHETIC; a multi-line message)
+2026-11-17 23:16:24 [FAIL] Patch night FAILED on the patched server; the official server is running instead (no Mystic Enchants). See patch-night.log.
+2026-11-17 23:16:24 [INFO] ---- patch night finished ----
+2026-11-20 03:30:02 [INFO] ---- patch night started ----
+2026-11-20 03:30:02 [INFO] The manager's installed core is 000000000000 (from worldserver.official.exe).
+2026-11-20 03:30:02 [INFO] The auth server reports core 000000000000.
+2026-11-20 03:30:02 [INFO] Patched build available: wcme-server-0.000000.000-build1.
+2026-11-20 03:30:02 [INFO] It is already installed.
+2026-11-20 03:30:06 [INFO] Players online: 0. Counting down 30 minutes while preparing.
+2026-11-20 03:30:07 [INFO] Applying server-settings (used from the restart)...
+2026-11-20 03:30:23 [INFO] Prepared in 16 s, with the server up.
+2026-11-20 04:00:11 [INFO] Starting the server (this waits until the world is up, up to 25 minutes)...
+2026-11-20 04:00:22 [INFO] Applied enchant fix 000-reset.sql to synthetic_world.
+2026-11-20 04:03:04 [INFO] Server is up on core 000000000000.
+2026-11-20 04:03:04 [INFO] Settings: the server runs 41 setting(s) on defaults (none set in a config file) and could not use 0. Full list in server-settings\settings-report.txt.
+2026-11-20 04:03:05 [INFO] Performance counters: every 5 seconds to C:\SYNTHETIC\Core\Logs\perf\perf-2026-11-20_0403.csv.
+2026-11-20 04:03:07 [INFO] Downtime: 118 s from the stop until the world was up (to within 15 s).
+2026-11-20 04:03:07 [OK] Patch night OK: patched server unchanged, settings checked, server up on core 000000000000.
+2026-11-20 04:03:07 [INFO] ---- patch night finished ----
+2026-11-20 19:15:00 [INFO] ---- start server (Start-Server.cmd) ----
+2026-11-20 19:15:00 [INFO] Applying server-settings...
+2026-11-20 19:19:00 [INFO] Server is up on core 000000000000.
+2026-11-20 19:19:00 [OK] Server started on core 000000000000 with your settings.
+2026-11-20 19:19:00 [INFO] ---- patch night finished ----
+2026-11-21 03:30:01 [INFO] ---- patch night started ----
+2026-11-21 03:30:04 [INFO] No players online.
+2026-11-21 04:07:01 [INFO] Server is up on core 000000000000.
+2026-11-21 04:07:01 [INFO] Downtime: 402 s from the stop until the world was up (to within 15 s).
+2026-11-21 04:07:01 [OK] Patch night OK: installed wcme-server-0.000000.000-build3, settings checked, server up on core 000000000000.
+2026-11-21 04:07:01 [INFO] ---- patch night finished ----
+2026-11-22 03:30:01 [INFO] ---- patch night started ----
+2026-11-22 03:30:03 [WARN] Cannot reach GitHub releases: SYNTHETIC timeout

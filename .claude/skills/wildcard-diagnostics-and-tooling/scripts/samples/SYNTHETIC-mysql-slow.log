@@ -1,0 +1,114 @@
+C:\SYNTHETIC\mysql\bin\mysqld.exe, Version: 8.4.0 (MySQL Community Server - GPL). started with:
+TCP Port: 3306, Named Pipe: MySQL
+Time                 Id Command    Argument
+# Time: 2026-11-20T17:00:37.542500Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 3.126170  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1670455
+use synthetic_characters;
+SET timestamp=1795194037;
+DELETE FROM character_spell WHERE spell = 14009998;
+# Time: 2026-11-20T17:07:47.852287Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 2.524712  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1655117
+SET timestamp=1795194467;
+DELETE FROM character_spell WHERE spell = 14009998;
+# Time: 2026-11-20T17:14:22.372113Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 3.185599  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1666065
+SET timestamp=1795194862;
+DELETE FROM character_spell WHERE spell = 14009998;
+# Time: 2026-11-20T17:21:00.873189Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 1.587808  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1673030
+SET timestamp=1795195260;
+DELETE FROM character_spell WHERE spell = 14009999;
+# Time: 2026-11-20T17:28:44.015418Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 0.964267  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1654896
+SET timestamp=1795195724;
+DELETE FROM character_spell WHERE spell = 14009998;
+# Time: 2026-11-20T17:35:03.414753Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 2.760845  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1690050
+SET timestamp=1795196103;
+DELETE FROM character_spell WHERE spell = 14009999;
+# Time: 2026-11-20T17:42:10.584247Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 1.326637  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1654257
+SET timestamp=1795196530;
+DELETE FROM character_spell WHERE spell = 14009999;
+# Time: 2026-11-20T17:49:45.818518Z
+?? a line that is not part of an entry (SYNTHETIC noise)
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 0.706161  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1697912
+SET timestamp=1795196985;
+DELETE FROM character_spell WHERE spell = 14009999;
+# Time: 2026-11-20T17:56:09.743622Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 3.202757  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1657585
+SET timestamp=1795197369;
+DELETE FROM character_spell WHERE spell = 14009999;
+# Time: 2026-11-20T18:03:38.749577Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 2.312427  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1676811
+SET timestamp=1795197818;
+DELETE FROM character_spell WHERE spell = 14009999;
+# Time: 2026-11-20T18:10:00.012962Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 2.645971  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1651286
+SET timestamp=1795198200;
+DELETE FROM character_spell WHERE spell = 14009999;
+# Time: 2026-11-20T18:17:42.265477Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 1.970270  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1710677
+SET timestamp=1795198662;
+DELETE FROM character_spell WHERE spell = 14009999;
+# Time: 2026-11-20T18:24:30.629780Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 0.781663  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1661923
+SET timestamp=1795199070;
+DELETE FROM character_spell WHERE spell = 14009998;
+# Time: 2026-11-20T18:31:36.349697Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 0.744481  Lock_time: 0.000200 Rows_sent: 0  Rows_examined: 1692147
+SET timestamp=1795199496;
+DELETE FROM character_spell WHERE spell = 14009998;
+# Time: 2026-11-20T17:30:00.335738Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 0.514839  Lock_time: 0.000010 Rows_sent: 18  Rows_examined: 52000
+SET timestamp=1795195800;
+SELECT guid, name FROM characters
+  WHERE guid IN (4410, 5066, 6436, 4654, 4880, 6807, 8505, 3357, 8585, 3620, 1996, 1396, 7317, 3371, 7661, 3660, 3620, 4217, 3318, 6125, 8785, 7343, 5124, 3938, 5152, 6598, 3872, 4149, 4002, 1870, 4380) /* synthetic */ AND name <> 'Synth''etic';
+# Time: 2026-11-20T17:41:00.974600Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 0.638310  Lock_time: 0.000010 Rows_sent: 32  Rows_examined: 52000
+SET timestamp=1795196460;
+SELECT guid, name FROM characters
+  WHERE guid IN (4465, 4100, 7000, 5501, 2394, 4538, 5142, 3873, 1968, 6395, 5954, 1480, 3509, 2819, 8167, 1321, 1879, 1940, 8125, 5123, 5707, 8654, 7860, 3374, 7587, 4888) /* synthetic */ AND name <> 'Synth''etic';
+# Time: 2026-11-20T17:52:00.752837Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 0.736788  Lock_time: 0.000010 Rows_sent: 37  Rows_examined: 52000
+SET timestamp=1795197120;
+SELECT guid, name FROM characters
+  WHERE guid IN (4411, 7065, 7253, 3897, 2900, 3434, 6969, 3401, 3866, 4037, 8998, 1556, 3632, 4007, 1858, 4055, 8199, 7320, 6087, 4430, 4094, 4573, 4365, 1032, 4257, 7016, 8945, 1241, 4602, 3687, 4409, 2970) /* synthetic */ AND name <> 'Synth''etic';
+# Time: 2026-11-20T18:03:00.943996Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 0.864854  Lock_time: 0.000010 Rows_sent: 33  Rows_examined: 52000
+SET timestamp=1795197780;
+SELECT guid, name FROM characters
+  WHERE guid IN (6101, 4169, 3899) /* synthetic */ AND name <> 'Synth''etic';
+# Time: 2026-11-20T18:14:00.599710Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: 0.722175  Lock_time: 0.000010 Rows_sent: 25  Rows_examined: 52000
+SET timestamp=1795198440;
+SELECT guid, name FROM characters
+  WHERE guid IN (2842, 8887, 3944, 7786, 6307, 6832, 2248, 2205, 3540, 5688, 2315, 7894, 5088, 1267) /* synthetic */ AND name <> 'Synth''etic';
+# Time: 2026-11-20T18:30:12.408601Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    14
+# Query_time: 12.750000  Lock_time: 4.500000 Rows_sent: 0  Rows_examined: 9000000
+SET timestamp=1795199412;
+UPDATE synthetic_table SET value = 0x1F, note = "x" WHERE id = -42 AND ratio > 1.5e3;
+# Time: 2026-11-20T19:00:00.000000Z
+# User@Host: acore[acore] @ localhost [127.0.0.1]  Id:    11
+# Query_time: not-a-number  Lock_time: 0 Rows_sent: 0  Rows_examined: 0
+SELECT 1;

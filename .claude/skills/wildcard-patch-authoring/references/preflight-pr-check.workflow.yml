@@ -1,0 +1,66 @@
+# Proposed practice (not yet adopted by James); NOT BUILT YET (not installed). Status on 2026-11-22: written, never run on GitHub.
+#
+# What it is: the pre-flight (.claude/skills/wildcard-patch-authoring/scripts/preflight.py) as a check on every pull
+# request that touches patches/. It proves in about two minutes that every *.patch and NN-*.ps1 still applies to the
+# newest manager release, so a failed anchor is found before a 2-3 hour build, not during it.
+#
+# To install (James only): copy this file to .github/workflows/patch-preflight.yml in a pull request of its own.
+# Adding a workflow is build-pipeline work: hard stop 5 in docs/agents/context/change-risk.md ("Patch night itself,
+# the build workflow, the installer, or rollback"), so it is HIGH and waits for James whatever the scores.
+# To make it REQUIRED, James then adds the check "Patches apply to the pinned sources" under
+# Settings > Branches > branch protection for main. That setting lives on GitHub, not in the repository.
+#
+# What it does not prove: that the patched code compiles, links, starts or behaves. Only the build
+# (build-worldserver.yml) and testing on the server show that.
+#
+# Safety notes for whoever reviews this file:
+# - "pull_request", never "pull_request_target": the job runs the pull request's own patch scripts, so it must not
+#   have a write token or secrets. permissions is read-only and no secret is referenced.
+# - Upstream code is cloned and patched, never built or run.
+# - The release input goes through an environment variable, not straight into the shell line.
+name: Patch pre-flight
+
+on:
+  pull_request:
+    paths:
+      - 'patches/**'
+      - 'scripts/resolve_release.py'
+      - '.github/workflows/build-worldserver.yml'
+      - '.claude/skills/wildcard-patch-authoring/scripts/**'
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Manager server release to check against, for example server-0.261119.114 (or "latest")'
+        default: latest
+
+permissions:
+  contents: read
+
+concurrency:
+  group: patch-preflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preflight:
+    name: Patches apply to the pinned sources
+    runs-on: ubuntu-latest        # has git, python3 and PowerShell 7 (pwsh) preinstalled
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7 # the same major version build-worldserver.yml uses
+
+      - name: Pre-flight (clone the pinned sources, apply every patch and script as the build does)
+        env:
+          RELEASE: ${{ inputs.release || 'latest' }}
+        run: |
+          set -o pipefail
+          python3 -I .claude/skills/wildcard-patch-authoring/scripts/preflight.py "$RELEASE" \
+            --no-cache --json "$RUNNER_TEMP/preflight.json" | tee "$RUNNER_TEMP/preflight.txt"
+
+      - name: Put the report on the run's summary page
+        if: always()
+        run: |
+          {
+            echo '```'
+            cat "$RUNNER_TEMP/preflight.txt" 2>/dev/null || echo 'The pre-flight wrote no report.'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
