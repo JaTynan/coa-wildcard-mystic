@@ -1,0 +1,577 @@
+AzerothCore rev. 000000000000+ 2026-01-01 00:00:00 +0000 (SYNTHETIC branch) (Win64, RelWithDebInfo, Static)
+Update time diff: 20ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 21ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 34ms, 46ms, 50ms
+Update time diff: 19ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 39ms, 55ms, 81ms
+Update time diff: 22ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 42ms, 56ms, 73ms
+Update time diff: 18ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 22ms
+|- Percentiles (95, 99, max): 43ms, 61ms, 81ms
+Update time diff: 19ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 24ms
+|- Median: 24ms
+|- Percentiles (95, 99, max): 39ms, 58ms, 74ms
+Update time diff: 29ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 39ms, 55ms, 63ms
+Update time diff: 25ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 26ms
+|- Median: 24ms
+|- Percentiles (95, 99, max): 44ms, 55ms, 70ms
+Update time diff: 14ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 45ms, 61ms, 77ms
+Update time diff: 25ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 23ms
+|- Percentiles (95, 99, max): 40ms, 63ms, 92ms
+Update time diff: 12ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 36ms, 57ms, 75ms
+Update time diff: 29ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 26ms
+|- Median: 23ms
+|- Percentiles (95, 99, max): 51ms, 62ms, 75ms
+Update time diff: 32ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 24ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 40ms, 59ms, 73ms
+Update time diff: 16ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 43ms, 62ms, 73ms
+Update time diff: 29ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 26ms
+|- Median: 23ms
+|- Percentiles (95, 99, max): 49ms, 59ms, 70ms
+Update time diff: 26ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 26ms
+|- Median: 23ms
+|- Percentiles (95, 99, max): 44ms, 67ms, 100ms
+Update time diff: 27ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 26ms
+|- Median: 25ms
+|- Percentiles (95, 99, max): 51ms, 77ms, 104ms
+Update time diff: 33ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 22ms
+|- Percentiles (95, 99, max): 43ms, 53ms, 62ms
+Update time diff: 26ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 45ms, 54ms, 79ms
+Update time diff: 16ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 20ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 38ms, 51ms, 67ms
+Update time diff: 31ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 43ms, 52ms, 75ms
+Update time diff: 17ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 20ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 39ms, 61ms, 76ms
+Update time diff: 25ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 23ms
+|- Percentiles (95, 99, max): 43ms, 63ms, 71ms
+Update time diff: 19ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 39ms, 57ms, 69ms
+Update time diff: 19ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 36ms, 44ms, 54ms
+Update time diff: 29ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 24ms
+|- Median: 24ms
+|- Percentiles (95, 99, max): 44ms, 61ms, 77ms
+Update time diff: 17ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 35ms, 52ms, 77ms
+Update time diff: 31ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 28ms
+|- Median: 28ms
+|- Percentiles (95, 99, max): 46ms, 57ms, 70ms
+Update time diff: 27ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 39ms, 980ms, 2450ms
+Update time diff: 31ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 24ms
+|- Median: 24ms
+|- Percentiles (95, 99, max): 45ms, 1160ms, 2900ms
+Update time diff: 20ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 26ms
+|- Median: 26ms
+|- Percentiles (95, 99, max): 45ms, 524ms, 1310ms
+Update time diff: 20ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 21ms
+|- Median: 18ms
+|- Percentiles (95, 99, max): 39ms, 60ms, 79ms
+Update time diff: 22ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 37ms, 48ms, 61ms
+Update time diff: 22ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 25ms
+|- Median: 24ms
+|- Percentiles (95, 99, max): 45ms, 62ms, 84ms
+Update time diff: 26ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 39ms, 49ms, 56ms
+Update time diff: 19ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 41ms, 65ms, 84ms
+Update time diff: 22ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 22ms
+|- Percentiles (95, 99, max): 41ms, 55ms, 69ms
+Update time diff: 23ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 24ms
+|- Median: 23ms
+|- Percentiles (95, 99, max): 47ms, 68ms, 88ms
+Update time diff: 14ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 38ms, 46ms, 52ms
+Update time diff: 25ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 26ms
+|- Median: 24ms
+|- Percentiles (95, 99, max): 48ms, 76ms, 111ms
+Update time diff: 20ms with 3 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 41ms, 57ms, 64ms
+Update time diff: 5ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 2ms
+|- Percentiles (95, 99, max): 7ms, 8ms, 11ms
+Update time diff: 3ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 7ms, 10ms, 13ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 2ms
+|- Percentiles (95, 99, max): 7ms, 9ms, 11ms
+Update time diff: 3ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 5ms
+|- Percentiles (95, 99, max): 9ms, 12ms, 17ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 6ms, 7ms, 8ms
+Update time diff: 3ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 5ms
+|- Percentiles (95, 99, max): 9ms, 12ms, 13ms
+Update time diff: 5ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 9ms, 10ms, 14ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 8ms, 10ms, 11ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 8ms, 9ms, 12ms
+Update time diff: 5ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 9ms, 12ms, 16ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 9ms, 12ms, 16ms
+Update time diff: 3ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 2ms
+|- Percentiles (95, 99, max): 9ms, 11ms, 12ms
+Update time diff: 5ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 3ms
+|- Percentiles (95, 99, max): 9ms, 11ms, 12ms
+Update time diff: 5ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 1ms
+|- Percentiles (95, 99, max): 7ms, 10ms, 13ms
+Update time diff: 5ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 3ms
+|- Percentiles (95, 99, max): 7ms, 10ms, 14ms
+Update time diff: 2ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 1ms
+|- Percentiles (95, 99, max): 7ms, 10ms, 12ms
+Update time diff: 2ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 3ms
+|- Percentiles (95, 99, max): 9ms, 11ms, 15ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 6ms, 8ms, 10ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 3ms
+|- Percentiles (95, 99, max): 8ms, 10ms, 11ms
+Update time diff: 3ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 3ms
+|- Median: 1ms
+|- Percentiles (95, 99, max): 5ms, 6ms, 7ms
+Update time diff: 5ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 2ms
+|- Percentiles (95, 99, max): 7ms, 8ms, 9ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 2ms
+|- Percentiles (95, 99, max): 6ms, 7ms, 8ms
+Update time diff: 3ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 3ms
+|- Percentiles (95, 99, max): 6ms, 7ms, 7ms
+Update time diff: 6ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 3ms
+|- Percentiles (95, 99, max): 9ms, 12ms, 13ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 6ms, 7ms, 8ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 5ms
+|- Median: 5ms
+|- Percentiles (95, 99, max): 9ms, 13ms, 15ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 6ms, 9ms, 12ms
+Update time diff: 5ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 1ms
+|- Percentiles (95, 99, max): 7ms, 9ms, 9ms
+Update time diff: 4ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 2ms
+|- Percentiles (95, 99, max): 7ms, 9ms, 12ms
+Update time diff: 2ms with 0 players online
+Last 500 diffs summary:
+|- Mean: 4ms
+|- Median: 4ms
+|- Percentiles (95, 99, max): 7ms, 10ms, 13ms
+AzerothCore rev. 000000000000+ 2026-01-01 00:00:00 +0000 (SYNTHETIC branch) (Win64, RelWithDebInfo, Static)
+Update time diff: 23ms with 2 players online
+Last 1 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 37ms, 55ms, 62ms
+Update time diff: 20ms with 2 players online
+Last 401 diffs summary:
+|- Mean: 22ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 37ms, 55ms, 80ms
+Update time diff: 20ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 18ms
+|- Median: 16ms
+|- Percentiles (95, 99, max): 34ms, 50ms, 65ms
+Update time diff: 22ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 19ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 31ms, 41ms, 59ms
+Update time diff: 23ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 20ms
+|- Median: 18ms
+|- Percentiles (95, 99, max): 34ms, 51ms, 71ms
+Update time diff: 20ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 43ms, 57ms, 83ms
+Update time diff: 20ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 19ms
+|- Median: 16ms
+|- Percentiles (95, 99, max): 33ms, 48ms, 68ms
+Update time diff: 21ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 39ms, 58ms, 83ms
+Update time diff: 30ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 24ms
+|- Median: 24ms
+|- Percentiles (95, 99, max): 39ms, 56ms, 64ms
+Update time diff: 32ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 37ms, 48ms, 63ms
+Update time diff: 24ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 20ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 32ms, 49ms, 71ms
+Update time diff: 26ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 24ms
+|- Median: 22ms
+|- Percentiles (95, 99, max): 47ms, 61ms, 69ms
+Update time diff: 17ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 39ms, 58ms, 79ms
+Update time diff: 23ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 38ms, 51ms, 71ms
+Update time diff: 20ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 19ms
+|- Median: 18ms
+|- Percentiles (95, 99, max): 32ms, 44ms, 64ms
+Update time diff: 18ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 20ms
+|- Median: 18ms
+|- Percentiles (95, 99, max): 37ms, 51ms, 74ms
+Update time diff: 19ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 45ms, 56ms, 71ms
+Update time diff: 17ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 43ms, 380ms, 950ms
+Update time diff: 22ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 22ms
+|- Percentiles (95, 99, max): 36ms, 44ms, 61ms
+Update time diff: 26ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 24ms
+|- Median: 24ms
+|- Percentiles (95, 99, max): 39ms, 54ms, 67ms
+Update time diff: 25ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 21ms
+|- Median: 18ms
+|- Percentiles (95, 99, max): 39ms, 52ms, 59ms
+Update time diff: 18ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 42ms, 64ms, 71ms
+Update time diff: 29ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 40ms, 54ms, 72ms
+Update time diff: 26ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 21ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 34ms, 49ms, 55ms
+Update time diff: 16ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 22ms
+|- Percentiles (95, 99, max): 42ms, 53ms, 63ms
+Update time diff: 21ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 40ms, 61ms, 76ms
+Update time diff: 18ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 42ms, 53ms, 60ms
+Update time diff: 27ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 24ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 44ms, 750ms, 1875ms
+Update time diff: 31ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 25ms
+|- Median: 22ms
+|- Percentiles (95, 99, max): 43ms, 67ms, 79ms
+Update time diff: 24ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 20ms
+|- Median: 17ms
+|- Percentiles (95, 99, max): 39ms, 58ms, 73ms
+Update time diff: 14ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 21ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 41ms, 58ms, 86ms
+Update time diff: 16ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 38ms, 50ms, 59ms
+Update time diff: 25ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 36ms, 46ms, 51ms
+Update time diff: 18ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 21ms
+|- Median: 18ms
+|- Percentiles (95, 99, max): 37ms, 50ms, 73ms
+Update time diff: 23ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 23ms
+|- Percentiles (95, 99, max): 38ms, 58ms, 65ms
+Update time diff: 20ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 40ms, 62ms, 71ms
+Update time diff: 14ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 22ms
+|- Percentiles (95, 99, max): 40ms, 55ms, 61ms
+Update time diff: 18ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 22ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 41ms, 63ms, 69ms
+Update time diff: 22ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 21ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 38ms, 53ms, 62ms
+Update time diff: 18ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 21ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 36ms, 55ms, 71ms
+Update time diff: 23ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 21ms
+|- Median: 20ms
+|- Percentiles (95, 99, max): 41ms, 58ms, 71ms
+Update time diff: 24ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 19ms
+|- Median: 16ms
+|- Percentiles (95, 99, max): 33ms, 96ms, 240ms
+Update time diff: 20ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 19ms
+|- Median: 19ms
+|- Percentiles (95, 99, max): 32ms, 46ms, 66ms
+Update time diff: 19ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 20ms
+|- Median: 17ms
+|- Percentiles (95, 99, max): 36ms, 46ms, 52ms
+Update time diff: 23ms with 2 players online
+Last 500 diffs summary:
+|- Mean: 23ms
+|- Median: 21ms
+|- Percentiles (95, 99, max): 36ms, 57ms, 85ms

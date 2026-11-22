@@ -1,0 +1,197 @@
+# Symptom lookup table (every row is a real failure or a message the repo's own scripts print)
+
+How to read a row:
+
+- **Symptom**: what you see. Text in "quotes" is the exact message; search for it.
+- **Likely cause**: what it turned out to be last time.
+- **Check that tells**: the one thing to look at that confirms or rules it out. All checks are read-only.
+- **Fix route**: what was done, and which sibling skill owns that kind of fix.
+- **Evidence**: commit hash (and PR). Read the full message with `git log -1 --format=%B <hash>`.
+  "script" means the message comes from a script in this repo and no incident is recorded for it.
+
+VM paths are as the repo's scripts and docs state them (server folder `C:\Games\CoA Server`); they were not
+re-verified on the VM on 2026-11-22. Rows are as of `origin/main` at `d3e030f` (2026-11-22). Evidence cells that cite
+`docs/agents/*` point at files that exist only in PR #232 (open on 2026-11-22; read them with
+`git show origin/agents-stage-1:<path>`).
+
+Any fix route that changes the live server, a setting, SQL, a patch or a script: **classify with
+wildcard-change-control first.** James merges.
+
+Contents: [Build](#build-github-actions) | [Start-up](#start-up) | [Patch night](#patch-night-and-nightly-restart) |
+[Settings](#settings) | [Database](#database-and-sql) | [Game behaviour](#game-behaviour-c-patches) |
+[Enchants](#mystic-enchants) | [Addons](#addons) | [Client](#client-patch-and-game-client) | [Bots](#bots) |
+[Launcher and site](#launcher-and-download-site) | [Sign-up and web services](#sign-up-and-web-services) |
+[Process](#process-git-and-merging)
+
+## Build (GitHub Actions)
+
+The build is `.github/workflows/build-worldserver.yml`. A full run takes 2 to 3 hours; that is normal, not a fault.
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| B1 | Step "Apply our patch scripts" stops with "Core changed: ... was not found exactly once", "CoA changed: ...", "SQUID changed: ...", "SQUID's bots changed: ..." (script 87), "mod-ollama-chat changed: ..." or "Battleground Spoils part missing or core changed" (script 40) | The anchor (the exact source text a patch script looks for) moved or changed in a new upstream release. The message is intended: it is how a core update announces itself. Variants "(or NN-name.ps1 did not run)" mean an earlier script this one builds on did not run or changed order. | The log prints `== NN-name.ps1` before each script; the message names the file and the part. Compare the anchor in the script with that file at the release's commit. | Re-anchor the script (wildcard-patch-authoring). Precedent: patch 60 was made to accept both the old and the new function signature before the new release arrived. | c4b6718 (#163); `patches/20-bots.ps1:1-4`; `docs/agents/context/patches.md` |
+| B2 | Step "Apply our patches" stops with "NAME.patch no longer fits release TAG. The patch needs refreshing for this core." | One of the five `patches/*.patch` files no longer applies to the new core. Nothing is published. | The message names the patch file. | Rebase the patch onto the new core (wildcard-patch-authoring). Done once for release .90. | f83171d (#29); workflow step "Apply our patches" |
+| B3 | "ninja: fatal: CreateProcess: The parameter is incorrect (is the command line too long?)", part-way through compiling (it was at 1288 of 3197) | A new module's include folders pushed the compiler command line past the Windows limit. | The Configure step must contain `-DCMAKE_NINJA_FORCE_RESPONSE_FILE=ON`. If it does and the error returns, something else grew the command line. | Flag added, as the official build does. | 2606a77 (#191) |
+| B4 | Compile error on Windows in code that uses an all-capitals name such as `SYNCHRONIZE` | The name is a macro in the Windows headers, so the compiler replaces it. | Search the failing line for an all-capitals identifier; a check compiled on a non-Windows machine will not show it (inference: the macro only exists in Windows headers). | Rename (it became `SYNCHRONIZE_SPELL`). The same rename was needed a second time in a parallel branch. | a4048e7 (#176), 2ccbf80 (#177) |
+| B5 | Compile error in `AscensionPrestigiousCache.cpp`: `ChatCommandTable` or `Console` not declared | Those types live in the namespace `Acore::ChatCommands` (header `ChatCommand.h`). | The error names the type. | Write `Acore::ChatCommands::ChatCommandTable`, include `ChatCommand.h`. | 0220a49 (#129) |
+| B6 | Warning C4067 on an `#include` line, then "undeclared" errors for a class from the next include (it was `DcSelfFoundPlanner`) | A patch script's inserted text (a PowerShell here-string) had no final line break, so the last added `#include` ran into the file's next line and the compiler ignored that line. | Look at the patched file around the insertion: two `#include`s on one line. | End the inserted text with a line break. The local check had added the line break itself, so it passed; a local check must reproduce the script's text exactly. | e0cc2f5 (#210) |
+| B7 | Compile error in mod-ollama-chat: `IsHeadless` is not a member | The module was written for a core where the call has that name; on the CoA core it is `IsBot`. | The error is in `core/modules/mod-ollama-chat`. | `patches/10-mod-ollama-chat-fit.ps1` renames the call. | d05134f (#42), fb60c6c |
+| B8 | Step "Apply the official build's module patches" stops with "checksum ... differs from the release's ...", "is listed but ... was not checked out" or "does not apply to ..." | The release list and the official build repository disagree, or a module commit moved. | `python3 -I scripts/resolve_release.py latest` prints the commits and checksums the build will use. | wildcard-build-and-env. | script (workflow); added by 01159e2 (#187) |
+| B9 | You merged a patch, the daily build ran, and it says "TAG is already built; nothing to do." | By design the scheduled build makes each manager release once. A merged patch does not cause a new build. | `git tag -l 'wcme-server-*'` (after a fetch) or the Releases page: is there a build newer than your merge? Release notes hold "This repository: OWNER/REPO SHA". | Run the workflow by hand with **rebuild** ticked (Actions, "Build patched worldserver", Run workflow). Release .114 has five builds (57, 61, 62, 68, 70), so re-running for the same release is routine. | workflow job `check`, step "Build only releases not built before" |
+| B10 | Build passes, server fails at start-up | The only run-time check in the build is `worldserver.exe --version`. It proves the program starts, not that the world loads. | See rows S1 to S5. | Proposed checks live in wildcard-validation-and-qa. | workflow step "Check it starts and reports its revision"; 01159e2 |
+
+## Start-up
+
+Look first at `Core\Logs\Server.log` (this start only; line 1 has the core revision; "World Initialized In" means the
+world is up), then `Core\Logs\Errors.log` (lines after the last start), then `Core\Crashes\`.
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| S1 | World server stops while starting: "Duplicate blank sub-command" | Two modules registered the same chat commands: SQUID 3.0's own auction house bot and the core's mod-ah-bot-plus both had `.ahbot update / reload / empty / help`. The official build patches SQUID so its copy never registers; ours had taken SQUID unchanged. | Does the build apply the official module patches? The workflow step "Apply the official build's module patches" must have run ("Applied ... to core/modules/mod-playerbots"). For a new duplicate: which module added commands in this release? | Build applies the official build's module patches, with checksums. | 01159e2 (#187), build57, 19 Nov |
+| S2 | World server stops while running (it did on 20 Nov); the stop is inside `ChatHandler::BuildChatPacket` | An assert (a deliberate stop when the code sees something it thinks impossible): a channel chat message with no channel name. SQUID's bots can build one when they answer a command heard in a channel. | Newest file in `Core\Crashes\` (UNVERIFIED what it prints for this stop; the function name is from the commit message). | Patch 81 sends the message with an empty channel name and logs the sender. | 3a50d87 (in #199), 20 Nov |
+| S3 | Players log in and their characters are missing or are another realm's | From server release 0.261119.114, `Scripts\manage.py` writes the default databases into `worldserver.conf` at every start, whatever realm is active. A start outside the manager app brought Wildcard up on the other realm's characters. | `patch-night.log` line "Databases: world X, characters Y." For Wildcard it must be `acore_world_wildcard` and `acore_characters_wildcard`. | `launcher_bridge.py` puts the active realm's databases back; patch night now refuses to start ("The Wildcard realm is active, but worldserver.conf points at ...; not starting the server"). | d5412a9 (#186), 19 Nov |
+| S4 | Log: "The server came up on core X, expected Y." | The program that started is not the build patch night expected. | Line 1 of `Server.log` against `Core\worldserver.patched-release.txt`. | Patch night then puts the official server back by itself (row P3). | script (`StartAndCheck`) |
+| S5 | Log: "The world server stopped within a minute of starting.", "The world server is not running." or "The world did not finish loading within 30 minutes." | The world died or hung while loading. | Last lines of `Server.log` and `Errors.log`, newest file in `Core\Crashes\`. Match the text against rows S1 and S2. | Depends on the cause. Patch night falls back to the official server on its own. | script (`StartAndCheck`) |
+| S6 | No Hero bots appear on Wildcard; log has "No more unused names left" | SQUID names new bots from `playerbots_names` in the realm's own characters database; the Wildcard one was empty. | Row count of `acore_characters_wildcard.playerbots_names`. | Patch night copies the three name lists from the CoA characters database when they are missing or empty ("Copied playerbots_names ..."). | 91aefe7 (#7) |
+| S7 | Bots are created as CoA classes, not as Wildcard Heroes; Wildcard behaves like a per-character challenge | `CoAChallenges.GameModes.Realm` was empty on the Wildcard realm. | That line in `modules\mod-coa-challenges.conf` must be `WildCard`. | The value is in `server-settings.txt`; `Rebuild-WildcardBots.cmd` replaces wrong bots (a live, destructive action: change control first). | 42290ca (#8) |
+| S8 | After a start outside the manager, other computers see the realm but cannot join it | The launcher resets the realm list to 127.0.0.1 at every start; the manager normally writes the friends' address back. | `patch-night.log` line "Realm list points friends at ADDRESS again". | Patch night and `Start-Server.cmd` write it back from `realmlist | address` in `server-settings.txt`. | 729e002 (#5), c21935e (#51) |
+| S9 | SQUID's bots are off on Wildcard after starting the server with the manager's own Start button | The manager forces `AiPlayerbot.Enabled = 0` on Wildcard whenever it starts the server. | `AiPlayerbot.Enabled` in `modules\playerbots.conf`. | Start with `patch-night\Start-Server.cmd`, which applies the settings and starts without that step. | 465c928 (#4); README |
+| S10 | New characters crash at first login | OPEN. `SkipCinematics = 2` was set on 30 Oct "to test whether the intro cinematic causes" it. No result is recorded in the repo. | Does it still happen with the setting at 2? Record the answer. | wildcard-failure-archaeology for the history. | aaf4df4 (#13) |
+
+## Patch night and nightly restart
+
+Look first at `patch-night\last-run.txt` (one line), then `patch-night\patch-night.log` between
+"---- patch night started ----" and "---- patch night finished ----".
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| P1 | No log lines at the scheduled time | Both scheduled tasks run as James and only while he is signed in on the VM. | Task Scheduler: "CoA Patch Night", "CoA Nightly Restart"; last run time. | James signs in; nothing to fix in the repo. | `docs/agents/context/patch-night.md`; `patch-night/Register-PatchNight.ps1` (LogonType Interactive) |
+| P2 | WARN "The manager installed core X (auth server), but kept our patched world server from core Y" | The manager's Update keeps a world server it sees was changed (ours), so the saved official copy is stale. The auth server is always the manager's own, so its revision shows the real release. | That log line; then whether "Patched build available" follows. | Patch night goes by the auth server. Until a build for core X exists you get "No patched build for core X yet; the official server keeps running (no Mystic Enchants on Wildcard)". | f83171d (#29), 0736bae (#30) |
+| P3 | "The installer refused or failed; continuing with the server as it was", or the installer says "This build is for core A, but the manager installed core B" | The build was made for a different core than the one installed. The installer refuses so the databases and the program always match. | `server\core-revision.txt` in the package against the manager's core. | Build for the installed release. | script (`vm/Install-WildcardServer.ps1`) |
+| P4 | "Patch night FAILED on the patched server; the official server is running instead (no Mystic Enchants)" | The patched server did not come up (rows S1, S4, S5), so patch night copied the official program back. | Why the patched start failed: lines above the FAIL. | Fix the cause, new build. Players can play meanwhile, without Mystic Enchants on Wildcard. | script (step 5 of `PatchNight.ps1`) |
+| P5 | MySQL error 1046 ("No database selected") while removing the Auctioneer's listings | MySQL refuses a multi-table DELETE with aliases unless a database is selected. | The failing statement has no `USE`. | `USE` the characters database first. Applies to any new multi-table DELETE sent through patch night. | b872579 (#62) |
+| P6 | `Rebuild-WildcardBots.cmd` removes "0 of 2100" bots | mysql on Windows can end each line with an extra carriage return, so no line passed the name check. Then: SQUID's bot names are two words ("<Name> Bot"), which a command argument splits. Then: success was reported with bots still there. | Log line "Skipping N line(s) that are not character numbers". | Lines are trimmed, bots are erased by character number, success only when none is left. Trim every line you read from mysql on Windows. | 0a04f12 (#9), 2c07b48 (#11), 5d35b3b (#10) |
+| P7 | Downtime much longer than about 2 minutes | (a) Applying 261 settings tested every line of the config files: about 3 minutes. (b) Windows PowerShell 5.1 redraws a progress bar per downloaded block: a 38 MB build took 2 min 20, a 25 MB addon 8 minutes. | The "Downtime: N s" line and the timestamps between log lines. | Settings indexed by name (24.6 s to 1.7 s in the test); progress bar off; preparing now happens during the countdown and only the world server restarts. | d802f8c, f5d6cf5, 759c7b6 (all #229) |
+| P8 | A script change you merged is not in use on the VM; WARN "... from GitHub does not read cleanly; keeping the current copy" | Patch night refuses a downloaded `.ps1` that has a syntax error and keeps the old one, so a mistake merged in the day cannot take the server down at night. | That WARN line. Also "Cannot download from GitHub (...); using the local copies." | Fix the syntax error. | script (`FetchRepo`, `ParsesCleanly`) |
+| P9 | "Enchant fix NNN-name.sql failed: ..." but the run still ends "Patch night OK" | A failed SQL file is only a WARN; the server starts anyway without that fix. | Search the run for "failed:"; a healthy file logs "Applied enchant fix NNN-name.sql to DATABASE." | Fix the SQL (ascension-restoration). Do not trust "OK" alone. | script (`ApplyEnchantFixes`) |
+| P10 | A new build is on GitHub but was not installed overnight | The nightly restart never installs builds: "Nightly restart: the new build is left for the weekly patch night." | That INFO line. | Wait for the weekly patch night (Tuesday 11 pm is the script's default; what the VM has registered is UNVERIFIED: `Get-ScheduledTask 'CoA Patch Night' \| Get-ScheduledTaskInfo`), or James runs `Run-PatchNight-Now.cmd` (it restarts the live server: hard stop 5, James decides). | `Register-PatchNight.ps1` (`-NoInstall`) |
+| P11 | The countdown ran with nobody able to hear it, or a run by hand counted down an empty server | The console is silent while the world is still loading, which read as "players unknown". | Log line "The world is not accepting players (still starting or stuck), so there is nobody to warn." | Patch night now tests the game port first. | e244a47 (#83) |
+| P12 | Disk fills; `world-console.log` is gigabytes | The manager appends every start's console output forever (3 GB by 22 Nov). | Size of `Core\Logs\world-console.log`. | Changed, **not confirmed; status OPEN**: logs are meant to be cleared once then dated per run, newest 3 kept (759c7b6), and bot roll/packet lines were moved off the console (f9dc45a, shipped 20 Nov, no after-measurement). On 22 Nov the file was 2.99 GB again; that day's server start (08:53) predates the merges of #229 to #231, so the clear/rotation had not run yet. Check `patch-night.log` after the next restart for "Cleared world-console.log" or "Left world-console.log as it is for now (in use)". | 759c7b6 (#229), f9dc45a (#204) |
+
+## Settings
+
+Look first at `server-settings\settings-report.txt` and the "Settings:" line of the last run in `patch-night.log`.
+Healthy by `docs/agents/context/patch-night.md` (INTENDED DOCTRINE): "0 unknown", no "Bad value". Prediction from the code, UNVERIFIED on the VM: about 28 working settings can never pass the unknown-name test, and the refinement `5978ee4` is not on `main`. So judge by **no NEW unknown name** against the previous run's list (Proposed practice, not yet adopted by James; home: `wildcard-settings-and-flags`, section 5).
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| C1 | A config file keeps growing (`playerbots.conf` went from 240 KB to 22 MB in 16 writes); a setting with non-English characters stops matching | The files are UTF-8 but were read as Windows-1252 and written back as UTF-8, multiplying every non-ASCII character on each write. | File size; lines showing runs of "Ã" or "Â". | Read and write as UTF-8; garbled lines are repaired exactly ("repaired: N garbled line(s)"). | ba59783 (#229) |
+| C2 | Level cap is 80 again and nobody can prestige at 60 | A manager update (.95) put `MaxPlayerLevel` back to the core default; prestige follows the level cap. | `MaxPlayerLevel` in `worldserver.conf`. | The value is now pinned in `server-settings.txt`. General rule: a value you rely on but have not listed can be reset by any update. | 2a033cd (#114) |
+| C3 | A settings change is "merged" but the value is not in `main` | A merge with `main` kept `main`'s copy of `server-settings.txt` and dropped the branch's line. | `git grep -n 'Setting.Name' origin/main -- server-settings/server-settings.txt` | Re-add the line and re-read the diff after every merge from `main`. (PR #218 merged the branch at 15:43:07 on 21 Nov without the line; the repair commit `d9aa1b0` was pushed 23 seconds later and is not on `main`, so on 2026-11-22 `Manastorm.ExperienceRate` is not in `main`.) | d9aa1b0 (branch `manastorm-xp-75`) |
+| C4 | A setting is in the list but the server ignores it | (a) The name is unknown to the installed server (renamed or removed by an update). (b) "Bad value": the server could not use the value. (c) The setting needs a patched build that is not installed. | `settings-report.txt` lists unknown names and bad values; the comment above the setting in `server-settings.txt` says which build it needs; `Core\worldserver.patched-release.txt` has the installed build. | wildcard-settings-and-flags. | ba59783 (#229); `PatchNight.ps1` `ReportConfigWarnings` |
+| C5 | Nothing in the list is applied | The list belongs to one realm (`realm | active = wildcard`) and is not applied while the manager has another realm active. | `Settings\realm-profile.json`, field `active`. | By design. | 42290ca (#8); `server-settings.txt:9-11` |
+| C6 | A value edited by hand in `worldserver.conf` is gone after a start | The manager rebuilds `Core\configs\worldserver.conf` from `Settings\worldserver.conf.template`. | Is the value in both files? | Put it in `server-settings.txt`; the kit writes both. | e3fc84b (#1); header of `Apply-ServerSettings.ps1` |
+| C7 | The settings kit fails when adding a setting a file does not have yet | PowerShell turned the list of lines into a fixed-size array. | Error on screen while applying. | Fixed; kept here because the same PowerShell habit (an if-expression "unrolls" a list) bites again in new scripts. | b8a71b5 (#2) |
+| C8 | Your line for the auction bot's never-list (`AuctionHouseBot.DisabledCustomItemIDs`) has no effect | Patch night wrote its own computed list over it. | The line in `mod_ahbot.conf` after a start. | The two lists are now merged. | ee4ab40 (#222) |
+
+## Database and SQL
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| Q1 | "Retrieving character list" takes about 40 seconds | Every login (bots included) ran a delete across all learned-spell rows (about 1.7 million) because the core "removes a spell from every character" when asked to teach one that does not exist, and CoA teaches a hidden spell the Wildcard world database lacks. No index on the `spell` column. | A slow-query log (queries over 1 s) found it. Index `idx_spell` on `character_spell` and `character_talent`. | Patch night adds the index once ("Indexed character_spell.spell."). 40 s became under 1 s. | cc145e5 (#82), 257158e (#84), ea01588 (#86) |
+| Q2 | The website's Tameable pets page is blank; "/api/pets" says the world database did not answer | The query asked for `creature.id1` (newer AzerothCore); this core's column is `creature.id`. | `signup.log` now holds MySQL's own error text. | Use `id`. Lesson: check column names against this core's database, not against upstream AzerothCore. | 2563565 (#215) |
+| Q3 | Players wait behind bot logins and saves | Too few character-database connections for hundreds of bots. | See wildcard-lag-spike-campaign before touching this. | More connections were added on 8 Nov. | 0cce098 (#75) |
+| Q4 | A SQL file fails or duplicates rows when run a second time | Enchant files in `sql/enchants/` run at **every** start, so each must be safe to repeat; `000-reset.sql` removes this repo's rows first. The AI chat table files are not safe to repeat, so they are recorded in `wcme_applied_sql` and run once. | Run the file twice on a scratch database (the documented workflow). | ascension-restoration. | `docs/enchant-restoration.md` "How a fix reaches the server"; `PatchNight.ps1` `PrepareOllamaChat` |
+
+## Game behaviour (C++ patches)
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| X1 | A hook on an item's "use" never runs (Manastorm caches still opened a loot window) | Items with the has-loot flag are opened by a different client message (`CMSG_OPEN_ITEM`) on right-click; the item's OnUse is not called. | Does the item have a loot window? | Catch the open-item message as well. | 1bfcce9 (#114) |
+| X2 | The Wildcard window refuses a purchase "with plenty owned" (Runes of Descension) | The decision is made in the client, which counts only the currency-tab slots; runes in bags do not count. | Where the runes sit: bags or currency tab. | Patch 82 moves them to the currency tab; `160-rune-currency.sql`. A server-only view of the rule was not enough. | b4f61e9 (#200) |
+| X3 | "Find a Group" does nothing for Random Classic Dungeon | The client sends every dungeon of the type (52 to 126 in the logs); the core dropped requests with more than 50. | Dungeon finder refusal lines (patch 88 logs the result and every member's locks). | Patch 94 raises the limit. A second case (a group of alts refused Ragefire Chasm) was still being diagnosed with patch 88's log on 21 Nov: OPEN. | a392da9 (#226), 33bda95 (#206) |
+| X4 | Battleground: a living player or bot keeps "Waiting to Resurrect" forever | Bots revive themselves and talk to the spirit guide again; the wave only cleared the queue. | The aura on a living unit. | Cleared at each wave. | 28a7345 (#127) |
+| X5 | A healing enchant reads the wrong unit (healer and target swapped) for heal-over-time | The core passes the heal hook's units as (healer, target) for direct heals and (target, healer) for periodic ticks. | Does it work for direct heals and fail for ticks? | Helper `WcmeHealParties` puts them in order. | 09c12c0 (in #178) |
+| X6 | A stacking bonus stops just short of its cap (49% instead of 50%) | The value only refreshed on changes of 1% or more, and the last step was smaller. | Compare the shown value with the cap at one level. | Always land exactly on full and empty. | 193a319 (#162) |
+| X7 | Something works for CoA classes and not for Wildcard Heroes | Wildcard Heroes are class 10; class tables and spec lookups often have no row for them. | Is there a table or switch keyed by class in that code? | wildcard-patch-authoring checklist. | `docs/agents/context/patches.md` item 5 |
+| X8 | A fix was merged but the old behaviour is still live | C++ only changes when a build that contains the merge is **installed** (weekly patch night or a run by hand). SQL, settings and addons go live at the next start. | `Core\worldserver.patched-release.txt` against the release whose notes name a commit that contains the fix. | Row B9. | bb308cc (#177); d8f9215 ("live doubling stays until a build with this PR is installed") |
+
+## Mystic Enchants
+
+Jargon: a **proc** is an effect that fires when something else happens (a hit, a cast). A **twin** is the same enchant
+made for another realm type that works; a link (`spell_linked_spell`) puts the twin's aura on while ours is on.
+`spell_proc` is the world-database table that says when a proc aura fires. Test with `.aura SPELL` then
+`.list auras` on a GM test character (`docs/enchant-restoration.md`, "Testing in game").
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| E1 | The enchant (or its twin) is on you (`.list auras` shows it) and never does anything | Its trigger aura has no proc flags and no `spell_proc` row. Ascension kept those rules in its own database; the spell data has them blanked. | Proc flags of the spell and whether a `spell_proc` row exists for it. | Give it a `spell_proc` row and an action rule. 22 twin links that never fired were dropped; 9 then 22 more were given proc settings. | 3a141df (#19), c4507e9 (#24), 8d8e256 (#165) |
+| E2 | The enchant fires on every hit with no cooldown (29 Legendaries by the commit's first line, 33 by its own breakdown: 7 + 2 + 24) | The opposite half of E1: proc flags are set but there is no `spell_proc` row, so there is no ability filter and no internal cooldown. | Same check as E1. | `015-runaway-procs.sql`: cooldown from the tooltip, a family filter, or a named-ability rule. | 7a1f7a8 (#164) |
+| E3 | The player gets the bonus twice | (a) Ours and the twin both carry the same real effect. (b) The core already implements the enchant (bonus table, `coa_mystic_enchant_proc` rule or hard-coded) and our script added it again. | `enchants/core-overlap-review.csv` lists every enchant we touch that the core also handles. For a twin: does our own spell have a real effect too? | Remove ours first (blank it to a placeholder) or drop the link or script. | 360dc22 (#23); f70bb96, 5bf04bd, 99174fa, d8f9215 (all in #178) |
+| E4 | A proc that should fire from an explosion, a nova or a damage-over-time tick does not | Those are triggered spells; they only set off a proc when the `spell_proc` row allows it (`AttributesMask` 2). | The row's `AttributesMask`. | Set it. | 4795ac5 (#25) |
+| E5 | The enchant teaches a hidden buff or a free piece of an ability instead of the ability | The "same name" pick chose a spell with no cost, cooldown or tooltip of its own. | The taught spell's cost and cooldown. | 20 such teaches removed, then 4 more. | 767ca36 (#32), 57c8c67 |
+| E6 | SQL added a "teaches" and nothing is taught | Taught spells are read from the client's Spell.dbc, not from the `spell_dbc` table. | Is the row in `wcme_enchant_teach`? Is a patched build installed? | The patched server reads extra teaches from `wcme_enchant_teach`. | 9970cbf (#26); `docs/enchant-restoration.md` Lessons |
+| E7 | A scroll roll gives an enchant that does nothing | Its spell is missing on the server, or exists with only placeholder effects. | `CoA.MysticEnchants.SkipMissingSpells` and `SkipDudSpells` (both default on); enchants that work only through hard-coded C++ look the same to the filter: "about 70" by README.md, 36 by `docs/enchant-restoration.md`; no list of them exists (`wildcard-failure-archaeology`, E-01). | Filters at start-up; `wcme_enchant_override` forces one in or out. | cf8c837 (#15), d746df2 (#17); README |
+| E8 | An enchant's "damage done in PvE / PvP" bonus does not count for its spell | The core applies those two aura types only for an allowlist of reviewed spells. | Is the spell on the allowlist? | Add it (a C++ patch). | 21826cd (#173) |
+| E9 | A stealth-opener enchant never fires (Double Agent) | The core removes the target's stealth before damage is worked out, so a check at damage time is always false. | When is the condition read: at cast start or at hit? | Check when the ability starts. | 3c1c790 (in #178) |
+| E10 | A helper spell hits far harder than intended | A helper cast with an amount taken from a finished hit got the caster's spell power added again. | Compare with and without spell power gear. | Helpers with a ready-made amount no longer scale again. | 3c1c790 (in #178) |
+| E11 | A fix made the target wrong and was undone (Arcane Charge) | A retarget attempt on 2 Nov was reverted the same day. "Fire it when Charge Root lands" was then tried on a wrong premise (the root lands as Charge starts); what passed the test was making the damage hit the Charge target itself (`79b50b4`, #35). | Full story: wildcard-failure-archaeology. | See the three commits in order. | 29eac6a (#33), d2ebbdb (#34), 93bfa49 |
+
+## Addons
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| A1 | Item tooltips show an enchant's text where "Requires Level 60" should be | The WildcardEnchants tooltip fix swaps an enchant's old text for its twin's. Enchants whose description starts with a "Requires SPELL" line gave that line as the text to replace. | Disable WildcardEnchants: if the line is right again, it is the addon. | Requirement lines and short lines are never changed. | 6a7f08b (#60) |
+| A2 | The twin tooltip swap shows the wrong text | The addon read the description from the last tooltip line; the description is the first line under the name (the granted buff is shown below it). | Compare the tooltip lines by eye. | Addon 1.9 reads the first line. | c4eaf1a (#22) |
+| A3 | Opening the enchant collection window freezes the game | Every query looked up and sorted all 6,440 enchants. | Does the freeze happen on each page turn or filter change? | Names and order are worked out once and cached. | 4fdb6a0 (#224) |
+| A4 | Damage meter shows nothing | A known 3.3.5 client bug: with many units around (hundreds of bots) the combat log stops passing events until cleared. | Does clearing the combat log bring the meter back? | Addon WildcardCombatLogFix clears it when needed. | 447b561 (#221) |
+| A5 | A Wildcard character has no Mystic Enchant tab | The client hides the tab for Wildcard characters; the WildcardEnchants addon puts it back. Every player needs it. | Is `Interface\AddOns\WildcardEnchants` in the player's client? Did the launcher finish? | Patch night copies every folder under `addon/` to the VM's client folder; the launcher syncs it. | README |
+
+## Client patch and game client
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| K1 | The client crashes on the character-creation screen | Spells added to the client patch carried a class family and class flags; that screen gathers spells by class. | Remove `patch-ZZW.MPQ` from the client's `Data` folder: if the crash goes, it is the patch. | Added spells carry no class family or flags (tested 7 Nov). | dc2a5da (#52); `client-patch/build_client_patch.py:8-9` |
+| K2 | An enchant has no name or icon in the client, or the server holds it out of rolls | Its spell is only in the Area 52 spell list, which this client does not read. | In game: `/run print(GetSpellInfo(ID))`. | `patch-ZZW.MPQ`, built locally from your own client (never published). | 34083eb (#36); `docs/enchant-restoration.md` "Client patch" |
+| K3 | Linux (Steam/Proton): endless loading screen, then a disconnect after about 30 s | The client's `DivxTac.dll` hangs the loading screen under Proton. | Does it load with the DLL switched off? | The Linux launcher's Steam entry sets a launch option that disables it. | f10cf9e (#101) |
+
+## Bots
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| R1 | Bots near players walk a few steps, then stand still for 20 minutes or more | OPEN. Seen with `AiPlayerbot.BotActiveAloneForceWhenInZone = 0` and only the 300-yard wake radius, "although the radius check reads correctly". | Are both `...ForceWhenInZone = 1` and `...ForceWhenInRadius = 300` set? | Zone waking was switched back on "until that is understood". Do not switch it off again as a performance fix without solving this. | e608f61 (#88), c02ba12 (#95) |
+| R2 | Battleground bots whisper "I have a master already" over and over | In a battleground raid the random bots answer to their own leader, so every whisper from a player or an addon (SquidBots Lite polls its bots) got that reply. | Does it happen only in battlegrounds, and with the addon on? | Patch 61: they refuse quietly. | 549f50a (#159) |
+| R3 | Random bots whisper a canned line back every 30 seconds | An addon whispers bot commands ("co ?", "wcr", ...) to every "... Bot" in the party; SQUID's live chat took each for small talk. | Same as R2. | Patch 96 swallows a whisper that is a bot command. Merged 21 Nov, **in no build as of 2026-11-22**: it needs a workflow run with rebuild ticked (James's say-so), then the weekly patch night. Until then random bots still answer. | 13a03d3 (#228) |
+| R4 | Wildcard and CoA bots never bring a dead pet back | SQUID only revived pets in its Hunter routine. | Bot class. | Patch 87. | 33bda95 (#206) |
+| R5 | No Hero bots, or bots in the wrong classes | See S6 and S7. | | | |
+| R6 | The world is slow with bots awake | Not for this skill: wildcard-lag-spike-campaign. | | | f9dc45a (#204), 6a3e017 (#217) |
+
+## Launcher and download site
+
+Player-side log: `launcher.log` next to the launcher (the Log button opens it).
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| L1 | Every launcher fails on one file with a 404 | IIS's own `web.config` was listed in the manifest (the list of client files); IIS never serves it. | Which file `launcher.log` names. | Publish leaves it out; the launcher keeps going past one failed file. | c3b4125 (#74) |
+| L2 | The Windows launcher fails during progress reporting on the full client (46 GB in total) | The total overflowed the whole-number (`int`) version of `Math.Max`. | `launcher.log`. | Maths in doubles. | 99f4fa7 (#73) |
+| L3 | A friend outside the home network gets "Unable to connect" | The game reads `Data\LOCALE\realmlist.wtf` over `WTF\Config.wtf`, and the downloaded copy pointed at the home address. | Content of `realmlist.wtf` in each locale folder. | The launcher writes both; the host's copy is no longer published. | eb1f8de (#65) |
+| L4 | The launcher window shows "Not responding" on the first check | It read all 43 GB to compare checksums with the window frozen. | Does it recover by itself? | Files count as current when size and modified time match; reads report progress. | d025dc7 (#71) |
+| L5 | Dates or file times are wrong after publish | Windows PowerShell 5.1 read 'Utc' as milliseconds in the Unix time conversion. | Compare a manifest time with the file's. | Conversion rewritten. | 4168ff5 (#72) |
+| L6 | The site's change list is empty or broken | Windows PowerShell 5.1 nests a top-level JSON array inside another. | Shape of the JSON the status service returns. | Unwrapped; the real error is now logged. | f9c3d54 (#81) |
+| L7 | Linux: Steam's Play button exits with "unrecognized arguments" | Steam's `%command%` contains `--`, which the argument parser treats as the end of options. | `launcher.log`. | The option is taken from the command line before parsing (launcher version 6). | 2bbf3d5 (#161) |
+| L8 | The game is not pointed at the server after a failed update | The realm was only set after a successful update. | `realmlist.wtf`. | Launcher 5 always sets it. | 9cb5609 (#74) |
+
+## Sign-up and web services
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| U1 | A page fed by the VM (pets, status, leaderboards) is blank | The service's database query failed. | `patch-night\signup.log` (from the repo: `signup/WildcardSignup.py:55`). | See Q2. | 2563565 (#215) |
+| U2 | Report Bug reports do not become GitHub issues | No GitHub token in `signup-settings.json`: reports wait in the `BugReports` folder and go out once it is added. That file holds secrets: a hard stop for change control, James only. | Files waiting in `BugReports`; `signup.log` records each issue number. | wildcard-client-and-web. | `signup/README.md` |
+
+## Process, git and merging
+
+| ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
+|---|---|---|---|---|---|
+| G1 | The build branch for the old core lost its patches | `main` was merged into `for-083`; `main`'s patches are for a newer core. | `git log --merges` on the branch. | Undone. Doctrine (README): never merge `for-083` and `main` into each other. | ebc3c3d |
+| G2 | A pull request conflicts in `CHANGES.md` (or `server-settings.txt`) with another open one | Several open PRs each add a line at the same place. | The conflict is at the end of a table. | Place the new line where other open PRs do not edit. Happened at least four times. | 677c825 (#166), f4ee5a3 and 549db71 (#201), 3bc4452 (#207) |
+| G3 | A diff shows a whole file as changed | Line endings flipped. Files differ: as of 2026-11-22 the `.ps1` and `.cmd` scripts under `patch-night/`, `server-settings/`, `vm/`, `signup/` and `launcher/` (except `Publish-WildcardSite.ps1`) use Windows line endings (CRLF), as do `signup/WildcardStatus.py` and four files in `sql/enchants/`; `patches/*.ps1`, the site pages, Markdown and most SQL use LF. There is no `.gitattributes` to enforce it. | `git diff --stat` shows every line changed; `git diff -w` shows the real edit. | Keep each file's existing endings. | 1f81e21 (#5), e11ba2a (#105), 07dc858 (#121) |
