@@ -283,9 +283,10 @@ foreach ($anchor in @($register, $loader)) {
 #   4. Every Wild Imp from Hand of Gul'dan the warlock has, and every one summoned while the stacks last, gets 276512
 #      at the same number of stacks for the time the stacks have left (+20% damage per stack).
 #   5. "Deteriorate over time": every Wild Imp from Hand of Gul'dan summoned by a warlock with the talent carries
-#      990142, Ascension's own deterioration for this talent's Legendary version: 4-5% of its health a second. An imp
-#      ends its 10-16 sec life at roughly 20-55% health, so it never dies of it alone, and the oldest imp is reliably
-#      the weakest (rule 2). Our copy ignores immunities, cannot crit and deals fixed damage, so the rate is steady.
+#      990142, Ascension's own deterioration for this talent's Legendary version, at a fixed 4% of its health a second.
+#      The longest an imp can live is 21 sec (12 base, +5 Master Summoner, +4 at 4 stacks), so at most 84% is lost: it
+#      never dies of this alone, and the oldest imp is reliably the weakest (rule 2). Our copy ignores immunities,
+#      cannot crit and deals fixed damage, so the rate is steady.
 # 276509, 276512 and 990142 are given working data in sql/enchants/140-talent-fixes.sql. Bound to 276508 there too.
 $class = @'
 // Wildcard: Demonic Persistence (issue #149).
