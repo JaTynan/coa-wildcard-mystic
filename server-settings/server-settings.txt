@@ -57,6 +57,12 @@ modules\playerbots.conf | AiPlayerbot.WildcardAltsLearnOwnedBooks = 1
 # account owns, with the mounts and companions the core already teaches then. No claim from the vanity menu needed.
 # Read at server start. 0 = the core's own behaviour (claim it on each character).
 modules\wildcard.conf | Wildcard.LearnOwnedBooks = 1
+# Your Wildcard Hero bots take the rolls their levels have earned (23 Nov, James; needs the build with
+# patches/44-alt-bots-wildcard-rolls.ps1): each new ability and talent roll that is due, the higher ranks of what
+# they have, and a stat path if they have none (from the role you set with the "wildcard role" whisper). At a
+# level up and when the bot comes online. It never rerolls, unlearns, spends a scroll or changes a path you chose,
+# and your skill cards still steer the rolls. Set 0 if you would rather make every roll yourself. Read at start.
+modules\playerbots.conf | AiPlayerbot.WildcardAltsRollOnLevelUp = 1
 # Skill card drops by quality (8 Nov; needs the build with the card patch). Cards were picked evenly from every card,
 # so epics and legendaries dropped as often as commons. Weights common,uncommon,rare,epic,legendary; 3% per kill.
 modules\wildcard.conf | Wildcard.CardDropQualityWeights = "50,28,14,6,2"
