@@ -108,8 +108,9 @@ that spell.
 `nullptr` as the table name). `patches/mystic-enchants-spellaffect-sql.patch` changes that one argument to
 `"wcme_spellaffect_dbc"`, so rows in that world table are laid over the file like any `*_dbc` table.
 `sql/enchants/011-missing-named-targets.sql` then builds the 337 spells with an empty mask and names each one's
-targets in `wcme_spellaffect_dbc`. Our IDs start at 900000 so they never replace a row of the real file
-(`sql/enchants/000-reset.sql:32-33`).
+targets in `wcme_spellaffect_dbc`. A table row replaces the file row with the same ID, and the file
+uses 201 IDs between 900000 and 999999, so a new ID must be checked first: `enchant_sql_lint.py` (skill
+ascension-restoration) fails on a clash. Ten rows of file 011 clashed until the fix of 23 Nov 2026.
 
 Rules that follow:
 

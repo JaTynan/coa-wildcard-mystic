@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Static pre-flight for sql/enchants: catches the mistakes that make a file fail when patch night runs it.
 
-Usage (from anywhere):  python3 -I enchant_sql_lint.py [path/to/sql/enchants]
+Usage (from anywhere):  python3 -I enchant_sql_lint.py [path/to/sql/enchants] [--spellaffect-dbc path/to/SpellAffect.dbc]
 Reads only. Python 3 standard library only. Exit code 1 when it finds an ERROR, 2 for a bad folder, 0 otherwise.
 This script is the authority for reset and ownership modelling of sql/enchants; the full pre-merge check set is
 listed in the skill wildcard-validation-and-qa. The files the reset cannot undo are listed in
@@ -16,12 +16,19 @@ files in name order against an empty model of the keys this repository adds, twi
                          (so 000-reset removes it before the next run) nor deleted earlier in the same file.
   ERROR  no WCME marker  a spell_linked_spell row whose comment does not start with 'WCME:' (000-reset would never
                          remove it, so the second run would add it again).
+  ERROR  stock row id    a wcme_spellaffect_dbc row whose ID the server's SpellAffect.dbc already uses. A table row
+                         REPLACES the file row with the same ID, so the stock modifier silently loses its target
+                         (file 011 did this to ten rows until 23 Nov 2026). Without --spellaffect-dbc the check uses
+                         the list below (the file's IDs from 900000 to 999999 on 23 Nov 2026) and refuses any ID
+                         outside that range, where the file is dense. With it, the real file is read and the list
+                         below is checked for staleness. The file is client data: never copy it into the repository.
   WARN   not in 000      a spell_script_names row whose ScriptName does not start with spell_wcme_ and is not
                          deleted in its own file (000-reset only clears spell_wcme_* names).
   NOTE                   statements it could not model (UPDATE, DELETE with a JOIN or sub-query) - read those by hand.
 """
 import argparse
 import re
+import struct
 import sys
 from pathlib import Path
 
@@ -36,6 +43,40 @@ KEYS = {
     'spell_linked_spell': ('spell_trigger', 'spell_effect', 'type'),
 }
 OWNED_TABLES = ('spell_dbc', 'spell_proc')
+
+# IDs that SpellAffect.dbc itself uses inside the range our rows live in, as inclusive (first, last) pairs.
+# Read from the server's file on 23 Nov 2026 (36,849 rows; 201 of them in this range). Re-check after a client
+# data update with --spellaffect-dbc: the run prints a replacement list when this one is out of date.
+OUR_ID_RANGE = (900000, 999999)
+STOCK_SPELLAFFECT_IDS = (
+    (901388, 901397), (912000, 912002), (918322, 918325), (918328, 918328), (918350, 918354), (918358, 918360),
+    (918375, 918378), (918380, 918381), (918384, 918384), (918389, 918392), (918398, 918415), (918421, 918421),
+    (918427, 918428), (918430, 918438), (918440, 918448), (918450, 918457), (918460, 918473), (918475, 918475),
+    (918477, 918488), (918491, 918495), (918497, 918498), (918519, 918522), (918525, 918530), (918532, 918539),
+    (918548, 918567), (918569, 918597), (918605, 918608), (929179, 929181), (938442, 938443), (975170, 975172),
+    (975176, 975176), (999997, 999999),
+)
+
+
+def dbc_ids(path):
+    """Returns the set of row IDs (first field) of a WDBC file."""
+    data = Path(path).read_bytes()
+    if data[:4] != b'WDBC' or len(data) < 20:
+        sys.exit(f'Not a DBC file: {path}')
+    rows, _fields, row_size, _strings = struct.unpack('<4I', data[4:20])
+    if row_size < 4 or len(data) < 20 + rows * row_size:
+        sys.exit(f'Damaged DBC file: {path}')
+    return {struct.unpack_from('<I', data, 20 + i * row_size)[0] for i in range(rows)}
+
+
+def as_ranges(ids):
+    out = []
+    for value in sorted(ids):
+        if out and value == out[-1][1] + 1:
+            out[-1][1] = value
+        else:
+            out.append([value, value])
+    return tuple((a, b) for a, b in out)
 
 
 def statements(text):
@@ -134,7 +175,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('folder', nargs='?', default=str(Path(__file__).resolve().parents[4] / 'sql' / 'enchants'),
                         help='the sql/enchants folder (default: the one in the repository this script sits in)')
-    folder = Path(parser.parse_args().folder)
+    parser.add_argument('--spellaffect-dbc', metavar='FILE',
+                        help="the server's SpellAffect.dbc (on the VM: C:\\Games\\CoA Server\\Data\\dbc). Checks "
+                             'wcme_spellaffect_dbc IDs against the real file instead of the built-in list')
+    args = parser.parse_args()
+    folder = Path(args.folder)
     if not folder.is_dir():
         print(f'Not a folder: {folder}', file=sys.stderr)
         sys.exit(2)
@@ -143,6 +188,27 @@ def main():
         sys.exit(f'No .sql files in {folder}')
     parsed = [(f.name, statements(f.read_text(encoding='utf-8'))) for f in files]
     problems, notes = [], []
+
+    stock_ids = dbc_ids(args.spellaffect_dbc) if args.spellaffect_dbc else None
+    if stock_ids is not None:
+        real = as_ranges(i for i in stock_ids if OUR_ID_RANGE[0] <= i <= OUR_ID_RANGE[1])
+        if real != STOCK_SPELLAFFECT_IDS:
+            problems.append(('WARN', 'enchant_sql_lint.py', 'STOCK_SPELLAFFECT_IDS is out of date for this '
+                             f'SpellAffect.dbc; replace it with: {real}'))
+
+    def stock_id_problem(value):
+        if not value.isdigit():
+            return f'wcme_spellaffect_dbc ID {value!r} is not a plain number'
+        number = int(value)
+        if stock_ids is not None:
+            return f'stock row id: SpellAffect.dbc already has a row {number}; ours would replace it' \
+                if number in stock_ids else None
+        if not OUR_ID_RANGE[0] <= number <= OUR_ID_RANGE[1]:
+            return (f'stock row id: wcme_spellaffect_dbc ID {number} is outside {OUR_ID_RANGE[0]}-{OUR_ID_RANGE[1]}, '
+                    f'where it cannot be checked without --spellaffect-dbc')
+        if any(first <= number <= last for first, last in STOCK_SPELLAFFECT_IDS):
+            return f'stock row id: SpellAffect.dbc already has a row {number}; ours would replace it'
+        return None
 
     # Every key any file registers in wcme_owned: 000-reset removes those rows before the next run.
     owned = set()
@@ -188,6 +254,10 @@ def main():
                             full = key + (comment,)
                             if run == 1 and not comment.startswith('WCME:'):
                                 problems.append(('ERROR', name, f'no WCME marker: spell_linked_spell {key}'))
+                        if run == 1 and table == 'wcme_spellaffect_dbc':
+                            clash = stock_id_problem(key[0])
+                            if clash:
+                                problems.append(('ERROR', name, clash))
                         present = any(k[:len(key)] == key for k in state[table])
                         if kind == 'INSERT' and present:
                             problems.append(('ERROR', name, f'duplicate key on run {run}: {table} {key}'))
