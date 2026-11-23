@@ -41,6 +41,17 @@ modules\playerbots.conf | AiPlayerbot.WildcardHeroesUseWildcardTrainer = 1
 # and the open world (22 Nov, James, issue #233; needs the build with patches/98-alt-bots-nearby-class-book.ps1 and
 # the line above at 1). Checked every 30 seconds out of combat. Read at server start. 0 = off.
 modules\playerbots.conf | AiPlayerbot.WildcardAltsUseNearbyClassBook = 1
+# Your Wildcard Hero bots are no longer taught a slice of every class (23 Nov, James, issue #248; needs the build
+# with patches/43-alt-bots-unrolled-class-spells.ps1). The bots' "learn what is available" step (the maintenance
+# command) walked every class trainer, and every class trainer counts as valid for a Wildcard Hero. With 1 that
+# step skips class trainers for your Hero bots; profession trainers are untouched. Read at start. 0 = as before.
+modules\playerbots.conf | AiPlayerbot.WildcardAltsSkipClassTrainers = 1
+# The one-off clean-up that goes with it: when one of your Hero bots next comes online it loses the class
+# abilities it was taught and never rolled. A spell goes only if it is a class ability (never a weapon, armour,
+# profession or language skill), is on a class trainer's list, is not one of the character's Wildcard slots in any
+# specialization (or granted with one), and is not a stat path. Every removal is written to the server log. Each
+# character is done once; raise the number by one to run it again for everyone. 0 = off. Read at start.
+modules\playerbots.conf | AiPlayerbot.WildcardAltsRemoveUnrolledClassSpells = 1
 # Second option when no book is out nearby (23 Nov, James): an alt that owns a class book brings it out by itself
 # after a level up, learns and puts it away. SQUID's own setting (off by default there); it also makes an alt
 # bring out its Book of Artisans when a profession reaches the top of its rank. One alt can opt out with the
