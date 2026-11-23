@@ -53,6 +53,10 @@ modules\playerbots.conf | AiPlayerbot.CoaPets.AutoBooks = 1
 # every 10 minutes, instead of you logging in to each one to claim it. Buys nothing and spends nothing; an account
 # without the book gets nothing. Read at server start. 0 = off.
 modules\playerbots.conf | AiPlayerbot.WildcardAltsLearnOwnedBooks = 1
+# The same for a character you log in to yourself (23 Nov, James; same build): at login it learns the books your
+# account owns, with the mounts and companions the core already teaches then. No claim from the vanity menu needed.
+# Read at server start. 0 = the core's own behaviour (claim it on each character).
+modules\wildcard.conf | Wildcard.LearnOwnedBooks = 1
 # Skill card drops by quality (8 Nov; needs the build with the card patch). Cards were picked evenly from every card,
 # so epics and legendaries dropped as often as commons. Weights common,uncommon,rare,epic,legendary; 3% per kill.
 modules\wildcard.conf | Wildcard.CardDropQualityWeights = "50,28,14,6,2"

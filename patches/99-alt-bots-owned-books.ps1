@@ -12,6 +12,10 @@
 # -> 750750. Only alts (bots with a real player as master), never random bots. Off at 0
 # (AiPlayerbot.WildcardAltsLearnOwnedBooks), read once at start-up.
 # Must run after 98-alt-bots-nearby-class-book.ps1 (it anchors on that patch's lines).
+# Second part, for a character the player logs in to (James, 23 November: "close that gap"): the core already teaches
+# the mounts and companions an account owns at login (CoA.LearnOwnedCompanions), but the books are in another vanity
+# category, so a player still had to claim the book on every alt. With Wildcard.LearnOwnedBooks = 1 the same login
+# step also teaches the books above, only when the account owns them. 0 (the default) leaves the core as it was.
 # Run by the build (step "Apply our patch scripts") after the modules are checked out. Throws if an anchor is gone.
 # Listed in CHANGES.md.
 $ErrorActionPreference = 'Stop'
@@ -19,6 +23,12 @@ $ErrorActionPreference = 'Stop'
 function Edit-Core($file, $anchor, $replacement, $what) {
     $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
     if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "SQUID changed: $what was not found exactly once in $file" }
+    Set-Content $file $text.Replace($anchor, $replacement.Replace("`r`n", "`n")) -NoNewline
+}
+
+function Edit-CoaCore($file, $anchor, $replacement, $what) {
+    $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed: $what was not found exactly once in $file" }
     Set-Content $file $text.Replace($anchor, $replacement.Replace("`r`n", "`n")) -NoNewline
 }
 
@@ -117,3 +127,16 @@ Edit-Core $file @'
             LearnOwnedBooks(alt);
     // Wildcard (patch 98): a class book out nearby, with or without SQUID's own automatic books.
 '@ 'the patch 98 comment at the start of CoaPet::Tick'
+
+Write-Host "Patch: characters learn the books their account owns at login (Wildcard.LearnOwnedBooks)"
+Edit-CoaCore 'core/src/server/coa/AscensionCompat.cpp' @'
+            bool const utilityCompanion = itemId == ITEM_WONDROUS_WISDOMBALL || itemId == ITEM_FIX_O_TRON_5000;
+'@ @'
+            // Wildcard (patch 99): the class and craft books an account owns are taught with its mounts and
+            // companions. Same vanity items as the bot half of this patch (CoaPet.cpp, OWNED_BOOKS).
+            static bool const ownedBooks = sConfigMgr->GetOption<bool>("Wildcard.LearnOwnedBooks", false);
+            bool const ownedBook = ownedBooks && (itemId == 98457 || itemId == 499920 || itemId == 134995 ||
+                itemId == 219315 || itemId == 134987 || itemId == 750750);
+            bool const utilityCompanion = itemId == ITEM_WONDROUS_WISDOMBALL || itemId == ITEM_FIX_O_TRON_5000 ||
+                ownedBook;
+'@ 'the utility companion line in GetMissingOwnedCompanionSpells (AscensionCompat.cpp)'
