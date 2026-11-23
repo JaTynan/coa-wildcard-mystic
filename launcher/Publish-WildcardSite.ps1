@@ -23,6 +23,17 @@ $ErrorActionPreference = 'Stop'
 $skipFolders = @('WTF', 'Cache', 'Logs', 'Errors', 'Screenshots')
 New-Item -ItemType Directory -Force -Path $Site | Out-Null
 $config = Get-Content $Settings -Raw | ConvertFrom-Json
+# The first-install archive link is kept out of GitHub (23 Nov 2026): it lives in launcher-local.json next to the
+# patch-night scripts on the VM, one folder up from here, beside signup-settings.json. launcher-settings.json may
+# still carry one (an old checkout); the local file wins. With neither, stop: publishing an empty link would break
+# every new install, and the site keeps its last good launcher.json meanwhile.
+$localFile = Join-Path (Split-Path $PSScriptRoot -Parent) 'launcher-local.json'
+$archiveUrl = [string] $config.clientArchiveUrl
+if (Test-Path $localFile) {
+    $local = Get-Content $localFile -Raw | ConvertFrom-Json
+    if ($local.clientArchiveUrl) { $archiveUrl = [string] $local.clientArchiveUrl }
+}
+if (-not $archiveUrl) { throw "No client archive link: put {`"clientArchiveUrl`": `"...`"} in $localFile (see launcher\README.md)." }
 
 # ---------------------------------------------------------------- manifest (hashes reused while size and time match)
 $cacheFile = Join-Path $Site '.hash-cache.json'
@@ -62,7 +73,7 @@ $launcherVersion = [int] ((Select-String -Path (Join-Path $PSScriptRoot 'Wildcar
 $linuxVersion = [int] ((Select-String -Path (Join-Path $PSScriptRoot 'WildcardLauncher.py') -Pattern '^LAUNCHER_VERSION = (\d+)').Matches[0].Groups[1].Value)
 [pscustomobject] @{
     realm = $config.realm
-    clientArchiveUrl = $config.clientArchiveUrl
+    clientArchiveUrl = $archiveUrl
     clientArchiveBytes = [long] $config.clientArchiveBytes
     launcherVersion = $launcherVersion
     linuxLauncherVersion = $linuxVersion
