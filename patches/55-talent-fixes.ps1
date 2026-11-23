@@ -282,9 +282,11 @@ foreach ($anchor in @($register, $loader)) {
 #      (game data, the same way Master Summoner lengthens them). The demon gains a stack of 276509 (+20% damage).
 #   4. Every Wild Imp from Hand of Gul'dan the warlock has, and every one summoned while the stacks last, gets 276512
 #      at the same number of stacks for the time the stacks have left (+20% damage per stack).
-# 276509 and 276512 are given working auras in sql/enchants/140-talent-fixes.sql (their client auras do nothing here).
-# The tooltip's "deteriorate over time" gives no rate in this talent's data and is not done (as for the Legendary,
-# 990130). Bound to 276508 by sql/enchants/140-talent-fixes.sql.
+#   5. "Deteriorate over time": every Wild Imp from Hand of Gul'dan summoned by a warlock with the talent carries
+#      990142, Ascension's own deterioration for this talent's Legendary version: 4-5% of its health a second. An imp
+#      ends its 10-16 sec life at roughly 20-55% health, so it never dies of it alone, and the oldest imp is reliably
+#      the weakest (rule 2). Our copy ignores immunities, cannot crit and deals fixed damage, so the rate is steady.
+# 276509, 276512 and 990142 are given working data in sql/enchants/140-talent-fixes.sql. Bound to 276508 there too.
 $class = @'
 // Wildcard: Demonic Persistence (issue #149).
 #include "AllCreatureScript.h"
@@ -296,6 +298,8 @@ constexpr uint32 WCME_DP_EXPLOSION = 276511;
 constexpr uint32 WCME_DP_DEMON_DAMAGE = 276509;
 constexpr uint32 WCME_DP_IMP_DAMAGE = 276512;
 constexpr uint32 WCME_DP_STACKS = 276513;
+constexpr uint32 WCME_DP_TALENT = 276506;
+constexpr uint32 WCME_DP_DETERIORATION = 990142;
 
 static bool WcmeIsHandOfGuldanImp(Unit const* unit)
 {
@@ -377,7 +381,7 @@ class spell_wcme_demonic_persistence_talent : public SpellScript
     }
 };
 
-// Rule 4 for imps summoned while the stacks last.
+// Rules 4 and 5 for each new Wild Imp from Hand of Gul'dan.
 class wcme_demonic_persistence_new_imps : public AllCreatureScript
 {
 public:
@@ -387,7 +391,12 @@ public:
     {
         if (!creature->IsSummon() || (creature->GetEntry() != 855350 && creature->GetEntry() != 855352))
             return;
-        if (Unit* owner = creature->GetOwner(); owner && owner->HasAura(WCME_DP_STACKS))
+        Unit* owner = creature->GetOwner();
+        if (!owner)
+            return;
+        if (owner->HasAura(WCME_DP_TALENT))  // rule 5
+            creature->AddAura(WCME_DP_DETERIORATION, creature);
+        if (owner->HasAura(WCME_DP_STACKS))  // rule 4
             WcmeEmpowerImp(owner, creature);
     }
 };
