@@ -118,7 +118,8 @@ static void WcmeStartHandOfGuldanCooldown(Player* player, uint32 opener)
 {
     for (uint32 spellId : WCME_HAND_OF_GULDAN)
     {
-        if ((opener && spellId != opener) || !player->HasSpell(spellId) || player->HasSpellCooldown(spellId))
+        // A known opener always gets its cooldown back; without one (after a relog), only the versions it knows.
+        if ((opener && spellId != opener) || (!opener && !player->HasSpell(spellId)) || player->HasSpellCooldown(spellId))
             continue;
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
         if (!spellInfo)
