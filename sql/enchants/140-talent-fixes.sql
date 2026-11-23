@@ -16,22 +16,19 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES (-47258, 'spe
 
 -- Master Summoner (issue #151): the talent also lengthens Wild Imps (2.5 sec at rank 1, 5 sec at rank 2), but that
 -- part lives in a hidden companion spell per rank (818709, 818710) that Ascension's server applied and ours never
--- did, and the companions say "longer duration" without saying of what. Two steps, no code:
---   1. While a rank of the talent is on a character, its companion is too (the same aura link the twin enchants
---      use). 000-reset removes these rows by their WCME: comment and this file puts them back.
---   2. Each companion names the spells it lengthens: both Hand of Gul'dan versions a Hero can learn (954611, and
---      2304612, the summoning half of 2304611). The core sets a Wild Imp's lifetime from that spell's duration.
---      000-reset empties wcme_spellaffect_dbc first; IDs 960000+ are used by neither SpellAffect.dbc nor another file.
+-- did. One step, no code: while a rank of the talent is on a character, its companion is too (the same aura link
+-- the twin enchants use). 000-reset removes these rows by their WCME: comment and this file puts them back.
+-- The companion finds its spells by itself: its duration effect carries Hand of Gul'dan's class flag (family
+-- Warlock, third mask word 0x100), which both versions a Hero can learn have (954611, and 2304612, the summoning
+-- half of 2304611). The core sets a Wild Imp's lifetime from that spell's duration.
+-- Corrected 24 Nov: this file also named those two spells as targets in wcme_spellaffect_dbc (IDs 960000-960003),
+-- after a misreading of the companion's mask columns as empty. Named targets are only read for an effect with no
+-- mask, so those rows did nothing and are gone.
 -- Needs a server start to take effect. The talent's other effects (summon cast time and cost, Infernal and
 -- Doomguard duration) are untouched.
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (18709, 818709, 2, 'WCME: Master Summoner rank 1 applies its Wild Imp duration companion (#151)'),
 (18710, 818710, 2, 'WCME: Master Summoner rank 2 applies its Wild Imp duration companion (#151)');
-INSERT INTO `wcme_spellaffect_dbc` (`ID`, `ModifierSpellID`, `AffectedSpellID`) VALUES
-(960000, 818709, 954611),
-(960001, 818709, 2304612),
-(960002, 818710, 954611),
-(960003, 818710, 2304612);
 
 -- Demonic Recurrence (issue #148; the game data spells it "Demonic Reoccurence"): talent 272730. Only one of its
 -- four parts worked, and that part is a drawback, so the talent made Metamorphosis worse and gave nothing back.
