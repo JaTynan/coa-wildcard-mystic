@@ -51,3 +51,71 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_backdraft);`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Nemesis capstone (rank 3, 63123, issue #150)
+Write-Host "Patch: Nemesis rank 3 lets Hand of Gul'dan be cast twice in Metamorphosis before its cooldown"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+$included = "#include `"SpellScript.h`"`n"
+foreach ($anchor in @($register, $loader, $included)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# The talent's cooldown cuts work from the game data (class masks). Its rank 3 bonus does not: in Metamorphosis,
+# Hand of Gul'dan may be cast a second time within 6 seconds before its cooldown counts. Ascension's data holds the
+# pieces (a hidden proc aura 863123 and three helpers) but the order "first cast opens the window, second cast
+# closes it" was in its server code. This script keeps that order with the game's own window buff (863121, 6 sec,
+# the one the tooltip names) as the memory: a cast without the buff gives the buff and clears the spell's
+# cooldown; a cast with the buff removes it and the cooldown stands. After the cast, so the cooldown is already
+# set when it is cleared. A second, independent limit: the cooldown is cleared at most once per length of the
+# spell's own cooldown, so whatever happens to the buff the talent can never give more than two casts in that
+# time. One difference from the tooltip, in the player's favour: the second cast may come later than 6 seconds
+# (the spell simply stays ready); the buff still shows the 6 seconds.
+# Bound to both learnable versions by sql/enchants/140-talent-fixes.sql.
+$class = @'
+// Wildcard: Nemesis capstone (issue #150).
+struct WcmeNemesisCleared : public DataMap::Base
+{
+    uint64 at = 0;  // game time (ms) the cooldown was last cleared for this character
+};
+
+class spell_wcme_nemesis_hand_of_guldan : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_nemesis_hand_of_guldan);
+
+    void HandleAfterCast()
+    {
+        Player* caster = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (!caster || !caster->HasAura(63123) || caster->GetShapeshiftForm() != FORM_METAMORPHOSIS)
+            return;
+        if (caster->HasAura(863121))
+        {
+            caster->RemoveAurasDueToSpell(863121);  // the second cast: its cooldown stands
+            return;
+        }
+        SpellInfo const* spell = GetSpellInfo();
+        uint64 const cooldown = spell->RecoveryTime ? spell->RecoveryTime : spell->CategoryRecoveryTime;
+        uint64 const now = GameTime::GetGameTimeMS().count();
+        WcmeNemesisCleared* cleared = caster->CustomData.GetDefault<WcmeNemesisCleared>("WcmeNemesisCleared");
+        if (cleared->at && now - cleared->at < cooldown)
+            return;                                 // already cleared once in this cooldown
+        if (caster->AddAura(863121, caster))        // 6 seconds to cast it once more
+        {
+            cleared->at = now;
+            caster->RemoveSpellCooldown(spell->Id, true);
+        }
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_wcme_nemesis_hand_of_guldan::HandleAfterCast);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_nemesis_hand_of_guldan);`n")
+Set-Content $file $text -NoNewline
+}

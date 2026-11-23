@@ -61,3 +61,14 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (272730, 272733, 2, 'WCME: Demonic Recurrence applies its critical hit companion (#148)');
 INSERT INTO `wcme_spellaffect_dbc` (`ID`, `ModifierSpellID`, `AffectedSpellID`) VALUES
 (960010, 272733, 54879);
+
+-- Nemesis (issue #150), rank 3 bonus: in Metamorphosis, Hand of Gul'dan can be cast a second time within 6 sec
+-- before its cooldown counts. The talent's cooldown cuts themselves work from the game data and are not touched.
+-- The bonus needs an order of events (first cast opens a 6 sec window and clears the cooldown, second cast closes
+-- it), which is the script spell_wcme_nemesis_hand_of_guldan in patches/55-talent-fixes.ps1. These rows put the
+-- script on both Hand of Gul'dan versions a Hero can learn. Needs the build with that patch: on an older build the
+-- server logs that the script name is unknown and carries on.
+DELETE FROM `spell_script_names` WHERE `ScriptName` = 'spell_wcme_nemesis_hand_of_guldan';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(954611, 'spell_wcme_nemesis_hand_of_guldan'),
+(2304611, 'spell_wcme_nemesis_hand_of_guldan');
