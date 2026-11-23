@@ -232,8 +232,9 @@ spell X by N"). **Examples:** `sql/enchants/009-missing-modifiers.sql` (858 trac
    - If the target spell's class flag is shared by at most three other spells, put that flag on the modifier
      (009). **Build needed:** no.
    - Otherwise leave the class mask empty and name every target in
-     `wcme_spellaffect_dbc (ID, ModifierSpellID, AffectedSpellID)` (011 uses ids 900000-908890, 012 uses
-     950000-950017; pick ids above the highest in use). **Build needed:** yes,
+     `wcme_spellaffect_dbc (ID, ModifierSpellID, AffectedSpellID)` (ids in 900000-999999 that neither
+     another file nor SpellAffect.dbc uses; a row replaces the file's row with the same ID. 950018-975169 was
+     free of file rows on 23 Nov 2026, and `scripts/enchant_sql_lint.py` fails on a clash). **Build needed:** yes,
      `patches/mystic-enchants-spellaffect-sql.patch` loads the table into the server's SpellAffect data.
 4. The client must have the spell too, or the enchant window has nothing to show: that is the client patch
    (`client-patch/build_client_patch.py`, built from James's own client files, never published). Route client patch
