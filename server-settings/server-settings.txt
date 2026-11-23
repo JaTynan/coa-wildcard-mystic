@@ -47,6 +47,12 @@ modules\playerbots.conf | AiPlayerbot.WildcardAltsUseNearbyClassBook = 1
 # whisper "pet auto off". Random bots never do this. For a Wildcard Hero it only teaches anything from the build
 # with patch 97 is meant to work; what a Hero alt gets from its book before that build is untested. 0 = only when asked.
 modules\playerbots.conf | AiPlayerbot.CoaPets.AutoBooks = 1
+# Your bots learn the books your account already owns (23 Nov, James; needs the build with
+# patches/99-alt-bots-owned-books.ps1). Once a book (class book, Book of Artisans) has been bought on any character,
+# each of your characters played as a bot learns it by itself, a minute after coming online and checked again
+# every 10 minutes, instead of you logging in to each one to claim it. Buys nothing and spends nothing; an account
+# without the book gets nothing. Read at server start. 0 = off.
+modules\playerbots.conf | AiPlayerbot.WildcardAltsLearnOwnedBooks = 1
 # Skill card drops by quality (8 Nov; needs the build with the card patch). Cards were picked evenly from every card,
 # so epics and legendaries dropped as often as commons. Weights common,uncommon,rare,epic,legendary; 3% per kill.
 modules\wildcard.conf | Wildcard.CardDropQualityWeights = "50,28,14,6,2"
