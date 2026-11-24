@@ -75,11 +75,16 @@ talent's own effect.
 |---|---|---|
 | 1 | Plain bonuses: an aura link per rank (`sql/enchants/141-talent-companions.sql`) | 25 talents; waiting for James to merge; unverified |
 | 2 | Event-driven companions: link plus proc rules, or action-table rules (`sql/enchants/142-talent-companions-procs.sql`) | 8 talents; waiting for James to merge; unverified |
-| 3 | Conditional: only in a form, on a stat path, while Swashbuckling, while a spell is learned (aura-link recipe R7) | Corrupted Bear Form, Divinity, Swashbuckler: Flurry of Blows, Glyph of Trueshot Aura |
-| 4 | Needs code: weapon-dependent linked auras, unimplemented class-script overrides, Ascension-only effect types and aura types | Two-Handed Weapon Mastery, Bloodletting, Careful Aim, Harbinger of Plague, Reave; from batch 2: Battle Fatigue, Beacon of Virtue, Divine Reset, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon |
+| 3 | Conditional: core aura links, recipe R7 (`sql/enchants/143-talent-companions-conditional.sql`) | Divinity (on Path of Strength), Glyph of Trueshot Aura (while Trueshot Aura is on); waiting for James to merge; unverified. Swashbuckler: Flurry of Blows was already an aura link in 007. |
+| 4 | Needs code: weapon-dependent linked auras, unimplemented class-script overrides, Ascension-only effect types and aura types | Two-Handed Weapon Mastery, Bloodletting, Careful Aim, Harbinger of Plague, Reave; from batch 2: Battle Fatigue, Beacon of Virtue, Divine Reset, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon; from batch 3: Corrupted Bear Form (its Shadow-damage proc has no trigger rules, so today the talent does nothing; the 20% penalty alone would make it worse) |
 | 5 | Active abilities with a passive companion (no aura to link from) | Thrust, Weighted Reinforcement, Jagged Reinforcement |
 | - | Left out by James (24 Nov 2026) | Icy Reach: a Death Knight talent whose tooltip quotes the Mage range companions (829023, 829014). Linking them would add range to Mage spells only, and stack with Arctic Reach at a different rank. James: "Leave it out." Do not link it in a later batch. |
 | - | Outlier | One With The Light: its companion fires 275371, which is not in the game data; linking it as it is would log an error every second |
+| - | No change needed | Nature's Splendor: the talent's own effects already give longer durations (4.5 / 9 / 3 sec) than the companion its tooltip quotes (3 / 6 / 2); linking would stack them |
+
+The results file is now the to-do list: `talent_companion_scan.py` counts our aura links, action-table casts and
+links as applied and skips greyed-out tooltip text, so after batches 1-3 it lists only what is left (19 strong
+entries, all named above, 16 probable, 7 stock data).
 
 Lessons from batch 1, for every later batch:
 - A tooltip that says "does not stack" over a companion with the adding duration aura (232): own a copy with
@@ -106,6 +111,16 @@ Lessons from batch 2:
   (Talonshrike's 38): own a copy with the type the tooltip means. Batch 1's companions have none.
 - Check the talent and companion ids against our earlier SQL first: these Hero talents double as Mystic Enchants,
   and some halves were already fixed (Talonshrike's cooldown cut in 007, Endless Agony's proc in 015).
+
+Lessons from batch 3:
+- The core's aura link (`coa_mystic_enchant_aura_link`) works for any aura, not only enchants: "source" is the
+  talent, "aura" the condition (a form, a stat path, a buff), "grant" the companion. Its key is (source, grant).
+- Before adding a penalty, check that the talent's payoff works: a talent that does nothing today must not get
+  its drawback alone (Corrupted Bear Form).
+- A tooltip can quote a spell with smaller numbers than the talent already gives (Nature's Splendor): compare
+  values, not just effect types, before linking.
+- Some aura types read a second value when the first is not valid (aura 175 falls back to MiscValueB): read the
+  core's handler before "fixing" an odd number.
 
 Before scripting, check the core does not already do it (`enchants/core-overlap-review.csv`) and read every
 version of the ability a Hero can learn (Hand of Gul'dan has 954611 and 2304611 -> 2304612; both summon guardians

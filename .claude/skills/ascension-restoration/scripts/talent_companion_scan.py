@@ -10,6 +10,7 @@ For every rank spell a Wildcard Hero can roll (CharacterAdvancement.dbc, the sam
 loader) the scan collects each spell the tooltip quotes, then checks whether anything applies it:
   - the talent's own effects (trigger fields), followed through spell_linked_spell, up to 3 steps;
   - spell_linked_spell in the core's base SQL, the core's modules and this repository's sql/;
+  - aura links (coa_mystic_enchant_aura_link) and action-table casts (wcme_enchant_action) in this repository;
   - learnable (another roll), spell_learn_spell, spell_script_names;
   - the id written in C++ (core src, modules, this repository's patches/);
   - optional: the live world tables (InnoDB files) with --live, as a loose "mentioned" check.
@@ -133,7 +134,7 @@ def main():
             if v:
                 pool[v] = (r[0], kind)
 
-    linked, scripted, learned = collections.defaultdict(set), set(), set()
+    linked, scripted, learned, granted = collections.defaultdict(set), set(), set(), set()
     sql = [os.path.join(args.core, "data/sql/base/db_world", f) for f in
            ("spell_linked_spell.sql", "spell_script_names.sql", "spell_learn_spell.sql")]
     sql += list(files(os.path.join(args.repo, "sql"), (".sql",)))
@@ -157,6 +158,14 @@ def main():
                 learned.add(int(row[1]))
             except (ValueError, IndexError):
                 pass
+        for row in sql_values(body, "coa_mystic_enchant_aura_link"):   # (enchant, auras, grant, comment)
+            try:
+                granted.add(int(row[2]))
+            except (ValueError, IndexError):
+                pass
+        for row in sql_values(body, "wcme_enchant_action"):   # cast actions name the spells they cast
+            if len(row) > 9 and row[8] in ("cast_self", "cast_target"):
+                granted.update(int(x) for x in row[9].split() if x.isdigit())
     in_code = set()
     for top in (os.path.join(args.core, "src"), os.path.join(args.core, "modules"), os.path.join(args.repo, "patches")):
         for path in files(top, (".cpp", ".h", ".ps1", ".patch")):
@@ -202,8 +211,12 @@ def main():
         if t not in sp:
             continue
         reached = reach(t)
-        for c in sorted({int(m.group(1)) for m in quote.finditer(text(sp[t][170]) + " " + text(sp[t][187]))} - {t}):
-            if c not in sp or c in reached or c in learnable or c in learned or c in scripted or c in in_code:
+        # Text greyed out in the tooltip (|cFFAAAAAA ... |r) describes a rank not yet reached, such as a capstone
+        # below the final rank; its quotes do not belong to this rank.
+        tip = re.sub(r"\|cFFAAAAAA.*?\|r", " ", text(sp[t][170]) + " " + text(sp[t][187]), flags=re.I | re.S)
+        for c in sorted({int(m.group(1)) for m in quote.finditer(tip)} - {t}):
+            if c not in sp or c in reached or c in learnable or c in learned or c in scripted or c in in_code \
+                    or c in granted:
                 continue
             r = sp[c]
             kinds = [r[71 + e] for e in range(3) if r[71 + e]]
