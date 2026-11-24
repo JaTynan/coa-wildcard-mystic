@@ -55,6 +55,20 @@ need the build after 24 Nov; the SQL parts went live at the next start.
 | T4 `spell_dbc` aura swap | The effect is right in spirit but uses an aura the core ignores | Owned `spell_dbc` copy (`wcme_owned`, DELETE, INSERT the full 234-column row) with the aura changed, for example to 79 (damage done %, misc 127 = all schools) | #149 (276509, 276512) |
 | T5 State across casts | A talent changes cooldown rules for a window | A per-player state struct in the script file; cover every way the window ends (expiry, logout, form change, a cast still in flight); start cooldowns with `AddSpellAndCategoryCooldowns` and send the packet | #150 |
 
+### The scan for more of the same (24 Nov 2026)
+
+`scripts/talent_companion_scan.py` finds every Wildcard-rollable talent and ability whose tooltip quotes a
+hidden spell that nothing applies (read-only; the docstring has the command). Results:
+`enchants/talent-companions.csv`. Run on 24 Nov against the client data and the core at `c3f2fd4`: 4,507 rank
+spells in the roll pool, 189 unapplied companions, of which **54 entries `strong`** (passive, permanent, and
+named like the talent, at id + 800000, tagged SLS, or in a known block such as the 902300 stun-reduction or
+957339 "Generic Capstone Threat" spells), 19 `probable`, 8 `stock-data`, 23 `false-alarm`. Run against the
+repository before #243, it lists Master Summoner and Demonic Recurrence as `strong`, so it would have found
+both. Checked by hand: Tactical Mastery, Careful Aim and Iron Will (the talent holds a placeholder or half the
+effect, the companion the rest). A row is a lead: read both spells before fixing (recipe T1), watch the
+`duplicate` column, and do not link a companion whose aura the core ignores (T3) or that duplicates the
+talent's own effect.
+
 Before scripting, check the core does not already do it (`enchants/core-overlap-review.csv`) and read every
 version of the ability a Hero can learn (Hand of Gul'dan has 954611 and 2304611 -> 2304612; both summon guardians
 through summon properties row 61).
