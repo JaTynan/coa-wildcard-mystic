@@ -142,6 +142,10 @@ Lessons from batch 4:
   `g++ -std=gnu++20 -fsyntax-only -w` on the changed file with the include folders of `src/` and `deps/` (not
   jemalloc, whose headers shadow the system's; `-Ideps/g3dlite/include` only at its root, since G3D has its own
   `Log.h`). It found nothing to fix in part 1, and catches a misspelt method, so it is a real check.
+- The core strips weapon-dependent auras on more than unequip: a disarm and a weapon at 0 durability do it too,
+  and putting them back (`Player::ApplyItemDependentAuras`) only covers the player's own spell and talent maps.
+  The equip hook alone missed both (patch-reviewer, #262); patch 55 now hooks that function. A talent from a
+  classic talent tree is in the talent map, not the spell map: check `HasTalent` as well as `HasSpell`.
 
 Before scripting, check the core does not already do it (`enchants/core-overlap-review.csv`) and read every
 version of the ability a Hero can learn (Hand of Gul'dan has 954611 and 2304611 -> 2304612; both summon guardians
