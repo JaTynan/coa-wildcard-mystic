@@ -154,7 +154,7 @@ Shadows, Spell Shredder, ...).
 
 `146-talent-companions-percent-damage.sql`: talent companions, batch 4 part 3 (needs the build with patch 55). Harbinger of Plague: the Haunt splash companion is linked (the buff from Wrath already worked through the core's rules). Reave (Hero version, every rank): its condition bonuses are held through patch 55's ability companions. Proc rules and script bindings for both. Unverified in game.
 
-`147-talent-companion-scripts.sql`: talent companions, batch 4 part 4 (needs the build with patch 55). Holds the companions of Beacon of Virtue, Flare Strike (ability companions), Holy Concentration, Pack Leader and Bloodletting (links), with the proc rules and script bindings for the patch 55 scripts. Unverified in game.
+`147-talent-companion-scripts.sql`: talent companions, batch 4 part 4 (needs the build with patch 55). Holds the companions of Beacon of Virtue, Flare Strike (ability companions), Holy Concentration, Pack Leader and Bloodletting (links), and scales Corrupted Bear Form's Shadow damage to 25% of each hit (it was a flat 2), with the proc rules and script bindings for the patch 55 scripts. Unverified in game.
 `161-wisdomball-tiraxis.sql`: the Wondrous Wisdomball (the pet that offers your dungeon quests) is back on Tiraxis' Convenience Items list for 800 Bazaar Tokens; the core had made it unobtainable.
 `016-dead-triggers.sql`: 33 Legendary enchants whose trigger never fired now work: 31 fire from the abilities their
 tooltip names (through the enchant action table; missing chances and sequences are best guesses, marked in each

@@ -1,4 +1,4 @@
--- Talent companions, batch 4 (code), part 4: five talents whose hidden companion did its work in Ascension's own
+-- Talent companions, batch 4 (code), part 4: six talents whose hidden companion did its work in Ascension's own
 -- server code. The scripts are in patches/55-talent-fixes.ps1 ("Talent companion scripts"); this file holds each
 -- companion and gives the scripts their proc rules and bindings. Needs the build with that patch: without it the
 -- bindings name scripts that do not exist yet (the server logs an error for each and carries on). Safe to run again
@@ -23,9 +23,12 @@
 -- 5. Bloodletting (283986): Rupture deals 25% more to targets with your Rend, and its companion (283987, linked) makes
 --   Rend deal 30% more to targets with your Rupture. The same code serves the Mystic Enchant Garrote (982178: Garrote
 --   5% more against targets with your Rend), which uses the same class script.
--- Not here: Tidecaller's Boon (271813) already works through the Epic enchant scripts (Healing Wave, its stacks);
--- Corrupted Bear Form (271403) is scripted by the core, but its Shadow damage (Corrupted Paw, 271411) is 2 per hit
--- with no scaling in the data, so it waits for James.
+-- 6. Corrupted Bear Form (271403): the core already gives it the -20% Physical penalty in Bear Form and fires Corrupted
+--   Paw (271411) on each melee hit, but the Paw dealt a flat 2 Shadow. Ours makes it 25% of the hit as dealt (after
+--   armour and the penalty), so the total equals a plain bear: Shadow ignores armour, so a share taken after armour
+--   keeps it in line with Ascension's elemental weapon attacks, which keep Physical in their school for that reason.
+--   James asked for scaling on 25 Nov 2026; 25% is the neutral choice.
+-- Not here: Tidecaller's Boon (271813) already works through the Epic enchant scripts (Healing Wave, its stacks).
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (34753, 966083, 2, 'WCME: Holy Concentration rank 1 applies its Renew extension companion'),
 (34859, 966084, 2, 'WCME: Holy Concentration rank 2 applies its Renew extension companion'),
@@ -54,4 +57,5 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (277684, 'spell_wcme_beacon_of_virtue_heals'),
 (966083, 'spell_wcme_holy_concentration_renew'),
 (966084, 'spell_wcme_holy_concentration_renew'),
-(966085, 'spell_wcme_holy_concentration_renew');
+(966085, 'spell_wcme_holy_concentration_renew'),
+(271403, 'spell_wcme_corrupted_bear_paw');

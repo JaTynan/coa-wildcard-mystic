@@ -764,8 +764,8 @@ Set-Content $file $text -NoNewline
 }
 
 # ---- Talent companion scripts (talent companions batch 4, part 4: Beacon of Virtue, Holy Concentration, Pack
-#      Leader, Flare Strike, Bloodletting)
-Write-Host "Patch: talent companion scripts (Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting)"
+#      Leader, Flare Strike, Bloodletting, Corrupted Bear Form)
+Write-Host "Patch: talent companion scripts (Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form)"
 & {
 $file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
@@ -774,7 +774,7 @@ $loader = "void AddSC_AscensionAdventurerCache()`n{`n"
 foreach ($anchor in @($register, $loader)) {
     if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
 }
-# Five talents whose hidden companion did its work in Ascension's own server code. The rows that hold each companion
+# Six talents whose hidden companion or scaling lived in Ascension's own server code. The rows that hold each companion
 # and give the scripts their proc rules are in sql/enchants/147-talent-companion-scripts.sql.
 $class = @'
 // Wildcard (patch 55, talent companions part 4): does the target carry an aura of this class family and flag
@@ -1010,9 +1010,39 @@ public:
             heal = uint32(uint64(heal) * uint32(std::clamp(pack->GetAmount(), 0, 100)) / 100);
     }
 };
+// Corrupted Bear Form (271403, the core's own script syncs its -20% Physical penalty, 271408): each melee hit in Bear
+// Form also deals Shadow damage (Corrupted Paw, 271411), which the data leaves at a flat 2. Ours scales it to 25% of
+// the hit as dealt, after armour and the penalty, so the total matches a plain bear (0.8 x 1.25 = 1.0). Ascension's
+// own elemental weapon attacks keep Physical in their school so armour still counts; taking the share from the hit
+// after armour does the same for a pure Shadow spell. James asked for scaling on 25 Nov 2026 (patch 55).
+class spell_wcme_corrupted_bear_paw : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_corrupted_bear_paw);
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        Unit* owner = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        DamageInfo* damage = eventInfo.GetDamageInfo();
+        if (!owner || !target || target == owner || !damage)
+            return;
+        // Never from the Paw itself, so it cannot feed on its own damage.
+        if (SpellInfo const* spell = eventInfo.GetSpellInfo(); spell && spell->Id == 271411)
+            return;
+        int32 const amount = WcmePercentOfDamage(damage->GetDamage(), 25);
+        if (amount)
+            owner->CastCustomSpell(target, 271411, &amount, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_wcme_corrupted_bear_paw::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
 
 '@
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
-$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_beacon_of_virtue);`n    RegisterSpellScript(spell_wcme_beacon_of_virtue_heals);`n    RegisterSpellScript(spell_wcme_holy_concentration_renew);`n    new wcme_talent_companion_hooks();`n")
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_beacon_of_virtue);`n    RegisterSpellScript(spell_wcme_beacon_of_virtue_heals);`n    RegisterSpellScript(spell_wcme_holy_concentration_renew);`n    RegisterSpellScript(spell_wcme_corrupted_bear_paw);`n    new wcme_talent_companion_hooks();`n")
 Set-Content $file $text -NoNewline
 }
