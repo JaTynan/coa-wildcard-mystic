@@ -1090,6 +1090,7 @@ foreach ($anchor in @($register, $loader)) {
 $class = @'
 // Explosive Charge (906142, held while you know Explosive Shot): each hit of Explosive Shot's damage (53352, the
 // first blast and every tick) also deals the companion's share (40%) to the other enemies within 5 yards (906143).
+// Only 53352 itself: its class flag is shared with other area shots, whose every hit would splash again.
 // Ascension ran this percent-of-damage aura (354) in its own code; this core runs it only for its own list.
 class spell_wcme_explosive_charge : public AuraScript
 {
@@ -1101,7 +1102,7 @@ class spell_wcme_explosive_charge : public AuraScript
         Unit* target = eventInfo.GetActionTarget();
         DamageInfo* damage = eventInfo.GetDamageInfo();
         return owner && eventInfo.GetActor() == owner && target && target != owner && damage && damage->GetDamage() &&
-            aurEff->GetAmount() > 0;
+            aurEff->GetAmount() > 0 && eventInfo.GetSpellInfo() && eventInfo.GetSpellInfo()->Id == 53352;
     }
 
     void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
@@ -1152,7 +1153,8 @@ class spell_wcme_explosive_charge_splash : public SpellScript
 
 // Authority (299120): Execution Sentence's ticks stack Authority (299121) on the target (the talent's own trigger,
 // given its proc rule in 149). Shield of Righteousness then consumes the stacks: after its hit, the paladin's own
-// stacks on that target are removed and the paladin takes 3% less damage per stack consumed (299122, 8 sec). The
+// stacks on that target are removed and the paladin takes 3% less damage per stack consumed (299122, 8 sec; a new
+// consume replaces the old buff, it does not add to it). The
 // stacks' damage bonus to Shield of Righteousness itself is the debuff's own data and applies before they go.
 class spell_wcme_authority_consume : public SpellScript
 {
@@ -1169,11 +1171,12 @@ class spell_wcme_authority_consume : public SpellScript
             return;
         uint8 const stacks = authority->GetStackAmount();
         authority->Remove();
-        SpellInfo const* reduction = sSpellMgr->GetSpellInfo(299122);
-        if (!reduction || !stacks)
+        if (!stacks)
             return;
-        int32 amount = reduction->Effects[EFFECT_0].CalcValue(caster) * int32(stacks);
-        caster->CastCustomSpell(caster, 299122, &amount, nullptr, nullptr, true);
+        // 299122 is "per stack" in its data (3% each, up to 4): a fresh buff with one stack per Authority consumed.
+        caster->RemoveAurasDueToSpell(299122);
+        if (Aura* reduction = caster->AddAura(299122, caster))
+            reduction->SetStackAmount(stacks);
     }
 
     void Register() override
