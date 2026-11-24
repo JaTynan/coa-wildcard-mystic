@@ -144,9 +144,12 @@ Lessons from batch 4:
   about a second on every proc. Check it, and own a copy with the second value set when the tooltip extends.
 - A tooltip that extends with no limit still wants a cap: James's rule (24 Nov) is +50% of the base duration unless
   the cooldown says otherwise (comparable talents: Glyph of Shred +50%, Endless Agonizer +50%, Glyph of Scourge
-  Strike +60%, Frozen Grave +40%). Patch 55 makes effect 173's second value a cap when it is 2 or more (ms beyond
-  the base duration). Check the uptime against the cooldown: Battle Fatigue's +50% (30 sec) equals its 30 sec
-  limit, so a warrior who keeps hitting and reshouts on time can keep it up throughout.
+  Strike +60%, Frozen Grave +40%). Patch 55 makes effect 173's second value a cap when it is 2 or more: the total ms
+  added per application, as Glyph of Shred counts it (a cap on time remaining would not stop endless uptime: the
+  patch review of #263 caught that first version). Check the uptime against the cooldown: Battle Fatigue's 30 sec
+  at most equals its 30 sec limit, so a warrior who keeps hitting and reshouts on time can keep it up throughout.
+- A cast rule ("when you cast X", phase 1) needs proc flags 87312, the "spell done" kinds. 104720 (used in batch 2
+  and first in 145) holds the helpful-spell TAKEN bits, so helpful triggers never fired; fixed in both.
 - Passives held by an ability: patch 55's `wcme_spell_companion` (ability, passive, flags). Use it for an active
   ability's passive and for any passive with a weapon requirement (a linked aura is lost at the first weapon swap).
 - A fast compile check exists without a build: after pre-flight with `--keep --workspace /tmp/pf`, run

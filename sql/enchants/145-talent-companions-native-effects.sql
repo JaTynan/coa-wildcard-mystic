@@ -11,12 +11,14 @@
 --   taken from you, 20 sec) to enemies within 10 yards, at most once every 30 sec; physical melee attacks and
 --   abilities have a 30% chance to add 1 sec to it.
 --   - The shouts: an action rule on the talent lists every shout, banner and Warcry by id (no class flag covers
---     them all) and casts 272848 around you, with the 30 sec limit.
+--     them all) and casts 272848 around you, with the 30 sec limit. Its proc rule fires on your own casts (proc
+--     flags 87312, every "spell done" kind, phase 1 cast).
 --   - The extension: the companion (272846) is linked to the talent and given its proc rule (physical melee
 --     damage, 30%). It fires 272845, effect 173 on 272848. That spell's second value is 0, which tells the core
 --     to SET the duration (to 1,001 ms) instead of adding to it: as it is, every proc would cut the debuff to a
---     second. Our copy sets the second value to 10000: add 1 sec per proc, never past 10 sec beyond the debuff's
---     20 sec (+50%).
+--     second. Our copy sets the second value to 10000: add 1 sec per proc, at most 10 sec in total for each
+--     application of the debuff (20 sec, so 30 sec at most; +50%). A new shout starts a fresh allowance. Only the
+--     warrior's own debuff is extended.
 --   - The cap is James's decision (24 Nov 2026): the tooltip gives none, and without one steady melee keeps the
 --     debuff up for good. +50% sits in the middle of comparable extension talents (Glyph of Shred +50%, Endless
 --     Agonizer +50%, Glyph of Scourge Strike +60%, Frozen Grave +40%). The cap needs patch 55 (build); before that
@@ -35,7 +37,7 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_proc', 272854), ('spell_proc', 272846), ('spell_proc', 277920), ('spell_proc', 277916), ('spell_proc', 277919), ('spell_dbc', 272845);
 DELETE FROM `spell_proc` WHERE `SpellId` IN (272854, 272846, 277920, 277916, 277919);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
-(272854, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(272854, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
 (272846, 1, 0, 0, 0, 0, 20, 1, 2, 0, 0, 0, 0, 30, 0, 0),
 (277920, 2, 0, 0, 0, 0, 65808, 1, 2, 0, 0, 0, 0, 20, 0, 0),
 (277916, 2, 0, 0, 0, 0, 65808, 1, 2, 0, 0, 0, 0, 40, 0, 0),

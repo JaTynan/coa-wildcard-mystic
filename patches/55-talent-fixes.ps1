@@ -608,21 +608,36 @@ Set-Content $file $text -NoNewline
 }
 
 # ---- Capped aura extensions (talent companions batch 4: Battle Fatigue)
-Write-Host "Patch: effect 173 (refresh aura) can cap an additive extension"
+Write-Host "Patch: effect 173 (refresh aura) can cap the total extension of one application"
 & {
 # Ascension's effect 173 sets an aura's duration (second value 0) or adds to it (any other value). Its data uses
-# only 0 and 1, so a second value of 2 or more now also means: add, but never past that many ms beyond the aura's
-# base duration. Battle Fatigue uses it to cap its extensions at +50% (sql/enchants/145). An aura already longer
-# than the cap is never shortened.
+# only 0 and 1, so a second value of 2 or more now means: add, but at most that many ms in total per application of
+# the aura, the way Glyph of Shred caps its Rip extensions. Each extension also raises the aura's max duration by
+# the same amount, and a fresh application resets the max (Aura::RefreshTimers), so "max minus base" is what has
+# been added since the aura was applied. With a cap, only the caster's own copy of the aura is extended: two
+# players with the talent on one target each extend their own debuff. Battle Fatigue uses it (sql/enchants/145).
 $file = 'core/src/server/game/Spells/SpellEffects.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
 $anchor = "    int32 duration = effect.MiscValueB ? aura->GetDuration() + damage : damage;`n"
 if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed: EffectAscensionRefreshAura's duration line was not found exactly once in $file" }
 $cap = @'
-    if (effect.MiscValueB > 1 && damage > 0 && aura->GetSpellInfo()->GetMaxDuration() > 0)
-        duration = std::min(duration, std::max(aura->GetSpellInfo()->GetMaxDuration() + effect.MiscValueB, aura->GetDuration()));
+    if (effect.MiscValueB > 1 && damage > 0)
+    {
+        aura = target->GetAura(effect.MiscValue, m_caster->GetGUID());
+        if (!aura)
+            return;
+        int32 const base = aura->CalcMaxDuration();
+        if (base <= 0)
+            return;
+        int32 const add = std::min<int32>(damage, base + effect.MiscValueB - aura->GetMaxDuration());
+        if (add <= 0)
+            return;
+        aura->SetMaxDuration(aura->GetMaxDuration() + add);
+        aura->SetDuration(aura->GetDuration() + add);
+        return;
+    }
 
 '@
-$text = $text.Replace($anchor, $anchor + $cap.Replace("`r`n", "`n"))
+$text = $text.Replace($anchor, $cap.Replace("`r`n", "`n") + "`n" + $anchor)
 Set-Content $file $text -NoNewline
 }
