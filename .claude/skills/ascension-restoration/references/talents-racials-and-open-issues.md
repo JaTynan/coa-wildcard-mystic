@@ -74,11 +74,12 @@ talent's own effect.
 | Batch | Type | Status |
 |---|---|---|
 | 1 | Plain bonuses: an aura link per rank (`sql/enchants/141-talent-companions.sql`) | 25 talents; waiting for James to merge; unverified |
-| 2 | Event-driven companions (aura 42): link plus proc rules from the tooltip | next |
+| 2 | Event-driven companions: link plus proc rules, or action-table rules (`sql/enchants/142-talent-companions-procs.sql`) | 8 talents; waiting for James to merge; unverified |
 | 3 | Conditional: only in a form, on a stat path, while Swashbuckling, while a spell is learned (aura-link recipe R7) | Corrupted Bear Form, Divinity, Swashbuckler: Flurry of Blows, Glyph of Trueshot Aura |
-| 4 | Needs code: weapon-dependent linked auras, unimplemented class-script overrides, Ascension aura types | Two-Handed Weapon Mastery, Bloodletting, Careful Aim, Harbinger of Plague, Reave |
-| 5 | Active abilities with a passive companion (no aura to link from) | Thrust, Weighted Reinforcement |
+| 4 | Needs code: weapon-dependent linked auras, unimplemented class-script overrides, Ascension-only effect types and aura types | Two-Handed Weapon Mastery, Bloodletting, Careful Aim, Harbinger of Plague, Reave; from batch 2: Battle Fatigue, Beacon of Virtue, Divine Reset, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon |
+| 5 | Active abilities with a passive companion (no aura to link from) | Thrust, Weighted Reinforcement, Jagged Reinforcement |
 | - | Left out by James (24 Nov 2026) | Icy Reach: a Death Knight talent whose tooltip quotes the Mage range companions (829023, 829014). Linking them would add range to Mage spells only, and stack with Arctic Reach at a different rank. James: "Leave it out." Do not link it in a later batch. |
+| - | Outlier | One With The Light: its companion fires 275371, which is not in the game data; linking it as it is would log an error every second |
 
 Lessons from batch 1, for every later batch:
 - A tooltip that says "does not stack" over a companion with the adding duration aura (232): own a copy with
@@ -90,6 +91,21 @@ Lessons from batch 1, for every later batch:
 - Look for sibling companions the tooltip does not quote (fear cuts next to stun cuts, 902313-902321).
 - Run the file on a real MariaDB twice before the PR: the lint missed an unescaped apostrophe (`enchant_sql_lint.py`
   now catches it).
+
+Lessons from batch 2:
+- A `spell_proc` row with Chance 0 falls back to the spell's own chance. With an action-table rule carrying the
+  chance, set the row to 100, or the two roll twice.
+- Companions that fire Ascension-only effect types (165 and 197: cooldown cuts; 173: duration changes) cannot fire
+  as they are. A cooldown cut goes in the action table (`reduce_cooldown`); bind the script to the companion. On a
+  match the script stops the companion's own effect (PreventDefaultAction), and without one nothing fires. Never
+  set a disable mask on every effect: then the aura cannot proc at all, script included.
+- A trigger that must be exact spells (Meteor's two versions, Align, a Druid spell on a Mage talent) goes in the
+  action table, which lists ids; a family mask cannot isolate them.
+- A spell that summons (Meteor 760040) deals its damage through another spell: proc on cast, not on hit.
+- A modifier type (107/108 misc) of 32 or more is outside the core's range and is ignored without an error
+  (Talonshrike's 38): own a copy with the type the tooltip means. Batch 1's companions have none.
+- Check the talent and companion ids against our earlier SQL first: these Hero talents double as Mystic Enchants,
+  and some halves were already fixed (Talonshrike's cooldown cut in 007, Endless Agony's proc in 015).
 
 Before scripting, check the core does not already do it (`enchants/core-overlap-review.csv`) and read every
 version of the ability a Hero can learn (Hand of Gul'dan has 954611 and 2304611 -> 2304612; both summon guardians
