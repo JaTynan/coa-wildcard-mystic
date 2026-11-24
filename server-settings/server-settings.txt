@@ -166,6 +166,18 @@ worldserver.conf | Wildcard.EnchantPrimaryStat = 1
 # Mystic Rune source, gold is the only way to apply one; patches/79-mystic-enchant-gold-cost.ps1). 1 = 30s uncommon,
 # 60s rare, 1g epic, 2g 50s legendary and artifact (from 30g, 60g, 100g, 250g). 100 = the core's prices.
 worldserver.conf | Wildcard.MysticEnchantGoldCostPct = 1
+# Mystic Enchant learning costs in steps (24 Nov, James: cheap to start from level 1, then reasonable, never rising
+# forever; patches/42-mystic-enchant-cost-steps.ps1). Learning an enchant costs 1 Mystic Extract. Each pair is
+# "from altar level:amount"; the last pair holds for every level above it. Empty = the core's own curve.
+# Altar points per altar level (one extract per level; a reforge gives 60 uncommon, 80 rare, 100 epic, 200 legendary).
+# The core's own: the first reforge completes level 0, then about 360 at level 1, 660 at level 20, 1,860 at level 100,
+# rising without end. At most 5 altar levels are gained per reforge (a character the new steps put far ahead catches
+# up over a few reforges). Pairs are separated by spaces only.
+worldserver.conf | Wildcard.MysticAltarLevelSteps = "0:60 1:120 5:240 10:400 20:640"
+# Marks of Ascension for buying one extract (the core allows it only while holding none, so the hourly extract makes
+# this the fallback for players who have spent theirs). The core's own: 1,000 + 200 per altar level,
+# up to 5,000.
+worldserver.conf | Wildcard.MysticExtractMarkSteps = "0:100 5:250 10:500 20:1000"
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100
@@ -179,11 +191,14 @@ worldserver.conf | Leaderboards.SameVictimSeconds = 300
 # Kept off the website's leaderboards and server firsts: the auction house bot's character and James's deleted test
 # character. Deleted characters are left out anyway; add names here, comma separated.
 worldserver.conf | Leaderboards.HiddenCharacters = "Auctioneer,Mandalyon"
-# Play-time rewards: every hour of a character's played time gives a sealed card pack (1 in 4 golden) and, 1 time in 4,
-# a Case of Fortune. Part of an hour carries over between sessions; nothing while AFK. Needs the build with the patch.
+# Play-time rewards: every hour of a character's played time gives a Mystic Extract (24 Nov, James: so levelling and
+# PvP players meet Mystic Enchants; card packs are easy to come by) and, 1 time in 4, a Case of Fortune. Part of an
+# hour carries over between sessions; nothing while AFK. Needs the build with the patch (the extracts: with the
+# 24 Nov change to patch 46). MysticExtracts: 0-20 per hour. PackPercent: chance of a sealed card pack (was 100).
 worldserver.conf | PlayTimeRewards.Enabled = 1
 worldserver.conf | PlayTimeRewards.IntervalMinutes = 60
-worldserver.conf | PlayTimeRewards.PackPercent = 100
+worldserver.conf | PlayTimeRewards.MysticExtracts = 1
+worldserver.conf | PlayTimeRewards.PackPercent = 0
 worldserver.conf | PlayTimeRewards.GoldenPackPercent = 25
 worldserver.conf | PlayTimeRewards.CasePercent = 25
 # Rotating weekly event (the WeekendBonus settings). It runs all week, Friday to Thursday (server time), so people
@@ -429,6 +444,12 @@ modules\mod_ahbot.conf | AuctionHouseBot.ListProportion.ListMultipliedItemIDs = 
 modules\mod_ahbot.conf | AuctionHouseBot.DisabledCustomItemIDs = 22459-22460,23094-23101,23103-23106,23108-23111,23113-23116,23118-23121,23436-23441,24027-24033,24035-24037,24039,24047-24048,24050-24062,24065-24067,25867-25868,25890,25893-25899,25901,27679,27777,27785-27786,27809,27812,27820,28118-28120,28123,28290,28360-28363,28556-28557,28595,30546-30556,30558-30560,30563-30564,30572-30575,30581-30585,30588-30594,30600-30608,31116-31118,31860-31869,32193-32231,32249,32409-32410,32634-32641,32735,32833,32836,33060,33131-33132,33135,33137-33144,33782,34142-34143,34220,34256,34627,34831,35315-35316,35318,35487-35489,35501,35503,35707,35758-35761,36783,36917-36920,36923-36934,37430,37503,37603,38292,38538,38545-38550,38838,38850-38875,38877-38915,38917-38942,38945-38951,38953-39005,39900,39905-39912,39914-39920,39927,39932-39938,39941-39948,39950-39968,39974-39978,39980-39986,39988-39992,39996-40003,40008-40011,40022-40031,40033,40037-40038,40040-40041,40043-40059,40085-40086,40088-40091,40094-40096,40098-40106,40111-40122,40129-40138,40140,40142-40143,40145-40169,40171-40182,40232,41266,41285,41307,41333-41335,41339,41375-41382,41385,41389,41395-41398,41400-41401,41429,41432-41450,41452,41454-41472,41474-41482,41484-41502,42701-42702,43987,44076,44078,44081-44082,44084,44087-44089,44449,44453,44455-44458,44463,44465-44467,44469-44470,44493,44497,44815,44946-44947,45054,45056,45060,45862,45879-45883,45987,46026,46098,46510,49110,50816,52070,52081-52096,52098,52100-52127,52130-52157,52159,52161-52182,52190-52195,52203-52209,52211-52220,52222-52236,52238-52250,52289,52291-52303,53141,53143,53145,54616,59478-59480,59489,59491,59493,59496,63696-63697,68356-68358,68660,68741,68779-68780,69922-69923,71806-71810,71817-71820,71822-71824,71826-71846,71848-71869,71871,71873-71878,76130-76137,76139-76141,76502,76504-76509,76511-76515,76517-76532,76534-76555,76557,76559-76576,76578-76598,76600-76621,76623,76625-76635,76640-76642,76644-76664,76666-76687,76689,76691-76696,76879,76884-76888,76890-76897,77130-77134,77136-77144,77154,77951-77952,88911-88922,88924-88928,88930-88931,88933-88952,88954-88955,88958-88963,88987,89674-89677,93705-93708,95344-95348,100545-100555,100559-100562,205062-205075,224509-224511,224515,233131,233133,238885,238893-238895,338890,354298,423160-423180,838873-838875,884036-884037,901400,901402,901404,901406,901408,911410,911412,911414,911416,911418,911420,911429,911431,1204129-1204130,1204133-1204134,1204141-1204144,1505062,1505064,1505066,1505068,1505070,1505072,1505074,1838875,2038948
 
 # ---------------------------------------------------------------- Performance diagnosis (21 Nov)
+# Lag experiment E1 (23 Nov, James; docs: the lag-spike campaign skill). The bot manager's main pass runs every 20
+# seconds by default, and the world server's CPU shows a 20-second beat only while a player is online. For ONE
+# evening the pass runs every 30 seconds: if the beat moves to 30 seconds the bot manager is the cause, if it stays
+# at 20 it is not. Side effect: bots come online and swap in more slowly after you log in. To end the experiment
+# set this back to 20; deleting the line leaves 30 in the config file on the server.
+modules\playerbots.conf | AiPlayerbot.RandomBotUpdateInterval = 30
 # Measuring only. The world server records how long one pass of its game loop took, once a minute, every time (it
 # used to sample every 5 minutes and only above 100 ms), with the time of day, in Logs\Timing.log. That file is
 # appended to, not replaced, so it keeps the history across restarts (about 100 KB a day). The lines still go to

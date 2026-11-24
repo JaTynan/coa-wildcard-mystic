@@ -27,6 +27,11 @@ CREATE TABLE IF NOT EXISTS `wcme_enchant_action` (`enchant_spell` INT UNSIGNED N
     `action_spells` TEXT NOT NULL, `amount` INT NOT NULL DEFAULT 0, `comment` VARCHAR(255) NOT NULL DEFAULT '',
     PRIMARY KEY (`enchant_spell`, `rule`));
 DELETE FROM `wcme_enchant_action`;
+-- Read by the patched world server's ability companions (patch 55, wcme_spell_companions): while a player knows
+-- ability_spell they have the aura passive_spell. flags 1 = only with no weapon in the off hand.
+CREATE TABLE IF NOT EXISTS `wcme_spell_companion` (`ability_spell` INT UNSIGNED NOT NULL, `passive_spell` INT UNSIGNED NOT NULL,
+    `flags` INT UNSIGNED NOT NULL DEFAULT 0, `comment` VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`ability_spell`, `passive_spell`));
+DELETE FROM `wcme_spell_companion`;
 DELETE FROM `spell_script_names` WHERE `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE `l` FROM `coa_mystic_enchant_aura_link` `l` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'aura_link' AND `o`.`id` = `l`.`enchant_spell`;
 -- Extra SpellAffect rows (modifier -> named target spell), loaded into the server's SpellAffect data by the build

@@ -55,6 +55,98 @@ need the build after 24 Nov; the SQL parts went live at the next start.
 | T4 `spell_dbc` aura swap | The effect is right in spirit but uses an aura the core ignores | Owned `spell_dbc` copy (`wcme_owned`, DELETE, INSERT the full 234-column row) with the aura changed, for example to 79 (damage done %, misc 127 = all schools) | #149 (276509, 276512) |
 | T5 State across casts | A talent changes cooldown rules for a window | A per-player state struct in the script file; cover every way the window ends (expiry, logout, form change, a cast still in flight); start cooldowns with `AddSpellAndCategoryCooldowns` and send the packet | #150 |
 
+### The scan for more of the same (24 Nov 2026)
+
+`scripts/talent_companion_scan.py` finds every Wildcard-rollable talent and ability whose tooltip quotes a
+hidden spell that nothing applies (read-only; the docstring has the command). Results:
+`enchants/talent-companions.csv`. Run on 24 Nov against the client data and the core at `c3f2fd4`: 4,507 rank
+spells in the roll pool, 189 unapplied companions, of which **54 entries `strong`** (passive, permanent, and
+named like the talent, at id + 800000, tagged SLS, or in a known block such as the 902300 stun-reduction or
+957339 "Generic Capstone Threat" spells), 19 `probable`, 8 `stock-data`, 23 `false-alarm`. Run against the
+repository before #243, it lists Master Summoner and Demonic Recurrence as `strong`, so it would have found
+both. Checked by hand: Tactical Mastery, Careful Aim and Iron Will (the talent holds a placeholder or half the
+effect, the companion the rest). A row is a lead: read both spells before fixing (recipe T1), watch the
+`duplicate` column, and do not link a companion whose aura the core ignores (T3) or that duplicates the
+talent's own effect.
+
+### Batches, by type (James, 24 Nov: work through them by type, so a problem met once is solved the same way)
+
+| Batch | Type | Status |
+|---|---|---|
+| 1 | Plain bonuses: an aura link per rank (`sql/enchants/141-talent-companions.sql`) | 25 talents; waiting for James to merge; unverified |
+| 2 | Event-driven companions: link plus proc rules, or action-table rules (`sql/enchants/142-talent-companions-procs.sql`) | 8 talents; waiting for James to merge; unverified |
+| 3 | Conditional: core aura links, recipe R7 (`sql/enchants/143-talent-companions-conditional.sql`) | Divinity (on Path of Strength), Glyph of Trueshot Aura (while Trueshot Aura is on); waiting for James to merge; unverified. Swashbuckler: Flurry of Blows was already an aura link in 007. |
+| 4 | Needs code. Part 1 (`patches/55-talent-fixes.ps1` ability companions, `sql/enchants/144-ability-companions.sql`): Thrust, Two-Handed Weapon Mastery, and Careful Aim (data after all: a conditional link). Still to do: aura 354 rules (Harbinger of Plague, Reave), class-script overrides and Ascension-only effect types, bespoke scripts | Bloodletting, Harbinger of Plague, Reave; from batch 2: Battle Fatigue, Beacon of Virtue, Divine Reset, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon; from batch 3: Corrupted Bear Form (its Shadow-damage proc has no trigger rules, so today the talent does nothing; the 20% penalty alone would make it worse); from batch 5: Thrust (an active ability whose armour-ignore passive needs "while you know X, you have Y", which this core cannot express in data: it has no learn-spell table) |
+| 5 | Active abilities with a passive companion (no aura to link from) | Done 24 Nov, no SQL. Weighted and Jagged Reinforcement already work: their shield enchants (280422, 280420) carry the companion as an equip spell (SpellItemEnchantment type 3), applied while the shield is worn. Thrust moves to batch 4 (row above). |
+| - | Left out by James (24 Nov 2026) | Icy Reach: a Death Knight talent whose tooltip quotes the Mage range companions (829023, 829014). Linking them would add range to Mage spells only, and stack with Arctic Reach at a different rank. James: "Leave it out." Do not link it in a later batch. |
+| - | Outlier | One With The Light: its companion fires 275371, which is not in the game data; linking it as it is would log an error every second |
+| - | No change needed | Nature's Splendor: the talent's own effects already give longer durations (4.5 / 9 / 3 sec) than the companion its tooltip quotes (3 / 6 / 2); linking would stack them |
+
+The results file is now the to-do list: `talent_companion_scan.py` counts our aura links, action-table casts and
+links as applied and skips greyed-out tooltip text, so after batches 1-3 it lists only what is left (19 strong
+entries, all named above, 16 probable, 7 stock data).
+
+Lessons from batch 1, for every later batch:
+- A tooltip that says "does not stack" over a companion with the adding duration aura (232): own a copy with
+  aura 234, which the core resolves as the strongest single cut.
+- A capstone shown greyed out below the final rank links from the final rank only.
+- A talent that only teaches spells has no aura of its own: link from the taught passive.
+- A linked companion with a weapon requirement is removed with the weapon and not put back until login: drop the
+  requirement (if the tooltip allows) or wait for batch 4's code.
+- Look for sibling companions the tooltip does not quote (fear cuts next to stun cuts, 902313-902321).
+- Run the file on a real MariaDB twice before the PR: the lint missed an unescaped apostrophe (`enchant_sql_lint.py`
+  now catches it).
+
+Lessons from batch 2:
+- A `spell_proc` row with Chance 0 falls back to the spell's own chance. With an action-table rule carrying the
+  chance, set the row to 100, or the two roll twice.
+- Companions that fire Ascension-only effect types (165 and 197: cooldown cuts; 173: duration changes) cannot fire
+  as they are. A cooldown cut goes in the action table (`reduce_cooldown`); bind the script to the companion. On a
+  match the script stops the companion's own effect (PreventDefaultAction), and without one nothing fires. Never
+  set a disable mask on every effect: then the aura cannot proc at all, script included.
+- A trigger that must be exact spells (Meteor's two versions, Align, a Druid spell on a Mage talent) goes in the
+  action table, which lists ids; a family mask cannot isolate them.
+- A spell that summons (Meteor 760040) deals its damage through another spell: proc on cast, not on hit.
+- A modifier type (107/108 misc) of 32 or more is outside the core's range and is ignored without an error
+  (Talonshrike's 38): own a copy with the type the tooltip means. Batch 1's companions have none.
+- Check the talent and companion ids against our earlier SQL first: these Hero talents double as Mystic Enchants,
+  and some halves were already fixed (Talonshrike's cooldown cut in 007, Endless Agony's proc in 015).
+
+Lessons from batch 3:
+- The core's aura link (`coa_mystic_enchant_aura_link`) works for any aura, not only enchants: "source" is the
+  talent, "aura" the condition (a form, a stat path, a buff), "grant" the companion. Its key is (source, grant).
+- Before adding a penalty, check that the talent's payoff works: a talent that does nothing today must not get
+  its drawback alone (Corrupted Bear Form).
+- A tooltip can quote a spell with smaller numbers than the talent already gives (Nature's Splendor): compare
+  values, not just effect types, before linking.
+- Some aura types read a second value when the first is not valid (aura 175 falls back to MiscValueB): read the
+  core's handler before "fixing" an odd number.
+
+Lessons from batch 5:
+- A spell that enchants an item (effects 53, 54) can carry its companion on the enchantment itself
+  (SpellItemEnchantment: type 1 combat proc, 3 equip spell, 7 use spell). The scan now reads that file; give it
+  the full server DBC folder (the VM's `C:\Games\CoA Server\Data\dbc`), or these show as missing.
+- This core has no `spell_learn_spell` table (newer AzerothCore removed it), so "learning ability X also teaches
+  passive Y" cannot be done in data. A generic code hook (an ability-to-passive table read at login and on learn
+  and unlearn) is the batch 4 proposal; Thrust is its first user.
+
+Lessons from batch 4:
+- Read `SpellAuraDefines.h` before calling an aura "Ascension-only": this core implements many of Ascension's
+  types (317-365). Aura 333 (hit chance, all kinds) works natively, so Careful Aim needed only a link. Others are
+  honoured only for listed spell ids, each with its own condition: 341 (Unit.cpp allowlist, patch 65) and 354
+  (`AuraEffect::CheckEffectProc` and `HandleAscensionPercentEventProc`). A companion on one of those needs its id
+  and its condition added in code.
+- Passives held by an ability: patch 55's `wcme_spell_companion` (ability, passive, flags). Use it for an active
+  ability's passive and for any passive with a weapon requirement (a linked aura is lost at the first weapon swap).
+- A fast compile check exists without a build: after pre-flight with `--keep --workspace /tmp/pf`, run
+  `g++ -std=gnu++20 -fsyntax-only -w` on the changed file with the include folders of `src/` and `deps/` (not
+  jemalloc, whose headers shadow the system's; `-Ideps/g3dlite/include` only at its root, since G3D has its own
+  `Log.h`). It found nothing to fix in part 1, and catches a misspelt method, so it is a real check.
+- The core strips weapon-dependent auras on more than unequip: a disarm and a weapon at 0 durability do it too,
+  and putting them back (`Player::ApplyItemDependentAuras`) only covers the player's own spell and talent maps.
+  The equip hook alone missed both (patch-reviewer, #262); patch 55 now hooks that function. A talent from a
+  classic talent tree is in the talent map, not the spell map: check `HasTalent` as well as `HasSpell`.
+
 Before scripting, check the core does not already do it (`enchants/core-overlap-review.csv`) and read every
 version of the ability a Hero can learn (Hand of Gul'dan has 954611 and 2304611 -> 2304612; both summon guardians
 through summon properties row 61).
