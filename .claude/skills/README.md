@@ -26,7 +26,7 @@ Three things to know before anything else:
 | Word | Means |
 |---|---|
 | DOCTRINE | Written in `README.md`, `CHANGES.md` or `docs/` on `main`. Follow it. |
-| INTENDED DOCTRINE | Written in `docs/agents/*` or `.claude/agents/*`, which exist only in PR #232 (open and unmerged on 2026-11-22). The risk matrix, the hard stops and the agent roles are all in this group. |
+| (retired) INTENDED DOCTRINE | Used until 24 Nov for `docs/agents/*` and `.claude/agents/*` while PR #232 was open. It merged on 22 Nov 2026 (`0802d4f`), so all of that is now DOCTRINE. The risk matrix, the hard stops and the agent roles are all in this group. |
 | PRACTICE | What the git history shows people actually did. Useful, not binding. |
 | NOT BUILT YET | Described in a document; no code or schedule exists for it. |
 | Proposed practice (not yet adopted by James) | A suggestion made by a skill, with its purpose and the incident behind it. It becomes a rule only when James says so. The register of all of them is in `wildcard-change-control/references/proposed-practices.md`. |

@@ -9,10 +9,9 @@ All facts were read from the repository at `origin/main` `d3e030f` on 2026-11-22
 that day**: VM paths and behaviour come from the scripts, their defaults and commit messages. Where a claim could not
 be verified it says UNVERIFIED and how to verify it.
 
-Status words: DOCTRINE (README, CHANGES.md, docs on `main`) / INTENDED DOCTRINE (PR #232, unmerged) / PRACTICE /
+Status words: DOCTRINE (README, CHANGES.md, docs on `main`) / DOCTRINE (PR #232, merged 22 Nov 2026) / PRACTICE /
 NOT BUILT YET / Proposed practice (not yet adopted by James) / UNVERIFIED / OPEN. The hard stops and the risk matrix
-cited below are from `docs/agents/context/change-risk.md`, which exists only in PR #232 (head `fcfee51`, open on
-2026-11-22): **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**.
+cited below are from `docs/agents/context/change-risk.md`, which came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and is on `main`: what rests on it is **DOCTRINE**.
 
 ## When NOT to use this skill
 
@@ -56,7 +55,7 @@ Words used once and then assumed:
 
 ## 1. Stop here first: hard stops in this territory
 
-`docs/agents/context/change-risk.md` (added by PR #232, still open on 2026-11-22: INTENDED DOCTRINE) lists
+`docs/agents/context/change-risk.md` (added by PR #232, merged 22 Nov 2026: DOCTRINE) lists
 changes that always wait for James, whatever their size. Most of this skill's territory sits on them:
 
 | Hard stop | What it covers here |

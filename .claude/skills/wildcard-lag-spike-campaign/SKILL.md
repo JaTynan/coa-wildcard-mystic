@@ -10,11 +10,10 @@ description: Decision-gated campaign for the Wildcard world server's lag spikes,
 That day shows a clear pattern, summarised below, and a leading hypothesis that has **not** been tested by any
 experiment. Treat everything here as a plan to find the cause, not as the cause.
 
-Status words used here: DOCTRINE (written in README, CHANGES.md or docs on `main`), INTENDED DOCTRINE (PR #232,
-unmerged), PRACTICE (what history shows), NOT BUILT YET, Proposed practice (not yet adopted by James), UNVERIFIED,
+Status words used here: DOCTRINE (written in README, CHANGES.md or docs on `main`), DOCTRINE (PR #232, merged 22 Nov 2026), PRACTICE (what history shows), NOT BUILT YET, Proposed practice (not yet adopted by James), UNVERIFIED,
 OPEN. The hard stops, the risk matrix and "standard changes" cited below come from
-`docs/agents/context/change-risk.md`, which is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**: the file
-is not on `main` yet (read it with `git show origin/agents-stage-1:docs/agents/context/change-risk.md`).
+`docs/agents/context/change-risk.md`, which is **DOCTRINE (PR #232, merged 22 Nov 2026)**: the file
+is not on `main` yet (read it with `git show origin/main:docs/agents/context/change-risk.md`).
 
 ## When NOT to use this skill
 
@@ -388,10 +387,10 @@ grep -nE "typeperf|'-si'" patch-night/PatchNight.ps1
 cat sql/enchants/095-slow-query-log.sql
 # Merge times against the server start (what was live on a given day)
 git log origin/main --first-parent --merges --format="%h %ad %s" --date=iso-local -6
-# Hard stops and standard changes (PR #232 only until it merges)
-git show origin/agents-stage-1:docs/agents/context/change-risk.md | sed -n 7,16p
+# Hard stops and standard changes
+git show origin/main:docs/agents/context/change-risk.md | sed -n 7,16p
 # Lag investigator still NOT BUILT YET (Status column)
-git show origin/agents-stage-1:docs/agents/README.md | grep -n "lag investigator"
+git show origin/main:docs/agents/README.md | grep -n "lag investigator"
 # docs/performance.md still out of date (7 Nov 2026 when written)
 git log -1 --format=%ad -- docs/performance.md
 # The script still parses the logs ("Records: 0" means the line format changed)

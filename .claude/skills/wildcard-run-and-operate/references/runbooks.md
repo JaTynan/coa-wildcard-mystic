@@ -1,8 +1,7 @@
 # Recovery and rollback runbooks
 
 Read from the repository on 2026-11-22 (checkout `fcfee51`, PR #232's head; `patch-night/` and `vm/` are identical
-on `origin/main` `d3e030f`). Hard-stop numbers are from `docs/agents/context/change-risk.md`, which is INTENDED
-DOCTRINE (PR #232, unmerged on 2026-11-22). None of these procedures was executed on the VM that
+on `origin/main` `d3e030f`). Hard-stop numbers are from `docs/agents/context/change-risk.md`, which is DOCTRINE (PR #232, merged 22 Nov 2026). None of these procedures was executed on the VM that
 day. Each one was written from what the scripts do. Where a consequence follows from the code and has not been
 seen in a real run, the text says "from the code".
 

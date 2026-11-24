@@ -8,9 +8,8 @@ description: Triage and symptom lookup for the Wildcard private WoW server (CoA 
 Use this when something is wrong and you do not know why yet. It tells you **which layer is broken, how to prove
 it, and what was done the last time it happened**. Every row comes from this repository's own history: commit
 messages, script comments and docs. Facts are as of 2026-11-22 (`origin/main` at `d3e030f`, #231).
-`docs/agents/*` and `.claude/agents/*` are cited below; on 2026-11-22 they exist only in PR #232 (open), so what
-rests on them is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**. On `main`, read them with
-`git show origin/agents-stage-1:docs/agents/context/<file>`. Status words (DOCTRINE, PRACTICE, NOT BUILT YET, OPEN ...)
+`docs/agents/*` and `.claude/agents/*` are cited below; they
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and are on `main`: what rests on them is **DOCTRINE**. Status words (DOCTRINE, PRACTICE, NOT BUILT YET, OPEN ...)
 are defined in `wildcard-change-control`, section 1.
 
 Three ground rules:

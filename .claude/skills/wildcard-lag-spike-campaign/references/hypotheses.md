@@ -9,7 +9,7 @@ a setting that is *not yet* in `server-settings/server-settings.txt`, so they ar
 change"; expect the score to come out above LOW because they act on all 750 bots and can only be seen working live.
 A bot-count change is not a standard change either: the setting's comment states no range (2026-11-22), so it is
 scored. James merges. One experiment per night (settings apply at the nightly restart). The matrix and "standard
-change" are INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22).
+change" are DOCTRINE (PR #232, merged 22 Nov 2026).
 
 **Ranking as of 2026-11-22 (a prior, from one day of data): H1 first, H2 second, H3 third.** H2 is ranked
 below H1 because of the instance-map evidence in its "Against" paragraph. This is evidence, not proof: the root

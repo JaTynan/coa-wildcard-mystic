@@ -14,9 +14,8 @@ anything else is a path in this repository. Facts were checked on **2026-11-22**
 `server-0.261119.114` (core `c3f2fd4b`, SQUID `4ef5ed9e`, tag v3.0). Upstream line numbers move with every
 release: when one matters, re-find it with the grep commands at the end of each file.
 
-`docs/agents/*` and `.claude/agents/*` are cited below. On 2026-11-22 they exist only in PR #232 (open): what
-rests on them (the hard stops, the risk matrix, the patch rules) is **INTENDED DOCTRINE (PR #232, unmerged on
-2026-11-22)**. On `main`, read them with `git show origin/agents-stage-1:docs/agents/context/<file>`. Status words are
+`docs/agents/*` and `.claude/agents/*` are cited below (the hard stops, the risk matrix, the patch rules). They
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and are on `main`: what rests on them is **DOCTRINE**. Status words are
 defined in `wildcard-change-control`, section 1.
 
 ## When NOT to use this skill

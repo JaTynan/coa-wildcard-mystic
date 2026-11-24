@@ -8,9 +8,8 @@ description: Every configuration axis of the Wildcard server. Covers server-sett
 Checked on 2026-11-22 at `fcfee51` (PR #232: `62a26e4`, the #230 merge, plus two commits adding `.claude/agents/`
 and `docs/agents/`) and at `origin/main` `d3e030f` (#231, which adds only `signup/WildcardConsole.py` and three
 lines of `signup/WildcardSignup.py`), and against the upstream sources at the commits the build pins. Nothing was
-re-checked on the server VM that day. `docs/agents/*` is cited below; it exists only in PR #232 (open), so what
-rests on it is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**; on `main` read it with
-`git show origin/agents-stage-1:docs/agents/context/<file>`. Status words: `wildcard-change-control`, section 1.
+re-checked on the server VM that day. `docs/agents/*` is cited below; it
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and is on `main`: what rests on it is **DOCTRINE**. Status words: `wildcard-change-control`, section 1.
 
 ## When NOT to use this skill
 
@@ -231,7 +230,7 @@ Reading it:
 - "Missing property" is normal in bulk; only a change in the count matters (docs/agents/context/patch-night.md).
   A patch can silence its own option by passing `false` as third argument of `GetOption` ("Quiet" in the catalogue).
 - Any "Bad value" is a fault to fix the same day.
-- **The "0 unknown" rule (this section is its home).** docs/agents/context/patch-night.md (INTENDED DOCTRINE) says
+- **The "0 unknown" rule (this section is its home).** docs/agents/context/patch-night.md (DOCTRINE) says
   a healthy run shows "0 unknown". **Prediction from the code, UNVERIFIED on the VM:** about 28 working settings
   can never pass the kit's test, because their names are assembled when the server runs
   (`"WeekendBonus." + theme + "." + name`, `prefix + "CasePercent"`), are read by prefix (`Appender.*`,

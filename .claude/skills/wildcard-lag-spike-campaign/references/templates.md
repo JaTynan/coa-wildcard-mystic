@@ -66,7 +66,7 @@ and the player count; a row without them cannot be compared with another.
 
 ## 3. Case file for Fable (when a C++ root cause needs judgement)
 
-The "crash and lag investigator" in `docs/agents/README.md` (PR #232, unmerged on 2026-11-22) is Stage 2 and
+The "crash and lag investigator" in `docs/agents/README.md` (PR #232, merged 22 Nov 2026) is Stage 2 and
 **NOT BUILT YET**. Until it exists, write
 the case by hand from `docs/agents/case-file-template.md` into `docs/agents/cases/YYYY-MM-DD-lag-spikes.md`, and
 add a line to `docs/agents/fable-ledger.md` when it is used. Fable reads only that file, so it must carry the

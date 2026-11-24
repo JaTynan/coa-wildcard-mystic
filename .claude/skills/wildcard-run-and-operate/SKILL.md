@@ -11,9 +11,8 @@ identical in the two. Nothing was re-verified on the VM that day. Where a claim 
 the text says so and gives the command to check.
 
 `docs/agents/*` and `.claude/agents/*` are cited below (hard-stop numbers, "healthy or wrong", the
-patch-night-checker). They arrive with PR #232, open and not on `main` on 2026-11-22, so they are
-**INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**. Check: `git ls-tree --name-only origin/main docs/agents/`
-(empty = still unmerged); read them with `git show origin/agents-stage-1:docs/agents/context/change-risk.md`.
+patch-night-checker). They
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and are on `main`: what rests on them is **DOCTRINE**.
 
 ## When NOT to use this skill
 
@@ -332,13 +331,13 @@ Read-only SQL uses the same client the script uses (`Sql`, `PatchNight.ps1:344`)
 
 ## Healthy or wrong
 
-From `docs/agents/context/patch-night.md` (INTENDED DOCTRINE: PR #232, unmerged), with additions from the script marked "added".
+From `docs/agents/context/patch-night.md` (DOCTRINE: PR #232, merged 22 Nov 2026), with additions from the script marked "added".
 
 **Healthy**
 
 - Ends with `[OK] Patch night OK: ...` and `server up on core <revision>`.
 - A `Downtime: N s` line of about 2 minutes since the staged change of 22 Nov. Over 5 minutes is worth a mention.
-- Settings: no `Bad value`, and "0 unknown" by the context pack's rule. That rule is INTENDED DOCTRINE and may be
+- Settings: no `Bad value`, and "0 unknown" by the context pack's rule. That rule is DOCTRINE and may be
   unreachable: `wildcard-settings-and-flags` predicts from the code that about 28 working settings are always
   listed as unknown, and the refinement `5978ee4` is not on `main` (UNVERIFIED on the VM). **Proposed practice (not
   yet adopted by James):** compare the unknown list with the previous run's and flag only NEW names. Settings on
@@ -414,7 +413,7 @@ on 2026-11-22. Line numbers refer to that version. Re-verify anything that may h
 ```bash
 # Has the operating code changed since this was written?
 git log d3e030f..origin/main --oneline -- patch-night vm server-settings/Apply-ServerSettings.ps1 docs/agents/context/patch-night.md .claude/agents/patch-night-checker.md
-# Are the agent docs on main yet? (empty = still PR #232 only)
+# The agent docs on main (PR #232, merged 22 Nov 2026)
 git ls-tree --name-only origin/main docs/agents/
 # The self-restart and the release choice (go-live table)
 sed -n 742,754p patch-night/PatchNight.ps1; sed -n 857,866p patch-night/PatchNight.ps1

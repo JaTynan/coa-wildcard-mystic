@@ -3,7 +3,7 @@
 Read this before your first classification, or when unsure how a check is scored.
 
 **What these are.** Retrospective teaching examples written on 2026-11-22. None of these PRs was classified when
-it was merged: the matrix was written on 22 Nov 2026 (PR #232, still unmerged that day) and all five were merged by
+it was merged: the matrix was written on 22 Nov 2026 (PR #232, merged that evening) and all five were merged by
 James before or without it. The scores are this skill's reading of `docs/agents/context/change-risk.md`, not
 rulings by James or Fable. Where a score is arguable it says so; "when in doubt, take the higher" was applied.
 

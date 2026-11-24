@@ -11,8 +11,7 @@ How to read a row:
 
 VM paths are as the repo's scripts and docs state them (server folder `C:\Games\CoA Server`); they were not
 re-verified on the VM on 2026-11-22. Rows are as of `origin/main` at `d3e030f` (2026-11-22). Evidence cells that cite
-`docs/agents/*` point at files that exist only in PR #232 (open on 2026-11-22; read them with
-`git show origin/agents-stage-1:<path>`).
+`docs/agents/*` point at files that came with PR #232 (merged 22 Nov 2026) and are on `main`.
 
 Any fix route that changes the live server, a setting, SQL, a patch or a script: **classify with
 wildcard-change-control first.** James merges.
@@ -81,7 +80,7 @@ Look first at `patch-night\last-run.txt` (one line), then `patch-night\patch-nig
 ## Settings
 
 Look first at `server-settings\settings-report.txt` and the "Settings:" line of the last run in `patch-night.log`.
-Healthy by `docs/agents/context/patch-night.md` (INTENDED DOCTRINE): "0 unknown", no "Bad value". Prediction from the code, UNVERIFIED on the VM: about 28 working settings can never pass the unknown-name test, and the refinement `5978ee4` is not on `main`. So judge by **no NEW unknown name** against the previous run's list (Proposed practice, not yet adopted by James; home: `wildcard-settings-and-flags`, section 5).
+Healthy by `docs/agents/context/patch-night.md` (DOCTRINE): "0 unknown", no "Bad value". Prediction from the code, UNVERIFIED on the VM: about 28 working settings can never pass the unknown-name test, and the refinement `5978ee4` is not on `main`. So judge by **no NEW unknown name** against the previous run's list (Proposed practice, not yet adopted by James; home: `wildcard-settings-and-flags`, section 5).
 
 | ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
 |---|---|---|---|---|---|

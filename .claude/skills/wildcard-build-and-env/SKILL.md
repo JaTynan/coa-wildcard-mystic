@@ -12,9 +12,8 @@ slow or stuck. The useful work is catching the failure before the build starts, 
 most of this skill is about.
 
 All facts below are as of 2026-11-22, `origin/main` at `d3e030f`, unless a line says otherwise.
-`docs/agents/*` and `.claude/agents/*` exist only in PR #232 (open): what rests on them (hard
-stops, the risk matrix) is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**; read them with
-`git show origin/agents-stage-1:<path>`. Status words are defined in `wildcard-change-control`, section 1.
+`docs/agents/*` and `.claude/agents/*` (hard stops, the risk matrix)
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and are on `main`: what rests on them is **DOCTRINE**. Status words are defined in `wildcard-change-control`, section 1.
 
 ## When NOT to use this skill
 

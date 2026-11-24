@@ -128,7 +128,7 @@ line saying whether a build is required).
   are not limited.
 - **Purpose.** A merge is a deployment and there is no staging server. A finished build is a release the weekly
   patch night will install whatever branch built it.
-- **What the documents say today.** Only the three agents in PR #232 are limited in writing (the analyst and the
+- **What the documents say today.** Only the three agents in `.claude/agents/` are limited in writing (the analyst and the
   reviewer never merge, deploy or comment; `patch-night-checker` is read only). CHANGES.md says nothing is edited
   on the running server by hand. Nothing covers every session, and sessions do have VM access.
 - **Incident.** `d5412a9` (19 Nov): patch night brought the Wildcard realm up on the other realm's characters.

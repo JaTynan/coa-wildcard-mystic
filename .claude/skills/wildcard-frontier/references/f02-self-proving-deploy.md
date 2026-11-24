@@ -33,7 +33,7 @@ change per night."
 | The LOW path assumes | What exists | Gap |
 |---|---|---|
 | A smoke test | "World came up on the right core and lived 60 seconds" | Says nothing about whether SQL applied, enchants loaded, players can log in, or the tick time is sane |
-| A check at 4:37 am | Nothing is scheduled at 4:37. The `patch-night-checker` agent is read-only, run by hand, and sits in an unmerged PR | **NOT BUILT YET** |
+| A check at 4:37 am | Nothing is scheduled at 4:37. The `patch-night-checker` agent is read-only and run by hand (on `main` since PR #232 merged on 22 Nov 2026) | **NOT BUILT YET** |
 | Roll back if the check fails | Only the program is swapped, and only to the official one | No "previous patched build". No rollback of settings, SQL, addons or site: the run always takes the head of `main`, so there is no notion of "what we ran last night" |
 | Installed at the next nightly restart | True for settings, SQL, addons | C++ builds wait for the weekly patch night (`-NoInstall`), and a merged patch is built only when the workflow is run with `rebuild` ticked |
 | One automatic change per night | No counter, no automatic merge | **NOT BUILT YET** |
@@ -80,7 +80,7 @@ too, and the run ends with "the server is not up".
   3. no new kind of line in `Errors.log` since this start, and no new file in `Core\Crashes`;
   4. the console answers `server info`, and the world port answers (`WorldAcceptsPlayers` already exists);
   5. the settings report has no "Bad value" and no unknown name that was not in the previous run's list. (The
-     context pack's rule is "0 unknown", INTENDED DOCTRINE; `wildcard-settings-and-flags` predicts about 28 working
+     context pack's rule is "0 unknown", DOCTRINE; `wildcard-settings-and-flags` predicts about 28 working
      settings can never pass it and the refinement `5978ee4` is not on `main`. UNVERIFIED on the VM.)
 - It ends with one line: `[OK] Health: 5 of 5` or `[WARN] Health: FAILED <which>`. **It changes nothing and rolls
   nothing back.** `last-run.txt` gains the health result.

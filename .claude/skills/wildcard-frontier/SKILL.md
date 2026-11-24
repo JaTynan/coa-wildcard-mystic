@@ -8,9 +8,8 @@ description: ADVANCED. Open problems where James's Wildcard server project (coa-
 **Status of this document.** Every forward-looking item below is a **Proposed practice (not yet adopted by James)**;
 the designs are **design proposals (NOT BUILT YET, need James's OK)**. The facts under "Where the project stands"
 were checked against the repository on 2026-11-22 and carry their source. Nothing here is a rule. The rules are in
-`README.md` and `CHANGES.md` (DOCTRINE) and in `docs/agents/context/change-risk.md`, which is **INTENDED DOCTRINE
-(PR #232, unmerged on 2026-11-22)**: the matrix, the hard stops and the agent roles cited below are not on `main`
-yet. Status words: DOCTRINE / INTENDED DOCTRINE / PRACTICE / NOT BUILT YET / Proposed practice (not yet adopted
+`README.md` and `CHANGES.md` (DOCTRINE) and in `docs/agents/context/change-risk.md`, which is **DOCTRINE (PR #232, merged 22 Nov 2026)**: the matrix, the hard stops and the agent roles cited below are not on `main`
+yet. Status words: DOCTRINE / PRACTICE / NOT BUILT YET / Proposed practice (not yet adopted
 by James) / UNVERIFIED / OPEN.
 
 **No step in this skill may be executed without change control.** Before any step that changes what the server,
@@ -71,7 +70,7 @@ its own table header says "Phase 1 (now)", but several parts of the LOW path do 
 
 | Thing a document mentions | Reality | Evidence |
 |---|---|---|
-| Risk matrix, `change-risk-analyst`, `patch-reviewer`, `patch-night-checker` | Written. In PR #232 (`agents-stage-1`), **not on `main`** | `git cat-file -e origin/main:docs/agents/README.md` fails; commits 6504f6f, fcfee51 |
+| Risk matrix, `change-risk-analyst`, `patch-reviewer`, `patch-night-checker` | Written, and on `main` since PR #232 merged on 22 Nov 2026 | `git cat-file -e origin/main:docs/agents/README.md` fails; commits 6504f6f, fcfee51 |
 | Fable ledger | Empty: zero calls recorded | `docs/agents/fable-ledger.md` has a header row only |
 | Issue pipeline (triage, fix, classify) | **NOT BUILT YET** (Stage 2) | `docs/agents/README.md` roles table |
 | In-game Report Bug to GitHub issue relay | Built and merged | `signup/WildcardSignup.py` `report_issue`, `bug_report_relay`; settings `CoABugReport.*` |
@@ -239,8 +238,8 @@ grep -n -e 'Register-Run' -e 'NoInstall' patch-night/Register-PatchNight.ps1
 grep -n -A40 '^function StartAndCheck' patch-night/PatchNight.ps1
 # What is the fallback?
 grep -n -A9 'did not come up: back to the official' patch-night/PatchNight.ps1
-# Has the Fable ledger any rows? (no output = none; the file is in PR #232 only until it merges)
-git show origin/agents-stage-1:docs/agents/fable-ledger.md | tail -n +8
+# Has the Fable ledger any rows? (no output = none)
+git show origin/main:docs/agents/fable-ledger.md | tail -n +8
 # Enchant test coverage
 python3 -I -B .claude/skills/ascension-restoration/scripts/tracker_summary.py
 python3 -I -B .claude/skills/wildcard-validation-and-qa/scripts/tested_inventory.py

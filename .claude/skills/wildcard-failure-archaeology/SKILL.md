@@ -202,7 +202,7 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | U-07 | `perf-visibility-react` | view distance 75 | never merged, never measured |
 | U-08 | `export-v2` | spell export includes namesakes | never merged, ask James |
 | U-09 | `docs/patch-night-build51` | build 51 install record | superseded |
-| U-10 | `agents-stage-1` / `pr-232` | agents and `docs/agents/` | PR #232, in flight |
+| U-10 | `agents-stage-1` / `pr-232` | agents and `docs/agents/` | PR #232, merged 22 Nov 2026 (`0802d4f`) |
 
 ---
 
@@ -387,8 +387,7 @@ with `wildcard-change-control` first; James merges).
 Written 2026-11-22 from the repository alone, at `origin/main` = `d3e030f` (710 commits, 205 merged pull
 requests), with all remote branches and `wcme-server-*` tags. The reading covered: every commit subject on every
 branch (515 non-merge commits) and the bodies of all of them; `README.md`, `CHANGES.md`, `docs/*.md`,
-`docs/agents/**` (present only on PR #232's branch `origin/agents-stage-1`, open on 2026-11-22: what rests on it is
-INTENDED DOCTRINE, PR #232, unmerged), `enchants/*.csv` headers and both notes headers, comments
+`docs/agents/**` (then on PR #232's branch; merged on 22 Nov 2026, so DOCTRINE), `enchants/*.csv` headers and both notes headers, comments
 in `server-settings/server-settings.txt`, `patch-night/PatchNight.ps1`,
 `server-settings/Apply-ServerSettings.ps1`, the build workflow and `sql/enchants/09x-*.sql`.
 
@@ -426,6 +425,6 @@ grep -o '2026-1[0-2]-[0-9][0-9]' enchants/tracker.csv | sort | tail -1
 # Release tags (which release was built when)
 git tag -l 'wcme-server-*' --format='%(refname:short) %(creatordate:short)' | sort -t- -k4 -V
 
-# Is PR #232 (docs/agents) merged yet?
+# PR #232 (docs/agents) merged on 22 Nov 2026; non-zero confirms
 git ls-tree --name-only origin/main docs/ | grep -c agents
 ```

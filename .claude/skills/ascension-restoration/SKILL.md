@@ -46,9 +46,9 @@ reconstructed from evidence. This skill is the method, the proven recipes, and t
 4. Section 8 is the per-batch checklist; section 4 the in-game test.
 5. Classify with `wildcard-change-control` before the pull request. James merges.
 
-Status words used below (DOCTRINE, INTENDED DOCTRINE, PRACTICE, NOT BUILT YET, Proposed practice, UNVERIFIED,
+Status words used below (DOCTRINE, PRACTICE, NOT BUILT YET, Proposed practice, UNVERIFIED,
 OPEN) are defined in `wildcard-change-control`, section 1. The risk matrix and hard stops come from
-`docs/agents/*`: **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**.
+`docs/agents/*`: **DOCTRINE (PR #232, merged 22 Nov 2026)**.
 
 ## Words used here
 
@@ -223,7 +223,7 @@ GM character, target yourself (`docs/enchant-restoration.md`):
 
 **These are for James's GM test character.** A session does not send GM or console commands on the live realm
 (including `additem` through the console) without his say-so: hard stops 1 (GM or console commands) and 2 (gives
-items outside normal play), INTENDED DOCTRINE.
+items outside normal play), DOCTRINE.
 
 | Test type (checklist column) | Do this | Pass means |
 |---|---|---|
@@ -459,7 +459,7 @@ Re-verify what may drift (run from the repository root):
 | Stale "unmerged" labels | `grep -c 'unmerged branch' enchants/legendary-history.csv enchants/epic-history.csv` |
 | Open talent issues | `gh issue list --repo JaTynan/coa-wildcard-mystic --state open` |
 | Table keys in the core | `grep -n 'KEY' data/sql/base/db_world/spell_proc.sql` in a clone of `Corfirean/azerothcore-wotlk-coa` |
-| Risk class of an enchant SQL fix | `grep -n 'Standard changes' -A3 docs/agents/context/change-risk.md` (file arrives with PR #232; not on `main` on 2026-11-22) |
+| Risk class of an enchant SQL fix | `grep -n 'Standard changes' -A3 docs/agents/context/change-risk.md` |
 
 When you change this skill: replace `references/state-2026-11-22.md` with a new dated snapshot rather than editing
 numbers in place, and update the "Current state" table from it.

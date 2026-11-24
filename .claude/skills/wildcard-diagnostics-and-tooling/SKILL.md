@@ -7,10 +7,8 @@ description: How to MEASURE the Wildcard server instead of eyeballing it. Invent
 
 Use this skill to turn "it feels laggy" into numbers, and to compare two numbers honestly.
 
-Status words used here: DOCTRINE (written in README, CHANGES.md or docs on `main`), INTENDED DOCTRINE (PR #232,
-unmerged), PRACTICE, NOT BUILT YET, Proposed practice (not yet adopted by James), UNVERIFIED, OPEN.
-`docs/agents/*` (hard stops, "healthy or wrong" for patch night) is cited below; it exists only in PR #232 and
-is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**.
+Status words used here: DOCTRINE (written in README, CHANGES.md or docs on `main`, including `docs/agents/` since PR #232 merged on 22 Nov 2026), PRACTICE, NOT BUILT YET, Proposed practice (not yet adopted by James), UNVERIFIED, OPEN.
+`docs/agents/*` (hard stops, "healthy or wrong" for patch night) is cited below; it came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and is on `main`: what rests on it is **DOCTRINE**.
 
 Terms used here, defined once:
 - **Pass** (the repo also says "tick" or "update"): one trip round the world server's main loop. Its length in
@@ -295,13 +293,13 @@ memory and disk write latency did not move. What that means for the spikes: `wil
 `---- patch night finished ----`; the line before the end is the outcome at `[OK]` or `[FAIL]`
 (literal strings from `PatchNight.ps1`). Flags the script raises: `FELL BACK TO OFFICIAL`, `LONG DOWNTIME`
 (over 300 s, from the "over 5 minutes" line above), `NO FINISHED LINE`, `BAD SETTING VALUE(S)`,
-`INSTALL NOT CONFIRMED`. What counts as healthy or wrong: `docs/agents/context/patch-night.md` (INTENDED DOCTRINE). No log lines at
+`INSTALL NOT CONFIRMED`. What counts as healthy or wrong: `docs/agents/context/patch-night.md` (DOCTRINE). No log lines at
 the scheduled time means the task did not run (it runs only while James is signed in). Operating patch night:
 `wildcard-run-and-operate`.
 
 **Settings report** (`server-settings\settings-report.txt`): look for the `Unknown, in neither the .dist nor the
 server program` count and `Values it could not use` (should be 0). The context pack's rule is "0 unknown"
-(INTENDED DOCTRINE), but `wildcard-settings-and-flags` predicts from the code that about 28 working settings can
+(DOCTRINE), but `wildcard-settings-and-flags` predicts from the code that about 28 working settings can
 never pass it, and the refinement `5978ee4` is not on `main` (UNVERIFIED on the VM). **Proposed practice (not yet
 adopted by James):** compare the unknown list with the previous run's and flag only NEW names. Settings on
 defaults are normal; only a change in their number matters (`patch-night.md`). Home: `wildcard-settings-and-flags`.
@@ -318,7 +316,7 @@ world is up (patch night's own check). It also holds the timing lines, without t
 `world`, `players`, `characters`, `uptime`, `server` build, cached 30 s; `signup/WildcardStatus.py`). On `main`
 (PR #231) its console window is a status board refreshed every 30 s. Both get players and uptime by sending the
 read-only `server info` through the manager's `ra-once`. Any other console command is a GM command: hard stop 1
-in `docs/agents/context/change-risk.md` (INTENDED DOCTRINE). Home for these services: `wildcard-client-and-web`.
+in `docs/agents/context/change-risk.md` (DOCTRINE). Home for these services: `wildcard-client-and-web`.
 
 ## 9. Measuring discipline
 
@@ -430,9 +428,9 @@ grep -nE "^Log '----|patch night finished|Downtime:" patch-night/PatchNight.ps1
 # Console log rotation, and the once-only console history
 grep -n -A 12 "function RotateConsoleLogs" patch-night/PatchNight.ps1
 grep -n -A 6 "function SaveConsoleHistory" patch-night/PatchNight.ps1
-# Thresholds in the docs (the second file is in PR #232 only until it merges)
+# Thresholds in the docs
 cat docs/performance.md
-git show origin/agents-stage-1:docs/agents/context/patch-night.md | grep -nE "Downtime|5 minutes"
+git show origin/main:docs/agents/context/patch-night.md | grep -nE "Downtime|5 minutes"
 # Bot count and map threads
 grep -nE "MinRandomBots|MaxRandomBots|MapUpdate.Threads" server-settings/server-settings.txt
 # Pinned core revision

@@ -13,9 +13,8 @@ that run there.
 
 **Before changing server behaviour: classify with `wildcard-change-control` first. James merges.** Changes to patch
 night, the build workflow, the installer or rollback are a hard stop (always HIGH, never automatic;
-`docs/agents/context/change-risk.md`, hard stop 5). `docs/agents/*` and `.claude/agents/*` exist only in PR #232:
-what rests on them is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**; on `main` read them with
-`git show origin/agents-stage-1:<path>`. Status words are defined in `wildcard-change-control`, section 1.
+`docs/agents/context/change-risk.md`, hard stop 5). `docs/agents/*` and `.claude/agents/*`
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and are on `main`: what rests on them is **DOCTRINE**. Status words are defined in `wildcard-change-control`, section 1.
 
 ## When NOT to use this skill
 

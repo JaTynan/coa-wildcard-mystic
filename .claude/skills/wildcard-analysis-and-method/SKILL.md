@@ -319,8 +319,8 @@ play before choosing the value.
 
 ## What is doctrine and what is proposed
 
-**DOCTRINE (written in README, CHANGES.md or docs on `main`) and INTENDED DOCTRINE (PR #232, unmerged on
-2026-11-22: every row whose source is `docs/agents/*` or `.claude/agents/*`), as of 2026-11-22:**
+**DOCTRINE (written in README, CHANGES.md or docs on `main`, including the rows whose source is `docs/agents/*` or
+`.claude/agents/*`, on `main` since PR #232 merged on 22 Nov 2026), as of 2026-11-22, status re-checked 24 Nov:**
 
 | Rule | Where |
 |---|---|
@@ -383,7 +383,7 @@ tick falls from 586 ms to under 150 ms while the 95% figure stays within 10 ms o
 
 ## B3. Assigned adversarial refutation
 
-**INTENDED DOCTRINE (PR #232) for patches:** a PR that changes `patches/` gets the Fable `patch-reviewer`, which sees only the diff
+**DOCTRINE (PR #232, merged 22 Nov 2026) for patches:** a PR that changes `patches/` gets the Fable `patch-reviewer`, which sees only the diff
 and the description. **Proposed practice (not yet adopted by James)** for everything else that claims a cause (a
 lag diagnosis, a balance finding, a "the core already does this" claim): give the claim to a separate session
 that has not seen your reasoning, with the instruction to break it. *Purpose:* the author cannot see their own
@@ -473,8 +473,8 @@ that drifts (run from the repository root):
 cat docs/performance.md                                   # the table and thresholds
 grep -nE "RandomBots|BotActiveAlone|MapUpdate.Threads|Visibility.Distance|Log.Async|Logger.coa" server-settings/server-settings.txt
 grep -nE "CardDrop|Rate.XP|Rate.Rest|PriceMultiplier|KillXPPercent" server-settings/server-settings.txt
-cat docs/agents/context/change-risk.md                    # L1-L6, I1-I4, bands, paths (PR #232 only until merged:
-                                                          # git show origin/agents-stage-1:docs/agents/context/change-risk.md)
+cat docs/agents/context/change-risk.md                    # L1-L6, I1-I4, bands, paths (on `main` since PR #232 merged on 22 Nov:
+                                                          # git show origin/main:docs/agents/context/change-risk.md)
 cat .claude/agents/patch-reviewer.md docs/agents/README.md
 ls docs/agents/cases; tail -3 docs/agents/fable-ledger.md # still no cases, no ledger rows?
 cut -d, -f4 enchants/legendary-history.csv | sort | uniq -c | sort -rn | head -4   # untested counts (rough)

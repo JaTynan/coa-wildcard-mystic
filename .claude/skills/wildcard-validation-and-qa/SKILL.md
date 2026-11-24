@@ -26,7 +26,7 @@ those hours. Pipeline, testing and validation is the owner's second priority, af
 Words used below, once:
 
 - **DOCTRINE**: a rule written in README.md, CHANGES.md or docs/ on `main`. Follow it.
-- **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**: anything in `docs/agents/*` or `.claude/agents/*`
+- **DOCTRINE (PR #232, merged 22 Nov 2026)**: anything in `docs/agents/*` or `.claude/agents/*`
   (the risk matrix, hard stops, L4, the LOW path, `patch-night.md`). Those files are not on `main` yet; every
   citation of them below carries this status.
 - **PRACTICE**: what the history shows people actually did. Useful, not binding.
@@ -139,7 +139,7 @@ Numbers proposed alongside the table (each **not yet adopted**; the motivating f
 
 | Threshold | Proposed value | Based on |
 |---|---|---|
-| Unknown settings after a start | **No NEW unknown names compared with the previous run's list** (Proposed practice). The doc's rule is "0 unknown": docs/agents/context/patch-night.md lists "Unknown settings, or any Bad value" under "What is wrong" (INTENDED DOCTRINE) | Prediction from the code (wildcard-settings-and-flags): about 28 working settings can never pass "0 unknown" (names built at run time, read by prefix, or read only by the website), and the refinement `5978ee4` is not on `main`. UNVERIFIED on the VM: compare with a real `settings-report.txt` before adopting either rule |
+| Unknown settings after a start | **No NEW unknown names compared with the previous run's list** (Proposed practice). The doc's rule is "0 unknown": docs/agents/context/patch-night.md lists "Unknown settings, or any Bad value" under "What is wrong" (DOCTRINE) | Prediction from the code (wildcard-settings-and-flags): about 28 working settings can never pass "0 unknown" (names built at run time, read by prefix, or read only by the website), and the refinement `5978ee4` is not on `main`. UNVERIFIED on the VM: compare with a real `settings-report.txt` before adopting either rule |
 | Bad values after a start | 0 | Same |
 | Failed enchant SQL files | 0 | Today a failure is a WARN and the run still ends OK (PatchNight.ps1 ApplyEnchantFixes) |
 | Downtime | Healthy about 2 minutes; over 5 minutes is reported (doctrine: patch-night.md). Proposed hard limit 30 minutes | James's stated tolerance: about 30 minutes of downtime, about 15 minutes of data loss |
@@ -413,8 +413,8 @@ ls .github/workflows; git ls-files | grep -iE "(^|/)tests?/|_test\.|/test_"
 grep -n -A44 "^function StartAndCheck" patch-night/PatchNight.ps1; tail -n 12 patch-night/PatchNight.ps1
 # A failed SQL file is still only a WARN
 grep -n "Enchant fix" patch-night/PatchNight.ps1
-# The LOW path still names the smoke test, 4:37 and rollback; L4 wording (PR #232 only until it merges)
-git show origin/agents-stage-1:docs/agents/context/change-risk.md | grep -nE "smoke|4:37|L4"
+# The LOW path still names the smoke test, 4:37 and rollback; L4 wording
+git show origin/main:docs/agents/context/change-risk.md | grep -nE "smoke|4:37|L4"
 # Nothing implements the 4:37 check (expect no output)
 grep -rn "4:37" --exclude-dir=.claude --include="*.ps1" --include="*.py" --include="*.yml" --include="*.cmd" .
 # What 000-reset.sql removes (see stats.reset_rules), and UPDATEs of owned rows

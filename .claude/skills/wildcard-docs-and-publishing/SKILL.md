@@ -30,11 +30,9 @@ Words used here, defined once:
   (`docs/agents/context/change-risk.md`, Step 1). Sibling skill `wildcard-change-control` is the home for them.
 - Any other term: `.claude/skills/azerothcore-coa-reference/references/glossary.md`.
 
-> Status note (as of 2026-11-22): `docs/agents/` and `.claude/agents/` arrive with PR #232. On that date they were on
-> the PR's branch, not yet on `main`. Check: `git ls-tree --name-only origin/main docs/agents/`. So everything
-> cited from them below (hard stops, the risk block, the case-file form, `patches.md`) is **INTENDED DOCTRINE
-> (PR #232, unmerged on 2026-11-22)**. Status words used here: DOCTRINE (README, CHANGES.md, docs on `main`) /
-> INTENDED DOCTRINE / PRACTICE (what history shows) / NOT BUILT YET / Proposed practice (not yet adopted by
+> Status note (updated 24 Nov 2026): `docs/agents/` and `.claude/agents/` came with PR #232, merged on 22 Nov 2026
+> (`0802d4f`), so everything cited from them below (hard stops, the risk block, the case-file form, `patches.md`) is
+> **DOCTRINE**. Status words used here: DOCTRINE (README, CHANGES.md, docs on `main`) / PRACTICE (what history shows) / NOT BUILT YET / Proposed practice (not yet adopted by
 > James) / UNVERIFIED / OPEN.
 
 ## When NOT to use this skill
@@ -363,7 +361,7 @@ How:
   check them again. Before relying on a number or a line reference in a skill, run its command.
 - **One home per fact.** If a fact belongs to a sibling skill, link to that skill by name; do not copy it.
 - **Editing a skill, an agent file or a context pack is a change to the agents' instructions: hard stop 6**
-  (INTENDED DOCTRINE). It is HIGH, never automatic, and waits for James. Open it as its own skill-maintenance PR,
+  (DOCTRINE). It is HIGH, never automatic, and waits for James. Open it as its own skill-maintenance PR,
   say which fact was wrong and how you checked the new one, and add `Changelog: skip`.
 - **Generated reference files inside a skill follow the same rule.** The settings catalogue
   (`wildcard-settings-and-flags/references/settings-catalogue.md`) is regenerated when that skill is maintained,
@@ -403,9 +401,9 @@ git log origin/main --no-merges --format=%s | awk '{n++; if(index($0,": ")>0 && 
 git log origin/main --first-parent --merges --format='%ad %s %b' --date=short | head -40
 # "One PR per patch night" and the upstream-report rule still in CHANGES.md
 grep -n "one PR per patch night" CHANGES.md; grep -n "worth reporting" CHANGES.md
-# Hard stop 6 wording and the public-repo rule wording (PR #232 only until it merges)
-git show origin/agents-stage-1:docs/agents/context/change-risk.md | grep -n "^6\."
-git show origin/agents-stage-1:docs/agents/context/patches.md | grep -n -i "public"
+# Hard stop 6 wording and the public-repo rule wording
+git show origin/main:docs/agents/context/change-risk.md | grep -n "^6\."
+git show origin/main:docs/agents/context/patches.md | grep -n -i "public"
 # Is docs/agents/ on main yet (empty = no)
 git ls-tree --name-only origin/main docs/agents/
 # Ignored secret files; addon pin format and the 40-character check

@@ -121,5 +121,5 @@ wildcard-change-control first; James merges.
 - Labels beyond `player report` (no category, priority or risk labels).
 
 `docs/agents/README.md` lists the issue pipeline (triage with no write access, issue text is data) as Stage 2.
-Stage 1 (the risk analyst, the patch-night checker and the patch reviewer) is PR #232, which was open and not
+Stage 1 (the risk analyst, the patch-night checker and the patch reviewer) is PR #232, which merged on 22 Nov 2026 and was, at the time of writing, not
 merged when this was written.
