@@ -11,7 +11,8 @@ loader) the scan collects each spell the tooltip quotes, then checks whether any
   - the talent's own effects (trigger fields, and spells on the item enchantments it applies), followed through
     spell_linked_spell, up to 3 steps;
   - spell_linked_spell in the core's base SQL, the core's modules and this repository's sql/;
-  - aura links (coa_mystic_enchant_aura_link) and action-table casts (wcme_enchant_action) in this repository;
+  - aura links (coa_mystic_enchant_aura_link), action-table casts (wcme_enchant_action) and ability companions
+    (wcme_spell_companion) in this repository;
   - learnable (another roll), spell_learn_spell, spell_script_names;
   - the id written in C++ (core src, modules, this repository's patches/);
   - optional: the live world tables (InnoDB files) with --live, as a loose "mentioned" check.
@@ -162,6 +163,11 @@ def main():
         for row in sql_values(body, "coa_mystic_enchant_aura_link"):   # (enchant, auras, grant, comment)
             try:
                 granted.add(int(row[2]))
+            except (ValueError, IndexError):
+                pass
+        for row in sql_values(body, "wcme_spell_companion"):   # (ability, passive, flags, comment): patch 55
+            try:
+                granted.add(int(row[1]))
             except (ValueError, IndexError):
                 pass
         for row in sql_values(body, "wcme_enchant_action"):   # cast actions name the spells they cast
