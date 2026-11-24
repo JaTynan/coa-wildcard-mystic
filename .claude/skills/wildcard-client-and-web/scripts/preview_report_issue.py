@@ -87,7 +87,7 @@ def main():
     else:
         print("  - nothing after the first '### Server context' heading carries a live @mention or #link")
     account = path.stem.split("-", 1)[0]
-    print(f"  - the hidden marker <!-- wildcard-report:{path.stem} --> starts with the account NUMBER ({account})")
+    print(f"  - the hidden marker <!-- wildcard-report:{path.stem} --> starts with the account number ({account}), on purpose (PR #237)")
     if temporary:
         temporary.cleanup()
     return 0

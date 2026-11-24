@@ -5,15 +5,16 @@ Facts were checked on 2026-11-22. Classify every step with `wildcard-change-cont
 
 ## 1. Goal and owner
 
-A C++ change (a file in `patches/`) should learn that it is broken in minutes, not after a 2 to 3 hour build.
+A C++ change (a file in `patches/`) should learn that it is broken in minutes, not after a 3½ hour build.
 Owner: the pipeline. It is James's costliest ongoing failure.
 
 ## 2. Where the project stands (2026-11-22)
 
 - **One workflow**, `.github/workflows/build-worldserver.yml`. It starts on a daily timer (`cron: '17 3 * * *'`,
   03:17 UTC) or by hand. **Nothing runs on a pull request.**
-- It builds a manager release **once**; a later change to `patches/` is built only when someone runs it by hand
-  with `rebuild` ticked (job `check`, step "Build only releases not built before").
+- Since PR #241 (23 Nov 2026) it builds whenever `patches/`, the workflow or the resolver changed since the newest
+  build (job `check`, step `decide`), so a merged patch is built the same evening; scheduled runs start about 8:37
+  to 10:50 pm Sydney. Before that it built each manager release once and a later change needed a by-hand `rebuild`.
 - Order inside job `build` (Windows runner, 340 minute limit): check out the core; apply `patches/*.patch` with
   `git apply --check`; check out the modules; apply the official build's module patches; apply
   `patches/*.ps1` in name order; install Boost and MySQL (cached); configure; `cmake --build build --target
@@ -50,7 +51,7 @@ Owner: the pipeline. It is James's costliest ongoing failure.
 | Setting read by a patch but missing from `server-settings.txt`, or no `CHANGES.md` row | by a reviewer, if at all | a static check on the PR, seconds (see `wildcard-validation-and-qa`) |
 | Compile error in inserted C++ | 1 to 2 hours into the build | minutes, with an incremental build tree that already holds everything else compiled |
 | Windows-only compile error (header macros) | same | only by a Windows compile; a Linux compile would have missed 16 Nov |
-| Link error | 2 to 3 hours | minutes, same incremental tree |
+| Link error | about 3½ hours | minutes, same incremental tree |
 | Start-up failure | after install, on the live server, players waiting | before install, with a dry-run start on the VM |
 | Wrong behaviour in game | when a player notices | F5 |
 
@@ -149,7 +150,7 @@ the incremental build regularly rebuilds most of the tree (the copy-only-changed
 - **Treating the local build as the release.** Different machine, possibly different tool versions. Keep the
   GitHub build from clean sources as the one that is installed, until James decides otherwise.
 - **Dry-running against the live database unproven.** See step 3.
-- **Calling the 2 to 3 hour build "slow" or "stuck".** It is the normal time.
+- **Calling the 3½ hour build "slow" or "stuck".** It is the normal time.
 
 ## 8. Dependencies
 

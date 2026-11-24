@@ -1,20 +1,20 @@
 ---
 name: wildcard-build-and-env
-description: How the patched Wildcard world server is built on GitHub Actions, and how to stop a 2-3 hour build failing late. Covers build-worldserver.yml step by step (what fails where, with the error text), scripts/resolve_release.py and the pinned commits, release tags wcme-server-X-buildN, the "builds a release once" rule and the rebuild tick box, starting and watching a build, the catalogue of past build failures, quick pre-push checks (check_patch_files.py, which_build.py), proposed workflow improvements, the for-083 branch story, and what to do after a new CoA or manager release. Load it when "the build failed" at any step ("Apply our patches", "Configure", "Build worldserver", "Publish as a release"), before starting a build, when asked "is my fix in a build yet" or "why did the nightly build do nothing", when a new manager release appears, or before touching .github, scripts/resolve_release.py or vm/. If the failed step is "Apply our patch scripts" (a moved anchor), fix it with wildcard-patch-authoring.
+description: How the patched Wildcard world server is built on GitHub Actions, and how to stop a 3½ hour build failing late. Covers build-worldserver.yml step by step (what fails where, with the error text), scripts/resolve_release.py and the pinned commits, release tags wcme-server-X-buildN, the automatic rebuild rule (a build whenever patches/ changed) and the rebuild tick box, starting and watching a build, the catalogue of past build failures, quick pre-push checks (check_patch_files.py, which_build.py), proposed workflow improvements, the for-083 branch story, and what to do after a new CoA or manager release. Load it when "the build failed" at any step ("Apply our patches", "Configure", "Build worldserver", "Publish as a release"), before starting a build, when asked "is my fix in a build yet" or "why did the nightly build do nothing", when a new manager release appears, or before touching .github, scripts/resolve_release.py or vm/. If the failed step is "Apply our patch scripts" (a moved anchor), fix it with wildcard-patch-authoring.
 ---
 
 # Wildcard build and environment
 
-Builds are the most expensive routine event in this project. One takes 2 to 3 hours on GitHub
-(README.md says "about 1.5-3 hours"; the job is allowed 340 minutes), and most failures show
+Builds are the most expensive routine event in this project. One takes about 3½ hours on GitHub
+(builds 61 to 74: 3h30 to 3h45, one outlier at 6h11; README.md's "about 1.5-3 hours" is out of
+date; the job is allowed 340 minutes), and most failures show
 up only after a long wait. That is normal for this build. Do not call a build of that length
 slow or stuck. The useful work is catching the failure before the build starts, which is what
 most of this skill is about.
 
 All facts below are as of 2026-11-22, `origin/main` at `d3e030f`, unless a line says otherwise.
-`docs/agents/*` and `.claude/agents/*` exist only in PR #232 (open): what rests on them (hard
-stops, the risk matrix) is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**; read them with
-`git show origin/agents-stage-1:<path>`. Status words are defined in `wildcard-change-control`, section 1.
+`docs/agents/*` and `.claude/agents/*` (hard stops, the risk matrix)
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and are on `main`: what rests on them is **DOCTRINE**. Status words are defined in `wildcard-change-control`, section 1.
 
 ## When NOT to use this skill
 
@@ -22,7 +22,7 @@ stops, the risk matrix) is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)
 |---|---|
 | Write, port or pre-flight a patch script or patch file; a build that stopped at "Apply our patch scripts" (tie-break: this skill says what failed and how to rerun; that one fixes the script) | `wildcard-patch-authoring` |
 | Decide whether a change may go ahead, or who merges | `wildcard-change-control` |
-| Understand patch night, the nightly restart, rollback, the VM's files; the table of when each kind of merged change goes live | `wildcard-run-and-operate` |
+| Understand patch night, rollback, the VM's files; the table of when each kind of merged change goes live | `wildcard-run-and-operate` |
 | Diagnose a server that built fine but misbehaves, lags or crashes | `wildcard-debugging-playbook`, `wildcard-diagnostics-and-tooling` |
 | Change a setting or add one | `wildcard-settings-and-flags` (no build needed for a value change) |
 | Fix an enchant with SQL | `ascension-restoration` (no build needed) |
@@ -44,11 +44,11 @@ stops, the risk matrix) is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)
    Classify with `wildcard-change-control` first. This skill gives you proposals to put in
    front of him, not permission.
 2. Starting a build is a deployment step, not a test. A finished build is published as a
-   release, and the weekly patch night installs the newest release that matches the server's
+   release, and the next 3:30 am patch night installs the newest release that matches the server's
    core (`patch-night/PatchNight.ps1:859-863`). It does not check which branch the build came
    from. **Proposed practice (not yet adopted by James):** build only from `main`, after
    James has merged, and only on his say-so (he starts the run, or tells a session to).
-   Purpose: an unreviewed branch build would otherwise be installed at the weekly patch
+   Purpose: an unreviewed branch build would otherwise be installed at the next patch
    night. No incident of this kind is recorded. It follows from reading the code. This rule
    is the home for "who starts a rebuild"; deleting or drafting a release is the same kind
    of act (it decides what patch night installs) and is James's too.
@@ -141,7 +141,7 @@ Run the script for the release you are about to build and read the output.
 
 | Trigger | What it does |
 |---|---|
-| Schedule, `17 3 * * *` | 03:17 UTC every day (about 2:17 pm Sydney by the workflow's own comment). Uses the workflow and patches on `main`, release `latest`, rebuild off. |
+| Schedule, `17 3 * * *` | 03:17 UTC every day by the cron line, but GitHub starts scheduled runs late: observed starts were 8:37 to 10:50 pm Sydney time (runs up to 75). Uses the workflow and patches on `main`, release `latest`, rebuild off. |
 | Run workflow (`workflow_dispatch`) | Inputs `release` (default `latest`) and `rebuild` (tick box, default off). Can run from any branch. |
 
 Concurrency group `build-worldserver` with `cancel-in-progress: false`. A second run waits for
@@ -149,45 +149,48 @@ the first instead of cancelling it. GitHub's own documented behaviour (not somet
 repository) is that only one run can wait in a group, so starting a third replaces the waiting
 one.
 
-The `check` job (ubuntu, 10 minute limit) runs first and decides. Read precisely
-(workflow lines 51-64):
+The `check` job (ubuntu, 10 minute limit) runs first and decides (step `decide`; rule since PR #241, 23 Nov
+2026, James):
 
 - If `rebuild` is ticked, build.
-- Otherwise list this repository's newest 200 releases. If any tag starts with
-  `wcme-<manager tag>-`, print "`<tag>` is already built; nothing to do." and skip the build
-  job. The run still ends green, in about a minute, and still uses up a run number.
-- Otherwise build.
+- Otherwise find the newest release whose tag starts with `wcme-<manager tag>-`. None: build ("has no build
+  yet").
+- Otherwise compare the commit that release was built from (`target_commitish`) with `HEAD`, for
+  `patches/`, `.github/workflows/build-worldserver.yml` and `scripts/resolve_release.py` only. Any change: build,
+  printing "Changed since `<tag>`:" and a diff summary. No change: print "is already built and the patches have not
+  changed since; nothing to do." and skip the build job. The run still ends green in about a minute and uses up a
+  run number.
+- If GitHub cannot be asked, the step fails red. If the built commit cannot be fetched, it builds "to be safe".
 
-The check looks only at the manager tag. It never compares patches. The consequences matter
-more than anything else on this page:
+Consequences:
 
-1. **Merging a patch change does not start a build.** If the current release already has a
-   build, the schedule skips it every day. The change reaches a build only when the workflow
-   is run with `rebuild` ticked (rule 2: James's say-so), or the manager publishes a newer release.
-2. **A manual run without the tick does nothing** for a release that already has a build. A
-   green run with a skipped `build` job is this, not a success.
-3. **The schedule only ever builds `latest`.** If the server is on an older release, its
-   builds must be started by hand with that release typed in.
-4. **A failed build publishes nothing, so the schedule tries again every day** until one
-   passes. A broken patch on a new release fails daily until it is fixed on `main`.
-5. **Building does not install.** The nightly restart applies settings, SQL and addons but
-   leaves a new build alone (`Register-PatchNight.ps1:28` passes `-NoInstall`). The weekly
-   patch night installs it, and so does `Run-PatchNight-Now.cmd` (James's call).
+1. **A merged patch is built the same evening** with nobody ticking anything, provided it was on `main` when the
+   scheduled run checked out. Scheduled runs start about 8:37 to 10:50 pm Sydney, so a patch merged later than
+   that waits for the next evening. SQL, settings, addons, docs and skills never cause a build.
+2. **Runs queue.** A scheduled run that waits behind a by-hand run usually finds nothing changed and skips (run 75
+   waited behind build 74 on 24 Nov, then skipped). Starting a run by hand in the afternoon therefore replaces
+   that evening's scheduled build rather than adding to it.
+3. **The schedule only ever builds `latest`.** If the server is on an older release, its builds must be started by
+   hand with that release typed in.
+4. **A failed build publishes nothing, so the next evening builds again** (the newest release still predates the
+   change) until one passes. A broken patch fails nightly until it is fixed on `main`.
+5. **Building does not install.** The daily 3:30 am patch night installs the newest matching release (until 23 Nov
+   only the weekly Tuesday run did; the nightly run had `-NoInstall`). `Run-PatchNight-Now.cmd` installs too
+   (James's call).
 
-So for a C++ change the path to live is: merged to `main`, then a rebuild run (2 to 3 hours),
-then the weekly patch night or a manual run on the VM. Settings and SQL changes need no build.
-The build-once rule above is this skill's own fact; the one table of when every kind of merged
-change goes live, with the schedule, is in `wildcard-run-and-operate`, "When does my merged
-change go live?".
+So for a C++ change the path to live is: merged to `main`, the evening build (about 3½ hours), then the next 3:30 am
+patch night. A build that finishes after 3:30 am Sydney waits a night. Settings and SQL changes need no build. The
+rebuild rule above is this skill's own fact; the one table of when every kind of merged change goes live is in
+`wildcard-run-and-operate`, "When does my merged change go live?".
 
-On 2026-11-22 this was live fact, not theory. `patches/96-bots-ignore-commands.ps1`
-(commit `13a03d3`) is on `main` and in no build. Check any commit with:
+Check whether a commit is in a published build:
 
 ```bash
-python3 -I .claude/skills/wildcard-build-and-env/scripts/which_build.py 13a03d3
+python3 -I .claude/skills/wildcard-build-and-env/scripts/which_build.py <commit>
 ```
 
-Exit code 1 and "is in no published build yet" means it still needs a rebuild run.
+Exit code 1 and "is in no published build yet" means the evening build has not run or has not finished. Example:
+patch 96 (`13a03d3`) was merged on 21 Nov, under the old rule, and stayed unbuilt until build 74 (24 Nov).
 
 ## The step sequence
 
@@ -201,7 +204,7 @@ order of steps. The repository records no per-step timings, so there are no minu
 | Step | Does | Fails with |
 |---|---|---|
 | Look up the release's exact commits | Runs `resolve_release.py` | "is not in the manager's list", "lists no ... commit", "The build recipe needs checking", "No release list could be read." |
-| Build only releases not built before | The decision above | Does not fail. Prints "already built; nothing to do." |
+| Build a release with no build yet, or whose patches changed since its newest build | The decision above | Fails red only if GitHub cannot be asked. Otherwise prints "has no build yet", "Changed since ..." or "already built and the patches have not changed since; nothing to do." |
 
 `build` job (windows-latest, 340 minute limit):
 
@@ -221,7 +224,7 @@ order of steps. The repository records no per-step timings, so there are no minu
 | 12 | Install Boost 1.87 and the MySQL 8.4 client | Downloads on a cache miss, finds OpenSSL on the runner | early | "Boost download attempt N failed", "got an HTML page instead of the installer", "MySQL download looks wrong.", "No OpenSSL development install found on the runner." |
 | 13 | MSVC environment | Sets up the Microsoft C++ compiler for x64 | early | action error |
 | 14 | Configure | CMake generates the Ninja build files | early | "CMake configure failed." |
-| 15 | **Build worldserver** | `cmake --build build --target worldserver -j 4`. Nearly all of the 2 to 3 hours | middle to late | "Build failed." Above it: `error C....` from the compiler, `LNK....` from the linker, or `ninja: fatal:` |
+| 15 | **Build worldserver** | `cmake --build build --target worldserver -j 4`. Nearly all of the 3½ hours | middle to late | "Build failed." Above it: `error C....` from the compiler, `LNK....` from the linker, or `ninja: fatal:` |
 | 16 | Check it starts and reports its revision | `worldserver.exe --version` | late | "worldserver --version exited with N" |
 | 17 | Package for the VM | Builds the zip and `BUILD-INFO.txt` | late | copy errors |
 | 18 | Publish as a release | `gh release create` | late | "Publishing the release failed." |
@@ -245,7 +248,7 @@ built before** when the release already has a build.
 With the `gh` command line tool. These are GitHub's standard commands, written but not
 executed on 2026-11-22.
 
-**Gate, before the first command.** A finished build is a release the weekly patch night will
+**Gate, before the first command.** A finished build is a release the next 3:30 am patch night will
 install, whatever branch it ran on. Start one only from `main`, after James has merged, and on
 his say-so (Proposed practice, not yet adopted by James; purpose and source in rule 2 above).
 Changing the workflow itself is hard stop 5.
@@ -276,10 +279,10 @@ Reading a result:
 
 | What you see | Meaning |
 |---|---|
-| Green run, about a minute, `build` skipped | Already built and `rebuild` not ticked. Nothing happened. |
+| Green run, about a minute, `build` skipped | Nothing in `patches/`, the workflow or the resolver changed since the newest build, and `rebuild` not ticked. Nothing happened. |
 | Run "pending" or "queued" for a long time | Another build holds the concurrency group. It will start afterwards. |
 | Red at a step in bold above | Go to the failure catalogue. |
-| Green, a new `wcme-...-buildN` release | Built. Not installed until patch night. |
+| Green, a new `wcme-...-buildN` release | Built. Installed at the next 3:30 am patch night. |
 
 After a build, confirm what it contains:
 
@@ -297,12 +300,12 @@ python3 -I .claude/skills/wildcard-build-and-env/scripts/which_build.py <commit 
 - `docs/agents/context/patches.md` says "a failed anchor costs a whole build". By step order,
   the anchor steps (4 and 9) run before compiling, so that run itself ends early. What you
   lose is the build you were waiting for: nothing is published, nobody is told, and each
-  retry is another full dispatch that then spends the full 2 to 3 hours if it gets further.
+  retry is another full dispatch that then spends the full 3½ hours if it gets further.
 - A mistake inside inserted C++ is the expensive kind. The anchor matches, the patch applies,
   and the error appears during step 15.
 - A start-up failure costs the most: a full build, an install, and a server that fell back to
   the official program without Mystic Enchants.
-- Undoing a bad C++ change is "revert and rebuild (2-3 h)" in the risk matrix (impact check
+- Undoing a bad C++ change is "revert and rebuild" in the risk matrix (the matrix says 2-3 h; about 3½ h now) (impact check
   I3, score 2).
 
 ## Shift-left: catch it before the 3 hours
@@ -455,8 +458,8 @@ branch.
 4. Port. `wildcard-patch-authoring` owns how to refresh a patch file and re-anchor a script.
    The first port, `.83` to `.90`, is commit `f83171d` (PR #29).
 5. Classify the port with `wildcard-change-control`. James merges.
-6. Build from `main`. With the fix merged, the schedule builds a release that has no build
-   yet. If a build exists, tick `rebuild`.
+6. Build from `main`. With the fix merged, the evening schedule builds a release that has no build
+   yet, and rebuilds one whose patches changed. Ticking `rebuild` is rarely needed now.
 7. The server changes release only when James clicks **Update** in the manager. If he updates
    before a build for the new core exists, patch night logs "No patched build for core ...
    yet; the official server keeps running (no Mystic Enchants on Wildcard)"

@@ -6,7 +6,7 @@ description: First-principles analysis recipes and the research method for the W
 # Wildcard: analysis recipes and research method
 
 **Purpose.** Stop two failures that cost this project the most: a change shipped on a guess that later has to be
-undone, and a 2 to 3 hour build spent to learn something a sum on paper would have told you. Part A is eleven
+undone, and a 3½ hour build spent to learn something a sum on paper would have told you. Part A is eleven
 ways to work a problem out first. Part B is the method that turns a hunch into a change James can accept.
 
 Everything dated "as of 2026-11-22" was checked against the repository on that day. Numbers quoted from the live
@@ -319,8 +319,8 @@ play before choosing the value.
 
 ## What is doctrine and what is proposed
 
-**DOCTRINE (written in README, CHANGES.md or docs on `main`) and INTENDED DOCTRINE (PR #232, unmerged on
-2026-11-22: every row whose source is `docs/agents/*` or `.claude/agents/*`), as of 2026-11-22:**
+**DOCTRINE (written in README, CHANGES.md or docs on `main`, including the rows whose source is `docs/agents/*` or
+`.claude/agents/*`, on `main` since PR #232 merged on 22 Nov 2026), as of 2026-11-22, status re-checked 24 Nov:**
 
 | Rule | Where |
 |---|---|
@@ -383,7 +383,7 @@ tick falls from 586 ms to under 150 ms while the 95% figure stays within 10 ms o
 
 ## B3. Assigned adversarial refutation
 
-**INTENDED DOCTRINE (PR #232) for patches:** a PR that changes `patches/` gets the Fable `patch-reviewer`, which sees only the diff
+**DOCTRINE (PR #232, merged 22 Nov 2026) for patches:** a PR that changes `patches/` gets the Fable `patch-reviewer`, which sees only the diff
 and the description. **Proposed practice (not yet adopted by James)** for everything else that claims a cause (a
 lag diagnosis, a balance finding, a "the core already does this" claim): give the claim to a separate session
 that has not seen your reasoning, with the instruction to break it. *Purpose:* the author cannot see their own
@@ -407,7 +407,7 @@ now be separated.
 2. Change one thing.
 3. Order of preference, cheapest and most reversible first: read-only measurement; a setting in
    `server-settings.txt` (undo at the next restart: I3 = 1 in the matrix); SQL that `000-reset.sql` or a
-   deleted file removes; an addon; a C++ patch (undo is revert and rebuild, 2 to 3 hours: I3 = 2).
+   deleted file removes; an addon; a C++ patch (undo is revert and rebuild, about 3½ hours: I3 = 2).
 4. If a C++ change is unavoidable, give it a setting (doctrine) so the experiment after the build is a toggle.
 
 ## B5 to B7. The idea lifecycle, where good ideas came from, patterns to avoid
@@ -473,8 +473,8 @@ that drifts (run from the repository root):
 cat docs/performance.md                                   # the table and thresholds
 grep -nE "RandomBots|BotActiveAlone|MapUpdate.Threads|Visibility.Distance|Log.Async|Logger.coa" server-settings/server-settings.txt
 grep -nE "CardDrop|Rate.XP|Rate.Rest|PriceMultiplier|KillXPPercent" server-settings/server-settings.txt
-cat docs/agents/context/change-risk.md                    # L1-L6, I1-I4, bands, paths (PR #232 only until merged:
-                                                          # git show origin/agents-stage-1:docs/agents/context/change-risk.md)
+cat docs/agents/context/change-risk.md                    # L1-L6, I1-I4, bands, paths (on `main` since PR #232 merged on 22 Nov:
+                                                          # git show origin/main:docs/agents/context/change-risk.md)
 cat .claude/agents/patch-reviewer.md docs/agents/README.md
 ls docs/agents/cases; tail -3 docs/agents/fable-ledger.md # still no cases, no ledger rows?
 cut -d, -f4 enchants/legendary-history.csv | sort | uniq -c | sort -rn | head -4   # untested counts (rough)

@@ -207,7 +207,7 @@ Literal marker lines in the script:
 
 | Line | Written when |
 |---|---|
-| `---- patch night started ----` | Weekly patch night, nightly restart, or `Run-PatchNight-Now.cmd`. |
+| `---- patch night started ----` | The daily 3:30 am patch night, or `Run-PatchNight-Now.cmd`. |
 | `---- start server (Start-Server.cmd) ----` | `-StartOnly`. |
 | `---- rebuild Wildcard bots (Rebuild-WildcardBots.cmd) ----` | `-RebuildWildcardBots`. |
 | `---- patch night finished ----` | Every exit through `Finish`, all three kinds. The line before it is the outcome, at level `OK` (exit code 0) or `FAIL`. |

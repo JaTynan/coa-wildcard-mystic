@@ -257,8 +257,10 @@ def check_public_repo_rules(repo):
         say("ok", f"no client data files, secrets files or token patterns among {len(files)} tracked files")
     settings = repo / "launcher" / "launcher-settings.json"
     if settings.exists() and "/share/" in read(settings):
-        say("warn", "launcher-settings.json carries the first-install share link in a public repository (it is also "
-                    "served in launcher.json by design; see the skill's 'Known weak points')")
+        say("warn", "launcher-settings.json carries the first-install share link in a public repository; since PR #242 it "
+                    "belongs in launcher-local.json on the VM (value not printed)")
+    elif settings.exists():
+        say("ok", "launcher-settings.json carries no share link (the archive link lives in launcher-local.json on the VM)")
 
 
 def main():

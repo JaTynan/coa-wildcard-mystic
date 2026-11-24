@@ -23,18 +23,17 @@ Words used here, defined once:
 - **Generated file**: a file a script writes. Never edit it by hand; edit its inputs and run the script.
 - **Patch night**: the scheduled job on the server PC that updates and restarts the server
   (`patch-night/PatchNight.ps1`). Details: sibling skill `wildcard-run-and-operate`.
-- **Build**: compiling the patched world server on GitHub Actions. It takes **2 to 3 hours**
-  (`docs/agents/context/patches.md`; README says "about 1.5-3 hours").
+- **Build**: compiling the patched world server on GitHub Actions. It takes **about 3½ hours**
+  (builds 61 to 74: 3h30 to 3h45; `docs/agents/context/patches.md` says 2 to 3 hours and README "about 1.5-3
+  hours", both out of date).
 - **Upstream**: the projects this one is built on top of (section 8).
 - **Hard stop**: one of eight kinds of change that always wait for James, whatever their risk score
   (`docs/agents/context/change-risk.md`, Step 1). Sibling skill `wildcard-change-control` is the home for them.
 - Any other term: `.claude/skills/azerothcore-coa-reference/references/glossary.md`.
 
-> Status note (as of 2026-11-22): `docs/agents/` and `.claude/agents/` arrive with PR #232. On that date they were on
-> the PR's branch, not yet on `main`. Check: `git ls-tree --name-only origin/main docs/agents/`. So everything
-> cited from them below (hard stops, the risk block, the case-file form, `patches.md`) is **INTENDED DOCTRINE
-> (PR #232, unmerged on 2026-11-22)**. Status words used here: DOCTRINE (README, CHANGES.md, docs on `main`) /
-> INTENDED DOCTRINE / PRACTICE (what history shows) / NOT BUILT YET / Proposed practice (not yet adopted by
+> Status note (updated 24 Nov 2026): `docs/agents/` and `.claude/agents/` came with PR #232, merged on 22 Nov 2026
+> (`0802d4f`), so everything cited from them below (hard stops, the risk block, the case-file form, `patches.md`) is
+> **DOCTRINE**. Status words used here: DOCTRINE (README, CHANGES.md, docs on `main`) / PRACTICE (what history shows) / NOT BUILT YET / Proposed practice (not yet adopted by
 > James) / UNVERIFIED / OPEN.
 
 ## When NOT to use this skill
@@ -140,8 +139,8 @@ Evidence base: the 487 non-merge commits and 205 merged PRs on `main`, 30 Oct to
 - **Dates:** in prose and comments, day then short month: `22 Nov` (62 uses in `server-settings.txt`); add the year in
   a heading or where it could be unclear: `7 Nov 2026`. In tables and CSV columns, ISO: `2026-11-16`. The tracker's
   `tested` column starts with the ISO date: `2026-10-31 pass: <what happened>`.
-- **Builds take "2 to 3 hours".** Never call a build slow, stuck or hung because it has run for two hours (James's
-  own instruction, not written in the repository; README gives "about 1.5-3 hours").
+- **Builds take about 3½ hours.** Never call a build slow, stuck or hung because it has run for hours (James's
+  own instruction, not written in the repository; README's "about 1.5-3 hours" is out of date).
 - **Spelling:** Australian/British, as the docs already use: honour, armour, customisation.
 - **Numbers:** thousands with a comma (1,250); `sec`, `min`, `ms`, `yards`, `%` as CHANGES.md does.
 - **For James on his phone:** the answer in the first line, at most about 12 short lines, no wide tables, no code
@@ -185,7 +184,7 @@ Verified by reading `launcher/Publish-WildcardSite.ps1` (lines 76-109) and `laun
 `changes.html`, `site.js` on 2026-11-22. Not run (no PowerShell there, no access to the live site).
 
 1. Patch night calls the publish script after each start, once the site folder exists (`PatchNight.ps1`, function
-   `PublishFriendsSite`). So the list refreshes at the nightly restart, at patch night, or when someone runs
+   `PublishFriendsSite`). So the list refreshes at each patch night (daily, 4:00 am), at `Start-Server.cmd`, or when someone runs
    `Publish-WildcardSite.cmd` by hand. **Not at the moment of merging.**
 2. The script asks GitHub for the 100 most recently updated closed pull requests **whose base is `main`**, keeps the
    merged ones from the last 7 days (today counts as day 1; the server PC's local time), and writes `changelog.json`.
@@ -213,12 +212,10 @@ nothing to a player. The mechanism above (items 1 to 5) is fact; when to use the
   to `main`, so that PR's title must cover it.
 
 Known gap (an inference from the code, not something observed live): the Changes page says its list is what "went
-live in the last week", but the list is of **merged** PRs. A change under `patches/` is live only after the weekly
-patch night installs a build that contains it; the nightly restart does not install builds (README, "Patch night").
-Until someone changes the mechanism, say so in the line when it matters, for example "... (arrives with the
-weekly update)" (Proposed practice; the weekly patch night is Tuesday 11 pm by the script's default, and what
-is registered on the VM is UNVERIFIED: `wildcard-run-and-operate`). A merged patch is also not built until the
-workflow is run with `rebuild` ticked.
+live in the last week", but the list is of **merged** PRs. A change under `patches/` is live only once a build that
+contains it is installed: the evening build (since PR #241) and then the next 3:30 am patch night, so normally the
+morning after the merge, later if the build started late or failed. The gap is now about a day, not up to a week, so
+a note such as "(arrives with the weekly update)" is no longer needed.
 
 Whether any PR has used a `Changelog:` line so far is UNVERIFIED (PR descriptions could not be read on 2026-11-22).
 Check: `gh api "repos/JaTynan/coa-wildcard-mystic/pulls?state=closed&per_page=100" --jq '.[] | select(.body // "" | test("(?m)^Changelog:")) | "\(.number) \(.title)"'`.
@@ -251,7 +248,7 @@ Each rule, where it is written, and why. The first four are doctrine (`docs/agen
 | **No third-party addon code** | Other people's work, under their own terms; and a pinned download is easier to review and update. | One line per addon in `addon/third-party-addons.txt`: `owner/repository \| commit \| folders`. The commit must be the **full 40 characters** (patch night skips the line otherwise: `PatchNight.ps1` line 260). A branch name is not allowed because it "would take untested changes". Before adding one, check it is for game version 3.3.5 and contains nothing but Lua, XML and art, and say so in a comment with the date, as the file does. Patch night downloads it into the client folder; the code never enters this repository. Only `addon/Wildcard*` folders are ours. |
 | **Keep provenance and licence notes with copied files** | So anyone can see what came from where, and under what terms. | `patch-night/launcher_bridge.py` is copied from CF-Server-Manager and says so in its first lines (AGPL-3.0, with the one Wildcard addition marked). `ollama-chat/` holds unchanged copies from mod-ollama-chat (AGPL-3.0, author Dustin Hendrickson, commit `906eb2a`) with its `LICENSE`. New C++ files written by the patches carry AzerothCore's AGPL header. If you copy a file in, add: source repository, path, **commit**, licence, and what you changed. |
 | **Keep the credits list current** | Credit is the minimum owed to the projects this stands on. | README "Credits" names Conquest of Azeroth, the CF-Server-Manager builds (Corfirean), SQUID's Playerbots (Zyth45) and AzerothCore. A new upstream part (as mod-ollama-chat and mod-dungeon-clear were) gets a mention where it is described; propose adding it to Credits too. |
-| **Player reports are public** | The in-game Report Bug relay files reports as GitHub issues labelled `player report` (`signup/README.md`). | The relay leaves out the account name and the character, but its hidden marker carries the account **number**, and the server-written context carries class, level, map and position (home for relay defects: `wildcard-client-and-web`, `references/bug-report-relay.md`, weak point 1). Do not add any more: no account names, character names, IP addresses or e-mail addresses in replies, PRs and docs. |
+| **Player reports are public** | The in-game Report Bug relay files reports as GitHub issues labelled `player report` (`signup/README.md`). | The relay leaves out the account name and the character, and its hidden marker carries the account **number** on purpose so James can go back to the player (PR #237); the server-written context carries class, level, map and position (relay details: `wildcard-client-and-web`, `references/bug-report-relay.md`). Do not add any more: no account names, character names, IP addresses or e-mail addresses in replies, PRs and docs. |
 
 ### Before every push
 
@@ -307,9 +304,10 @@ repository's commit and the build time. When you tell someone outside "this fixe
 
 - This is a private server for a game mode whose original home, Ascension, is gone; intended behaviour is rebuilt
   from what remains. Say that plainly; do not argue about whether it is allowed.
-- Client files are never put in the repository. Note for accuracy: `launcher/launcher-settings.json` holds a public
-  share link to the first-install client archive, and `launcher/README.md` says the site is not behind a login. That
-  is James's decision to make or revisit; do not add further links to client files, and do not advertise that one.
+- Client files are never put in the repository, and nor is the link to them. Since PR #242 (23 Nov 2026) the
+  first-install archive link lives in `launcher-local.json` on the VM, not in `launcher/launcher-settings.json`.
+  The old link is still in git history: leave the history alone (James) and never paste either link into a file,
+  PR or issue. `launcher/README.md` says the site is not behind a login; that is James's decision.
 - The repository has **no licence file of its own** (as of 2026-11-22). Do not tell anyone they may reuse it under
   some licence, and do not add one yourself. Upstream licence files on that date: the CoA core and SQUID's playerbots
   carry GPL v2 text (SQUID also ships an AGPL-3 file); CF-Server-Manager and mod-dungeon-clear carry AGPL-3.0.
@@ -363,7 +361,7 @@ How:
   check them again. Before relying on a number or a line reference in a skill, run its command.
 - **One home per fact.** If a fact belongs to a sibling skill, link to that skill by name; do not copy it.
 - **Editing a skill, an agent file or a context pack is a change to the agents' instructions: hard stop 6**
-  (INTENDED DOCTRINE). It is HIGH, never automatic, and waits for James. Open it as its own skill-maintenance PR,
+  (DOCTRINE). It is HIGH, never automatic, and waits for James. Open it as its own skill-maintenance PR,
   say which fact was wrong and how you checked the new one, and add `Changelog: skip`.
 - **Generated reference files inside a skill follow the same rule.** The settings catalogue
   (`wildcard-settings-and-flags/references/settings-catalogue.md`) is regenerated when that skill is maintained,
@@ -403,9 +401,9 @@ git log origin/main --no-merges --format=%s | awk '{n++; if(index($0,": ")>0 && 
 git log origin/main --first-parent --merges --format='%ad %s %b' --date=short | head -40
 # "One PR per patch night" and the upstream-report rule still in CHANGES.md
 grep -n "one PR per patch night" CHANGES.md; grep -n "worth reporting" CHANGES.md
-# Hard stop 6 wording and the public-repo rule wording (PR #232 only until it merges)
-git show origin/agents-stage-1:docs/agents/context/change-risk.md | grep -n "^6\."
-git show origin/agents-stage-1:docs/agents/context/patches.md | grep -n -i "public"
+# Hard stop 6 wording and the public-repo rule wording
+git show origin/main:docs/agents/context/change-risk.md | grep -n "^6\."
+git show origin/main:docs/agents/context/patches.md | grep -n -i "public"
 # Is docs/agents/ on main yet (empty = no)
 git ls-tree --name-only origin/main docs/agents/
 # Ignored secret files; addon pin format and the 40-character check

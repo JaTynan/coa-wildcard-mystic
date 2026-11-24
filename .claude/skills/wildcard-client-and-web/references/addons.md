@@ -102,7 +102,7 @@ MikScrollingBattleText, MoveAnything, Omen, OmniBar, SuperDuperMacro). One line 
 ## How an addon change reaches players
 
 1. Edit under `addon/<Name>/`, bump `## Version:` in the `.toc`, merge to `main` (James merges).
-2. The next patch-night run of any kind (nightly 3:30 am, weekly, `Start-Server.cmd`, `Run-PatchNight-Now.cmd`)
+2. The next patch-night run of any kind (the daily 3:30 am patch night, `Start-Server.cmd`, `Run-PatchNight-Now.cmd`)
    downloads `main` and copies every folder under `addon/` into `F:\CoAClient\Interface\AddOns`
    (`FetchRepo`; log line `Updated the <Name> addon in ...`). The installer does the same on a build install.
 3. After the server is back up, the site is republished and the changed files get new hashes in `manifest.json`.

@@ -11,9 +11,9 @@ Three things to know before anything else:
    `patch-night/` script runs the same night with no night of grace. James merges; nothing else does.
 2. **Classify before you change.** Any step that changes what the server does goes through
    `wildcard-change-control` first.
-3. **A build takes 2 to 3 hours and that is normal.** Catch the mistake before the build, not in it. A merged
-   C++ patch is not built until the workflow is run with `rebuild` ticked, and only the weekly patch night (or a
-   by-hand run) installs a build.
+3. **A build takes about 3½ hours and that is normal.** Catch the mistake before the build, not in it. A merged
+   C++ patch is built automatically that evening (the workflow rebuilds when `patches/` changed), and the daily
+   3:30 am patch night installs it.
 
 ## Priority order (James's decision)
 
@@ -26,7 +26,7 @@ Three things to know before anything else:
 | Word | Means |
 |---|---|
 | DOCTRINE | Written in `README.md`, `CHANGES.md` or `docs/` on `main`. Follow it. |
-| INTENDED DOCTRINE | Written in `docs/agents/*` or `.claude/agents/*`, which exist only in PR #232 (open and unmerged on 2026-11-22). The risk matrix, the hard stops and the agent roles are all in this group. |
+| (retired) INTENDED DOCTRINE | Used until 24 Nov for `docs/agents/*` and `.claude/agents/*` while PR #232 was open. It merged on 22 Nov 2026 (`0802d4f`), so all of that is now DOCTRINE. The risk matrix, the hard stops and the agent roles are all in this group. |
 | PRACTICE | What the git history shows people actually did. Useful, not binding. |
 | NOT BUILT YET | Described in a document; no code or schedule exists for it. |
 | Proposed practice (not yet adopted by James) | A suggestion made by a skill, with its purpose and the incident behind it. It becomes a rule only when James says so. The register of all of them is in `wildcard-change-control/references/proposed-practices.md`. |
@@ -146,9 +146,9 @@ which is a hard stop: propose it to James, do not add it.
 | `azerothcore-coa-reference` | How the game server works where this repository touches it; the glossary. |
 | `ascension-restoration` | Restoring Mystic Enchants, talents and racials: sources, recipes, SQL rules (and the files the reset cannot undo), tracker, tests. |
 | `wildcard-settings-and-flags` | Every setting: the file, the kit, the catalogue of options, how to add one. |
-| `wildcard-build-and-env` | The 2 to 3 hour build: steps, failures, triggering, the build-once rule, what is in which build. |
+| `wildcard-build-and-env` | The build (about 3½ hours): steps, failures, triggering, the automatic rebuild rule, what is in which build. |
 | `wildcard-patch-authoring` | Writing and porting C++ patches, and proving they apply before pushing. |
-| `wildcard-run-and-operate` | Patch night, the nightly restart, the go-live table, rollback runbooks, the VM file map. |
+| `wildcard-run-and-operate` | The daily patch night, the go-live table, rollback runbooks, the VM file map. |
 | `wildcard-diagnostics-and-tooling` | Measuring: every log and counter file, its format, and parsers for each. Reads only. |
 | `wildcard-validation-and-qa` | What counts as proof, what has been tested, how to test each layer, the pre-merge check set. |
 | `wildcard-docs-and-publishing` | Docs of record, house style, templates, public-repository rules. |

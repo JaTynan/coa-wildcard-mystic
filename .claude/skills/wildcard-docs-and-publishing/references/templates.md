@@ -72,7 +72,7 @@ git show -s 52a235a    # a two-line fix found by an in-game test
 
 ## C. Pull request description (**proposed practice, not yet adopted by James**)
 
-Purpose: the reviewer and James should be able to decide from the description alone, on a phone. Builds take 2 to 3
+Purpose: the reviewer and James should be able to decide from the description alone, on a phone. Builds take about 3½
 hours, so anything that lets a problem be seen before the build is worth writing down. The risk block's format is
 doctrine (`docs/agents/context/change-risk.md`, "What the analyst returns"); pasting it into the PR, and the test and
 rollback sections, are the proposal. What existing PR descriptions look like could not be read on 2026-11-22, so
@@ -117,11 +117,11 @@ Evidence: one line per score that is not 1
 - SQL: revert this PR; `000-reset.sql` removes the rows it owns at the next start. (The files the reset cannot undo
   and core rows changed in place need a reverse statement: list in `ascension-restoration` section 5 item 3.
   A settings line that was added needs the old value set, not the line removed.)
-- Patch: revert this PR and rebuild (2 to 3 hours); until then <turn it off with `<Setting.Name>` / reinstall the
+- Patch: revert this PR; the evening build and the next 3:30 am patch night take it out; until then <turn it off with `<Setting.Name>` / reinstall the
   previous build / Restore-Official.cmd>.
 - Cannot be undone: <what is already changed, and what limits the damage>.
 
-Needs: <a new build | the nightly restart only | a client patch rebuild | nothing>
+Needs: <a new build | the next patch night only | a client patch rebuild | nothing>
 Changelog: <a plain line for players | skip>
 ```
 

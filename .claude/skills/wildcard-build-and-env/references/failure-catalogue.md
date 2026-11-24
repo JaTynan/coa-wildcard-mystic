@@ -25,7 +25,7 @@ These strings are in the workflow or the patch scripts today, so they are what t
 | same | `lists no core commit` (or bots, scaling, squid) | Upstream list entry is incomplete | Wait or ask upstream |
 | same | `The build recipe needs checking` | A part now comes from a different repository | James. The workflow must follow upstream (hard stop 5) |
 | same | `has no checksum`, `lists module patches but no build repository commit` | Upstream list entry is inconsistent | Same |
-| Build only releases not built before | `is already built; nothing to do.` | Not an error. Tick `rebuild` | Whoever started it |
+| Build a release with no build yet, or whose patches changed (step `decide`) | `is already built and the patches have not changed since; nothing to do.` (before 23 Nov: `is already built; nothing to do.`) | Not an error. Nothing in `patches/`, the workflow or the resolver changed | Nobody |
 | Apply our patches | `no longer fits release` | A `patches/*.patch` file does not apply to this core | `wildcard-patch-authoring` |
 | Apply the official build's module patches | `checksum ... differs from the release's` | The patch file in `coa-server-build` is not the one the release lists | Do not bypass. Report upstream, tell James |
 | same | `does not apply to` | Upstream's own patch does not fit upstream's own module commit | Same |

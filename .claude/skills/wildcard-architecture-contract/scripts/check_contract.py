@@ -26,6 +26,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 sys.dont_write_bytecode = True
 
@@ -42,16 +43,13 @@ if not os.path.isfile(os.path.join(REPO, 'CHANGES.md')):
     sys.exit(2)
 fails = 0
 known = 0
-# Exact FAIL lines already understood on 2026-11-22 (SKILL.md, "Known violations": V1-V6, V8). Compared as
+# Exact FAIL lines already understood (SKILL.md, "Known violations"; re-checked 2026-11-24: V1, V6 and V8 cleared). Compared as
 # "[invariant] text". Remove a line here when its violation is fixed; never add one without a V-row in SKILL.md.
 KNOWN_FAILS = {
     "[I3] README.md names missing patch files: ['mystic-enchants-skip-missing.patch']",
     '[I7] spell_proc rows written but not listed in wcme_owned, so 000-reset never removes them: 005: [282040, 285100]; 007: [276302, 979137]; 017: [1587050]; 020: [1180480]; 038: [1544910]',
     "[I7] deletes every script binding of the listed spells, the core's own included, and nothing restores those: 015 (24 spell ids), 016 (31 spell ids)",
     '[I7] changes that deleting the file does NOT undo (outside 000-reset): 026: spell_proc row -44445 (a core row, changed in place); 090: MySQL server variables (SET PERSIST); 095: MySQL server variables (SET PERSIST); 100: creature_loot_template, gameobject_loot_template, item_loot_template, quest_template, reference_loot_template; 110: item_template; 120: item_template; 130: spell_area; 160: currencytypes_dbc, item_template; 161: npc_vendor',
-    "[I8] compiled Python is tracked although .gitignore lists __pycache__/: ['launcher/__pycache__/WildcardLauncher.cpython-313.pyc', 'signup/__pycache__/WildcardSignup.cpython-313.pyc', 'signup/__pycache__/WildcardStatus.cpython-313.pyc']",
-    "[I8] a share link (the whole client archive) is published in: ['launcher/launcher-settings.json']",
-    "[I14] newest build tag wcme-server-0.261119.114-build70; patch commits on origin/main that no build contains: 1\n          13a03d3 2026-11-21 Random bots stay silent on bot commands from players who don't command them",
 }
 
 
@@ -279,7 +277,8 @@ if tracked:
             continue
         if secret.search(text):
             hits.append(f)
-        if re.search(r'https?://[^\s"\']*/share/[^\s"\']+', text):
+        # A placeholder such as /share/<id> in a document is not a link.
+        if re.search(r'https?://[^\s"\'<]*/share/[^\s"\'<]+', text):
             links.append(f)
     check(not hits, 'I9', 'no token-shaped secret in tracked files', f'token-shaped text in: {hits}')
     check(not links, 'I8', 'no share link to the client archive in tracked files',
@@ -322,8 +321,13 @@ main = 'origin/main' if git('rev-parse', '--verify', '-q', 'origin/main').strip(
 if tags:
     newest = max(tags, key=lambda t: int(re.search(r'build(\d+)$', t).group(1)) if re.search(r'build(\d+)$', t) else 0)
     behind = [l for l in git('log', '--no-merges', '--format=%h %ad %s', '--date=short', f'{newest}..{main}', '--', 'patches/').split('\n') if l]
-    level = 'INFO' if not behind else 'FAIL'
-    say(level, 'I14', f'newest build tag {newest}; patch commits on {main} that no build contains: {len(behind)}'
+    # Since PR #241 the daily workflow builds a merged patch the same evening, so an unbuilt patch commit is normal
+    # for about a day. It is a FAIL only when the oldest one is more than 36 hours old (a missed or failed build).
+    stamps = [int(x) for x in git('log', '--no-merges', '--format=%ct', f'{newest}..{main}', '--', 'patches/').split() if x.isdigit()]
+    stale = bool(stamps) and (time.time() - min(stamps)) > 36 * 3600
+    level = 'FAIL' if stale else 'INFO'
+    note = '' if not behind else (' (older than 36 h: the automatic build missed them)' if stale else ' (normal: the next automatic evening build picks them up)')
+    say(level, 'I14', f'newest build tag {newest}; patch commits on {main} that no build contains: {len(behind)}{note}'
         + ''.join(f'\n          {l}' for l in behind))
     off = [t for t in tags if subprocess.run(['git', '-C', REPO, 'merge-base', '--is-ancestor',
                                               git('rev-list', '-1', t).strip(), main]).returncode]

@@ -26,7 +26,7 @@ yours. Exit code 1 means an error: fix it before going further.
 |---|---|---|---|
 | 1 | Run the lint (step 0) | No `settings-format` or `settings-dup` finding | 1 |
 | 2 | Read the comment above the line you changed | Your value is inside the range the comment states. (A "standard change" in docs/agents/context/change-risk.md is exactly this: a value change to a setting already in the file, within the range its comment states) | 1 |
-| 3 | After the merge, at the next start (nightly restart, or `server-settings\Apply-Settings.cmd` by hand with James's OK), open `C:\Games\CoA Server\server-settings\settings-report.txt` | The line `Unknown, in neither the .dist nor the server program (...): N.` lists no name that was not there at the previous run (Proposed practice, not yet adopted by James). The context pack's rule is 0 (INTENDED DOCTRINE: PR #232), but wildcard-settings-and-flags predicts about 28 working settings can never pass it and the refinement `5978ee4` is not on `main`; UNVERIFIED on the VM. And, under "The world server's own warnings at this start", `Values it could not use (0):` | 5 |
+| 3 | After the merge, at the next start (the 3:30 am patch night, or `server-settings\Apply-Settings.cmd` by hand with James's OK), open `C:\Games\CoA Server\server-settings\settings-report.txt` | The line `Unknown, in neither the .dist nor the server program (...): N.` lists no name that was not there at the previous run (Proposed practice, not yet adopted by James). The context pack's rule is 0 (DOCTRINE: PR #232), but wildcard-settings-and-flags predicts about 28 working settings can never pass it and the refinement `5978ee4` is not on `main`; UNVERIFIED on the VM. And, under "The world server's own warnings at this start", `Values it could not use (0):` | 5 |
 | 4 | In `C:\Games\CoA Server\patch-night\patch-night.log`, the last run | A line `Settings: the server runs N setting(s) on defaults ... and could not use 0`. N on defaults is normal; only a change in N matters (docs/agents/context/patch-night.md) | 5 |
 | 5 | Look at the effect in game, or with `server info` / the status page for server-wide ones | The behaviour the comment promises | 6 |
 | 6 | For anything on the performance list: measure before and after (wildcard-diagnostics-and-tooling) | Numbers, with the same bot count and time window | 7 |
@@ -100,10 +100,10 @@ afterwards. Never point a test at `acore_world_wildcard`, `acore_characters_wild
 | Step | Do | Pass when | Rung |
 |---|---|---|---|
 | 1 | Lint (step 0) | `changes-row`, `patch-number-dup`, `settings-missing`, `win-macro`, `ps1-herestring`, `eol-patch-script` all clean | 1 |
-| 2 | Patch pre-flight from the sibling wildcard-patch-authoring (`scripts/preflight.py`): applies every patch and script to the pinned sources in a scratch workspace, as the workflow does. It needs `pwsh` | Every script reports OK. This is the step that saves a 2-3 hour build from dying at "Apply our patch scripts" | 2 |
+| 2 | Patch pre-flight from the sibling wildcard-patch-authoring (`scripts/preflight.py`): applies every patch and script to the pinned sources in a scratch workspace, as the workflow does. It needs `pwsh` | Every script reports OK. This is the step that saves a 3½ hour build from dying at "Apply our patch scripts" | 2 |
 | 3 | Compile check of the files you touched, against the pinned core with all patches applied. Practice recorded in history: "compiles with -Wall -Wextra against core c3f2fd4b2395 with our patches" (5c2a489), "compile-checked ... also with the Windows header macros defined" (enchants/epic-notes-header.md). The exact command is not in the repository: see wildcard-patch-authoring / wildcard-build-and-env | No error. A Linux compile does **not** prove the Windows build: SYNCHRONIZE (a4048e7), a missing final newline (e0cc2f5) and an unqualified namespace (0220a49) each cost a build | 3 (partial) |
-| 4 | The GitHub build (2-3 hours; wildcard-build-and-env) | The workflow's steps "Apply our patches", "Apply our patch scripts", "Build worldserver" and "Check it starts and reports its revision" (`worldserver.exe --version`) pass and a release `wcme-<tag>-build<N>` appears | 3 and 4 |
-| 5 | Install: the weekly patch night or `Run-PatchNight-Now.cmd` (hard stop 5: James) | `patch-night.log` ends `[OK] Patch night OK: installed wcme-...` and has `Server is up on core <revision>` | 5 |
+| 4 | The GitHub build (about 3½ hours, automatic the evening after the merge; wildcard-build-and-env) | The workflow's steps "Apply our patches", "Apply our patch scripts", "Build worldserver" and "Check it starts and reports its revision" (`worldserver.exe --version`) pass and a release `wcme-<tag>-build<N>` appears | 3 and 4 |
+| 5 | Install: the next 3:30 am patch night, or `Run-PatchNight-Now.cmd` (hard stop 5: James) | `patch-night.log` ends `[OK] Patch night OK: installed wcme-...` and has `Server is up on core <revision>` | 5 |
 | 6 | Read `Core\Logs\Errors.log` for kinds of line that were not there before the start, and `Core\Crashes\` for a file newer than the start (`errors_log_groups.py --baseline` in wildcard-diagnostics-and-tooling). Nothing does this automatically | No new kind, no new crash file | 5 |
 | 7 | In game with a GM character: exercise the change, with its setting on **and off** if it has one | What the CHANGES.md row says, both ways | 6 |
 | 8 | If the code runs per tick, per packet or for bots (L3 = 3 in the risk matrix): tick times before and after | wildcard-diagnostics-and-tooling | 7 |
@@ -155,7 +155,7 @@ recorded test actually found):
 | 4 | For anything that loops over the 6,440 enchants: open, page and filter the collection window | No freeze. Commit 4fdb6a0 fixed a window that froze the game on every query | 7 |
 
 How it ships: patch night copies every folder under `addon/` to `F:\CoAClient\Interface\AddOns` (FetchRepo), and
-the launcher takes it to players. So a merge to `main` reaches every player after the next nightly restart with
+the launcher takes it to players. So a merge to `main` reaches every player after the next patch night with
 no build. That makes "addon text" a standard LOW change and "addon logic" L1 = 2.
 
 ## 6. Client patch (`client-patch/`, builds `patch-ZZW.MPQ`)
@@ -218,5 +218,5 @@ All three are **hard stop 5**: always HIGH, never automatic. What testing exists
   (`python repo_lint.py --only parse`): the VM has Python at `C:\Games\CoA Server\Runtime\python\python.exe`
   (PatchNight.ps1) and PowerShell.
 - There is no rehearsal for the workflow file: a manual run with `rebuild` ticked publishes a release that the
-  weekly patch night will install, whatever branch it ran on. Start one only from `main`, on James's say-so (hard
+  next 3:30 am patch night will install, whatever branch it ran on. Start one only from `main`, on James's say-so (hard
   stop 5; wildcard-build-and-env). A draft-release input is proposed in wildcard-build-and-env and NOT BUILT YET.

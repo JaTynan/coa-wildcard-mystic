@@ -126,9 +126,9 @@ accounts in the Wildcard characters database, then starts normally so SQUID make
 
 - **Symptom:** not a failure. A weekly patch night meant merged fixes waited up to a week.
 - **Evidence:** `5eea001`, `36da31e`, `6c313ab`, PR #76; `patch-night/Register-PatchNight.ps1:1-14`.
-- **Status:** adopted. `Register-PatchNight.ps1` registers "CoA Patch Night" (weekly, default Tuesday 11:00 pm,
-  installs new builds) and "CoA Nightly Restart" (daily from 3:30 am, 30 minute countdown, restart 4:00 am,
-  `-NoInstall`).
+- **Status:** superseded on 23 Nov by P-17. Until then `Register-PatchNight.ps1` registered "CoA Patch Night"
+  (weekly, default Tuesday 11:00 pm, installs new builds) and "CoA Nightly Restart" (daily from 3:30 am, 30 minute
+  countdown, restart 4:00 am, `-NoInstall`).
 - **Lesson:** SQL and settings changes go live at the next 4 am restart. Anything in `patches/` waits for a build
   and the next patch night that installs it.
 
@@ -207,6 +207,19 @@ accounts in the Wildcard characters database, then starts normally so SQUID make
 - **Status:** adopted on 22 Nov. No run of the staged version is recorded in the repository yet.
 - **Lesson:** `docs/agents/context/patch-night.md` gives the expected result: a "Downtime: N s" line of about
   2 minutes; over 5 is worth a mention.
+
+## P-17 · 2026-11-23 · Patch night every night, installing builds
+
+- **Symptom:** not a failure. With builds installed only on Tuesdays, a merged and built C++ fix waited up to a week,
+  and SQL that needed new code ran days ahead of it.
+- **Evidence:** `aef54f0`, PR #240 (James, 23 Nov); `patch-night/Register-PatchNight.ps1` header.
+- **Status:** adopted. One task, "CoA Patch Night", daily at 3:30 am, restart at 4:00 am, installs any new build.
+  Running the register script removes "CoA Nightly Restart". `PatchNight.ps1` was not changed: `-NoInstall` and its
+  log line still exist, and the header comment and in-game text still say "nightly restart". Build 74 was installed
+  on 24 Nov at 04:04, the first install under the new task.
+- **Side effect, from the code:** after a fall-back to the official server the same bad build is now retried every
+  night, not every Tuesday (`wildcard-architecture-contract`, W7).
+- **Lesson:** with PR #241 (B-17) a merged patch normally reaches players the next morning, with its SQL.
 
 ---
 

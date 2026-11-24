@@ -10,11 +10,10 @@ description: Decision-gated campaign for the Wildcard world server's lag spikes,
 That day shows a clear pattern, summarised below, and a leading hypothesis that has **not** been tested by any
 experiment. Treat everything here as a plan to find the cause, not as the cause.
 
-Status words used here: DOCTRINE (written in README, CHANGES.md or docs on `main`), INTENDED DOCTRINE (PR #232,
-unmerged), PRACTICE (what history shows), NOT BUILT YET, Proposed practice (not yet adopted by James), UNVERIFIED,
+Status words used here: DOCTRINE (written in README, CHANGES.md or docs on `main`), DOCTRINE (PR #232, merged 22 Nov 2026), PRACTICE (what history shows), NOT BUILT YET, Proposed practice (not yet adopted by James), UNVERIFIED,
 OPEN. The hard stops, the risk matrix and "standard changes" cited below come from
-`docs/agents/context/change-risk.md`, which is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**: the file
-is not on `main` yet (read it with `git show origin/agents-stage-1:docs/agents/context/change-risk.md`).
+`docs/agents/context/change-risk.md`, which is **DOCTRINE (PR #232, merged 22 Nov 2026)**: the file
+is not on `main` yet (read it with `git show origin/main:docs/agents/context/change-risk.md`).
 
 ## When NOT to use this skill
 
@@ -38,6 +37,13 @@ is not on `main` yet (read it with `git show origin/agents-stage-1:docs/agents/c
 3. Walk Gates A to D in Phase 2 with the output.
 4. The next experiment is in the Phase 3 table (E1 as of 2026-11-22). Write its prediction down first.
 5. Any change at all: classify with wildcard-change-control first; James merges.
+
+**Status on 2026-11-24.** Root cause still unknown; James: "we need to find the root cause first, collecting
+evidence is first". The worst tick in the 23 Nov logs was 6,079 ms. E1 is prepared as draft PR #251
+(`AiPlayerbot.RandomBotUpdateInterval = 30`): Tuesday 24 Nov is the baseline evening, James merges #251 after
+that evening's play, Wednesday 25 Nov is the experiment evening (the 4 am patch night applies it), Thursday is
+the comparison against the prediction in the Phase 3 table. Keep other merges that change bot or world behaviour
+out of that window, or the comparison means nothing. E1 is a test of H1, not a fix.
 
 Words used: a **tick** is one pass of the world server's game loop; players feel long ticks as freezes and
 rubber-banding. A **record** is one five-line entry in `Timing.log`; its **window** is the last 500 ticks it
@@ -103,7 +109,7 @@ decides. The login ramp may have a second cause of its own (the database pulse).
 | A value change to a setting already in `server-settings.txt`, **inside the range its comment states** | Pre-approved "standard change" (LOW) per `change-risk.md`. |
 | Bot count (`AiPlayerbot.MinRandomBots` / `MaxRandomBots`), `RecordUpdateTimeDiffInterval`, and any other setting whose comment states **no range** | **Not** a standard change. The bot-count comment (`server-settings.txt:505-506`) records history, not a range, as of 2026-11-22. Score it with wildcard-change-control; James merges. |
 | A setting line that is **not yet** in `server-settings.txt` (most experiments here) | Not pre-approved. Score it. It acts on all 750 bots and can only be seen working live, so do not assume LOW. |
-| C++ (a patch) | Scores high on "kind of change" and usually on "every tick"; expect HIGH with a patch-reviewer (Fable) review. A build takes 2-3 hours. |
+| C++ (a patch) | Scores high on "kind of change" and usually on "every tick"; expect HIGH with a patch-reviewer (Fable) review. A build takes about 3½ hours. |
 | Patch night, the installer, `Restore-Official.cmd`, rollback, console/GM commands | **Hard stops** (1 and 5). James does these himself. Never from an agent session on its own. |
 | Editing config files on the VM by hand | Never. `CHANGES.md` (DOCTRINE): "Nothing is edited on the running server by hand". Settings go in the repository and apply at the next start (go-live table: wildcard-run-and-operate). |
 
@@ -112,7 +118,7 @@ change did what. Incident that motivates them: 21-22 Nov, when bot count, auctio
 diagnostics and four core options all changed within a day and no clean "before" exists
 (`references/timeline.md` section 3).
 
-- **One change per night.** The nightly restart applies it; the next evening tests it. If anything else merged
+- **One change per night.** The 4 am patch night applies it; the next evening tests it. If anything else merged
   that day changes load, the night is void: say so in the campaign log.
 - **Write the prediction before the run** (template in `references/templates.md`). An experiment without a
   written prediction is a look, not a test.
@@ -324,8 +330,9 @@ on a hunch. Incident: 1,500 and 1,250 bots both had to come back down (7 and 9 N
    the number the prediction named. One good evening is not a result.
 2. **Promotion.** Settings fix: PR with the campaign log entries in the description -> classify with
    wildcard-change-control -> James merges -> live at the next restart. Patch: wildcard-patch-authoring
-   pre-flight, HIGH path, patch-reviewer, 2-3 hour build (a merged patch is built only when someone runs the
-   workflow with `rebuild` ticked), installed at the weekly patch night or by James. When each kind of change
+   pre-flight, HIGH path, patch-reviewer, 3½ hour build (automatic the evening after the merge, since PR #241),
+   installed at the next 3:30 am patch night. A patch merge and a settings experiment on the same night break
+   the one-change rule. When each kind of change
    goes live: wildcard-run-and-operate, "When does my merged change go live?".
 3. **Bot ladder.** Only after 7 passing evenings at the current count: 750 -> 1,000 -> 1,250, one step at a
    time, **each step classified with wildcard-change-control** (a bot-count change is not a standard change;
@@ -388,10 +395,10 @@ grep -nE "typeperf|'-si'" patch-night/PatchNight.ps1
 cat sql/enchants/095-slow-query-log.sql
 # Merge times against the server start (what was live on a given day)
 git log origin/main --first-parent --merges --format="%h %ad %s" --date=iso-local -6
-# Hard stops and standard changes (PR #232 only until it merges)
-git show origin/agents-stage-1:docs/agents/context/change-risk.md | sed -n 7,16p
+# Hard stops and standard changes
+git show origin/main:docs/agents/context/change-risk.md | sed -n 7,16p
 # Lag investigator still NOT BUILT YET (Status column)
-git show origin/agents-stage-1:docs/agents/README.md | grep -n "lag investigator"
+git show origin/main:docs/agents/README.md | grep -n "lag investigator"
 # docs/performance.md still out of date (7 Nov 2026 when written)
 git log -1 --format=%ad -- docs/performance.md
 # The script still parses the logs ("Records: 0" means the line format changed)

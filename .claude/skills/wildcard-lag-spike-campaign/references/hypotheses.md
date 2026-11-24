@@ -8,8 +8,8 @@ Every experiment below changes server behaviour. **Classify each with wildcard-c
 a setting that is *not yet* in `server-settings/server-settings.txt`, so they are not the pre-approved "standard
 change"; expect the score to come out above LOW because they act on all 750 bots and can only be seen working live.
 A bot-count change is not a standard change either: the setting's comment states no range (2026-11-22), so it is
-scored. James merges. One experiment per night (settings apply at the nightly restart). The matrix and "standard
-change" are INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22).
+scored. James merges. One experiment per night (settings apply at the 4 am patch night). The matrix and "standard
+change" are DOCTRINE (PR #232, merged 22 Nov 2026).
 
 **Ranking as of 2026-11-22 (a prior, from one day of data): H1 first, H2 second, H3 third.** H2 is ranked
 below H1 because of the instance-map evidence in its "Against" paragraph. This is evidence, not proof: the root
@@ -164,9 +164,8 @@ reversible test and the numbers that would confirm or refute it. **Before a fix 
 - **Status.** Partly supported already: evidence C (official build, 2.6 s tick). H1 and H2 are both upstream code.
 - **Experiment (James only: it touches the installer and rollback, a hard stop).** `vm\Restore-Official.cmd`
   with the server stopped, play one evening with the same settings, then `Run-PatchNight-Now.cmd` to go back.
-  Read from `PatchNight.ps1`, not tried: the 4 am nightly restart leaves the official server in place (it runs
-  with `-NoInstall`), the weekly patch-night run (Tuesday 11 pm by the script's default; what the VM has
-  registered is UNVERIFIED) reinstalls ours. On the official server: settings that need our build
+  Read from `PatchNight.ps1`, not tried: since 23 Nov the 4 am patch night installs every night, so it
+  reinstalls ours the same night unless James disables the `CoA Patch Night` task for that evening. On the official server: settings that need our build
   are ignored (server-settings.txt says so for the Mystic Enchant lines), Mystic Enchants on Wildcard, the racial
   kits and the Ollama chat (our build adds that module) are gone for the evening, and our `sql/enchants` rows
   that name our scripts may produce start-up errors (UNVERIFIED). Prediction if upstream: same 20 s beat, same
@@ -211,7 +210,7 @@ Only do this if the official-server evening (H8) says the long ticks are ours.
 3. If they go: next night restore half of that half. If they stay: restore all, turn off the other half.
 4. About five nights to isolate one switch out of ~20. If every switch is off and the long ticks remain, the cause
    is in an always-on patch or a hook itself: only a build without that patch can test it (wildcard-build-and-env;
-   2-3 hours a build).
+   about 3½ hours a build).
 
 Each night's change is several settings at once **on purpose**; record it as one experiment with its prediction,
 and never mix it with any other change that night.

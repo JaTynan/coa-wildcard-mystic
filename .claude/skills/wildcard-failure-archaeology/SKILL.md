@@ -1,6 +1,6 @@
 ---
 name: wildcard-failure-archaeology
-description: The dated chronicle of every investigation, dead end, revert, retry and rejected fix in the coa-wildcard-mystic repository (30 Oct to 22 Nov 2026), each with symptom, root cause, evidence (commit, PR, file), what was tried and rejected, status and lesson. Load it before repeating a fix or experiment that feels familiar, or changing a value that looks odd, to check whether it was already tried (bot count 1000/1500/1250/1000/750, view distance 75/150, zone waking, logging, twin links, Arcane Charge, dud filter, runaway procs, core overlap review). Load it when asked "why is X set this way", "was this tried before", "why was this reverted", "what happened with for-083", "which branches are unmerged or abandoned", "what is still an open question", or when adding a new entry after an incident. Covers builds and core updates (.83 to .114), patch night and settings kit, performance and bots, enchants and spells, client patch, launcher and site, unmerged branches and lost commits. Not for quick symptom lookup.
+description: The dated chronicle of every investigation, dead end, revert, retry and rejected fix in the coa-wildcard-mystic repository (30 Oct to 24 Nov 2026), each with symptom, root cause, evidence (commit, PR, file), what was tried and rejected, status and lesson. Load it before repeating a fix or experiment that feels familiar, or changing a value that looks odd, to check whether it was already tried (bot count 1000/1500/1250/1000/750, view distance 75/150, zone waking, logging, twin links, Arcane Charge, dud filter, runaway procs, core overlap review). Load it when asked "why is X set this way", "was this tried before", "why was this reverted", "what happened with for-083", "which branches are unmerged or abandoned", "what is still an open question", or when adding a new entry after an incident. Covers builds and core updates (.83 to .114), patch night and settings kit, performance and bots, enchants and spells, client patch, launcher and site, unmerged branches and lost commits. Not for quick symptom lookup.
 ---
 
 # Wildcard failure archaeology
@@ -63,8 +63,8 @@ the entry says "not known" and stops. It does not guess.
 | The manager | CF-Server-Manager, the program that installs and normally starts the CoA server |
 | The core | CoA's server code (a fork of AzerothCore 3.3.5a) |
 | Release `.NN` | last part of a manager release tag: `server-0.261119.114` is "release .114" |
-| Build N | one of this repository's releases, tag `wcme-server-<release>-buildN`. A build takes 2 to 3 hours on GitHub Actions |
-| Patch night | `patch-night/PatchNight.ps1` on the VM: weekly install of a new build, and a nightly restart that applies settings and SQL only (schedule: `wildcard-run-and-operate`) |
+| Build N | one of this repository's releases, tag `wcme-server-<release>-buildN`. A build takes about 3½ hours on GitHub Actions |
+| Patch night | `patch-night/PatchNight.ps1` on the VM: one daily run from 3:30 am that applies settings and SQL and installs any new build (since 23 Nov; before that a weekly install plus a nightly restart; schedule: `wildcard-run-and-operate`) |
 | Settings kit | `server-settings/server-settings.txt` and `Apply-ServerSettings.ps1`, which writes it into the config files at every start |
 | SQUID | SQUID's Playerbots, the random bots |
 | Tick | one pass of the world server's game loop. A long tick is a freeze |
@@ -102,6 +102,7 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | B-14 | 19 Nov | Build stopped at 1288/3197: command line too long | fixed |
 | B-15 | 19 to 22 Nov | Five things the core changed, or did differently from what we assumed | four fixed, one lost (U-03) |
 | B-16 | 21 Nov | Patch 90: a missing line break hid an include | fixed |
+| B-17 | 23 Nov | Merged patches waited for a by-hand rebuild | adopted: automatic rebuild |
 
 ### Patch night and settings (`references/patch-night-and-settings.md`)
 
@@ -116,13 +117,14 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | P-07 | 1 Nov | Manager update kept our patched world server | fixed (go by the auth server) |
 | P-08 | 7 Nov | MySQL error 1046 | fixed |
 | P-09 | 8 Nov | Countdown while the world was still loading | fixed |
-| P-10 | 8 Nov | Weekly patch night plus nightly 4 am restart | adopted |
+| P-10 | 8 Nov | Weekly patch night plus nightly 4 am restart | superseded by P-17 |
 | P-11 | 19 Nov | Wildcard started on the other realm's characters | fixed, with a guard that refuses to start |
 | P-12 | 21 Nov | Patch night overwrote a settings line | fixed |
 | P-13 | 22 Nov | 3 minutes of downtime applying settings | fixed |
 | P-14 | 22 Nov | Config files grew to 22 MB (encoding) | fixed |
 | P-15 | 22 Nov | Settings the server does not know; 49 new options on defaults | check live, refinement lost (U-05) |
 | P-16 | 22 Nov | Staged patch night | adopted, no run recorded yet |
+| P-17 | 23 Nov | Patch night every night, installing builds | adopted |
 
 ### Performance and bots (`references/performance-and-bots.md`)
 
@@ -164,6 +166,8 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | E-17 | 11 to 18 Nov | Twelve other root causes in one table | see table |
 | E-18 | 19 Nov | Worldforged enchants neither dropped nor worked | awaiting in-game test |
 | E-19 | 19 Nov | Enchant gold prices: client and server could disagree | changed |
+| E-20 | 23 Nov | Ten named-target IDs replaced stock SpellAffect rows | fixed, lint check added |
+| E-21 | 23 Nov | Spell mask read word by word: two wrong conclusions | corrected |
 
 ### Client, launcher, site (`references/client-launcher-site.md`)
 
@@ -187,6 +191,8 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | G-05 | 21 Nov | Dungeon Finder dropped requests with more than 50 dungeons | fixed; Ragefire Chasm question open |
 | G-06 | 20 Nov | Pet spells brought back the wrong pet, two fixes | fixed |
 | G-07 | various | Smaller ones, and "the shield and stance bug of 22 Nov" | last one unknown |
+| G-08 | 23 Nov | Wildcard alts taught a slice of every class | merged, unverified |
+| G-09 | 24 Nov | Alt-bot log lines reached no file (root logs errors only) | changed |
 
 ### Unmerged, lost, reversed (`references/unmerged-and-abandoned.md`)
 
@@ -202,7 +208,7 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | U-07 | `perf-visibility-react` | view distance 75 | never merged, never measured |
 | U-08 | `export-v2` | spell export includes namesakes | never merged, ask James |
 | U-09 | `docs/patch-night-build51` | build 51 install record | superseded |
-| U-10 | `agents-stage-1` / `pr-232` | agents and `docs/agents/` | PR #232, in flight |
+| U-10 | `agents-stage-1` / `pr-232` | agents and `docs/agents/` | PR #232, merged 22 Nov 2026 (`0802d4f`) |
 
 ---
 
@@ -231,7 +237,7 @@ again. "Settled" means history has an answer, not that the answer can never chan
 | Publish the client folder as it stands | Shipped the host's `realmlist.wtf` and IIS's `web.config` | C-03 |
 | Hook an item's `OnUse` without checking how it opens | Loot-container items never call it | G-02 |
 | Take the build's sources from the release list and stop there | The official build also patches modules and passes its own CMake flags | B-13, B-14 |
-| Check a patch script locally with a "tidied" copy of its output | The real output failed the 2 to 3 hour build | B-16 |
+| Check a patch script locally with a "tidied" copy of its output | The real output failed the build | B-16 |
 | Read config files with `Get-Content` and no encoding (PowerShell 5.1) | A 240 KB file became 22 MB | P-14 |
 | Push one more commit to a branch after its PR merged | Four changes are missing from `main` today | U-03 to U-06 |
 
@@ -387,8 +393,7 @@ with `wildcard-change-control` first; James merges).
 Written 2026-11-22 from the repository alone, at `origin/main` = `d3e030f` (710 commits, 205 merged pull
 requests), with all remote branches and `wcme-server-*` tags. The reading covered: every commit subject on every
 branch (515 non-merge commits) and the bodies of all of them; `README.md`, `CHANGES.md`, `docs/*.md`,
-`docs/agents/**` (present only on PR #232's branch `origin/agents-stage-1`, open on 2026-11-22: what rests on it is
-INTENDED DOCTRINE, PR #232, unmerged), `enchants/*.csv` headers and both notes headers, comments
+`docs/agents/**` (then on PR #232's branch; merged on 22 Nov 2026, so DOCTRINE), `enchants/*.csv` headers and both notes headers, comments
 in `server-settings/server-settings.txt`, `patch-night/PatchNight.ps1`,
 `server-settings/Apply-ServerSettings.ps1`, the build workflow and `sql/enchants/09x-*.sql`.
 
@@ -426,6 +431,6 @@ grep -o '2026-1[0-2]-[0-9][0-9]' enchants/tracker.csv | sort | tail -1
 # Release tags (which release was built when)
 git tag -l 'wcme-server-*' --format='%(refname:short) %(creatordate:short)' | sort -t- -k4 -V
 
-# Is PR #232 (docs/agents) merged yet?
+# PR #232 (docs/agents) merged on 22 Nov 2026; non-zero confirms
 git ls-tree --name-only origin/main docs/ | grep -c agents
 ```

@@ -352,6 +352,28 @@ twice. The commit messages date some of the core's own handling to early Novembe
 - **Status:** changed; no test recorded.
 - **Lesson:** "at least 1 copper (0 means 'not for sale' to the rules)". A price of 0 is not "free".
 
+## E-20 · 2026-11-23 · Ten named-target rows replaced stock SpellAffect rows
+
+- **Symptom:** none seen in game. Found by comparing all 8,909 of our `wcme_spellaffect_dbc` IDs with the 36,849 rows
+  of `SpellAffect.dbc`.
+- **Root cause:** file `011` used IDs 901388-901397, which the stock file uses for the "Threat Reduction" spells.
+  A table row replaces the file row with the same ID. `000-reset.sql` had claimed IDs from 900000 never collide.
+- **Evidence:** PR #244 (moved to 951000-951009); PR #245 (`enchant_sql_lint.py` fails on a clash, with a built-in
+  list of the 32 ranges the file uses between 900000 and 999999).
+- **Status:** fixed; lint check in place.
+- **Lesson:** a "safe range" is a claim to check against the data, not a comment to trust.
+
+## E-21 · 2026-11-23 · Spell mask read word by word instead of effect by effect
+
+- **Symptom:** while fixing #151 and #150, Master Summoner's companion looked maskless and Nemesis's cooldown cuts
+  looked broken, and named-target rows 960000-960003 were added for Master Summoner.
+- **Root cause:** a scratch reader took the class mask from fields `122+e`, `125+e`, `128+e`. The layout is three
+  words per effect, effect by effect: `122+3*e` to `124+3*e`.
+- **Evidence:** `sql/enchants/140-talent-fixes.sql` header ("Corrected 24 Nov"); PR #252 removed rows
+  960000-960003; #148 was re-checked with the right reader.
+- **Status:** corrected. The layout is written down in `azerothcore-coa-reference/references/spell-system.md`.
+- **Lesson:** check a new data reader against one spell whose answer you already know.
+
 ---
 
 ## Race kit fixes (not enchants, same spell machinery)

@@ -493,7 +493,7 @@ through three values in ten hours that day (2cd2a78, bf3e353, b06519c); only the
 
 ## Recipe 10. Reading a diff for hot-path cost
 
-**Use when** reviewing or writing a patch that adds a hook. INTENDED DOCTRINE (PR #232, unmerged): the change-risk matrix scores "every tick,
+**Use when** reviewing or writing a patch that adds a hook. DOCTRINE (PR #232, merged 22 Nov 2026): the change-risk matrix scores "every tick,
 every packet, or for all 750 bots" as L3 = 3, and the patch context pack lists "a setting read on a hot path
 without caching" and "code written for players runs for 750 bots too" among the commonest faults.
 

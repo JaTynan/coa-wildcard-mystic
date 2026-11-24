@@ -51,13 +51,13 @@ is from the code.
 1. The patched server fails `StartAndCheck`. Lines 979-986: stop everything, copy `worldserver.official.exe` over
    `worldserver.exe`, delete `worldserver.patched.txt` and `worldserver.patched-release.txt`, start again, finish with
    "Patch night FAILED on the patched server; the official server is running instead (no Mystic Enchants)".
-2. Next nightly restart (`-NoInstall`): the live program is no longer ours, so the installed tag reads as empty
-   (line 869). A release exists, so `installNeeded` becomes true (873), then false again because of `-NoInstall`
-   (875). The official server is restarted with our settings and our SQL. The run ends
-   "Patch night OK: official server (no patched build yet)" (line 975), which is misleading: a patched build exists,
-   it was rejected.
-3. Next Tuesday (or `Run-PatchNight-Now.cmd`): `installNeeded` stays true, the **same** release is installed again,
-   and step 1 repeats unless a newer build was published in between. Nothing records that a build was bad.
+2. Next 3:30 am run (daily since 23 Nov 2026): the live program is no longer ours, so the installed tag reads as
+   empty (line 869). The release still exists, so `installNeeded` is true, the **same** release is installed again,
+   and step 1 repeats unless a newer build was published in between. Nothing records that a build was bad. With the
+   daily task this is one failed start (up to 30 minutes of checking) and one fall-back **every night**.
+3. Before 23 Nov the nightly run had `-NoInstall` (line 875): it kept the official server and ended "Patch night OK:
+   official server (no patched build yet)" (line 975), which was misleading, and only Tuesday's run retried the bad
+   build. A run given `-NoInstall` by hand still behaves that way.
 
 While the official server runs: Wildcard characters have no Mystic Enchants, and every setting and `wcme_*` table
 our patches read is ignored. Rows our SQL binds to `spell_wcme_*` script names point at scripts the official program
@@ -66,7 +66,7 @@ does not have. What the official server logs about those is UNVERIFIED (check `E
 `Start-Server.cmd` (`-StartOnly`, lines 816-830) has no fall-back: if the server does not come up it says so and
 stops.
 
-## T5. The manager's Update button, then a nightly restart (W5)
+## T5. The manager's Update button, then the next patch night (W5)
 
 The script's own comment (lines 842-843): a manager update keeps a world server it sees was changed (ours), so the
 saved official copy goes stale. The auth server is always the manager's own, so its revision is trusted.
@@ -75,8 +75,9 @@ Suppose the manager moved from core A to core B and kept our patched program (bu
 
 1. `OfficialExe` returns the saved copy (core A). The auth server reports B. They differ, so `$installed = B` and
    `$staleOfficial = $true` (849-854).
-2. Nightly restart: even if a build for B exists it is not installed (`-NoInstall`). `$expected` is B (lines 951,
-   969-971).
+2. Next run. If a build for B exists, it is installed (with `-Force`, because the saved copy is stale, line 958) and
+   the run normally ends OK: this is the common case since patch night installs every night (23 Nov 2026). The rest
+   of this trace is the case where **no build for B exists yet**. `$expected` is B (lines 951, 969-971).
 3. `StartAndCheck B`: the live program is still the A build. `Server.log` line 1 shows A. "The server came up on
    core A, expected B" and the function returns false (716-718). It does not stop the server it just started.
 4. Fall-back (980-986): stops, copies the saved official program (core A, stale) over the live one, starts, and
@@ -86,14 +87,11 @@ Suppose the manager moved from core A to core B and kept our patched program (bu
 Whether a core-A program starts at all against core-B databases is UNVERIFIED and depends on what the update changed.
 
 What would avoid it, from the code (a prediction to confirm, not observed). **Proposed practice (not yet adopted by
-James):** after pressing Update in the manager, James runs `Run-PatchNight-Now.cmd` the same day. Without
-`-NoInstall` the run installs the build for B, passing `-Force` to the installer because the saved copy is stale
-(line 958). It restarts the live server and installs a build: classify with `wildcard-change-control` first (hard
-stop 5; James decides). If no build for B exists yet, one has to be built first (2-3 hours); starting a build is
-also James's call, because a finished build is a release patch night will install (`wildcard-build-and-env`).
-Purpose: avoid a nightly run that ends FAILED. Incident: none recorded. README says the Update button "stays
-manual: click it any time before patch night and the new release is picked up"; the two are not reconciled
-(SKILL.md, V12).
+James):** press Update in the manager only after the build workflow has published a release for the new manager
+release. The workflow builds a release with no build yet by itself (step `decide`, "has no build yet"), in the
+evening run after the release appears, and a build takes about 3½ hours. Purpose: avoid nights that end FAILED.
+Incident: none recorded. With that order, README's wording (the Update button "stays manual: click it any time
+before patch night and the new release is picked up") holds (SKILL.md, V12).
 
 History: the stale-copy detection was added in f83171d (PR #29, 1 Nov), "catch a manager update that kept the patched
 world server". README still says the official server "comes back on its own" after a manager update; the script is
@@ -108,7 +106,7 @@ newest first, so that is the newest build for this core.
 Nothing looks at which branch or commit of this repository the release was built from, although the notes carry it
 ("This repository: ..."). The workflow accepts a manual run from any branch and always publishes. Consequences:
 
-- A test build started from a feature branch becomes the build Tuesday installs.
+- A test build started from a feature branch becomes the build the next 3:30 am patch night installs.
 - To keep a build from being installed, its release has to be deleted or marked as a draft; a newer good build also
   wins. **James only** (hard stop 5: this decides what patch night installs, and it is an action on GitHub outside
   any PR). A session does not do this without his say-so.
@@ -116,7 +114,7 @@ Nothing looks at which branch or commit of this repository the release was built
   `wcme-server-0.261028.83-build20`, from `for-083`, which was that branch's purpose.
 
 Proposed practice (not yet adopted by James): only start the build workflow from `main`. Purpose: keep "what is on
-`main`" and "what Tuesday installs" the same thing. Motivating incident: none yet; the `for-083` period showed the
+`main`" and "what patch night installs" the same thing. Motivating incident: none yet; the `for-083` period showed the
 mechanism works for any branch.
 
 ## T7. `main` as the deploy branch (W3)

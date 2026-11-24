@@ -22,7 +22,7 @@ If I am wrong:   <metric> will stay within <range> of the baseline
 Will NOT change: <metrics that must stay put if this mechanism is the only cause>
 Also explains:   <each earlier observation, including things that did not change, one line each>
 Does not explain: <anything left over; if this is not empty, say "candidate", not "cause">
-Undo:            <set X back at the next restart | delete file N | revert and rebuild (2-3 h)>
+Undo:            <set X back at the next restart | delete file N | revert and rebuild (about 3½ h)>
 Risk class:      <from wildcard-change-control; who merges>
 
 ## Result (written YYYY-MM-DD, after)
@@ -89,7 +89,7 @@ PR like any other). Keep it under two pages. One Fable call unless stated.
 | Question | The decision needed, one sentence. Not "what is wrong?" but "is X the cause, and should we do A or B?" |
 | What we know | Your observation list, each with its source. Include the sums (Recipe number and the figures) |
 | What we don't know | The "Does not explain" and "Not checked" lines, and what would close each |
-| Options considered | Two to four, each with cost (a restart, or a 2 to 3 h build) and risk class. "Do nothing" counts |
+| Options considered | Two to four, each with cost (a restart, or a 3½ h build) and risk class. "Do nothing" counts |
 | Constraints | The rules that apply (`docs/agents/context/`), hard stops touched, anything James has decided |
 | Ruling | Left empty. Fable writes it: decision, why, confidence, rule for next time |
 

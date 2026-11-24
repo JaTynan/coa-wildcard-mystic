@@ -152,9 +152,9 @@ def facts(repo, base, head):
     print("\nHousekeeping:")
     patch_files = [p for p in paths if p.startswith("patches/")]
     if patch_files:
-        print(f"  touches patches/: needs a build (2-3 h) and the weekly patch night to go live; the daily build "
-              f"skips a release it has already built, so the workflow must be run with 'rebuild' ticked "
-              f"(who starts it: see the skill wildcard-build-and-env); CHANGES.md {'is' if 'CHANGES.md' in paths else 'IS NOT'} in this change.")
+        print(f"  touches patches/: needs a build (about 3.5 h) and an install to go live; the daily workflow rebuilds "
+              f"by itself when patches/ changed (starts about 8:30-11 pm Sydney), and the 3:30 am patch night "
+              f"installs it (see the skill wildcard-build-and-env); CHANGES.md {'is' if 'CHANGES.md' in paths else 'IS NOT'} in this change.")
         added_settings = set(re.findall(r'^\+.*GetOption<[^>]+>\("([^"]+)"', diff, re.M))
         if added_settings:
             listed = git(repo, "show", f"{head}:server-settings/server-settings.txt")

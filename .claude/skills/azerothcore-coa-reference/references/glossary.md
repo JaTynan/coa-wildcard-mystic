@@ -101,7 +101,7 @@ sources". Checked on 2026-11-22 against release `server-0.261119.114`.
 | tracker | `enchants/tracker.csv`: one row per enchant (6,440) with audit result, status, fix file and test date. | `enchants/`. |
 | patch (ours) | A file in `patches/` that edits the pinned sources at build time. Not to be confused with a client patch (an MPQ). | `docs/agents/context/patches.md`. |
 | anchor / `Edit-Core` | The exact text a patch script looks for in the source, which must be found exactly once, and the helper that replaces it. | `docs/agents/context/patches.md:8`. |
-| patch night / nightly restart | The two scheduled tasks on the server PC: weekly (Tuesday 11:00 pm) installs a new build; nightly (starts 3:30 am, restart 4:00 am) applies merged settings, SQL and addons. Times are the script's defaults; what is registered on the VM is UNVERIFIED (`wildcard-run-and-operate`). | `patch-night/Register-PatchNight.ps1:3-5`. |
+| patch night | The one scheduled task on the server PC, `CoA Patch Night`: daily, countdown from 3:30 am, restart 4:00 am. Applies merged settings, SQL and addons and installs a new build. Until 23 Nov 2026 there were two tasks (a weekly build install and a nightly restart with `-NoInstall`). Times are the script's defaults; what is registered on the VM: `wildcard-run-and-operate`. | `patch-night/Register-PatchNight.ps1:3-5`. |
 | server-settings | `server-settings/server-settings.txt`, the one list of every config value this server changes. | Lines are `<config file> | <setting> = <value>`. |
 
 ## Bots

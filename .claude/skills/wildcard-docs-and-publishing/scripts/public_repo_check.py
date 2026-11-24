@@ -46,7 +46,8 @@ SECRET_PATTERNS = [
 # are written by client-patch/custom_spells.py, so those two places are expected.
 TOOLTIP_TOKEN = re.compile(r"'[^'\n]{25,}\$(\d{3,7})?[sdtmoax][1-3]?\b")
 OWN_SPELL_TEXT = ('sql/enchants/150-custom-spells.sql', 'client-patch/')
-SHARE_LINK = re.compile(r'https?://[^\s"\']*(/share/|[?&](token|key|sig)=)[^\s"\']*')
+# A placeholder such as /share/<id> in a document is not a link, so '<' ends a match.
+SHARE_LINK = re.compile(r'https?://[^\s"\'<]*(/share/|[?&](token|key|sig)=)[^\s"\'<]+')
 PIN_LINE = re.compile(r'^[\w.-]+/[\w.-]+ \| [0-9a-f]{40} \| \S')
 BIG = 1_000_000
 

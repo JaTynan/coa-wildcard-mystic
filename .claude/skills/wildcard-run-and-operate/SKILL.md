@@ -1,6 +1,6 @@
 ---
 name: wildcard-run-and-operate
-description: How the Wildcard server on the Windows VM is run day to day. Covers the weekly patch night and the nightly restart (patch-night/PatchNight.ps1 function by function, with the log lines to search for), the two scheduled tasks and the by-hand run, Start-Server.cmd, the installer and Restore-Official.cmd, the VM file map, the go-live table (when a merged setting, SQL file, addon, script or C++ patch reaches players), rollback runbooks (build, settings, SQL, official server, VM snapshot), Rebuild-WildcardBots.cmd, the RA console bridge, and what a healthy run looks like. Load it when asked "did the server update last night", "why did it not restart", "when will my merged change be live", "how do I start, stop, restart, install or roll back the server", "what do I do after a manager Update click or a Windows reboot", "where is that file or log on the VM", or before touching anything under C:\Games\CoA Server. Who may roll back is decided in wildcard-change-control; this skill holds the procedure.
+description: How the Wildcard server on the Windows VM is run day to day. Covers the daily patch night (patch-night/PatchNight.ps1 function by function, with the log lines to search for; one scheduled task at 3:30 am since 23 Nov 2026) and the by-hand run, Start-Server.cmd, the installer and Restore-Official.cmd, the VM file map, the go-live table (when a merged setting, SQL file, addon, script or C++ patch reaches players), rollback runbooks (build, settings, SQL, official server, VM snapshot), Rebuild-WildcardBots.cmd, the RA console bridge, and what a healthy run looks like. Load it when asked "did the server update last night", "why did it not restart", "when will my merged change be live", "how do I start, stop, restart, install or roll back the server", "what do I do after a manager Update click or a Windows reboot", "where is that file or log on the VM", or before touching anything under C:\Games\CoA Server. Who may roll back is decided in wildcard-change-control; this skill holds the procedure.
 ---
 
 # Wildcard: run and operate
@@ -8,12 +8,13 @@ description: How the Wildcard server on the Windows VM is run day to day. Covers
 Everything here was read from this repository on 2026-11-22: the checkout `fcfee51` (PR #232's head, which sits on
 `62a26e4`, the #230 merge) and `origin/main` at `d3e030f` (#231); `patch-night/`, `vm/` and `server-settings/` are
 identical in the two. Nothing was re-verified on the VM that day. Where a claim depends on the VM's real state,
-the text says so and gives the command to check.
+the text says so and gives the command to check. **Updated 2026-11-24** against `origin/main` `ed97e40` for the
+daily patch night (PR #240) and the automatic rebuild (PR #241); `PatchNight.ps1` itself is unchanged since
+`d3e030f`, so its line numbers still hold.
 
 `docs/agents/*` and `.claude/agents/*` are cited below (hard-stop numbers, "healthy or wrong", the
-patch-night-checker). They arrive with PR #232, open and not on `main` on 2026-11-22, so they are
-**INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**. Check: `git ls-tree --name-only origin/main docs/agents/`
-(empty = still unmerged); read them with `git show origin/agents-stage-1:docs/agents/context/change-risk.md`.
+patch-night-checker). They
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and are on `main`: what rests on them is **DOCTRINE**.
 
 ## When NOT to use this skill
 
@@ -24,7 +25,7 @@ patch-night-checker). They arrive with PR #232, open and not on `main` on 2026-1
 | "It restarted fine but it lags", rubber-banding, long ticks | `wildcard-lag-spike-campaign` |
 | Read Timing.log, perf CSVs, the slow query log, or measure something | `wildcard-diagnostics-and-tooling` |
 | Understand or change a setting, or the settings file format | `wildcard-settings-and-flags` |
-| Trigger, watch or fix the 2 to 3 hour GitHub build | `wildcard-build-and-env` |
+| Trigger, watch or fix the GitHub build (about 3½ hours) | `wildcard-build-and-env` |
 | Write or port a C++ patch | `wildcard-patch-authoring` |
 | Write an enchant SQL fix, or learn what `000-reset.sql` owns | `ascension-restoration` |
 | Launcher, site, sign-up service, bug report relay, client patch | `wildcard-client-and-web` |
@@ -68,48 +69,53 @@ patch-night-checker). They arrive with PR #232, open and not on `main` on 2026-1
 
 Any other term: `.claude/skills/azerothcore-coa-reference/references/glossary.md`.
 
-## The three ways PatchNight.ps1 runs a restart
+## The ways PatchNight.ps1 runs a restart
 
 One script does everything. The switches decide how much.
 
 | Run | How it starts | Switches | Countdown | Installs a new build |
 |---|---|---|---|---|
-| Weekly patch night | Task `CoA Patch Night` | `-Unattended -WarnMinutes 30` | Always 30 minutes | Yes |
-| Nightly restart | Task `CoA Nightly Restart` | `-Unattended -WarnMinutes 30 -NoInstall` | Always 30 minutes | No |
+| Patch night, every night | Task `CoA Patch Night`, daily 3:30 am | `-Unattended -WarnMinutes 30` | Always 30 minutes, restart at 4:00 am | Yes |
 | By hand | `patch-night\Run-PatchNight-Now.cmd` | none, so `-WarnMinutes 10` | 10 minutes, skipped if nobody is online | Yes |
 
-`-NoInstall` is the only difference between the nightly restart and patch night. Both download `main`, apply
-settings, SQL fixes, addons and the site, and restart the world server. The nightly leaves a newer build alone and
-logs `Nightly restart: the new build is left for the weekly patch night.`
+Every run downloads `main`, applies settings, SQL fixes, addons and the site, installs a new build when one matches
+the installed core, and restarts the world server.
+
+**History (since 23 Nov 2026, James).** Until then there were two tasks: a weekly patch night (Tuesday 11 pm) that
+installed builds, and a daily 3:30 am "nightly restart" that ran with `-NoInstall` and left a new build alone. Running
+`Register-PatchNight.cmd` now registers the one daily task and removes the old `CoA Nightly Restart` task.
+
+`-NoInstall` still exists in `PatchNight.ps1` (line 28) and still logs `Nightly restart: the new build is left for the
+weekly patch night.` (line 875), but no task passes it. If that line appears in `patch-night.log`, someone ran the
+script by hand with the switch, or the old task is still registered on the VM.
+
+**Known stale text in the script (checked on `main` 2026-11-24).** The header comment of `PatchNight.ps1` (lines
+4-5 and 27) still describes the two-task model, and the in-game announcements still say "Nightly restart". Wording
+only; fixing it is a `patch-night/` change (hard stop 5).
 
 Two more modes skip the release lookup: `Start-Server.cmd` (`-StartOnly`) and `Rebuild-WildcardBots.cmd`
 (`-RebuildWildcardBots`). Both are covered below.
 
 ### What Register-PatchNight.ps1 registers
 
-Read from `patch-night/Register-PatchNight.ps1` on 2026-11-22:
+Read from `patch-night/Register-PatchNight.ps1` on `main`, 2026-11-24:
 
 | Task name | Trigger | Players see | World stops at about |
 |---|---|---|---|
-| `CoA Patch Night` | Weekly, Tuesday, 11:00 pm | Warnings at 30, 15, 10, 5 and 1 minutes | Tuesday 11:30 pm |
-| `CoA Nightly Restart` | Daily, 3:30 am | The same warnings | 4:00 am |
+| `CoA Patch Night` | Daily, 3:30 am | Warnings at 30, 15, 10, 5 and 1 minutes | 4:00 am |
 
-Times are the VM's local clock. Both tasks run `powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden
--File "<folder>\PatchNight.ps1" -Unattended -WarnMinutes 30`, and the nightly adds ` -NoInstall`. Task settings:
-start when available after a missed time, 3 hour limit, a second copy of the same task is not started while one
-runs.
+Times are the VM's local clock. The task runs `powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden
+-File "<folder>\PatchNight.ps1" -Unattended -WarnMinutes 30`. The script takes `-Time` and `-WarnMinutes`. Task
+settings: start when available after a missed time, 3 hour limit, a second copy is not started while one runs.
 
-**They run only while James is signed in on the VM.** The principal is the user who ran the register script, logon
-type Interactive, not elevated (`Register-PatchNight.ps1:18`). Signed out means no run and no log lines.
+**It runs only while James is signed in on the VM.** The principal is the user who ran the register script, logon
+type Interactive, not elevated. Signed out means no run and no log lines.
 
-**Known discrepancy, not resolved here.** README and the context pack say Tuesday 11 pm and 3:30/4:00, which matches
-the script. James has also described the patch night job as Wednesday 4:00 am, with Windows Update on Wednesday at
-3 am. The script takes `-Day`, `-Time`, `-NightlyTime` and `-WarnMinutes`, and someone can edit a task in Task
-Scheduler, so the tasks on the VM may differ from the repository. Check before you rely on a time (read-only,
-written from the script, not executed on the VM on 2026-11-22):
+The repository describes what the register script *would* set. Someone can edit the task in Task Scheduler, or the
+script may not have been re-run since 23 Nov, so check the VM before relying on a time (read-only):
 
 ```powershell
-Get-ScheduledTask -TaskName 'CoA Patch Night','CoA Nightly Restart' | ForEach-Object {
+Get-ScheduledTask -TaskName 'CoA Patch Night','CoA Nightly Restart' -ErrorAction SilentlyContinue | ForEach-Object {
   $_.TaskName; $_.State
   $_.Triggers | Format-List DaysOfWeek, StartBoundary, Enabled
   $_.Actions.Arguments
@@ -119,10 +125,9 @@ Get-ScheduledTask -TaskName 'CoA Patch Night','CoA Nightly Restart' | ForEach-Ob
 
 ```cmd
 schtasks /query /tn "CoA Patch Night" /v /fo list
-schtasks /query /tn "CoA Nightly Restart" /v /fo list
 ```
 
-Note that the Tuesday patch night and the 3:30 am nightly both run, about four hours apart. A third task,
+If `CoA Nightly Restart` still shows up, `Register-PatchNight.cmd` has not been run since the change. A third task,
 `Wildcard Sign-up`, starts the sign-up and status service at sign-in. It belongs to `wildcard-client-and-web`.
 
 ## Patch night in one page
@@ -173,15 +178,18 @@ automatic check after a restart. A broader smoke test is NOT BUILT YET. The desi
 | Patched server does not pass the check | `Putting the official world server back...` | Stops everything, copies `worldserver.official.exe` over the live one, starts and checks again. |
 | Official server fails too | `Patch night FAILED: the server is not up. Start it in the manager and check patch-night.log.` | Stops. A person has to act. |
 
-After a fall-back the nightly restart does not put the patched build back, because it never installs. The weekly
-patch night or `Run-PatchNight-Now.cmd` does.
+After a fall-back the script deletes `Core\worldserver.patched-release.txt` (`PatchNight.ps1:985`), so the next
+run sees no installed build and installs the same release again. With the daily task that means **a build that
+fails its check is retried, and falls back again, every night at 4 am** until a newer release exists or someone
+acts. Each attempt costs one failed start (up to 30 minutes) before the official server comes up. Read
+`patch-night.log` after any `Patch night FAILED on the patched server` line.
 
 ## When does my merged change go live?
 
 This table is the library's single home for the question; other skills keep a two-line summary and point here.
 
-**A merge to `main` is a deployment.** "Next run" means the next time `PatchNight.ps1` runs in any mode: nightly
-restart, patch night, by hand, or `Start-Server.cmd`. Every run downloads `main` first. A start from the manager's
+**A merge to `main` is a deployment.** "Next run" means the next time `PatchNight.ps1` runs: the daily 3:30 am
+patch night, a by-hand run, or `Start-Server.cmd`. Every run downloads `main` first. A start from the manager's
 own Start button applies none of this.
 
 | Layer | Repository path | Goes live | Notes |
@@ -194,23 +202,28 @@ own Start button applies none of this.
 | Sign-up and status service | `signup/` | Start of the next run. The task is stopped, the files replaced, the task started | Does not wait for the restart. |
 | Patch-night scripts | `patch-night/`, `server-settings/*.ps1` | **The same run that downloads them. There is no night of grace.** | The run copies the new scripts over the live ones and, when `PatchNight.ps1` itself changed, re-runs itself as the new copy at once (`PatchNight.ps1:742-754`, since `0a04f12`). The only guard is a parse check: if any downloaded `.ps1` does not parse, all the old copies are kept (`:326-335`). The script's own log line says "used from the next run"; that wording is stale, the code does not wait. So a merged `patch-night/` change (hard stop 5) runs unattended at the next 3:30 am. |
 | Installer | `vm/Install-WildcardServer.ps1` | Next install | Patch night uses the copy from `main`, not the one in the zip. |
-| C++ patches | `patches/` | Needs a build, then an install by the weekly patch night or a by-hand run. Never by the nightly restart (`-NoInstall`) | See below. |
+| C++ patches | `patches/` | After the automatic evening build, at the next 3:30 am run | See below. |
 | Client files | our addons, `patch-ZZW.MPQ`, anything in `F:\CoAClient` | After the run that follows the file landing in `F:\CoAClient`: the site's `manifest.json` is republished, and each friend's launcher fetches the differences the next time it is opened | Addons are copied by `FetchRepo`. The client patch is built and copied into `F:\CoAClient\Data` by hand (James; see `wildcard-client-and-web`). |
 | The launcher itself | `launcher/WildcardLauncher.ps1`, `.py` | As client files, and only if its version number was raised (`$LauncherVersion`, `LAUNCHER_VERSION`): a launcher updates itself only to a higher number | Details: `wildcard-client-and-web`. |
 
 **C++ patches need two things.**
 
-1. **A build (the build-once rule).** The daily workflow (03:17 UTC) builds each manager release only once. Its
-   check job skips the build when any release named `wcme-<tag>-` exists
-   (`.github/workflows/build-worldserver.yml:51-64`). So a patch merged after that release was built is **not**
-   built by the daily run. The workflow has to be run by hand with **rebuild** ticked, which takes 2 to 3 hours.
-   A finished run publishes a release, and a release is something patch night will install, so starting one is a
-   deployment step: James starts it, or a session he has told to (hard stop 5; see `wildcard-build-and-env`,
-   which owns the build). Example on 2026-11-22: patch 96 (`13a03d3`, PR #228) is on `main` and in **no build**;
-   the newest build, build70, was cut before it.
-2. **An install.** Only the weekly patch night or `Run-PatchNight-Now.cmd` installs a build. The nightly restart
-   runs with `-NoInstall` and never does: it logs `Nightly restart: the new build is left for the weekly patch
-   night.` Patch night installs when the chosen release's tag differs from `Core\worldserver.patched-release.txt`.
+1. **A build.** Since PR #241 (23 Nov 2026) the daily workflow rebuilds by itself whenever `patches/`, the
+   workflow file or `scripts/resolve_release.py` changed since the commit the newest `wcme-<tag>-` release was built
+   from (`.github/workflows/build-worldserver.yml`, step `decide`). Nobody ticks **rebuild**. The cron is
+   `17 3 * * *` UTC, but GitHub starts scheduled runs late: observed starts were 8:37 to 10:50 pm Sydney time. A
+   build takes about 3½ hours (runs 61 to 74: 3h30 to 3h45; one outlier, run 62, took 6h11). Runs queue rather
+   than cancel (`concurrency: build-worldserver`), so a scheduled run behind a by-hand one waits, then usually
+   finds nothing changed and skips (run 75 on 24 Nov). A merge that lands after the evening run's checkout waits a
+   day. Ticking **rebuild** by hand is still possible and is still a deployment step: James starts it, or a session
+   he has told to (hard stop 5; see `wildcard-build-and-env`, which owns the build).
+2. **An install.** Every patch-night run installs when the chosen release's tag differs from
+   `Core\worldserver.patched-release.txt`. So a build that finishes before 3:30 am Sydney time is live at 4:00 am;
+   one that finishes later waits for the next night. Example: build 74 was installed on 24 Nov at 04:04, core
+   `c3f2fd4b2395`.
+
+**Do not run patch night by hand while a build is still running** if the point is to ship a merged patch: the run
+installs nothing new, and the SQL that goes with the patch is applied without the code it needs.
 
 **Which release patch night chooses** (`PatchNight.ps1:857-866`): it walks the repository's releases newest
 first, skips drafts, and takes the first whose notes carry a `Core:` line with the commit of the core that is
@@ -282,7 +295,7 @@ README and `vm/Install-WildcardServer.ps1`). There is no stop script in the repo
 
 - Nothing warns players unless you announce it yourself.
 - A stopped server does not stay stopped. If the world is not running when a task fires, the script skips the
-  countdown and starts it. To keep it down across the nightly and weekly task times, James has to disable the tasks.
+  countdown and starts it. To keep it down past 3:30 am, James has to disable the `CoA Patch Night` task.
 
 ## Talking to the server console (RA)
 
@@ -332,26 +345,28 @@ Read-only SQL uses the same client the script uses (`Sql`, `PatchNight.ps1:344`)
 
 ## Healthy or wrong
 
-From `docs/agents/context/patch-night.md` (INTENDED DOCTRINE: PR #232, unmerged), with additions from the script marked "added".
+From `docs/agents/context/patch-night.md` (DOCTRINE: PR #232, merged 22 Nov 2026), with additions from the script marked "added".
 
 **Healthy**
 
 - Ends with `[OK] Patch night OK: ...` and `server up on core <revision>`.
 - A `Downtime: N s` line of about 2 minutes since the staged change of 22 Nov. Over 5 minutes is worth a mention.
-- Settings: no `Bad value`, and "0 unknown" by the context pack's rule. That rule is INTENDED DOCTRINE and may be
+- Settings: no `Bad value`, and "0 unknown" by the context pack's rule. That rule is DOCTRINE and may be
   unreachable: `wildcard-settings-and-flags` predicts from the code that about 28 working settings are always
   listed as unknown, and the refinement `5978ee4` is not on `main` (UNVERIFIED on the VM). **Proposed practice (not
   yet adopted by James):** compare the unknown list with the previous run's and flag only NEW names. Settings on
   defaults are normal. Only a change in their number matters.
-- Normal lines that look alarming: `Nightly restart: the new build is left for the weekly patch night.` is INFO.
-  `No patched build found for this core, but the installed patched server matches it already.` is a WARN and fine.
+- Normal lines that look alarming: `No patched build found for this core, but the installed patched server matches it already.` is a WARN and fine.
 - Added: `Databases: world acore_world_wildcard, characters acore_characters_wildcard.` on the Wildcard realm.
 
 **Wrong**
 
 - `[FAIL]`, `Patch night FAILED`, `official server is running instead`, `did not come up`, `installer refused`.
 - No run at the scheduled time. No log lines at 3:30 am means the task did not run.
-- The newest release on GitHub differs from the installed build tag for more than a week. A weekly run was missed.
+- The newest release on GitHub was published before 3:30 am Sydney time and is still not the installed build tag
+  after that night's run. A run was missed or the install refused.
+- `Nightly restart: the new build is left for the weekly patch night.`: the old `-NoInstall` task is still
+  registered (see "What Register-PatchNight.ps1 registers").
 - A crash file newer than the last report, or a new kind of line in `Errors.log` since the last start.
 - New unknown settings (see the note under Healthy), or any `Bad value`.
 - Added: any `Enchant fix ... failed`, `Applying the settings reported a problem.`, or
@@ -387,7 +402,7 @@ it saw and that a case file (`docs/agents/case-file-template.md`) is the next st
 | No kept copy of the previous patched build | Only the official server is kept on disk. Older builds are on GitHub Releases. |
 | No lock between a by-hand run and a task | Two copies could overlap. |
 | A stopped server is started by the next task | No "stay down" switch. |
-| OK is said by every mode | `last-run.txt` holds the last outcome of any mode, including `Start-Server.cmd`. The nightly and the weekly run write the same `Patch night OK` wording. Tell them apart by the time. |
+| OK is said by every mode | `last-run.txt` holds the last outcome of any mode, including `Start-Server.cmd`. A by-hand run and the 3:30 am task write the same `Patch night OK` wording. Tell them apart by the time. |
 | VM snapshots | James has said Proxmox snapshots and Ansible exist and that no snapshot rollback has been needed. No procedure is in this repository. |
 
 **Proposed practice (not yet adopted by James; register: `wildcard-change-control/references/proposed-practices.md`):** after every run, search the run's log for `failed` and `[WARN]`
@@ -409,25 +424,25 @@ scheduled task time. Purpose: the script has no lock. No incident on record. Thi
 
 Written 2026-11-22 from the checkout `fcfee51` (PR #232's head on `62a26e4`, #230) and `origin/main` at `d3e030f`
 (#231). `PatchNight.ps1` was last changed by `759c7b6`, `f5d6cf5` and `ba59783`
-on 2026-11-22. Line numbers refer to that version. Re-verify anything that may have drifted:
+on 2026-11-22, and is unchanged at `ed97e40` (2026-11-24). Line numbers refer to that version. Re-verify anything that may have drifted:
 
 ```bash
 # Has the operating code changed since this was written?
 git log d3e030f..origin/main --oneline -- patch-night vm server-settings/Apply-ServerSettings.ps1 docs/agents/context/patch-night.md .claude/agents/patch-night-checker.md
-# Are the agent docs on main yet? (empty = still PR #232 only)
+# The agent docs on main (PR #232, merged 22 Nov 2026)
 git ls-tree --name-only origin/main docs/agents/
 # The self-restart and the release choice (go-live table)
 sed -n 742,754p patch-night/PatchNight.ps1; sed -n 857,866p patch-night/PatchNight.ps1
 # Task names, days, times, switches as registered by the script
-grep -n "Register-Run\|\$Day\|\$Time\|\$NightlyTime\|WarnMinutes\|LogonType\|ScheduledTaskSettingsSet" patch-night/Register-PatchNight.ps1
+grep -n "Register-ScheduledTask\|Nightly Restart\|\$Time\|WarnMinutes\|LogonType\|ScheduledTaskSettingsSet" patch-night/Register-PatchNight.ps1
 # Every log line and outcome the script can write
 grep -n "Log '\|Log \"\|Finish '\|Finish \"" patch-night/PatchNight.ps1
 # What StartAndCheck checks
 sed -n '/^function StartAndCheck/,/^}/p' patch-night/PatchNight.ps1
 # What a run downloads from main
 sed -n '/^function FetchRepo/,/^}/p' patch-night/PatchNight.ps1
-# Build-once rule and the rebuild input
-grep -n "rebuild\|already built" .github/workflows/build-worldserver.yml
+# The automatic rebuild rule (what changed since the newest build) and the rebuild input
+grep -n "INPUTS=\|rebuild\|already built" .github/workflows/build-worldserver.yml
 # Is a 4:37 check or a smoke test built yet?
 git grep -n "4:37\|smoke" -- . ':!.claude/skills'
 # Launcher verbs and the realm guard in the bridge

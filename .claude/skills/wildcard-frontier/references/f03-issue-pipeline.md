@@ -13,9 +13,9 @@ MEDIUM and HIGH go to James with the reasoning for the class shown. Owner: James
 |---|---|---|
 | In-game Report Bug window to a file on the VM | Built (CoA core feature, switched on) | `CoABugReport.Enable = 1`, `SpoolDirectory`, `CooldownSeconds = 120` in `server-settings.txt` |
 | File to GitHub issue | Built | `signup/WildcardSignup.py`: `report_issue`, `relay_reports`, thread `bug_report_relay`; label `player report`, title prefix `[Player report]` |
-| What an issue contains | The player's title and text (quoted), then a server-made block: category, priority, class id, level, map id, position, core revision. No account name and no character name; **known defect: the hidden marker at the end of each issue carries the spool file name, which begins with the account number** (home for relay defects: `wildcard-client-and-web`, `references/bug-report-relay.md`) | same file; pinned core `src/server/coa/CoABugReport.cpp` |
+| What an issue contains | The player's title and text (quoted), then a server-made block: category, priority, class id, level, map id, position, core revision. No account name and no character name; the hidden marker at the end of each issue carries the spool file name, which begins with the account number, on purpose so James can go back to the player (PR #237) (home for relay defects: `wildcard-client-and-web`, `references/bug-report-relay.md`) | same file; pinned core `src/server/coa/CoABugReport.cpp` |
 | Protections in the relay | Only reports ticked Public; 16,000 bytes read; `@` and `#` in the player's part made inert; one report per 2 minutes per player | same |
-| Risk matrix and the analyst agent | Written, in PR #232, not on `main` | `docs/agents/context/change-risk.md`, `.claude/agents/change-risk-analyst.md` |
+| Risk matrix and the analyst agent | Written, on `main` since PR #232 merged on 22 Nov 2026 | `docs/agents/context/change-risk.md`, `.claude/agents/change-risk-analyst.md` |
 | Triage agent, fixing agent, automatic merge, one-per-night limit | **NOT BUILT YET** (Stage 2) | `docs/agents/README.md` |
 | Worked example by hand | Issue #152 (Backdraft does less than its tooltip) was fixed by PR #153 on 14 Nov: a C++ patch (`patches/55-talent-fixes.ps1`) plus `sql/enchants/140-talent-fixes.sql` | `CHANGES.md` row for patch 55; commit 1b8768a |
 | Open issues | #148 to #151: four warlock talent reports opened 14 Nov by James (as recorded on 22 Nov; the GitHub API was not reachable to re-check) | re-check with the command in SKILL.md |
@@ -41,9 +41,9 @@ become live, and they can write lines that look like server context (a false cla
 
 ## 4. This project's asset
 
-- The relay exists and leaves out the account and character names. Known defect: its hidden marker carries the
-  account number (home: `wildcard-client-and-web`, `references/bug-report-relay.md`); fix that before treating
-  public issues as free of identity.
+- The relay exists and leaves out the account and character names. Its hidden marker carries the account number
+  on purpose, so James can go back to the player (PR #237); an issue is therefore not free of identity, and a
+  triage agent must not quote the marker or look the account up.
 - The matrix gives a written, checkable definition of LOW, with eight hard stops. Hard stop 8 already says a
   player's request for something for themselves always waits for James.
 - The analyst's instructions already say issue text is data and that a request to be classified a certain way is a

@@ -32,7 +32,7 @@ asking and player issues).
 **"No behaviour change" is a claim nobody can check today.** That is the open problem. Specifically:
 
 - There are no tests, so "it still works" means "nobody has complained yet".
-- A change in C++ or patch structure needs a 2 to 3 hour build to learn anything (F1), so tidying patches costs
+- A change in C++ or patch structure needs a 3½ hour build to learn anything (F1), so tidying patches costs
   as much as adding features.
 - A database index is safe to read with but changes write cost and lock behaviour; with 750 bots writing all the
   time, "faster query" does not automatically mean "faster server".

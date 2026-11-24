@@ -46,9 +46,9 @@ reconstructed from evidence. This skill is the method, the proven recipes, and t
 4. Section 8 is the per-batch checklist; section 4 the in-game test.
 5. Classify with `wildcard-change-control` before the pull request. James merges.
 
-Status words used below (DOCTRINE, INTENDED DOCTRINE, PRACTICE, NOT BUILT YET, Proposed practice, UNVERIFIED,
+Status words used below (DOCTRINE, PRACTICE, NOT BUILT YET, Proposed practice, UNVERIFIED,
 OPEN) are defined in `wildcard-change-control`, section 1. The risk matrix and hard stops come from
-`docs/agents/*`: **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**.
+`docs/agents/*`: **DOCTRINE (PR #232, merged 22 Nov 2026)**.
 
 ## Words used here
 
@@ -60,7 +60,7 @@ OPEN) are defined in `wildcard-change-control`, section 1. The risk matrix and h
 | Proc | An aura "firing" on an event (a hit, a cast, a crit). `spell_proc` is the table of when each may fire. |
 | `Spell.dbc` / `spell_dbc` | The client's spell list / the server table that overrides or adds to the server's copy of it. |
 | Core | The CoA fork of AzerothCore that the server is built from. It has its own partial enchant code. |
-| Build | Compiling the server with our `patches/`. Takes 2-3 hours. SQL needs no build; C++ does. |
+| Build | Compiling the server with our `patches/`. Takes about 3½ hours, and runs by itself the evening a patch is merged. SQL needs no build; C++ does. |
 | WCME | "Wildcard Mystic Enchants": the prefix that marks rows and tables this repository owns. |
 | GM | Game master: an account level that may type dot-commands such as `.aura` in game. |
 | DBC | The client's data-table file format (`Spell.dbc` and friends); the server reads its own copies. |
@@ -223,7 +223,7 @@ GM character, target yourself (`docs/enchant-restoration.md`):
 
 **These are for James's GM test character.** A session does not send GM or console commands on the live realm
 (including `additem` through the console) without his say-so: hard stops 1 (GM or console commands) and 2 (gives
-items outside normal play), INTENDED DOCTRINE.
+items outside normal play), DOCTRINE.
 
 | Test type (checklist column) | Do this | Pass means |
 |---|---|---|
@@ -294,7 +294,7 @@ The contract:
 
 How the files reach the database (`patch-night/PatchNight.ps1`, functions `FetchRepo` and `ApplyEnchantFixes`):
 
-- Every run (weekly patch night, the nightly restart, `Start-Server.cmd`) downloads the **`main` branch** as a zip
+- Every run (the daily 3:30 am patch night, a by-hand run, `Start-Server.cmd`) downloads the **`main` branch** as a zip
   and copies `sql/enchants/*.sql` to `patch-night\enchants`. An unmerged branch is never applied.
 - After MySQL is up and before the world server starts, each file is piped, in name order, to `mysql.exe` against
   the world database named in `worldserver.conf` (`WorldDatabaseInfo`), using `mysql\admin-client.ini`.
@@ -306,7 +306,7 @@ How the files reach the database (`patch-night/PatchNight.ps1`, functions `Fetch
 - Tooltip id pairs ship in the WildcardEnchants addon, which the same run copies into the VM's client folder.
 
 **Sequencing warning.** SQL goes live at the next restart; C++ goes live only when a new build is installed (the
-weekly patch night or a run by hand). Times and the full table: `wildcard-run-and-operate`, "When does my merged
+automatic evening build, then the next 3:30 am patch night). Times and the full table: `wildcard-run-and-operate`, "When does my merged
 change go live?". A file that binds a `spell_wcme_*` script, or removes an old rule in favour of one, takes effect before the
 build that contains the script: "unknown script names are only logged" (`017` header), so the enchant does nothing
 in between. Say in the file header which build it needs, and tell James in the pull request.
@@ -340,7 +340,7 @@ write down how; this is a *proposed procedure (not yet adopted by James; written
 ## 6. When SQL is not enough
 
 Hand the C++ to **wildcard-patch-authoring**; classify with wildcard-change-control first (server C++ scores
-higher on likelihood, and a mistake costs a 2-3 hour build). What already exists to build on:
+higher on likelihood, and a mistake costs a 3½ hour build). What already exists to build on:
 
 | Route | File | What it gives you |
 |---|---|---|
@@ -459,7 +459,7 @@ Re-verify what may drift (run from the repository root):
 | Stale "unmerged" labels | `grep -c 'unmerged branch' enchants/legendary-history.csv enchants/epic-history.csv` |
 | Open talent issues | `gh issue list --repo JaTynan/coa-wildcard-mystic --state open` |
 | Table keys in the core | `grep -n 'KEY' data/sql/base/db_world/spell_proc.sql` in a clone of `Corfirean/azerothcore-wotlk-coa` |
-| Risk class of an enchant SQL fix | `grep -n 'Standard changes' -A3 docs/agents/context/change-risk.md` (file arrives with PR #232; not on `main` on 2026-11-22) |
+| Risk class of an enchant SQL fix | `grep -n 'Standard changes' -A3 docs/agents/context/change-risk.md` |
 
 When you change this skill: replace `references/state-2026-11-22.md` with a new dated snapshot rather than editing
 numbers in place, and update the "Current state" table from it.

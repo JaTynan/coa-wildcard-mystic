@@ -19,14 +19,14 @@ The honest starting point, as of 2026-11-22:
 - A static checker now exists and is tested: `scripts/repo_lint.py` (this skill). On the current repository it
   reports 0 errors and 6 warnings.
 
-Why this matters here more than usual: a build takes 2-3 hours on GitHub Actions and often fails deep inside (a
+Why this matters here more than usual: a build takes about 3½ hours on GitHub Actions and often fails deep inside (a
 failed anchor, a compile error, a start-up failure after install). Every failure caught before the build saves
 those hours. Pipeline, testing and validation is the owner's second priority, after the lag spikes.
 
 Words used below, once:
 
 - **DOCTRINE**: a rule written in README.md, CHANGES.md or docs/ on `main`. Follow it.
-- **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**: anything in `docs/agents/*` or `.claude/agents/*`
+- **DOCTRINE (PR #232, merged 22 Nov 2026)**: anything in `docs/agents/*` or `.claude/agents/*`
   (the risk matrix, hard stops, L4, the LOW path, `patch-night.md`). Those files are not on `main` yet; every
   citation of them below carries this status.
 - **PRACTICE**: what the history shows people actually did. Useful, not binding.
@@ -84,7 +84,7 @@ line, a dated in-game result are. Each rung proves more than the one before, and
 |---|---|---|---|---|
 | 1 | Static check | The files are well-formed and follow the repository's written rules | That anything works | `repo_lint.py`; `enchant_audit.py` verdicts; reading code or spell data ("works from its data") |
 | 2 | Applies cleanly | The patch finds its anchors in the pinned sources; the SQL loads without error, **twice** | That it compiles; that the rows do the right thing | Patch pre-flight (wildcard-patch-authoring); scratch-database double run |
-| 3 | Builds | It compiles and links on Windows with every other patch | That it starts | The GitHub build (2-3 h). A local Linux compile is a partial rung 3: three Windows-only failures are on record |
+| 3 | Builds | It compiles and links on Windows with every other patch | That it starts | The GitHub build (about 3½ h, automatic the evening a patch is merged). A local Linux compile is a partial rung 3: three Windows-only failures are on record |
 | 4 | Starts and reports its revision | The program loads and prints its version | That the world loads. Build 57 passed this and stopped at start-up | Workflow step `worldserver.exe --version`; the installer repeats it on the VM |
 | 5 | World initialises, no new errors | The server loads all data and scripts on the real database, on the expected revision, and stays up a minute | That your feature works | `StartAndCheck` in PatchNight.ps1 (world initialised, revision, alive after 60 s). **"No new Errors.log lines" and "0 unknown settings" (see the note on that rule in section 3) are checked by nobody automatically**: read them yourself |
 | 6 | In-game functional test by a GM | A person saw the change do what it should, once | Edge cases; bots; load; that it still works after the next change | GM commands; `enchants/test-checklist.csv`; record it (section 7) |
@@ -113,7 +113,8 @@ Rules for using the ladder:
 | Racials | James "auditioned in game" each racial's effect and sound on 20 Nov | commit 22fae33 |
 | Settings script rewrites | Old and new run side by side on copies of the config files, outputs compared | commit d802f8c |
 | Client patch | Tried on one private client first: `GetSpellInfo(911367)` | commit 34083eb |
-| Going live | Merge to `main`; SQL, settings and addons arrive at the 4:00 am restart, builds at the weekly patch night; players are the soak | PatchNight.ps1, Register-PatchNight.ps1 |
+| Going live | Merge to `main`; SQL, settings and addons arrive at the 4:00 am restart, builds at the next 3:30 am patch night after the evening build; players are the soak | PatchNight.ps1, Register-PatchNight.ps1 |
+| **Testing policy (James, 23 Nov 2026)** | James no longer tests by hand: "either I wait for players to report issues or discrepancies or they have to be automated". So a merged fix stays **unverified** until a player report or an automated test says otherwise, and a PR or skill never calls it tested. Proof before merge comes from reading, independent review (`patch-reviewer`), pre-flight and scratch-database runs; proof after merge from player reports and automated checks. The automated in-game test rig is NOT BUILT YET | James in chat, 23 Nov 2026 (not yet written in the repository) |
 | Merge cadence | CHANGES.md says "one PR per patch night". History shows up to 31 merged pull requests in a day (8 Nov) and 205 in 24 days. Both are facts; this skill does not resolve the difference (wildcard-change-control owns it) | CHANGES.md; `git log origin/main --merges --first-parent` |
 
 ## 3. Proposed acceptance thresholds (not yet adopted by James)
@@ -139,14 +140,14 @@ Numbers proposed alongside the table (each **not yet adopted**; the motivating f
 
 | Threshold | Proposed value | Based on |
 |---|---|---|
-| Unknown settings after a start | **No NEW unknown names compared with the previous run's list** (Proposed practice). The doc's rule is "0 unknown": docs/agents/context/patch-night.md lists "Unknown settings, or any Bad value" under "What is wrong" (INTENDED DOCTRINE) | Prediction from the code (wildcard-settings-and-flags): about 28 working settings can never pass "0 unknown" (names built at run time, read by prefix, or read only by the website), and the refinement `5978ee4` is not on `main`. UNVERIFIED on the VM: compare with a real `settings-report.txt` before adopting either rule |
+| Unknown settings after a start | **No NEW unknown names compared with the previous run's list** (Proposed practice). The doc's rule is "0 unknown": docs/agents/context/patch-night.md lists "Unknown settings, or any Bad value" under "What is wrong" (DOCTRINE) | Prediction from the code (wildcard-settings-and-flags): about 28 working settings can never pass "0 unknown" (names built at run time, read by prefix, or read only by the website), and the refinement `5978ee4` is not on `main`. UNVERIFIED on the VM: compare with a real `settings-report.txt` before adopting either rule |
 | Bad values after a start | 0 | Same |
 | Failed enchant SQL files | 0 | Today a failure is a WARN and the run still ends OK (PatchNight.ps1 ApplyEnchantFixes) |
 | Downtime | Healthy about 2 minutes; over 5 minutes is reported (doctrine: patch-night.md). Proposed hard limit 30 minutes | James's stated tolerance: about 30 minutes of downtime, about 15 minutes of data loss |
 | New kinds of line in `Errors.log` | 0 without an explanation | patch-night.md: "a new kind of line in Errors.log since the last start" is wrong |
 | New crash files | 0 | patch-night.md |
 | Tick time after a change | No number here: the single home for lag pass/fail numbers is the proposed exit metric in wildcard-lag-spike-campaign (Phase 1 step 5; tool `spike_gates.py metric`) | One day of readings exists (22 Nov, one player: wildcard-lag-spike-campaign `references/evidence-2026-11-22.md`); a multi-evening baseline does not |
-| Soak before "done" for HIGH | 7 days | One full weekly patch-night cycle |
+| Soak before "done" for HIGH | 7 days | Seven daily patch-night runs and one full turn of the weekly event rotation |
 | Enchant fix "verified" | One dated GM result that says what was seen, on the build that is live | docs/enchant-restoration.md: "A fix passes when it does what its tooltip says. Write the result and date in the tracker's tested column" (doctrine) |
 
 ## 4. How this ties to L4 in the risk matrix
@@ -178,7 +179,7 @@ Consequence, by the matrix's own arithmetic (read it before promising anyone an 
 - Server C++ is L1 = 3 (doctrine). With L4 = 3 as well, the likelihood total is at least 10 once the other four
   checks score their minimum of 1 each. Low likelihood needs 6-8, so **a C++ patch is never low likelihood today**;
   three more points anywhere (size, hot path, understanding, precedent) make it high (13+).
-- Impact check I3 (undo) is 2 for "revert and rebuild (2-3 h)". A patch with no setting to turn it off therefore
+- Impact check I3 (undo) is 2 for "revert and rebuild" (the matrix says 2-3 h; a build is about 3½ h now). A patch with no setting to turn it off therefore
   has medium impact at least, and medium x medium is MEDIUM: James merges.
 - So a C++ patch can come out LOW only when it has an off switch that works (I3 = 1), every other impact score is
   1, and the likelihood total stays at 12 or under. That is the practical value of the CHANGES.md rule "every new
@@ -413,8 +414,8 @@ ls .github/workflows; git ls-files | grep -iE "(^|/)tests?/|_test\.|/test_"
 grep -n -A44 "^function StartAndCheck" patch-night/PatchNight.ps1; tail -n 12 patch-night/PatchNight.ps1
 # A failed SQL file is still only a WARN
 grep -n "Enchant fix" patch-night/PatchNight.ps1
-# The LOW path still names the smoke test, 4:37 and rollback; L4 wording (PR #232 only until it merges)
-git show origin/agents-stage-1:docs/agents/context/change-risk.md | grep -nE "smoke|4:37|L4"
+# The LOW path still names the smoke test, 4:37 and rollback; L4 wording
+git show origin/main:docs/agents/context/change-risk.md | grep -nE "smoke|4:37|L4"
 # Nothing implements the 4:37 check (expect no output)
 grep -rn "4:37" --exclude-dir=.claude --include="*.ps1" --include="*.py" --include="*.yml" --include="*.cmd" .
 # What 000-reset.sql removes (see stats.reset_rules), and UPDATEs of owned rows

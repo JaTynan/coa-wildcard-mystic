@@ -193,7 +193,7 @@ These pass every anchor check and were each a real or demonstrated way to lose a
 
 | Not proven | Who proves it |
 |---|---|
-| The C++ compiles with MSVC (types, missing includes, names in the wrong namespace) | The build (2-3 h). The text check is a few regular expressions, not a compiler |
+| The C++ compiles with MSVC (types, missing includes, names in the wrong namespace) | The build (about 3½ h). The text check is a few regular expressions, not a compiler |
 | It links | The build |
 | The server starts with it | The build's only runtime check is `worldserver.exe --version`; start-up is seen at install time (sibling skill wildcard-validation-and-qa) |
 | It does what the description says, for players, bots and Wildcard Heroes | Review (the checklists in SKILL.md, the patch reviewer) and testing in game |

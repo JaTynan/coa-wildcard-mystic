@@ -3,7 +3,7 @@
 Read this before your first classification, or when unsure how a check is scored.
 
 **What these are.** Retrospective teaching examples written on 2026-11-22. None of these PRs was classified when
-it was merged: the matrix was written on 22 Nov 2026 (PR #232, still unmerged that day) and all five were merged by
+it was merged: the matrix was written on 22 Nov 2026 (PR #232, merged that evening) and all five were merged by
 James before or without it. The scores are this skill's reading of `docs/agents/context/change-risk.md`, not
 rulings by James or Fable. Where a score is arguable it says so; "when in doubt, take the higher" was applied.
 
@@ -40,7 +40,7 @@ Hard stop: none
 Impact: I1 2, I2 2, I3 1, I4 1 -> medium
 Likelihood: L1 1, L2 1, L3 1, L4 1, L5 2, L6 1 = 7 -> low
 Class: LOW        Confidence: high (see note on I2)
-Path: LOW. Intended: automatic, live at the next nightly restart. Today: James merges (automatic merge NOT BUILT YET).
+Path: LOW. Intended: automatic, live at the next 3:30 am patch night. Today: James merges (automatic merge NOT BUILT YET).
 Evidence:
   I1 2: bots are a system most players use (the matrix names bots in the 2 column).
   I2 2: bot characters are world-side data SQUID's module recreates; no player data. Taken as 2, not 1, because

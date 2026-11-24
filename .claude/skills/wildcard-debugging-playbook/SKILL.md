@@ -1,6 +1,6 @@
 ---
 name: wildcard-debugging-playbook
-description: Triage and symptom lookup for the Wildcard private WoW server (CoA AzerothCore fork). Load it first whenever something is broken or behaving oddly and the layer at fault is not yet known - a failed GitHub build (anchor "Core changed", "SQUID changed", compile or CreateProcess errors), the world server not starting or crashing ("Duplicate blank sub-command"), patch night or the nightly restart failing or falling back to the official server, a setting that does not take effect, SQL or database errors (MySQL 1046, slow character list), a Mystic Enchant that never fires, fires on every hit or applies twice, addon or tooltip faults, client crashes, bots frozen or spamming whispers, launcher or download site errors, sign-up or website pages blank. Gives a first-five-minutes triage with the file to read per layer, a 90-row symptom, cause, check and fix table citing commits and PRs, experiments that split competing explanations, and traps that cost real time. Not for lag or tick-time problems.
+description: Triage and symptom lookup for the Wildcard private WoW server (CoA AzerothCore fork). Load it first whenever something is broken or behaving oddly and the layer at fault is not yet known - a failed GitHub build (anchor "Core changed", "SQUID changed", compile or CreateProcess errors), the world server not starting or crashing ("Duplicate blank sub-command"), patch night failing or falling back to the official server, a setting that does not take effect, SQL or database errors (MySQL 1046, slow character list), a Mystic Enchant that never fires, fires on every hit or applies twice, addon or tooltip faults, client crashes, bots frozen or spamming whispers, launcher or download site errors, sign-up or website pages blank. Gives a first-five-minutes triage with the file to read per layer, a 90-row symptom, cause, check and fix table citing commits and PRs, experiments that split competing explanations, and traps that cost real time. Not for lag or tick-time problems.
 ---
 
 # Wildcard debugging playbook
@@ -8,9 +8,8 @@ description: Triage and symptom lookup for the Wildcard private WoW server (CoA 
 Use this when something is wrong and you do not know why yet. It tells you **which layer is broken, how to prove
 it, and what was done the last time it happened**. Every row comes from this repository's own history: commit
 messages, script comments and docs. Facts are as of 2026-11-22 (`origin/main` at `d3e030f`, #231).
-`docs/agents/*` and `.claude/agents/*` are cited below; on 2026-11-22 they exist only in PR #232 (open), so what
-rests on them is **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**. On `main`, read them with
-`git show origin/agents-stage-1:docs/agents/context/<file>`. Status words (DOCTRINE, PRACTICE, NOT BUILT YET, OPEN ...)
+`docs/agents/*` and `.claude/agents/*` are cited below; they
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and are on `main`: what rests on them is **DOCTRINE**. Status words (DOCTRINE, PRACTICE, NOT BUILT YET, OPEN ...)
 are defined in `wildcard-change-control`, section 1.
 
 Three ground rules:
@@ -20,7 +19,7 @@ Three ground rules:
 2. **Anything that changes the live server, a setting, SQL, a patch or a script: classify with
    wildcard-change-control first.** Patch night, the build workflow, the installer and rollback are hard stops in
    `docs/agents/context/change-risk.md` (always James). James merges.
-3. **A build takes 2 to 3 hours. That is normal.** Do not describe a running build as slow or stuck, and do not
+3. **A build takes about 3½ hours. That is normal.** Do not describe a running build as slow or stuck, and do not
    "try a rebuild" as a diagnostic step when a cheaper check exists.
 
 VM paths below are the ones the repo's scripts and docs use (`patch-night/PatchNight.ps1`,
@@ -48,8 +47,8 @@ The PowerShell lines in this file were written but not executed on 2026-11-22.
   of `Server.log`.
 - **Anchor**: the exact piece of upstream source text a patch script searches for before editing. If it is not found
   exactly once the build stops on purpose.
-- **Patch night**: `patch-night/PatchNight.ps1` on the VM. Two scheduled runs: the weekly patch night (also
-  installs a new build) and the nightly restart (no new build). Schedule: `wildcard-run-and-operate`.
+- **Patch night**: `patch-night/PatchNight.ps1` on the VM. One scheduled run, daily at 3:30 am (restart
+  4:00 am), which also installs a new build. Schedule: `wildcard-run-and-operate`.
 - **SQUID's bots**: the mod-playerbots module that runs the roughly 750 random bots.
 - **Wildcard Hero**: the realm's classless character, class id 10.
 - **Proc**: an effect that fires when something else happens (a hit, a cast).
@@ -136,15 +135,14 @@ git log --all --no-merges -i --grep='<two or three words of the symptom>' --form
 | MySQL error 1046 | P5 |
 | "... from GitHub does not read cleanly; keeping the current copy" | P8 |
 | "Enchant fix ... failed: ..." | P9 |
-| "Nightly restart: the new build is left for the weekly patch night." (normal) | P10 |
+| "Nightly restart: the new build is left for the weekly patch night." (old task still registered) | P10 |
 | "repaired: N garbled line(s) in ..." | C1 |
 | "the world database did not answer" (website) | Q2 |
 | Bot whisper "I have a master already" | R2 |
 | Launcher: one file 404 (`web.config`) | L1 |
 | Client: "Unable to connect" from outside the home network | L3 |
 
-Normal lines that are **not** faults (`docs/agents/context/patch-night.md`): "Nightly restart: the new build is left
-for the weekly patch night"; "No patched build found for this core, but the installed patched server matches it";
+Normal lines that are **not** faults (`docs/agents/context/patch-night.md`): "No patched build found for this core, but the installed patched server matches it";
 settings "on defaults" (only a change in their number matters).
 
 ## Discriminating experiments
@@ -188,10 +186,9 @@ build that contains it is installed; the client patch only when rebuilt and copi
 | C++ (`patches/`) | The release notes of the installed tag contain "This repository: OWNER/REPO SHA". Then: `git merge-base --is-ancestor <fix-commit> <SHA> && echo in-build` (or `which_build.py` in `wildcard-build-and-env`) |
 | Client patch (`patch-ZZW.MPQ`) | File date in the client's `Data` folder |
 
-The scheduled build makes each manager release once (row B9), so a merged C++ patch is in no build until the
-workflow is run with **rebuild** ticked. James starts that run, or a session he has told to
-(`wildcard-build-and-env`, rule 2: a finished build is a release the weekly patch night will install). Example on
-2026-11-22: patch 96 (`13a03d3`, #228) is merged and in no build.
+Since PR #241 the evening build picks up a merged C++ patch by itself (row B9), and the next 3:30 am patch night
+installs it. A patch merged after the evening run started, or a failed build, means a day's wait. A by-hand rebuild
+is James's call (`wildcard-build-and-env`, rule 2).
 
 ### 4. Is it the server, or the client (addon, client patch)?
 
@@ -319,10 +316,10 @@ git log --all --no-merges --since=2026-11-22 -i --grep='fix\|fail\|crash\|revert
 grep -ho "throw ['\"][A-Za-z' -]* changed" patches/*.ps1 | sort | uniq -c
 # Messages quoted from patch night still exist
 grep -n "does not read cleanly\|came up on core\|stopped within a minute\|kept our patched world server\|Enchant fix" patch-night/PatchNight.ps1
-# The build's only run-time check, the response-file flag and the build-once rule
-grep -n "worldserver.exe\" --version\|CMAKE_NINJA_FORCE_RESPONSE_FILE\|already built" .github/workflows/build-worldserver.yml
-# Patch night times as registered by default
-grep -n "Day = \|Time = \|NightlyTime = \|WarnMinutes = " patch-night/Register-PatchNight.ps1
+# The build's only run-time check, the response-file flag and the automatic rebuild rule
+grep -n "worldserver.exe\" --version\|CMAKE_NINJA_FORCE_RESPONSE_FILE\|INPUTS=" .github/workflows/build-worldserver.yml
+# Patch night time as registered by default
+grep -n "Time = \|WarnMinutes = \|Nightly Restart" patch-night/Register-PatchNight.ps1
 # Bot wake settings (trap 9) and the level cap (row C2)
 grep -n "BotActiveAloneForceWhen\|MaxPlayerLevel" server-settings/server-settings.txt
 # Row C3: is the repair commit pushed after PR #218 on main yet? (rc 1 = still missing)

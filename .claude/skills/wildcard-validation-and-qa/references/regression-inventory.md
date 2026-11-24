@@ -9,7 +9,7 @@ less than the incident did. A project with no tests gets its first tests from it
 the failures known to be possible here. The full stories are in the sibling wildcard-failure-archaeology; this
 file only keeps what a check needs.
 
-Cost reminder: a failure found in the build costs 2-3 hours; one found at patch night costs a night without the
+Cost reminder: a failure found in the build costs about 3½ hours and a day; one found at patch night costs a night without the
 change, or without Mystic Enchants if the fallback fires; one found by a player costs trust.
 
 ## Top 10 (ranked by cost x how cheaply a check would have caught it)

@@ -9,10 +9,9 @@ All facts were read from the repository at `origin/main` `d3e030f` on 2026-11-22
 that day**: VM paths and behaviour come from the scripts, their defaults and commit messages. Where a claim could not
 be verified it says UNVERIFIED and how to verify it.
 
-Status words: DOCTRINE (README, CHANGES.md, docs on `main`) / INTENDED DOCTRINE (PR #232, unmerged) / PRACTICE /
+Status words: DOCTRINE (README, CHANGES.md, docs on `main`) / DOCTRINE (PR #232, merged 22 Nov 2026) / PRACTICE /
 NOT BUILT YET / Proposed practice (not yet adopted by James) / UNVERIFIED / OPEN. The hard stops and the risk matrix
-cited below are from `docs/agents/context/change-risk.md`, which exists only in PR #232 (head `fcfee51`, open on
-2026-11-22): **INTENDED DOCTRINE (PR #232, unmerged on 2026-11-22)**.
+cited below are from `docs/agents/context/change-risk.md`, which came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and is on `main`: what rests on it is **DOCTRINE**.
 
 ## When NOT to use this skill
 
@@ -47,8 +46,8 @@ Words used once and then assumed:
   the game client (`F:\CoAClient`).
 - **The manager**: CF-Server-Manager, the program that installs and runs the server. Its command-line side is
   `Scripts\manage.py`, run through `patch-night\launcher_bridge.py`.
-- **Patch night**: `patch-night/PatchNight.ps1`. It runs weekly (Tuesday 11:00 pm, with a new build) and nightly
-  (starts 3:30 am, restart at 4:00 am Sydney, no new build), and by hand through `Start-Server.cmd` or
+- **Patch night**: `patch-night/PatchNight.ps1`. It runs every night (starts 3:30 am, restart at 4:00 am Sydney,
+  installing any new build), and by hand through `Start-Server.cmd` or
   `Run-PatchNight-Now.cmd`. Every run downloads `main` from GitHub first.
 - **The tunnel**: a Cloudflare tunnel that publishes two web ports of the VM as `wildcard.jtlab.cc` and
   `join.jtlab.cc`. The game itself does NOT go through it.
@@ -56,7 +55,7 @@ Words used once and then assumed:
 
 ## 1. Stop here first: hard stops in this territory
 
-`docs/agents/context/change-risk.md` (added by PR #232, still open on 2026-11-22: INTENDED DOCTRINE) lists
+`docs/agents/context/change-risk.md` (added by PR #232, merged 22 Nov 2026: DOCTRINE) lists
 changes that always wait for James, whatever their size. Most of this skill's territory sits on them:
 
 | Hard stop | What it covers here |
@@ -90,7 +89,7 @@ PCs or the server do says so: **classify with wildcard-change-control first; Jam
                      Cloudflare tunnel -> https://wildcard.jtlab.cc  -----> friend's launcher and browser
   "Wildcard Sign-up" task, port 8089 (sign-up, /api/status, /api/pets, bug-report relay)
                      Cloudflare tunnel -> https://join.jtlab.cc      -----> friend's browser, site pages
-  Seedbox share link (CoAClient.tar, about 43 GB) ------------------------> first install only
+  Seedbox share link (CoAClient.tar, about 43 GB; link kept in launcher-local.json on the VM) -> first install only
 
   Game traffic (NOT the tunnel): friend -> wow.jtlab.cc (Cloudflare, DNS only) -> home gateway forwards
   TCP 3724 (login) and 8085 (world) -> the VM's LAN address.   At home: straight to that LAN address
@@ -102,7 +101,7 @@ PCs or the server do says so: **classify with wildcard-change-control first; Jam
 | 1 | Windows launcher (v5) | `launcher/WildcardLauncher.ps1`, `Start Wildcard.cmd` | - (friend's PC) | `launcher-site.txt` beside it | `launcher.log` beside it |
 | 2 | Linux launcher (v6) | `launcher/WildcardLauncher.py` | - (friend's PC) | `launcher-linux.json` | `launcher.log` |
 | 3 | Download site | `launcher/site/*`, `Setup-WildcardSite.ps1` | IIS website `Wildcard`, port 8088; firewall rule `Wildcard site` | IIS | IIS's own |
-| 4 | Publisher | `launcher/Publish-WildcardSite.ps1`, `launcher-settings.json` | called by patch night after every good start; by hand `Publish-WildcardSite.cmd` | `launcher-settings.json` (public) | one line in `patch-night.log` |
+| 4 | Publisher | `launcher/Publish-WildcardSite.ps1`, `launcher-settings.json` | called by patch night after every good start; by hand `Publish-WildcardSite.cmd` | `launcher-settings.json` (public; `clientArchiveUrl` left empty) and `launcher-local.json` on the VM (the archive link, gitignored, PR #242) | one line in `patch-night.log` |
 | 5 | Sign-up + status + pets + relay | `signup/*.py`, `Register-WildcardSignup.ps1` | scheduled task `Wildcard Sign-up` (at log-on), port 8089; firewall rule `Wildcard sign-up` | `signup-settings.json` (SECRET, gitignored) | `signup.log` |
 | 6 | Addons | `addon/*`, `addon/third-party-addons.txt` | copied by patch night into `F:\CoAClient\Interface\AddOns` | the `.toc` files | `patch-night.log` |
 | 7 | Client patch | `client-patch/*.py` | built by hand, copied by hand to `F:\CoAClient\Data\patch-ZZW.MPQ` | Python data in the builders | none |
@@ -194,7 +193,8 @@ It checks: both launcher version lines are readable by the publisher, `launcher-
 agrees across launchers and `server-settings.txt`, Python files compile, site pages match the menu, each `.toc`
 lists files that exist, third-party pins are full commits, `150-custom-spells.sql` matches its generator, and no
 client data, secrets file or token pattern is tracked. Result on 2026-11-22: 13 ok, 4 warnings (three committed
-`__pycache__` files, and the share link in a public file), 0 failures. It cannot parse PowerShell.
+`__pycache__` files, and the share link in a public file), 0 failures. Both causes are gone since (PR #242 and
+the `__pycache__` removal). It cannot parse PowerShell.
 
 ### 6.2 Publish the site now (VM)
 
@@ -263,7 +263,7 @@ The website and the game use different roads (tunnel versus port forwards), so o
 
 | What the friend sees | Most likely | Check |
 |---|---|---|
-| Between 3:30 and about 4:10 am Sydney, or Tuesday from 11 pm (30-minute countdown, then the restart) | the restart | wait; the site's status pill says Restarting or Offline |
+| Between 3:30 and about 4:10 am Sydney (30-minute countdown, then the restart) | the restart | wait; the site's status pill says Restarting or Offline |
 | Launcher: `Game server: not answering (wow.jtlab.cc)` and the site says Online | the road from outside to port 3724: DNS for `wow.jtlab.cc`, the gateway's forward, or the friend's own firewall | from outside the home network: `Test-NetConnection wow.jtlab.cc -Port 3724` and `-Port 8085`. Fixing it is hard stop 3: **[James]** |
 | Launcher: not answering, and the site says Offline or Restarting | the server is down | wildcard-run-and-operate |
 | Launcher says online, login works, the realm shows, then stuck on connecting to the realm | the realm list holds the wrong address (the home address or 127.0.0.1) or port 8085 is not forwarded | the status board's "Realm" rows (minimised `Wildcard server status` window on the VM), or `patch-night.log`: `Realm list points friends at wow.jtlab.cc again, from server-settings (realm ...)` |
@@ -380,10 +380,12 @@ Facts only. The forward plan lives in wildcard-frontier.
 1. Patch night parse-checks its own scripts and the settings scripts before using them, but not `launcher/*.ps1`.
    A launcher that does not parse, with a raised version, would reach every friend (6.3).
 2. One process (`Wildcard Sign-up`) carries sign-up, status, pets, the bug-report relay and the status board.
-3. The bug-report marker exposes the account number; the `### Server context` split; one refused report blocks
+3. The `### Server context` split (the account number in the marker is intended, PR #237); one refused report blocks
    the queue (all in `references/bug-report-relay.md`).
 4. The site has no login. `launcher/README.md` says so: anyone who knows the address can download the client. The
-   first-install share link is in the public repository and in `launcher.json`.
+   first-install share link is served in `launcher.json` by design. Since PR #242 (23 Nov) it is no longer in the
+   repository: it lives in `launcher-local.json` on the VM. The old link is still in git history; leave the history
+   alone (James) and treat it as live until he confirms it is revoked.
 5. The sign-up service trusts the `CF-Connecting-IP` header for its per-address limits. The firewall rule limits
    who can reach port 8089 to the Servers network, so the header is only as trustworthy as that network.
 6. The changelog reads one page (100) of pull requests sorted by last update; in a week with more merged PRs than

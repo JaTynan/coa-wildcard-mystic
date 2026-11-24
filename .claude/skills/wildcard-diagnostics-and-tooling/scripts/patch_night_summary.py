@@ -8,7 +8,7 @@ What the file is
 
     with a level of INFO, OK, WARN or FAIL (function Log). A run opens with one of
 
-        ---- patch night started ----                               (weekly, nightly, or Run-PatchNight-Now.cmd)
+        ---- patch night started ----                               (the daily 3:30 am task, or Run-PatchNight-Now.cmd)
         ---- start server (Start-Server.cmd) ----
         ---- rebuild Wildcard bots (Rebuild-WildcardBots.cmd) ----
 
@@ -169,7 +169,7 @@ def flags(run):
     if run["installing"] and not run["installed"]:
         out.append("INSTALL NOT CONFIRMED")
     if run["nightly_skip"]:
-        out.append("new build left for weekly")
+        out.append("NEW BUILD NOT INSTALLED (-NoInstall: old nightly task still registered?)")
     if run["self_update"]:
         out.append("script updated itself")
     return ", ".join(out)

@@ -59,7 +59,7 @@ Three limits of today's fallback worth stating plainly:
 
 ## 3. Stage 1: at pull request time (minutes, ubuntu runner)
 
-Purpose: fail before a 2-3 hour build is spent.
+Purpose: fail before a 3½ hour build is spent.
 
 | # | Check | Tool | Pass | Fail action |
 |---|---|---|---|---|
@@ -147,7 +147,7 @@ script. Thresholds marked * are **proposed acceptance thresholds (not yet adopte
 | 3.5 | Ports answer | TCP connect to the auth and world ports from `Settings\repack.json` (defaults 3724 and 8085; `WorldAcceptsPlayers` already does this for the world port) | Both within 2 s | HARD |
 | 3.6 | Console round trip | `server info` through the bridge (`ra-once`), as PatchNight's `Ra` and the status service do | Reply within 20 s containing `Connected players:` | HARD |
 | 3.7 | No crash | Files in `Core\Crashes` newer than the start | None | HARD |
-| 3.8 | Settings: unknown | `settings-report.txt` line `Unknown, in neither the .dist nor the server program (...): N.` | No name that was not in the previous run's list * (Proposed practice). The context pack's rule is N = 0 (INTENDED DOCTRINE), but wildcard-settings-and-flags predicts about 28 working settings can never pass it and the refinement `5978ee4` is not on `main`; UNVERIFIED on the VM | SOFT (HARD if a new name appeared and the night's change touched settings) |
+| 3.8 | Settings: unknown | `settings-report.txt` line `Unknown, in neither the .dist nor the server program (...): N.` | No name that was not in the previous run's list * (Proposed practice). The context pack's rule is N = 0 (DOCTRINE), but wildcard-settings-and-flags predicts about 28 working settings can never pass it and the refinement `5978ee4` is not on `main`; UNVERIFIED on the VM | SOFT (HARD if a new name appeared and the night's change touched settings) |
 | 3.9 | Settings: bad value | `Values it could not use (N):` in the same report | N = 0 * | SOFT, as 3.8 |
 | 3.10 | Settings on defaults | `Settings it uses but no config file sets ... (N):` | N equals baseline (the doc: "only a change in their number matters") | INFO |
 | 3.11 | Enchant SQL applied | Count of `Applied enchant fix` lines in this run equals the number of `.sql` files downloaded; zero `Enchant fix ... failed` | Both | SOFT (HARD if the night's change was SQL) |

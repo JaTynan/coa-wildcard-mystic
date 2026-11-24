@@ -14,9 +14,8 @@ anything else is a path in this repository. Facts were checked on **2026-11-22**
 `server-0.261119.114` (core `c3f2fd4b`, SQUID `4ef5ed9e`, tag v3.0). Upstream line numbers move with every
 release: when one matters, re-find it with the grep commands at the end of each file.
 
-`docs/agents/*` and `.claude/agents/*` are cited below. On 2026-11-22 they exist only in PR #232 (open): what
-rests on them (the hard stops, the risk matrix, the patch rules) is **INTENDED DOCTRINE (PR #232, unmerged on
-2026-11-22)**. On `main`, read them with `git show origin/agents-stage-1:docs/agents/context/<file>`. Status words are
+`docs/agents/*` and `.claude/agents/*` are cited below (the hard stops, the risk matrix, the patch rules). They
+came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and are on `main`: what rests on them is **DOCTRINE**. Status words are
 defined in `wildcard-change-control`, section 1.
 
 ## When NOT to use this skill
@@ -304,6 +303,21 @@ Cost settings (`server-settings.txt:467-508`): `AiPlayerbot.MinRandomBots` / `Ma
 `AiPlayerbot.botActiveAloneSmartScale` (not set here, SQUID default on: sheds awake bots as the tick goes from 50
 to 200 ms); `MapUpdate.Threads` = 6; `Visibility.Distance.Continents` = 100.
 
+**Altbots on Wildcard (22-24 Nov 2026, issues #233 and #248).** Five patches make a player's own Wildcard Hero
+alts look after themselves, each with its own switch in `server-settings.txt`:
+
+| Patch | Does | Setting |
+|---|---|---|
+| 97 | Hero altbots train from the Wildcard trainer's list at its prices | `AiPlayerbot.WildcardHeroesUseWildcardTrainer` |
+| 98 | They learn from a class book that is out within 30 yards | `AiPlayerbot.WildcardAltsUseNearbyClassBook` |
+| 43 | SQUID's "learn what is available" step skips class trainers for Hero altbots (it had taught them a slice of every class), plus a one-off clean-up of class abilities never rolled | `AiPlayerbot.WildcardAltsSkipClassTrainers`, `...RemoveUnrolledClassSpells` (a counter: raise it to run again) |
+| 44 | They take the ability, talent and stat-path rolls their level has earned; never rerolls or spends a scroll | `AiPlayerbot.WildcardAltsRollOnLevelUp` |
+| 99 | Altbots, and characters a player logs in to, learn the books the account already owns (core half in `AscensionCompat.cpp`) | `AiPlayerbot.WildcardAltsLearnOwnedBooks`, `Wildcard.LearnOwnedBooks` |
+
+What they do is logged under the category `wcme.alts` (`Logger.wcme.alts = 4,Server`, Server.log only): the
+root logger passes errors only, so lines at Info under SQUID's own categories reached no file (PR #255). Random
+bots never run any of this. Verified in game: nothing yet.
+
 The manager switches both bot systems off on Wildcard whenever its own Start button is used. Start with
 `patch-night\Start-Server.cmd` (README.md).
 
@@ -349,7 +363,7 @@ world.
 | `spell_script_names` | Restart (no reload command at the pin) |
 | `wcme_enchant_teach`, `wcme_enchant_override`, `wcme_enchant_action`, `coa_mystic_enchant_*` | Restart (read in start-up code) |
 | `wcme_proc_target_cooldown` | Restart (read once, at the first proc) |
-| Anything in `patches/` | A build (2 to 3 hours) and an install |
+| Anything in `patches/` | A build (automatic that evening, about 3½ hours) and the next 3:30 am install |
 
 In practice the project does not hot-reload: SQL is applied by patch night just before the world server starts,
 and `000-reset.sql` must never run against a live world. Treat the reload rows as knowledge for a test realm.

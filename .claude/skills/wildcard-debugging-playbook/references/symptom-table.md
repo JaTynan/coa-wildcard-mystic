@@ -11,13 +11,12 @@ How to read a row:
 
 VM paths are as the repo's scripts and docs state them (server folder `C:\Games\CoA Server`); they were not
 re-verified on the VM on 2026-11-22. Rows are as of `origin/main` at `d3e030f` (2026-11-22). Evidence cells that cite
-`docs/agents/*` point at files that exist only in PR #232 (open on 2026-11-22; read them with
-`git show origin/agents-stage-1:<path>`).
+`docs/agents/*` point at files that came with PR #232 (merged 22 Nov 2026) and are on `main`.
 
 Any fix route that changes the live server, a setting, SQL, a patch or a script: **classify with
 wildcard-change-control first.** James merges.
 
-Contents: [Build](#build-github-actions) | [Start-up](#start-up) | [Patch night](#patch-night-and-nightly-restart) |
+Contents: [Build](#build-github-actions) | [Start-up](#start-up) | [Patch night](#patch-night) |
 [Settings](#settings) | [Database](#database-and-sql) | [Game behaviour](#game-behaviour-c-patches) |
 [Enchants](#mystic-enchants) | [Addons](#addons) | [Client](#client-patch-and-game-client) | [Bots](#bots) |
 [Launcher and site](#launcher-and-download-site) | [Sign-up and web services](#sign-up-and-web-services) |
@@ -25,7 +24,7 @@ Contents: [Build](#build-github-actions) | [Start-up](#start-up) | [Patch night]
 
 ## Build (GitHub Actions)
 
-The build is `.github/workflows/build-worldserver.yml`. A full run takes 2 to 3 hours; that is normal, not a fault.
+The build is `.github/workflows/build-worldserver.yml`. A full run takes about 3½ hours (3h30 to 3h45 for builds 61 to 74); that is normal, not a fault.
 
 | ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
 |---|---|---|---|---|---|
@@ -37,7 +36,7 @@ The build is `.github/workflows/build-worldserver.yml`. A full run takes 2 to 3 
 | B6 | Warning C4067 on an `#include` line, then "undeclared" errors for a class from the next include (it was `DcSelfFoundPlanner`) | A patch script's inserted text (a PowerShell here-string) had no final line break, so the last added `#include` ran into the file's next line and the compiler ignored that line. | Look at the patched file around the insertion: two `#include`s on one line. | End the inserted text with a line break. The local check had added the line break itself, so it passed; a local check must reproduce the script's text exactly. | e0cc2f5 (#210) |
 | B7 | Compile error in mod-ollama-chat: `IsHeadless` is not a member | The module was written for a core where the call has that name; on the CoA core it is `IsBot`. | The error is in `core/modules/mod-ollama-chat`. | `patches/10-mod-ollama-chat-fit.ps1` renames the call. | d05134f (#42), fb60c6c |
 | B8 | Step "Apply the official build's module patches" stops with "checksum ... differs from the release's ...", "is listed but ... was not checked out" or "does not apply to ..." | The release list and the official build repository disagree, or a module commit moved. | `python3 -I scripts/resolve_release.py latest` prints the commits and checksums the build will use. | wildcard-build-and-env. | script (workflow); added by 01159e2 (#187) |
-| B9 | You merged a patch, the daily build ran, and it says "TAG is already built; nothing to do." | By design the scheduled build makes each manager release once. A merged patch does not cause a new build. | `git tag -l 'wcme-server-*'` (after a fetch) or the Releases page: is there a build newer than your merge? Release notes hold "This repository: OWNER/REPO SHA". | Run the workflow by hand with **rebuild** ticked (Actions, "Build patched worldserver", Run workflow). Release .114 has five builds (57, 61, 62, 68, 70), so re-running for the same release is routine. | workflow job `check`, step "Build only releases not built before" |
+| B9 | You merged a patch and no new build appeared the next morning | Since PR #241 the evening build rebuilds when `patches/` changed since the newest build. Either the scheduled run checked out before your merge (it starts about 8:37 to 10:50 pm Sydney), it waited behind a by-hand run and then found nothing new, or it failed. Before 23 Nov the schedule built each manager release once and printed "TAG is already built; nothing to do." | Actions run list for that evening: did `check` print "Changed since ..." and did `build` run and pass? `which_build.py <commit>`. | Late merge: wait for the next evening. Failed build: the failure catalogue in `wildcard-build-and-env`. A by-hand run with **rebuild** ticked is James's call (hard stop 5). | workflow job `check`, step `decide` |
 | B10 | Build passes, server fails at start-up | The only run-time check in the build is `worldserver.exe --version`. It proves the program starts, not that the world loads. | See rows S1 to S5. | Proposed checks live in wildcard-validation-and-qa. | workflow step "Check it starts and reports its revision"; 01159e2 |
 
 ## Start-up
@@ -58,14 +57,14 @@ world is up), then `Core\Logs\Errors.log` (lines after the last start), then `Co
 | S9 | SQUID's bots are off on Wildcard after starting the server with the manager's own Start button | The manager forces `AiPlayerbot.Enabled = 0` on Wildcard whenever it starts the server. | `AiPlayerbot.Enabled` in `modules\playerbots.conf`. | Start with `patch-night\Start-Server.cmd`, which applies the settings and starts without that step. | 465c928 (#4); README |
 | S10 | New characters crash at first login | OPEN. `SkipCinematics = 2` was set on 30 Oct "to test whether the intro cinematic causes" it. No result is recorded in the repo. | Does it still happen with the setting at 2? Record the answer. | wildcard-failure-archaeology for the history. | aaf4df4 (#13) |
 
-## Patch night and nightly restart
+## Patch night
 
 Look first at `patch-night\last-run.txt` (one line), then `patch-night\patch-night.log` between
 "---- patch night started ----" and "---- patch night finished ----".
 
 | ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
 |---|---|---|---|---|---|
-| P1 | No log lines at the scheduled time | Both scheduled tasks run as James and only while he is signed in on the VM. | Task Scheduler: "CoA Patch Night", "CoA Nightly Restart"; last run time. | James signs in; nothing to fix in the repo. | `docs/agents/context/patch-night.md`; `patch-night/Register-PatchNight.ps1` (LogonType Interactive) |
+| P1 | No log lines at the scheduled time | The scheduled task runs as James and only while he is signed in on the VM. | Task Scheduler: "CoA Patch Night" (and "CoA Nightly Restart", which should no longer exist); last run time. | James signs in; nothing to fix in the repo. | `docs/agents/context/patch-night.md`; `patch-night/Register-PatchNight.ps1` (LogonType Interactive) |
 | P2 | WARN "The manager installed core X (auth server), but kept our patched world server from core Y" | The manager's Update keeps a world server it sees was changed (ours), so the saved official copy is stale. The auth server is always the manager's own, so its revision shows the real release. | That log line; then whether "Patched build available" follows. | Patch night goes by the auth server. Until a build for core X exists you get "No patched build for core X yet; the official server keeps running (no Mystic Enchants on Wildcard)". | f83171d (#29), 0736bae (#30) |
 | P3 | "The installer refused or failed; continuing with the server as it was", or the installer says "This build is for core A, but the manager installed core B" | The build was made for a different core than the one installed. The installer refuses so the databases and the program always match. | `server\core-revision.txt` in the package against the manager's core. | Build for the installed release. | script (`vm/Install-WildcardServer.ps1`) |
 | P4 | "Patch night FAILED on the patched server; the official server is running instead (no Mystic Enchants)" | The patched server did not come up (rows S1, S4, S5), so patch night copied the official program back. | Why the patched start failed: lines above the FAIL. | Fix the cause, new build. Players can play meanwhile, without Mystic Enchants on Wildcard. | script (step 5 of `PatchNight.ps1`) |
@@ -74,14 +73,14 @@ Look first at `patch-night\last-run.txt` (one line), then `patch-night\patch-nig
 | P7 | Downtime much longer than about 2 minutes | (a) Applying 261 settings tested every line of the config files: about 3 minutes. (b) Windows PowerShell 5.1 redraws a progress bar per downloaded block: a 38 MB build took 2 min 20, a 25 MB addon 8 minutes. | The "Downtime: N s" line and the timestamps between log lines. | Settings indexed by name (24.6 s to 1.7 s in the test); progress bar off; preparing now happens during the countdown and only the world server restarts. | d802f8c, f5d6cf5, 759c7b6 (all #229) |
 | P8 | A script change you merged is not in use on the VM; WARN "... from GitHub does not read cleanly; keeping the current copy" | Patch night refuses a downloaded `.ps1` that has a syntax error and keeps the old one, so a mistake merged in the day cannot take the server down at night. | That WARN line. Also "Cannot download from GitHub (...); using the local copies." | Fix the syntax error. | script (`FetchRepo`, `ParsesCleanly`) |
 | P9 | "Enchant fix NNN-name.sql failed: ..." but the run still ends "Patch night OK" | A failed SQL file is only a WARN; the server starts anyway without that fix. | Search the run for "failed:"; a healthy file logs "Applied enchant fix NNN-name.sql to DATABASE." | Fix the SQL (ascension-restoration). Do not trust "OK" alone. | script (`ApplyEnchantFixes`) |
-| P10 | A new build is on GitHub but was not installed overnight | The nightly restart never installs builds: "Nightly restart: the new build is left for the weekly patch night." | That INFO line. | Wait for the weekly patch night (Tuesday 11 pm is the script's default; what the VM has registered is UNVERIFIED: `Get-ScheduledTask 'CoA Patch Night' \| Get-ScheduledTaskInfo`), or James runs `Run-PatchNight-Now.cmd` (it restarts the live server: hard stop 5, James decides). | `Register-PatchNight.ps1` (`-NoInstall`) |
+| P10 | A new build is on GitHub but was not installed overnight | (a) The build finished after that night's 3:30 am run (builds start about 8:37 to 10:50 pm Sydney and take about 3½ h). (b) The run was given `-NoInstall`: it logs "Nightly restart: the new build is left for the weekly patch night." No task passes it since 23 Nov, so that line means the old `CoA Nightly Restart` task is still registered. (c) The release notes do not name the installed core. | Release time against 3:30 am; that INFO line; `Get-ScheduledTask 'CoA Patch Night','CoA Nightly Restart'`. | (a) Wait one night. (b) James runs `Register-PatchNight.cmd` again, which removes the old task. A by-hand `Run-PatchNight-Now.cmd` restarts the live server: hard stop 5, James decides. | `Register-PatchNight.ps1`; `PatchNight.ps1:875` |
 | P11 | The countdown ran with nobody able to hear it, or a run by hand counted down an empty server | The console is silent while the world is still loading, which read as "players unknown". | Log line "The world is not accepting players (still starting or stuck), so there is nobody to warn." | Patch night now tests the game port first. | e244a47 (#83) |
 | P12 | Disk fills; `world-console.log` is gigabytes | The manager appends every start's console output forever (3 GB by 22 Nov). | Size of `Core\Logs\world-console.log`. | Changed, **not confirmed; status OPEN**: logs are meant to be cleared once then dated per run, newest 3 kept (759c7b6), and bot roll/packet lines were moved off the console (f9dc45a, shipped 20 Nov, no after-measurement). On 22 Nov the file was 2.99 GB again; that day's server start (08:53) predates the merges of #229 to #231, so the clear/rotation had not run yet. Check `patch-night.log` after the next restart for "Cleared world-console.log" or "Left world-console.log as it is for now (in use)". | 759c7b6 (#229), f9dc45a (#204) |
 
 ## Settings
 
 Look first at `server-settings\settings-report.txt` and the "Settings:" line of the last run in `patch-night.log`.
-Healthy by `docs/agents/context/patch-night.md` (INTENDED DOCTRINE): "0 unknown", no "Bad value". Prediction from the code, UNVERIFIED on the VM: about 28 working settings can never pass the unknown-name test, and the refinement `5978ee4` is not on `main`. So judge by **no NEW unknown name** against the previous run's list (Proposed practice, not yet adopted by James; home: `wildcard-settings-and-flags`, section 5).
+Healthy by `docs/agents/context/patch-night.md` (DOCTRINE): "0 unknown", no "Bad value". Prediction from the code, UNVERIFIED on the VM: about 28 working settings can never pass the unknown-name test, and the refinement `5978ee4` is not on `main`. So judge by **no NEW unknown name** against the previous run's list (Proposed practice, not yet adopted by James; home: `wildcard-settings-and-flags`, section 5).
 
 | ID | Symptom | Likely cause | Check that tells | Fix route | Evidence |
 |---|---|---|---|---|---|
@@ -114,7 +113,7 @@ Healthy by `docs/agents/context/patch-night.md` (INTENDED DOCTRINE): "0 unknown"
 | X5 | A healing enchant reads the wrong unit (healer and target swapped) for heal-over-time | The core passes the heal hook's units as (healer, target) for direct heals and (target, healer) for periodic ticks. | Does it work for direct heals and fail for ticks? | Helper `WcmeHealParties` puts them in order. | 09c12c0 (in #178) |
 | X6 | A stacking bonus stops just short of its cap (49% instead of 50%) | The value only refreshed on changes of 1% or more, and the last step was smaller. | Compare the shown value with the cap at one level. | Always land exactly on full and empty. | 193a319 (#162) |
 | X7 | Something works for CoA classes and not for Wildcard Heroes | Wildcard Heroes are class 10; class tables and spec lookups often have no row for them. | Is there a table or switch keyed by class in that code? | wildcard-patch-authoring checklist. | `docs/agents/context/patches.md` item 5 |
-| X8 | A fix was merged but the old behaviour is still live | C++ only changes when a build that contains the merge is **installed** (weekly patch night or a run by hand). SQL, settings and addons go live at the next start. | `Core\worldserver.patched-release.txt` against the release whose notes name a commit that contains the fix. | Row B9. | bb308cc (#177); d8f9215 ("live doubling stays until a build with this PR is installed") |
+| X8 | A fix was merged but the old behaviour is still live | C++ only changes when a build that contains the merge is **installed** (the 3:30 am patch night or a run by hand). SQL, settings and addons go live at the next start. | `Core\worldserver.patched-release.txt` against the release whose notes name a commit that contains the fix. | Row B9. | bb308cc (#177); d8f9215 ("live doubling stays until a build with this PR is installed") |
 
 ## Mystic Enchants
 
@@ -161,7 +160,7 @@ made for another realm type that works; a link (`spell_linked_spell`) puts the t
 |---|---|---|---|---|---|
 | R1 | Bots near players walk a few steps, then stand still for 20 minutes or more | OPEN. Seen with `AiPlayerbot.BotActiveAloneForceWhenInZone = 0` and only the 300-yard wake radius, "although the radius check reads correctly". | Are both `...ForceWhenInZone = 1` and `...ForceWhenInRadius = 300` set? | Zone waking was switched back on "until that is understood". Do not switch it off again as a performance fix without solving this. | e608f61 (#88), c02ba12 (#95) |
 | R2 | Battleground bots whisper "I have a master already" over and over | In a battleground raid the random bots answer to their own leader, so every whisper from a player or an addon (SquidBots Lite polls its bots) got that reply. | Does it happen only in battlegrounds, and with the addon on? | Patch 61: they refuse quietly. | 549f50a (#159) |
-| R3 | Random bots whisper a canned line back every 30 seconds | An addon whispers bot commands ("co ?", "wcr", ...) to every "... Bot" in the party; SQUID's live chat took each for small talk. | Same as R2. | Patch 96 swallows a whisper that is a bot command. Merged 21 Nov, **in no build as of 2026-11-22**: it needs a workflow run with rebuild ticked (James's say-so), then the weekly patch night. Until then random bots still answer. | 13a03d3 (#228) |
+| R3 | Random bots whisper a canned line back every 30 seconds | An addon whispers bot commands ("co ?", "wcr", ...) to every "... Bot" in the party; SQUID's live chat took each for small talk. | Same as R2. | Patch 96 swallows a whisper that is a bot command. Merged 21 Nov; in build 74, installed 24 Nov. | 13a03d3 (#228) |
 | R4 | Wildcard and CoA bots never bring a dead pet back | SQUID only revived pets in its Hunter routine. | Bot class. | Patch 87. | 33bda95 (#206) |
 | R5 | No Hero bots, or bots in the wrong classes | See S6 and S7. | | | |
 | R6 | The world is slow with bots awake | Not for this skill: wildcard-lag-spike-campaign. | | | f9dc45a (#204), 6a3e017 (#217) |

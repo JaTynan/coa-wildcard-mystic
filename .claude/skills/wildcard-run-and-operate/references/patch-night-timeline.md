@@ -108,7 +108,7 @@ program is ours.
 |---|---|
 | `Patched build available: TAG.` | A matching release exists. |
 | `It is already installed.` | Tag equals the record. No install. |
-| `Nightly restart: the new build is left for the weekly patch night.` | `-NoInstall` run and the tag differs. No install. INFO. |
+| `Nightly restart: the new build is left for the weekly patch night.` | `-NoInstall` run and the tag differs. No install. Since 23 Nov no task passes `-NoInstall`, so this line now means a by-hand run with the switch or the old `CoA Nightly Restart` task still registered. |
 | `No patched build found for this core, but the installed patched server matches it already.` WARN | No matching release was found, or GitHub could not be reached, and the live program is ours. Fine. |
 | `No patched build for core REV yet; the official server keeps running (no Mystic Enchants on Wildcard).` WARN | The manager is on a release we have not built. Needs a build. See `wildcard-build-and-env`. |
 | `Cannot reach GitHub releases: REASON` WARN | Carries on without a release. |
@@ -131,7 +131,7 @@ Only if a `worldserver` process exists. Sends `server info` over RA and reads `C
 Warnings come at the full time, then 15, 10, 5 and 1 minutes, dropping any mark larger than the full time. In game
 they read "Nightly restart: the server restarts in N minutes for maintenance and is back within 5 minutes." and, at
 one minute, "Nightly restart: the server restarts in 1 minute. Find a safe spot! It is back within 5 minutes."
-(`Announce`, line 909). The wording says "Nightly restart" on Tuesday too.
+(`Announce`, line 909). The wording says "Nightly restart" on every run, including those that install a build.
 
 If no world server is running, this phase logs nothing, and the run goes on to start the server.
 
@@ -317,8 +317,8 @@ Things that follow from the code and have not been observed in a real run:
 - After `The server came up on core A, expected B.` the world is left running. If the fall-back also mismatches,
   the last line says the server is not up while a world server may in fact be running. Check
   `Get-Process worldserver` before believing it.
-- After a fall-back, the nightly restart will not reinstall the build. The next weekly patch night or by-hand run
-  does, and it will hit the same failure if the cause is still there.
+- After a fall-back the release record is deleted, so the next run (the 3:30 am patch night, every night since 23
+  Nov) installs the same build again, and hits the same failure if the cause is still there.
 
 ## All outcome lines (`last-run.txt`)
 
@@ -329,13 +329,13 @@ Things that follow from the code and have not been observed in a real run:
 |---|---|---|
 | Any | `Missing PATH; nothing was changed.` | 1 |
 | Any | `Stopped with an unexpected error: REASON` | 1 |
-| Patch night, nightly | `Cannot read the revision of PATH; nothing was changed.` | 1 |
-| Patch night, nightly, start | `No settings kit at PATH; nothing was changed.` | 1 |
+| Patch night (task or by hand) | `Cannot read the revision of PATH; nothing was changed.` | 1 |
+| Patch night (task or by hand), start | `No settings kit at PATH; nothing was changed.` | 1 |
 | Patch night | `Release TAG has no zip; nothing was changed.` | 1 |
 | Patch night | `The downloaded package has no installer; nothing was changed.` | 1 |
-| Patch night, nightly | `Patch night OK: WHAT, settings checked, server up on core REV.` | 0 |
-| Patch night, nightly | `Patch night FAILED on the patched server; the official server is running instead (no Mystic Enchants). See patch-night.log.` | 1 |
-| Patch night, nightly | `Patch night FAILED: the server is not up. Start it in the manager and check patch-night.log.` | 1 |
+| Patch night (task or by hand) | `Patch night OK: WHAT, settings checked, server up on core REV.` | 0 |
+| Patch night (task or by hand) | `Patch night FAILED on the patched server; the official server is running instead (no Mystic Enchants). See patch-night.log.` | 1 |
+| Patch night (task or by hand) | `Patch night FAILED: the server is not up. Start it in the manager and check patch-night.log.` | 1 |
 | Start-Server | `Server started on core REV with your settings.` | 0 |
 | Start-Server | `The server is already running. Stop it in the manager first to restart it with bots.` | 1 |
 | Start-Server | `Cannot read the revision of PATH.` | 1 |
@@ -383,5 +383,7 @@ Things that follow from the code and have not been observed in a real run:
 | 22 Nov | `759c7b6` | Staged run: prepare during the countdown, restart only the world, console log rotation, downtime line, parse check |
 | 22 Nov | `f5d6cf5` | No download progress bar. The 38 MB build had taken 2 min 20 s |
 | 22 Nov | `ba59783` | Settings check report, config encoding repair, 20 settings backups kept |
+| 23 Nov | `aef54f0` (PR #240) | One daily task, `CoA Patch Night` at 3:30 am, that also installs builds; the register script removes `CoA Nightly Restart` |
+| 23 Nov | `0cce318` (PR #241) | The build workflow rebuilds by itself when `patches/`, the workflow or the resolver changed |
 
 Full list: `git log origin/main --format='%h %ad %s%n%b' --date=short -- patch-night vm`
