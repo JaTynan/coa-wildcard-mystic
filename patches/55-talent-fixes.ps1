@@ -641,3 +641,124 @@ $cap = @'
 $text = $text.Replace($anchor, $cap.Replace("`r`n", "`n") + "`n" + $anchor)
 Set-Content $file $text -NoNewline
 }
+
+# ---- Percent-of-damage companions (aura 354) the core does not list (talent companions batch 4: Harbinger of
+#      Plague, Reave)
+Write-Host "Patch: Harbinger of Plague and Reave deal their share of damage (aura 354 scripts)"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# Ascension's aura 354 deals a percentage of the triggering damage as another spell. The core runs it only for its
+# own list of spells (AuraEffect::CheckEffectProc and HandleAscensionPercentEventProc); for any other spell it asks
+# the aura's scripts whether to proc and then does nothing. These scripts answer and do the casting, so the core's
+# code is not touched. Each needs its spell_proc row and binding (sql/enchants/146).
+$class = @'
+static int32 WcmePercentOfDamage(uint32 damage, int32 pct)
+{
+    return pct <= 0 ? 0 : int32(std::min<uint64>(std::numeric_limits<int32>::max(), uint64(damage) * uint32(pct) / 100));
+}
+
+// Wildcard: Harbinger of Plague (talent 276427, companion 276433). While a Harbinger of Plague buff from Wrath is on
+// you (276430 or 276432), Haunt also hits up to 10 enemies near its target for 30% of its damage (276435).
+class spell_wcme_harbinger_of_plague : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_harbinger_of_plague);
+
+    bool CheckProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        Unit* owner = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        DamageInfo* damage = eventInfo.GetDamageInfo();
+        return owner && eventInfo.GetActor() == owner && target && target != owner && damage && damage->GetDamage() &&
+            aurEff->GetAmount() > 0 && (owner->HasAura(276430) || owner->HasAura(276432));
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        int32 const amount = WcmePercentOfDamage(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount());
+        if (amount)
+            GetTarget()->CastCustomSpell(eventInfo.GetActionTarget(), 276435, &amount, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckEffectProc += AuraCheckEffectProcFn(spell_wcme_harbinger_of_plague::CheckProc, EFFECT_0, SPELL_AURA_ASCENSION_PROC_PERCENT_EVENT);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_harbinger_of_plague::HandleProc, EFFECT_0, SPELL_AURA_ASCENSION_PROC_PERCENT_EVENT);
+    }
+};
+
+// Harbinger's Bile (276435) hits enemies around Haunt's target; from Harbinger of Plague it spares that target,
+// which Haunt itself already hit ("nearby targets"). Any other use of the spell is left alone.
+class spell_wcme_harbinger_bile : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_harbinger_bile);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        SpellInfo const* from = GetTriggeringSpell();
+        if (from && from->Id == 276433)
+            if (Unit* primary = GetExplTargetUnit())
+                targets.remove(primary);
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_harbinger_bile::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+    }
+};
+
+// Wildcard: Reave (280990-280997, the Hero version; its passive 280998 is held by wcme_spell_companion). Each hit adds
+// Shadow damage as a share of Reave's damage, per condition met: behind the enemy (effect 0, 100%, 280999), the
+// enemy below 35% health before the hit (effect 1, 125%, 281000), the enemy bleeding (effect 2, 100%, 281001). The
+// conditions are the ones the core uses for the Bloodmage class's own Reave (AscensionBloodmageSecondary.cpp).
+class spell_wcme_reave_passive : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_reave_passive);
+
+    bool CheckProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        Unit* owner = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        DamageInfo* damage = eventInfo.GetDamageInfo();
+        SpellInfo const* spell = eventInfo.GetSpellInfo();
+        if (!owner || eventInfo.GetActor() != owner || !target || target == owner || !damage || !damage->GetDamage() ||
+            !spell || spell->Id < 280990 || spell->Id > 280997 || aurEff->GetAmount() <= 0)
+            return false;
+        switch (aurEff->GetEffIndex())
+        {
+            case EFFECT_0:
+                return !target->HasInArc(float(M_PI), owner);
+            case EFFECT_1:
+                return (uint64(target->GetHealth()) + damage->GetDamage()) * 100 < uint64(target->GetMaxHealth()) * 35;
+            default:
+                return target->HasAuraState(AURA_STATE_BLEEDING);
+        }
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        uint32 const trigger = GetSpellInfo()->Effects[aurEff->GetEffIndex()].TriggerSpell;
+        int32 const amount = WcmePercentOfDamage(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount());
+        if (amount && sSpellMgr->GetSpellInfo(trigger))
+            GetTarget()->CastCustomSpell(eventInfo.GetActionTarget(), trigger, &amount, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckEffectProc += AuraCheckEffectProcFn(spell_wcme_reave_passive::CheckProc, EFFECT_ALL, SPELL_AURA_ASCENSION_PROC_PERCENT_EVENT);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_reave_passive::HandleProc, EFFECT_ALL, SPELL_AURA_ASCENSION_PROC_PERCENT_EVENT);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_harbinger_of_plague);`n    RegisterSpellScript(spell_wcme_harbinger_bile);`n    RegisterSpellScript(spell_wcme_reave_passive);`n")
+Set-Content $file $text -NoNewline
+}
