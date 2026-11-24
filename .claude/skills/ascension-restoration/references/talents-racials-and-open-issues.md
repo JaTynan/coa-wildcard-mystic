@@ -69,6 +69,28 @@ effect, the companion the rest). A row is a lead: read both spells before fixing
 `duplicate` column, and do not link a companion whose aura the core ignores (T3) or that duplicates the
 talent's own effect.
 
+### Batches, by type (James, 24 Nov: work through them by type, so a problem met once is solved the same way)
+
+| Batch | Type | Status |
+|---|---|---|
+| 1 | Plain bonuses: an aura link per rank (`sql/enchants/141-talent-companions.sql`) | 25 talents; waiting for James to merge; unverified |
+| 2 | Event-driven companions (aura 42): link plus proc rules from the tooltip | next |
+| 3 | Conditional: only in a form, on a stat path, while Swashbuckling, while a spell is learned (aura-link recipe R7) | Corrupted Bear Form, Divinity, Swashbuckler: Flurry of Blows, Glyph of Trueshot Aura |
+| 4 | Needs code: weapon-dependent linked auras, unimplemented class-script overrides, Ascension aura types | Two-Handed Weapon Mastery, Bloodletting, Careful Aim, Harbinger of Plague, Reave |
+| 5 | Active abilities with a passive companion (no aura to link from) | Thrust, Weighted Reinforcement |
+| - | Outliers for James | Icy Reach (Mage companion on a Death Knight talent) |
+
+Lessons from batch 1, for every later batch:
+- A tooltip that says "does not stack" over a companion with the adding duration aura (232): own a copy with
+  aura 234, which the core resolves as the strongest single cut.
+- A capstone shown greyed out below the final rank links from the final rank only.
+- A talent that only teaches spells has no aura of its own: link from the taught passive.
+- A linked companion with a weapon requirement is removed with the weapon and not put back until login: drop the
+  requirement (if the tooltip allows) or wait for batch 4's code.
+- Look for sibling companions the tooltip does not quote (fear cuts next to stun cuts, 902313-902321).
+- Run the file on a real MariaDB twice before the PR: the lint missed an unescaped apostrophe (`enchant_sql_lint.py`
+  now catches it).
+
 Before scripting, check the core does not already do it (`enchants/core-overlap-review.csv`) and read every
 version of the ability a Hero can learn (Hand of Gul'dan has 954611 and 2304611 -> 2304612; both summon guardians
 through summon properties row 61).
