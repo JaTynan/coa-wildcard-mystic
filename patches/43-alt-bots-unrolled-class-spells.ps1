@@ -19,7 +19,7 @@
 #         their chain and their rank ladder), and the core did not grant it together with an ability the character
 #         keeps (the copy of the core's ENTRY_SPELLS table below: a taunt with Defensive Stance, and so on);
 #      d. it is not a stat path spell.
-#    Every removal is logged ("playerbots.coa"). The alt is marked with N in its player settings
+#    Every removal is logged (category "wcme.alts", written to Server.log by Logger.wcme.alts in server-settings.txt). The alt is marked with N in its player settings
 #    (wcme.wildcard.alt_clean) so it runs once; raise N to run it again for everyone. An alt with no rolled build at
 #    all, or one where the rule would remove more than 600 spells, is left alone and logged.
 # Alts only: random bots are not touched by either part.
@@ -235,7 +235,7 @@ void CleanWildcardAltSpells(Player* bot)
         keep(path.SpellId);
     if (!rolled)
     {
-        LOG_INFO("playerbots.coa", "Wildcard alt {}: no rolled build to compare with, its spells are left alone",
+        LOG_INFO("wcme.alts", "Wildcard alt {}: no rolled build to compare with, its spells are left alone",
                  bot->GetName());
         return;
     }
@@ -266,7 +266,7 @@ void CleanWildcardAltSpells(Player* bot)
 
     if (extra.size() > 600)
     {
-        LOG_WARN("playerbots.coa", "Wildcard alt {}: the rule would remove {} spells, which is not believable; "
+        LOG_WARN("wcme.alts", "Wildcard alt {}: the rule would remove {} spells, which is not believable; "
                  "nothing was removed", bot->GetName(), extra.size());
         return;
     }
@@ -277,13 +277,13 @@ void CleanWildcardAltSpells(Player* bot)
         if (!bot->HasSpell(spellId))
             continue;  // a higher rank or a granted spell that left with an earlier one
         SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId);
-        LOG_INFO("playerbots.coa", "Wildcard alt {}: removed unrolled class spell {} ({})", bot->GetName(), spellId,
+        LOG_INFO("wcme.alts", "Wildcard alt {}: removed unrolled class spell {} ({})", bot->GetName(), spellId,
                  info && info->SpellName[0] ? info->SpellName[0] : "?");
         bot->removeSpell(spellId, SPEC_MASK_ALL, false);
         ++removed;
     }
     bot->UpdatePlayerSetting(MARK, 0, wanted);
-    LOG_INFO("playerbots.coa", "Wildcard alt {} (level {}): {} unrolled class spell(s) removed, {} rolled or granted "
+    LOG_INFO("wcme.alts", "Wildcard alt {} (level {}): {} unrolled class spell(s) removed, {} rolled or granted "
              "spell(s) protected", bot->GetName(), bot->GetLevel(), removed, kept.size());
     if (removed)
         ForgetWildcardKit(bot);

@@ -108,7 +108,7 @@ void LearnOwnedBooks(Player* bot)
             if (book.item == item && !bot->HasSpell(book.spell))
             {
                 bot->learnSpell(book.spell);
-                LOG_INFO("playerbots", "Alt bot {} learned book companion {} from its account's vanity item {}",
+                LOG_INFO("wcme.alts", "Alt bot {} learned book companion {} from its account's vanity item {}",
                          bot->GetName(), book.spell, item);
             }
     } while (owned->NextRow());

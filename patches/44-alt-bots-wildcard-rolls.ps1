@@ -74,7 +74,7 @@ static bool RollForWildcardAlt(Player* bot)
 
     auto const after = filled();
     if (after != before)
-        LOG_INFO("playerbots.coa", "Wildcard alt {} (level {}) took {} roll(s) it had earned",
+        LOG_INFO("wcme.alts", "Wildcard alt {} (level {}) took {} roll(s) it had earned",
                  bot->GetName(), bot->GetLevel(), after - before);
     ForgetWildcardKit(bot);
     return role != GetWildcardRole(bot) || style != GetWildcardStyle(bot);
