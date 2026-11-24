@@ -76,7 +76,7 @@ talent's own effect.
 | 1 | Plain bonuses: an aura link per rank (`sql/enchants/141-talent-companions.sql`) | 25 talents; waiting for James to merge; unverified |
 | 2 | Event-driven companions: link plus proc rules, or action-table rules (`sql/enchants/142-talent-companions-procs.sql`) | 8 talents; waiting for James to merge; unverified |
 | 3 | Conditional: core aura links, recipe R7 (`sql/enchants/143-talent-companions-conditional.sql`) | Divinity (on Path of Strength), Glyph of Trueshot Aura (while Trueshot Aura is on); waiting for James to merge; unverified. Swashbuckler: Flurry of Blows was already an aura link in 007. |
-| 4 | Needs code. Part 1 (`patches/55-talent-fixes.ps1` ability companions, `sql/enchants/144-ability-companions.sql`): Thrust, Two-Handed Weapon Mastery, and Careful Aim (data after all: a conditional link). Still to do: aura 354 rules (Harbinger of Plague, Reave), class-script overrides and Ascension-only effect types, bespoke scripts | Bloodletting, Harbinger of Plague, Reave; from batch 2: Battle Fatigue, Beacon of Virtue, Divine Reset, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon; from batch 3: Corrupted Bear Form (its Shadow-damage proc has no trigger rules, so today the talent does nothing; the 20% penalty alone would make it worse); from batch 5: Thrust (an active ability whose armour-ignore passive needs "while you know X, you have Y", which this core cannot express in data: it has no learn-spell table) |
+| 4 | Needs code. Part 1 (`patches/55-talent-fixes.ps1` ability companions, `sql/enchants/144-ability-companions.sql`): Thrust, Two-Handed Weapon Mastery, and Careful Aim (data after all: a conditional link). Part 2 (`sql/enchants/145-talent-companions-native-effects.sql`, and patch 55's cap for effect 173): Battle Fatigue (extensions capped at +50%) and Divine Reset, whose companions use effect types this core runs. Part 3 (`sql/enchants/146-talent-companions-percent-damage.sql`, patch 55 aura scripts): Harbinger of Plague and Reave. Still to do: class-script overrides and Ascension-only effect types, bespoke scripts | Bloodletting; from batch 2: Beacon of Virtue, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon; from batch 3: Corrupted Bear Form (its Shadow-damage proc has no trigger rules, so today the talent does nothing; the 20% penalty alone would make it worse); from batch 5: Thrust (an active ability whose armour-ignore passive needs "while you know X, you have Y", which this core cannot express in data: it has no learn-spell table) |
 | 5 | Active abilities with a passive companion (no aura to link from) | Done 24 Nov, no SQL. Weighted and Jagged Reinforcement already work: their shield enchants (280422, 280420) carry the companion as an equip spell (SpellItemEnchantment type 3), applied while the shield is worn. Thrust moves to batch 4 (row above). |
 | - | Left out by James (24 Nov 2026) | Icy Reach: a Death Knight talent whose tooltip quotes the Mage range companions (829023, 829014). Linking them would add range to Mage spells only, and stack with Arctic Reach at a different rank. James: "Leave it out." Do not link it in a later batch. |
 | - | Outlier | One With The Light: its companion fires 275371, which is not in the game data; linking it as it is would log an error every second |
@@ -100,10 +100,11 @@ Lessons from batch 1, for every later batch:
 Lessons from batch 2:
 - A `spell_proc` row with Chance 0 falls back to the spell's own chance. With an action-table rule carrying the
   chance, set the row to 100, or the two roll twice.
-- Companions that fire Ascension-only effect types (165 and 197: cooldown cuts; 173: duration changes) cannot fire
-  as they are. A cooldown cut goes in the action table (`reduce_cooldown`); bind the script to the companion. On a
-  match the script stops the companion's own effect (PreventDefaultAction), and without one nothing fires. Never
-  set a disable mask on every effect: then the aura cannot proc at all, script included.
+- (Corrected in batch 4.) This lesson first said effect types 165, 173 and 197 do not exist in this core. They do:
+  see the batch 4 lessons. What stands: the action table (`reduce_cooldown`, bound to the companion) is the tool
+  when the trigger must be exact spells or the companion's own effect is a placeholder. On a match the script stops
+  the companion's own effect (PreventDefaultAction), and without one nothing fires. Never set a disable mask on
+  every effect: then the aura cannot proc at all, script included.
 - A trigger that must be exact spells (Meteor's two versions, Align, a Druid spell on a Mage talent) goes in the
   action table, which lists ids; a family mask cannot isolate them.
 - A spell that summons (Meteor 760040) deals its damage through another spell: proc on cast, not on hit.
@@ -136,6 +137,31 @@ Lessons from batch 4:
   honoured only for listed spell ids, each with its own condition: 341 (Unit.cpp allowlist, patch 65) and 354
   (`AuraEffect::CheckEffectProc` and `HandleAscensionPercentEventProc`). A companion on one of those needs its id
   and its condition added in code.
+- Read `SpellEffects.cpp` too: this core runs several of Ascension's effect types (165, 168, 173, 176, 177, 183, 192,
+  195, 197, 198). A companion using one needs only its trigger rules, so Battle Fatigue and Divine Reset were data.
+- Effect 173 (refresh an aura) reads its second value: 0 sets the aura's duration to the amount, anything else adds
+  the amount. Ascension's spell data leaves it 0 even where the tooltip says "extends", which would cut the aura to
+  about a second on every proc. Check it, and own a copy with the second value set when the tooltip extends.
+- A tooltip that extends with no limit still wants a cap: James's rule (24 Nov) is +50% of the base duration unless
+  the cooldown says otherwise (comparable talents: Glyph of Shred +50%, Endless Agonizer +50%, Glyph of Scourge
+  Strike +60%, Frozen Grave +40%). Patch 55 makes effect 173's second value a cap when it is 2 or more: the total ms
+  added per application, as Glyph of Shred counts it (a cap on time remaining would not stop endless uptime: the
+  patch review of #263 caught that first version). Check the uptime against the cooldown: Battle Fatigue's 30 sec
+  at most equals its 30 sec limit, so a warrior who keeps hitting and reshouts on time can keep it up throughout.
+- A cast rule ("when you cast X", phase 1) needs proc flags 87312, the "spell done" kinds. 104720 (used in batch 2
+  and first in 145) holds the helpful-spell TAKEN bits, so helpful triggers never fired; fixed in both.
+- Aura 354 for a spell the core does not list needs no core edit: the core asks the aura's scripts in
+  `CheckEffectProc` and does nothing itself, so an AuraScript with `DoCheckEffectProc` and `OnEffectProc`
+  (`PreventDefaultAction`, then cast the trigger with damage x amount / 100) does the whole job (Harbinger of Plague,
+  Reave). Exclude the trigger spells from the check: Reave's bonus spells are also named Reave.
+- Look for the core's own version before scripting: the Bloodmage class's Reave (800490) is scripted in
+  `AscensionBloodmageSecondary.cpp`, and its conditions (aura state bleeding, health below 35%, not in the front
+  arc) were reused for the Hero version (280990).
+- A talent with no proc flags in Spell.dbc may still fire: the core's `coa_mystic_enchant_proc` rules (in
+  `data/sql/updates/pending_db_world`) cover many talents too (Harbinger of Plague's Wrath buff). Search those
+  files for the id before writing a `spell_proc` row, and never own a row the core ships.
+- A spell aimed at enemies around a destination drops its unit target when cast at a unit
+  (`Spell::InitExplicitTargets`): in its scripts `GetExplTargetUnit()` is null; use `GetSpell()->GetOriginalTarget()`.
 - Passives held by an ability: patch 55's `wcme_spell_companion` (ability, passive, flags). Use it for an active
   ability's passive and for any passive with a weapon requirement (a linked aura is lost at the first weapon swap).
 - A fast compile check exists without a build: after pre-flight with `--keep --workspace /tmp/pf`, run
