@@ -79,8 +79,9 @@ def as_ranges(ids):
     return tuple((a, b) for a, b in out)
 
 
-def statements(text):
-    """Splits SQL into statements at ';' outside quotes, dropping -- comments."""
+def statements(text, unterminated=None):
+    """Splits SQL into statements at ';' outside quotes, dropping -- comments. If a string is still open at the end
+    of the text (an unescaped ' inside a value, such as Tiger's), appends to unterminated where that string began."""
     out, buf, quote, i, n = [], [], None, 0, len(text)
     while i < n:
         ch = text[i]
@@ -94,7 +95,7 @@ def statements(text):
                 else:
                     quote = None
         elif ch == "'":
-            quote = ch; buf.append(ch)
+            quote = ch; buf.append(ch); opened = i
         elif ch == '-' and text.startswith('--', i):
             while i < n and text[i] != '\n':
                 i += 1
@@ -104,6 +105,8 @@ def statements(text):
         else:
             buf.append(ch)
         i += 1
+    if quote and unterminated is not None:
+        unterminated.append(text.count('\n', 0, opened) + 1)
     tail = ''.join(buf).strip()
     if tail:
         out.append(tail)
@@ -186,8 +189,13 @@ def main():
     files = sorted(folder.glob('*.sql'))
     if not files:
         sys.exit(f'No .sql files in {folder}')
-    parsed = [(f.name, statements(f.read_text(encoding='utf-8'))) for f in files]
-    problems, notes = [], []
+    problems, notes, parsed = [], [], []
+    for f in files:
+        open_at = []
+        parsed.append((f.name, statements(f.read_text(encoding='utf-8'), open_at)))
+        for line in open_at:
+            problems.append(('ERROR', f.name, f'a quoted string opened on line {line} never closes: an unescaped '
+                             f"' inside a value (write it as ''); MySQL would reject the rest of the file"))
 
     stock_ids = dbc_ids(args.spellaffect_dbc) if args.spellaffect_dbc else None
     if stock_ids is not None:
