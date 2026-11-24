@@ -407,3 +407,166 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_demonic_persistence_talent);`n    new wcme_demonic_persistence_new_imps();`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Ability companions (talent companions batch 4: Thrust, Two-Handed Weapon Mastery)
+Write-Host "Patch: passives held by an ability (wcme_spell_companion): while a player knows the ability, they have the passive"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# Some abilities keep part of their effect in a hidden passive that Ascension's server gave to whoever knew the
+# ability (Thrust's armour-ignore, 274337). A plain link needs an aura to hang off, and an active ability has none;
+# this core has no spell_learn_spell table either. So: a table, wcme_spell_companion (ability_spell, passive_spell,
+# flags), read at start-up. While a player knows ability_spell they have the aura passive_spell, and lose it when
+# they no longer do. flags 1: only while no weapon is in the off hand (Two-Handed Weapon Mastery: a single two-handed
+# weapon, not with Titan's Grip). A passive with an item requirement is held only while the gear fits it; a linked
+# aura could not do this, because the core takes it off with the weapon and never puts it back.
+# Checked at login, when a listed ability is learnt or forgotten, and when gear changes for a player who knows a
+# gear-dependent ability; each check runs 200 ms later, so the change has settled. The aura is not saved: login
+# puts it back. Empty table (the default): nothing happens. Rows in sql/enchants/144-ability-companions.sql.
+$class = @'
+// Wildcard: passives held by an ability (wcme_spell_companion).
+#include "DatabaseEnv.h"
+#include "ObjectAccessor.h"
+#include "WorldScript.h"
+#include <unordered_map>
+#include <unordered_set>
+
+struct WcmeSpellCompanion
+{
+    uint32 Ability;
+    uint32 Passive;
+    uint32 Flags;
+};
+
+constexpr uint32 WCME_COMPANION_NO_OFFHAND_WEAPON = 1;
+
+std::vector<WcmeSpellCompanion> WcmeSpellCompanions;
+std::unordered_set<uint32> WcmeSpellCompanionAbilities;
+std::vector<uint32> WcmeGearDependentAbilities;
+
+void WcmeSyncSpellCompanions(Player* player)
+{
+    if (!player || !player->IsInWorld() || WcmeSpellCompanions.empty())
+        return;
+    // One passive may be held by several abilities: hold it if any of them allows it.
+    std::unordered_map<uint32, bool> wanted;
+    for (WcmeSpellCompanion const& row : WcmeSpellCompanions)
+    {
+        bool hold = player->HasSpell(row.Ability);
+        if (hold && (row.Flags & WCME_COMPANION_NO_OFFHAND_WEAPON) && player->GetWeaponForAttack(OFF_ATTACK, true))
+            hold = false;
+        if (hold)
+            if (SpellInfo const* info = sSpellMgr->GetSpellInfo(row.Passive))
+                if (info->EquippedItemClass != -1 && !player->HasItemFitToSpellRequirements(info))
+                    hold = false;
+        wanted[row.Passive] = wanted[row.Passive] || hold;
+    }
+    for (auto const& [passive, hold] : wanted)
+    {
+        if (hold && !player->HasAura(passive))
+            player->CastSpell(player, passive, true);
+        else if (!hold && player->HasAura(passive))
+            player->RemoveAurasDueToSpell(passive);
+    }
+}
+
+void WcmeQueueSpellCompanionSync(Player* player)
+{
+    ObjectGuid const guid = player->GetGUID();
+    player->m_Events.AddEventAtOffset([guid]()
+    {
+        if (Player* target = ObjectAccessor::FindPlayer(guid))
+            WcmeSyncSpellCompanions(target);
+    }, 200ms);
+}
+
+class wcme_spell_companions_world : public WorldScript
+{
+public:
+    wcme_spell_companions_world() : WorldScript("wcme_spell_companions_world", { WORLDHOOK_ON_STARTUP }) { }
+
+    void OnStartup() override
+    {
+        WcmeSpellCompanions.clear();
+        WcmeSpellCompanionAbilities.clear();
+        WcmeGearDependentAbilities.clear();
+        if (!WorldDatabase.Query("SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() "
+            "AND TABLE_NAME = 'wcme_spell_companion'"))
+            return;
+        if (QueryResult result = WorldDatabase.Query("SELECT ability_spell, passive_spell, flags FROM wcme_spell_companion"))
+            do
+            {
+                Field* fields = result->Fetch();
+                WcmeSpellCompanion row{ fields[0].Get<uint32>(), fields[1].Get<uint32>(), fields[2].Get<uint32>() };
+                SpellInfo const* passive = sSpellMgr->GetSpellInfo(row.Passive);
+                if (!passive || !sSpellMgr->GetSpellInfo(row.Ability))
+                {
+                    LOG_ERROR("sql.sql", "wcme_spell_companion: ability {} or passive {} does not exist", row.Ability, row.Passive);
+                    continue;
+                }
+                WcmeSpellCompanions.push_back(row);
+                WcmeSpellCompanionAbilities.insert(row.Ability);
+                if ((row.Flags & WCME_COMPANION_NO_OFFHAND_WEAPON) || passive->EquippedItemClass != -1)
+                    WcmeGearDependentAbilities.push_back(row.Ability);
+            } while (result->NextRow());
+        LOG_INFO("server.loading", ">> Loaded {} ability companions (wcme_spell_companion)", WcmeSpellCompanions.size());
+    }
+};
+
+class wcme_spell_companions_player : public PlayerScript
+{
+public:
+    wcme_spell_companions_player() : PlayerScript("wcme_spell_companions_player", { PLAYERHOOK_ON_LOGIN,
+        PLAYERHOOK_ON_LEARN_SPELL, PLAYERHOOK_ON_FORGOT_SPELL, PLAYERHOOK_ON_EQUIP, PLAYERHOOK_ON_UNEQUIP_ITEM }) { }
+
+    void OnPlayerLogin(Player* player) override
+    {
+        if (!WcmeSpellCompanions.empty())
+            WcmeQueueSpellCompanionSync(player);
+    }
+
+    void OnPlayerLearnSpell(Player* player, uint32 spellId) override
+    {
+        if (WcmeSpellCompanionAbilities.count(spellId))
+            WcmeQueueSpellCompanionSync(player);
+    }
+
+    void OnPlayerForgotSpell(Player* player, uint32 spellId) override
+    {
+        if (WcmeSpellCompanionAbilities.count(spellId))
+            WcmeQueueSpellCompanionSync(player);
+    }
+
+    void OnPlayerEquip(Player* player, Item* /*item*/, uint8 /*bag*/, uint8 /*slot*/, bool /*update*/) override
+    {
+        GearChanged(player);
+    }
+
+    void OnPlayerUnequip(Player* player, Item* /*item*/) override
+    {
+        GearChanged(player);
+    }
+
+private:
+    // Gear changes often (bots dress themselves): only check players who know a gear-dependent ability.
+    static void GearChanged(Player* player)
+    {
+        for (uint32 ability : WcmeGearDependentAbilities)
+            if (player->HasSpell(ability))
+            {
+                WcmeQueueSpellCompanionSync(player);
+                return;
+            }
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    new wcme_spell_companions_world();`n    new wcme_spell_companions_player();`n")
+Set-Content $file $text -NoNewline
+}
