@@ -8,7 +8,8 @@ code, which nobody has. The talent's own effects are then placeholders. The tool
 
 For every rank spell a Wildcard Hero can roll (CharacterAdvancement.dbc, the same filter as the core's Wildcard
 loader) the scan collects each spell the tooltip quotes, then checks whether anything applies it:
-  - the talent's own effects (trigger fields), followed through spell_linked_spell, up to 3 steps;
+  - the talent's own effects (trigger fields, and spells on the item enchantments it applies), followed through
+    spell_linked_spell, up to 3 steps;
   - spell_linked_spell in the core's base SQL, the core's modules and this repository's sql/;
   - aura links (coa_mystic_enchant_aura_link) and action-table casts (wcme_enchant_action) in this repository;
   - learnable (another roll), spell_learn_spell, spell_script_names;
@@ -182,6 +183,18 @@ def main():
                         if 1000 <= w <= 9999999:
                             live.add(w)
 
+    # Item enchantments: a spell that enchants an item (effects 53, 54) can carry a spell on the enchant itself
+    # (SpellItemEnchantment types 1 combat proc, 3 equip spell, 7 use spell), applied while the item is worn.
+    enchant_spells = collections.defaultdict(set)
+    sie = os.path.join(args.dbc, "SpellItemEnchantment.dbc")
+    if os.path.exists(sie):
+        for r in load_dbc(sie)[0]:
+            for k in range(3):
+                if r[2 + k] in (1, 3, 7) and r[11 + k]:
+                    enchant_spells[r[0]].add(r[11 + k])
+    else:
+        print("note: no SpellItemEnchantment.dbc in --dbc; spells granted through item enchants show as unapplied")
+
     def reach(spell, depth=0, seen=None):
         seen = set() if seen is None else seen
         if spell not in sp or spell in seen or depth > 3:
@@ -190,6 +203,9 @@ def main():
         for e in range(3):
             if sp[spell][116 + e]:
                 reach(sp[spell][116 + e], depth + 1, seen)
+            if sp[spell][71 + e] in (53, 54):
+                for granted_spell in enchant_spells.get(sp[spell][110 + e], ()):
+                    reach(granted_spell, depth + 1, seen)
         for c in linked.get(spell, ()):
             reach(c, depth + 1, seen)
         return seen
