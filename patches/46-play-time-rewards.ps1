@@ -1,4 +1,4 @@
-# Play-time rewards: every hour of play earns a sealed card pack, sometimes a Case of Fortune.
+# Play-time rewards: every hour of play earns a sealed card pack and/or Mystic Extracts, sometimes a Case of Fortune.
 # Run by the build (step "Apply our patch scripts") from the workspace root, after 40-battlegrounds.ps1, whose
 # world PvP part this builds on (same file and script loader). Throws if an anchor is gone. Listed in CHANGES.md.
 $ErrorActionPreference = 'Stop'
@@ -16,7 +16,7 @@ foreach ($anchor in @($include, $register, $loader)) {
 }
 # Each time a character's total played time passes another PlayTimeRewards.IntervalMinutes (default 60), it gets
 # a sealed card pack (PackPercent; GoldenPackPercent of them golden; talent or ability at random) and, at
-# CasePercent, a Case of Fortune. Counting uses the character's own played time, so part of an hour carries over
+# CasePercent, a Case of Fortune, and MysticExtracts Mystic Extracts (0 by default, at most 20). Counting uses the character's own played time, so part of an hour carries over
 # between sessions. Nothing is given while the player is flagged AFK at that moment. Bots get nothing.
 $class = @'
 class play_time_rewards : public PlayerScript
@@ -70,16 +70,16 @@ private:
         return std::max<uint32>(1, sConfigMgr->GetOption<uint32>("PlayTimeRewards.IntervalMinutes", 60)) * MINUTE;
     }
 
-    static void Give(Player* player, uint32 entry)
+    static void Give(Player* player, uint32 entry, uint32 count = 1)
     {
         ItemPosCountVec dest;
-        if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, entry, 1) == EQUIP_ERR_OK)
+        if (player->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, entry, count) == EQUIP_ERR_OK)
             if (Item* item = player->StoreNewItem(dest, entry, true))
             {
-                player->SendNewItem(item, 1, true, false);
+                player->SendNewItem(item, count, true, false);
                 return;
             }
-        player->SendItemRetrievalMail(entry, 1);
+        player->SendItemRetrievalMail(entry, count);
     }
 
     static void Reward(Player* player)
@@ -90,6 +90,13 @@ private:
             bool const golden = urand(1, 100) <= sConfigMgr->GetOption<uint32>("PlayTimeRewards.GoldenPackPercent", 25);
             bool const talent = urand(0, 1);
             Give(player, golden ? (talent ? 97870u : 778998u) : (talent ? 97886u : 97885u));
+            given = true;
+        }
+        // Mystic Extracts (98463), the currency for learning Mystic Enchants (James, 24 November): a few every hour
+        // so levelling and PvP players meet the enchant system. PlayTimeRewards.MysticExtracts (default 0 = none).
+        if (uint32 const extracts = std::min<uint32>(sConfigMgr->GetOption<uint32>("PlayTimeRewards.MysticExtracts", 0), 20))
+        {
+            Give(player, 98463u, extracts);
             given = true;
         }
         if (urand(1, 100) <= sConfigMgr->GetOption<uint32>("PlayTimeRewards.CasePercent", 25))
