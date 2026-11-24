@@ -414,7 +414,8 @@ SPELLS = {
                       'Every 5 sec in combat, another step, up to 10; after 10 sec at 10 it cools down and climbs '
                       'again. Each step makes abilities cost 1% less and runes recharge 1% faster, and tops up 1% of '
                       'every resource. Out of combat the steps hold.',
-                      'Abilities cost 1% less and runes recharge 1% faster for each step. The number is the steps.',
+                      'Steps of Overclock: the number on this icon. Per step, abilities cost 1% less and runes '
+                      'recharge 1% faster, so 5 steps is 5% and 10 steps 10%.',
                       ICON_OVERCLOCK_STEPS, 10, [(MOD_POWER_COST_PCT, -1, ALL_SCHOOLS),
                                                  (MOD_POWER_REGEN_PERCENT, 1, POWER_RUNE),
                                                  (MOD_POWER_REGEN_PERCENT, 1, POWER_RUNE)],
