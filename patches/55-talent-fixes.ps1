@@ -816,11 +816,23 @@ static std::vector<Unit*> WcmeGroupWithin(Player* player, float range)
     return units;
 }
 
-// Beacon of Virtue (277680): beacons the target and up to 4 injured allies of its party or raid near it (the most
-// injured first) with 277682 for 10 sec. The heal itself is the companion's (277684, held by wcme_spell_companion).
+// Beacon of Virtue (277680): beacons the target and up to 4 injured allies of its party near it (the most injured
+// first) with 277682 for 10 sec. The heal itself is the companion's (277684, held by wcme_spell_companion). The caster
+// keeps the list of what it beaconed last, so the heals reach every beacon, in a group or not, pets included.
+struct WcmeBeaconTargets final : DataMap::Base
+{
+    std::vector<ObjectGuid> Targets;
+};
+constexpr char WcmeBeaconTargetsKey[] = "wcme_beacon_of_virtue_targets";
+
 class spell_wcme_beacon_of_virtue : public SpellScript
 {
     PrepareSpellScript(spell_wcme_beacon_of_virtue);
+
+    void ClearTargets()
+    {
+        GetCaster()->CustomData.GetDefault<WcmeBeaconTargets>(WcmeBeaconTargetsKey)->Targets.clear();
+    }
 
     void FilterTargets(std::list<WorldObject*>& targets)
     {
@@ -842,19 +854,23 @@ class spell_wcme_beacon_of_virtue : public SpellScript
     void HandleDummy(SpellEffIndex /*effIndex*/)
     {
         if (Unit* target = GetHitUnit())
+        {
             GetCaster()->CastSpell(target, 277682, true);
+            GetCaster()->CustomData.GetDefault<WcmeBeaconTargets>(WcmeBeaconTargetsKey)->Targets.push_back(target->GetGUID());
+        }
     }
 
     void Register() override
     {
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_beacon_of_virtue::FilterTargets, EFFECT_0, TARGET_UNIT_LASTTARGET_AREA_PARTY);
         OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_beacon_of_virtue::FilterTargets, EFFECT_1, TARGET_UNIT_LASTTARGET_AREA_PARTY);
+        BeforeCast += SpellCastFn(spell_wcme_beacon_of_virtue::ClearTargets);
         OnEffectHitTarget += SpellEffectFn(spell_wcme_beacon_of_virtue::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
     }
 };
 
-// Beacon of Virtue's companion (277684): your Holy heals with a cast time also heal everyone carrying your beacon
-// (277682) within 60 yards, other than the heal's own target, for 25% of the heal (277681, a plain heal).
+// Beacon of Virtue's companion (277684): each hit of your Holy heals with a cast time also heals everyone carrying
+// your beacon (277682) within 60 yards, other than the heal's own target, for 25% of it (277681, a plain heal).
 class spell_wcme_beacon_of_virtue_heals : public AuraScript
 {
     PrepareAuraScript(spell_wcme_beacon_of_virtue_heals);
@@ -876,9 +892,15 @@ class spell_wcme_beacon_of_virtue_heals : public AuraScript
         if (!amount)
             return;
         Unit* healed = eventInfo.GetActionTarget();
-        for (Unit* unit : WcmeGroupWithin(player, 60.0f))
-            if (unit != healed && unit->HasAura(277682, player->GetGUID()))
-                player->CastCustomSpell(unit, 277681, &amount, nullptr, nullptr, true, nullptr, aurEff);
+        WcmeBeaconTargets const* beacons = player->CustomData.Get<WcmeBeaconTargets>(WcmeBeaconTargetsKey);
+        if (!beacons)
+            return;
+        std::vector<ObjectGuid> const targets = beacons->Targets;
+        for (ObjectGuid const& guid : targets)
+            if (Unit* unit = ObjectAccessor::GetUnit(*player, guid))
+                if (unit != healed && unit->IsAlive() && unit->IsWithinDistInMap(player, 60.0f) &&
+                    unit->HasAura(277682, player->GetGUID()))
+                    player->CastCustomSpell(unit, 277681, &amount, nullptr, nullptr, true, nullptr, aurEff);
     }
 
     void Register() override
@@ -910,7 +932,7 @@ class spell_wcme_holy_concentration_renew : public AuraScript
                 Aura* aura = application->GetBase();
                 SpellInfo const* info = aura->GetSpellInfo();
                 if (info->SpellFamilyName != SPELLFAMILY_PRIEST || !(info->SpellFamilyFlags[0] & 0x40) ||
-                    aura->GetCasterGUID() != player->GetGUID())
+                    !info->HasAura(SPELL_AURA_PERIODIC_HEAL) || aura->GetCasterGUID() != player->GetGUID())
                     continue;
                 int32 const base = aura->CalcMaxDuration();
                 if (base <= 0)
@@ -933,7 +955,7 @@ class spell_wcme_holy_concentration_renew : public AuraScript
 // - Bloodletting (283986, Rupture +25% on targets with your Rend; its companion 283987, Rend +30% on targets with your
 //   Rupture) and the Mystic Enchant Garrote (982178, Garrote +5% on targets with your Rend): class scripts 982178 and
 //   982132, limited by the aura's class mask.
-// - Flare Strike (283151-283155): its rain of arrows deals 100% more to the target of your Hunter's Mark (companion
+// - Flare Strike (283151-283155): its rain of arrows (417802, 417816-417819) deals 100% more to the target of your Hunter's Mark (companion
 //   283150, class script 417800, held by wcme_spell_companion). The rain is cast by the flare on its owner's behalf.
 // - Pack Leader (277566; companion 277750): Spirit Wolves' Spirit Hunt heals (58879) heal for 30% (Pack Leader adds
 //   wolves). The heal is a direct heal, so the hook's first unit is the healing wolf.
@@ -947,19 +969,26 @@ public:
     {
         if (!target || !attacker || !spellInfo || !damage || spellInfo->HasAura(SPELL_AURA_PERIODIC_HEAL))
             return;
+        // The attacker's class scripts first: an empty list for nearly everyone, so the target is rarely scanned.
+        int32 const rend = WcmeClassScriptPct(attacker, 982178, spellInfo);
+        int32 const rupture = WcmeClassScriptPct(attacker, 982132, spellInfo);
+        if (!rend && !rupture)
+            return;
         int32 pct = 0;
-        if (WcmeHasOwnFamilyAura(target, attacker->GetGUID(), SPELLFAMILY_WARRIOR, 0x20))
-            pct += WcmeClassScriptPct(attacker, 982178, spellInfo);
-        if (WcmeHasOwnFamilyAura(target, attacker->GetGUID(), SPELLFAMILY_ROGUE, 0x100000))
-            pct += WcmeClassScriptPct(attacker, 982132, spellInfo);
+        if (rend && WcmeHasOwnFamilyAura(target, attacker->GetGUID(), SPELLFAMILY_WARRIOR, 0x20))
+            pct += rend;
+        if (rupture && WcmeHasOwnFamilyAura(target, attacker->GetGUID(), SPELLFAMILY_ROGUE, 0x100000))
+            pct += rupture;
         if (pct > 0)
             damage = uint32(std::min<uint64>(std::numeric_limits<uint32>::max(), uint64(damage) * (100 + pct) / 100));
     }
 
     void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
     {
-        if (!target || !attacker || !spellInfo || damage <= 0 || spellInfo->SpellFamilyName != SPELLFAMILY_HUNTER ||
-            !(spellInfo->SpellFamilyFlags[0] & 0x2000))
+        // The rain of each Flare Strike rank (the core's AscensionSummonedEffects payloads), not Volley and its kin,
+        // which share the class flag.
+        if (!target || !attacker || !spellInfo || damage <= 0 ||
+            (spellInfo->Id != 417802 && (spellInfo->Id < 417816 || spellInfo->Id > 417819)))
             return;
         Unit* owner = attacker->GetCharmerOrOwnerOrSelf();
         if (!owner || !WcmeHasOwnFamilyAura(target, owner->GetGUID(), SPELLFAMILY_HUNTER, 0x400))

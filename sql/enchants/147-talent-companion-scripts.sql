@@ -6,12 +6,15 @@
 -- 25 Nov 2026. Not tested in game: unverified until a player report or an automated test.
 --
 -- 1. Beacon of Virtue (277680, an ability): beacons the target and up to 4 injured allies near it for 10 sec; while
---   the beacons last, your Holy heals with a cast time also heal them for 25% (277681). The companion (277684) is held
+--   the beacons last, each hit of your Holy heals with a cast time also heals them for 25% (277681), in a group or
+--   not; the caster remembers what it beaconed last. The companion (277684) is held
 --   while you know the ability, and fires on your heals (Holy school, heal, on hit; the script checks the cast time).
 -- 2. Holy Concentration (34753, 34859, 34860): Flash Heal, Greater Heal, Binding Heal and Circle of Healing have a
 --   33/66/100% chance (the companion ranks 966083-966085, linked to the talent ranks) to extend your Renew on you and
 --   your party or raid by 3 sec, capped at +50% of Renew's duration per application (James's rule for extensions;
---   the tooltip's cap is missing from the client data). The rule fires once per cast.
+--   the tooltip's cap is missing from the client data). The rule fires once per cast. Its class flags: Flash Heal and
+--   Greater Heal (first mask), Binding Heal (second), Circle of Healing (third, 0x4000000; the companion's own data
+--   names Empowered Renew there instead, which is triggered and could never fire it).
 -- 3. Pack Leader (277566): the talent's own Feral Spirit buff already works (the core's rules); its companion (277750)
 --   now cuts the Spirit Wolves' Spirit Hunt healing to 30%, as the tooltip says, since Pack Leader adds wolves.
 -- 4. Flare Strike (283151-283155, the Hero's Flare): the rain of arrows when it expires already works (the core); the
@@ -42,9 +45,9 @@ INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_proc', 277684), ('s
 DELETE FROM `spell_proc` WHERE `SpellId` IN (277684, 966083, 966084, 966085);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
 (277684, 2, 0, 0, 0, 0, 16384, 2, 2, 0, 0, 0, 0, 100, 0, 0),
-(966083, 0, 6, 6144, 4, 262144, 87312, 0, 1, 0, 0, 0, 0, 33, 0, 0),
-(966084, 0, 6, 6144, 4, 262144, 87312, 0, 1, 0, 0, 0, 0, 66, 0, 0),
-(966085, 0, 6, 6144, 4, 262144, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0);
+(966083, 0, 6, 6144, 4, 67108864, 87312, 0, 1, 0, 0, 0, 0, 33, 0, 0),
+(966084, 0, 6, 6144, 4, 67108864, 87312, 0, 1, 0, 0, 0, 0, 66, 0, 0),
+(966085, 0, 6, 6144, 4, 67108864, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0);
 
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (277680, 'spell_wcme_beacon_of_virtue'),
