@@ -166,6 +166,18 @@ worldserver.conf | Wildcard.EnchantPrimaryStat = 1
 # Mystic Rune source, gold is the only way to apply one; patches/79-mystic-enchant-gold-cost.ps1). 1 = 30s uncommon,
 # 60s rare, 1g epic, 2g 50s legendary and artifact (from 30g, 60g, 100g, 250g). 100 = the core's prices.
 worldserver.conf | Wildcard.MysticEnchantGoldCostPct = 1
+# Mystic Enchant learning costs in steps (24 Nov, James: cheap to start from level 1, then reasonable, never rising
+# forever; patches/42-mystic-enchant-cost-steps.ps1). Learning an enchant costs 1 Mystic Extract. Each pair is
+# "from altar level:amount"; the last pair holds for every level above it. Empty = the core's own curve.
+# Altar points per altar level (one extract per level; a reforge gives 60 uncommon, 80 rare, 100 epic, 200 legendary).
+# The core's own: the first reforge completes level 0, then about 360 at level 1, 660 at level 20, 1,860 at level 100,
+# rising without end. At most 5 altar levels are gained per reforge (a character the new steps put far ahead catches
+# up over a few reforges). Pairs are separated by spaces only.
+worldserver.conf | Wildcard.MysticAltarLevelSteps = "0:60 1:120 5:240 10:400 20:640"
+# Marks of Ascension for buying one extract (the core allows it only while holding none, so the hourly extract makes
+# this the fallback for players who have spent theirs). The core's own: 1,000 + 200 per altar level,
+# up to 5,000.
+worldserver.conf | Wildcard.MysticExtractMarkSteps = "0:100 5:250 10:500 20:1000"
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
 # gives 3 and a loss 1, and a sealed card pack (ability or talent; 1 in 4 is golden).
 worldserver.conf | Battleground.SpoilsCasePercent = 100
@@ -179,11 +191,14 @@ worldserver.conf | Leaderboards.SameVictimSeconds = 300
 # Kept off the website's leaderboards and server firsts: the auction house bot's character and James's deleted test
 # character. Deleted characters are left out anyway; add names here, comma separated.
 worldserver.conf | Leaderboards.HiddenCharacters = "Auctioneer,Mandalyon"
-# Play-time rewards: every hour of a character's played time gives a sealed card pack (1 in 4 golden) and, 1 time in 4,
-# a Case of Fortune. Part of an hour carries over between sessions; nothing while AFK. Needs the build with the patch.
+# Play-time rewards: every hour of a character's played time gives a Mystic Extract (24 Nov, James: so levelling and
+# PvP players meet Mystic Enchants; card packs are easy to come by) and, 1 time in 4, a Case of Fortune. Part of an
+# hour carries over between sessions; nothing while AFK. Needs the build with the patch (the extracts: with the
+# 24 Nov change to patch 46). MysticExtracts: 0-20 per hour. PackPercent: chance of a sealed card pack (was 100).
 worldserver.conf | PlayTimeRewards.Enabled = 1
 worldserver.conf | PlayTimeRewards.IntervalMinutes = 60
-worldserver.conf | PlayTimeRewards.PackPercent = 100
+worldserver.conf | PlayTimeRewards.MysticExtracts = 1
+worldserver.conf | PlayTimeRewards.PackPercent = 0
 worldserver.conf | PlayTimeRewards.GoldenPackPercent = 25
 worldserver.conf | PlayTimeRewards.CasePercent = 25
 # Rotating weekly event (the WeekendBonus settings). It runs all week, Friday to Thursday (server time), so people
