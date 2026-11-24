@@ -63,3 +63,11 @@ One character you stick with and keep investing in. The end state:
    synergy weighting). Rerolls already cover the need, so this is for fun: roll three candidates with the existing
    synergy weighting, show them in a small WildcardEnchants window (the addon already talks to the server), and
    learn the pick. First check whether the Ascension client still has the window from the season that ran this.
+
+## Backlog (not scheduled)
+
+- **Spell tooltips that show your real numbers** (James, 24 November: high effort, low reward). Healing and damage
+  tooltips show the base amount, as the stock 3.3.5 client does (Renew says 60 over 15 sec and heals 160 with
+  healing power). Some Ascension descriptions in our client data already use healing and attack power in their
+  formulas, so the client can work them out; doing it means rewriting each spell's description in the client patch
+  with its own scaling factor.
