@@ -76,7 +76,7 @@ talent's own effect.
 | 1 | Plain bonuses: an aura link per rank (`sql/enchants/141-talent-companions.sql`) | 25 talents; waiting for James to merge; unverified |
 | 2 | Event-driven companions: link plus proc rules, or action-table rules (`sql/enchants/142-talent-companions-procs.sql`) | 8 talents; waiting for James to merge; unverified |
 | 3 | Conditional: core aura links, recipe R7 (`sql/enchants/143-talent-companions-conditional.sql`) | Divinity (on Path of Strength), Glyph of Trueshot Aura (while Trueshot Aura is on); waiting for James to merge; unverified. Swashbuckler: Flurry of Blows was already an aura link in 007. |
-| 4 | Needs code: weapon-dependent linked auras, unimplemented class-script overrides, Ascension-only effect types and aura types | Two-Handed Weapon Mastery, Bloodletting, Careful Aim, Harbinger of Plague, Reave; from batch 2: Battle Fatigue, Beacon of Virtue, Divine Reset, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon; from batch 3: Corrupted Bear Form (its Shadow-damage proc has no trigger rules, so today the talent does nothing; the 20% penalty alone would make it worse); from batch 5: Thrust (an active ability whose armour-ignore passive needs "while you know X, you have Y", which this core cannot express in data: it has no learn-spell table) |
+| 4 | Needs code. Part 1 (`patches/55-talent-fixes.ps1` ability companions, `sql/enchants/144-ability-companions.sql`): Thrust, Two-Handed Weapon Mastery, and Careful Aim (data after all: a conditional link). Still to do: aura 354 rules (Harbinger of Plague, Reave), class-script overrides and Ascension-only effect types, bespoke scripts | Bloodletting, Harbinger of Plague, Reave; from batch 2: Battle Fatigue, Beacon of Virtue, Divine Reset, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon; from batch 3: Corrupted Bear Form (its Shadow-damage proc has no trigger rules, so today the talent does nothing; the 20% penalty alone would make it worse); from batch 5: Thrust (an active ability whose armour-ignore passive needs "while you know X, you have Y", which this core cannot express in data: it has no learn-spell table) |
 | 5 | Active abilities with a passive companion (no aura to link from) | Done 24 Nov, no SQL. Weighted and Jagged Reinforcement already work: their shield enchants (280422, 280420) carry the companion as an equip spell (SpellItemEnchantment type 3), applied while the shield is worn. Thrust moves to batch 4 (row above). |
 | - | Left out by James (24 Nov 2026) | Icy Reach: a Death Knight talent whose tooltip quotes the Mage range companions (829023, 829014). Linking them would add range to Mage spells only, and stack with Arctic Reach at a different rank. James: "Leave it out." Do not link it in a later batch. |
 | - | Outlier | One With The Light: its companion fires 275371, which is not in the game data; linking it as it is would log an error every second |
@@ -129,6 +129,23 @@ Lessons from batch 5:
 - This core has no `spell_learn_spell` table (newer AzerothCore removed it), so "learning ability X also teaches
   passive Y" cannot be done in data. A generic code hook (an ability-to-passive table read at login and on learn
   and unlearn) is the batch 4 proposal; Thrust is its first user.
+
+Lessons from batch 4:
+- Read `SpellAuraDefines.h` before calling an aura "Ascension-only": this core implements many of Ascension's
+  types (317-365). Aura 333 (hit chance, all kinds) works natively, so Careful Aim needed only a link. Others are
+  honoured only for listed spell ids, each with its own condition: 341 (Unit.cpp allowlist, patch 65) and 354
+  (`AuraEffect::CheckEffectProc` and `HandleAscensionPercentEventProc`). A companion on one of those needs its id
+  and its condition added in code.
+- Passives held by an ability: patch 55's `wcme_spell_companion` (ability, passive, flags). Use it for an active
+  ability's passive and for any passive with a weapon requirement (a linked aura is lost at the first weapon swap).
+- A fast compile check exists without a build: after pre-flight with `--keep --workspace /tmp/pf`, run
+  `g++ -std=gnu++20 -fsyntax-only -w` on the changed file with the include folders of `src/` and `deps/` (not
+  jemalloc, whose headers shadow the system's; `-Ideps/g3dlite/include` only at its root, since G3D has its own
+  `Log.h`). It found nothing to fix in part 1, and catches a misspelt method, so it is a real check.
+- The core strips weapon-dependent auras on more than unequip: a disarm and a weapon at 0 durability do it too,
+  and putting them back (`Player::ApplyItemDependentAuras`) only covers the player's own spell and talent maps.
+  The equip hook alone missed both (patch-reviewer, #262); patch 55 now hooks that function. A talent from a
+  classic talent tree is in the talent map, not the spell map: check `HasTalent` as well as `HasSpell`.
 
 Before scripting, check the core does not already do it (`enchants/core-overlap-review.csv`) and read every
 version of the ability a Hero can learn (Hand of Gul'dan has 954611 and 2304611 -> 2304612; both summon guardians
