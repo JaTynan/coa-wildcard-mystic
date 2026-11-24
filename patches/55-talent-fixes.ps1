@@ -606,3 +606,23 @@ $text = $text.Replace($head, "void (*WcmeItemAurasApplied)(Player*) = nullptr; /
 $text = $text.Replace($tail, "                AddAura(spellId, this);`n        }`n`n        if (WcmeItemAurasApplied)`n            WcmeItemAurasApplied(this);`n    }`n    else`n        RemoveItemDependentAurasAndCasts(item);`n}`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Capped aura extensions (talent companions batch 4: Battle Fatigue)
+Write-Host "Patch: effect 173 (refresh aura) can cap an additive extension"
+& {
+# Ascension's effect 173 sets an aura's duration (second value 0) or adds to it (any other value). Its data uses
+# only 0 and 1, so a second value of 2 or more now also means: add, but never past that many ms beyond the aura's
+# base duration. Battle Fatigue uses it to cap its extensions at +50% (sql/enchants/145). An aura already longer
+# than the cap is never shortened.
+$file = 'core/src/server/game/Spells/SpellEffects.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$anchor = "    int32 duration = effect.MiscValueB ? aura->GetDuration() + damage : damage;`n"
+if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed: EffectAscensionRefreshAura's duration line was not found exactly once in $file" }
+$cap = @'
+    if (effect.MiscValueB > 1 && damage > 0 && aura->GetSpellInfo()->GetMaxDuration() > 0)
+        duration = std::min(duration, std::max(aura->GetSpellInfo()->GetMaxDuration() + effect.MiscValueB, aura->GetDuration()));
+
+'@
+$text = $text.Replace($anchor, $anchor + $cap.Replace("`r`n", "`n"))
+Set-Content $file $text -NoNewline
+}

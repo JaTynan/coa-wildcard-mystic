@@ -1,7 +1,8 @@
 -- Talent companions, batch 4 (code), part 2: two talents the core can already run, once their rules are written.
+-- Data only, except Battle Fatigue's cap, which needs patch 55 (see 1).
 -- Their companions fire Ascension effect types this core implements (SpellEffects.cpp): 173 refreshes or extends an
 -- aura, 197 changes the cooldown of a class's spells by class flag. What Ascension kept in its own database is the
--- trigger rules, so this file writes them from the tooltips. Data only: no build. Needs a server start. Safe to run
+-- trigger rules, so this file writes them from the tooltips. Needs a server start. Safe to run
 -- again (000-reset removes WCME: links, owned spell_proc and spell_dbc rows, action rules and spell_wcme_ bindings).
 -- Each read by hand on 24 Nov 2026. Not tested in game: these stay unverified until a player report or an automated
 -- test.
@@ -14,8 +15,12 @@
 --   - The extension: the companion (272846) is linked to the talent and given its proc rule (physical melee
 --     damage, 30%). It fires 272845, effect 173 on 272848. That spell's second value is 0, which tells the core
 --     to SET the duration (to 1,001 ms) instead of adding to it: as it is, every proc would cut the debuff to a
---     second. Our copy sets the second value to 1, so each proc adds 1 sec, as the tooltip says.
---   - Known: nothing caps the extensions (neither does the tooltip), so steady melee can keep it up for good.
+--     second. Our copy sets the second value to 10000: add 1 sec per proc, never past 10 sec beyond the debuff's
+--     20 sec (+50%).
+--   - The cap is James's decision (24 Nov 2026): the tooltip gives none, and without one steady melee keeps the
+--     debuff up for good. +50% sits in the middle of comparable extension talents (Glyph of Shred +50%, Endless
+--     Agonizer +50%, Glyph of Scourge Strike +60%, Frozen Grave +40%). The cap needs patch 55 (build); before that
+--     build the core reads any non-zero second value as plain "add", so the extension works uncapped until then.
 --
 -- 2. Divine Reset (277920). Direct Holy damage has a 20% chance to reset Divine Storm (277921, effect 197) and, in
 --   the same roll, give Divine Storm +50% damage (277919); and a separate 40% chance (the companion, 277916) to take
@@ -44,4 +49,4 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 
 DELETE FROM `spell_dbc` WHERE `ID` IN (272845);
 INSERT INTO `spell_dbc` VALUES
-(272845, 0, 0, 0, 2147484032, 0, 4, 1048576, 128, 0, 8388608, 2147483648, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1024, 100, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 6, 0.0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 173, 0, 0, 1, 1, 1, 0.0, 0.0, 0.0, 1000, -1, -1, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 272848, 0, 0, 1, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 'Battle Fatigue duration', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0);
+(272845, 0, 0, 0, 2147484032, 0, 4, 1048576, 128, 0, 8388608, 2147483648, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1024, 100, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 6, 0.0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 173, 0, 0, 1, 1, 1, 0.0, 0.0, 0.0, 1000, -1, -1, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 272848, 0, 0, 10000, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 'Battle Fatigue duration', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0);
