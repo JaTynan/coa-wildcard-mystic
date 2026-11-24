@@ -9,7 +9,13 @@
 # and deleted again after the next log-in.
 # The fix: the subclass module also leaves Auto Shot alone while the character holds the Auto Shot card. Nothing else
 # in the module changes. A Hero who lost it gets it back at the next log-in (the core teaches it from the card).
-# Run by the build (step "Apply our patch scripts") after the modules are checked out. Throws if the anchor is gone.
+#
+# Second part (James, 24 November: close out the card's promise): the card's tooltip says Auto Shot is 33% faster.
+# The core's Wildcard grant only teaches Auto Shot, so a Hero shot at the plain weapon speed. Hunters get the 33%
+# from a hidden passive, Auto Shot Haste (34082: 33% ranged attack speed). The core's own grant table now teaches it
+# with Auto Shot from the card, and removes it with Auto Shot when the card goes (AscensionWildcard.cpp,
+# ENTRY_SPELLS). "Scales with Ranged Attack Power" needs nothing: Auto Shot's weapon damage already includes it.
+# Run by the build (step "Apply our patch scripts") after the modules are checked out. Throws if an anchor is gone.
 # Listed in CHANGES.md.
 $ErrorActionPreference = 'Stop'
 
@@ -25,5 +31,17 @@ $replacement = "        !IsBorrowedSpell(player, StockAutoShot) && !OwnClassGran
     "        !player->HasSpell(965202)) // Wildcard (patch 41): the Wildcard Auto Shot card teaches Auto Shot`n" +
     "        stray.push_back(StockAutoShot);`n"
 $text = $text.Replace($anchor, $replacement)
+Set-Content $file $text -NoNewline
+}
+
+Write-Host 'Patch: the Wildcard Auto Shot card also teaches Auto Shot Haste (34082, 33% ranged attack speed)'
+& {
+$file = 'core/src/server/coa/AscensionWildcard.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$anchor = "    { AUTO_SHOT_ENTRY_SPELL, { AUTO_SHOT_SPELL } },`n"
+if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) {
+    throw "Core changed: AscensionWildcard.cpp's Auto Shot row in ENTRY_SPELLS was not found exactly once"
+}
+$text = $text.Replace($anchor, "    { AUTO_SHOT_ENTRY_SPELL, { AUTO_SHOT_SPELL, 34082 } }, // Wildcard (patch 41): + Auto Shot Haste`n")
 Set-Content $file $text -NoNewline
 }
