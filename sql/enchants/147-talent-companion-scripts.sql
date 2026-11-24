@@ -63,8 +63,8 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (271403, 'spell_wcme_corrupted_bear_paw'),
 (271411, 'spell_wcme_corrupted_paw');
 
--- The core's own Corrupted Bear form script, on the CoA bear forms as well (000-reset does not clear core names).
-DELETE FROM `spell_script_names` WHERE `spell_id` IN (1105487, 1109634) AND `ScriptName` = 'aura_ascension_wildcard_corrupted_bear_form';
-INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+-- The core's own Corrupted Bear form script, on the CoA bear forms as well. 000-reset does not clear core script names,
+-- so the insert skips rows already there (safe to run again).
+INSERT IGNORE INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1105487, 'aura_ascension_wildcard_corrupted_bear_form'),
 (1109634, 'aura_ascension_wildcard_corrupted_bear_form');
