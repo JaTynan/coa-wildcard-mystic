@@ -1,10 +1,11 @@
 -- Talent companions, batch 2: companions that fire on an event (scan: enchants/talent-companions.csv).
 -- Same pattern as batch 1 (141-talent-companions.sql): each talent rank applies its hidden companion with an aura
 -- link. These companions also need to fire, and Ascension kept their trigger rules in its own database, so each
--- gets a spell_proc row here. Where the companion fires an Ascension-only effect (cooldown cuts use effect types
--- 165 and 197, which this core does not have), or must fire for exact spells only, the action table does the work
--- instead (spell_wcme_enchant_action, in every build since build6; recipe R6). On a match the script stops the
--- companion's own effect, and without one nothing fires, so the Ascension-only effect never runs.
+-- gets a spell_proc row here. Where the trigger must be exact spells, or the companion's own effect is a placeholder
+-- (Deflection fires a dummy), the action table does the work instead (spell_wcme_enchant_action, in every build
+-- since build6; recipe R6). On a match the script stops the companion's own effect, and without one nothing fires.
+-- Correction (24 Nov, batch 4): an earlier version of this note said the cooldown effects (types 165 and 197) do not
+-- exist in this core. They do (SpellEffects.cpp); the rules below still work, and list exact trigger spells.
 -- Data only: no build. Needs a server start. Safe to run again (000-reset removes WCME: links, owned spell_proc and
 -- spell_dbc rows, every action rule and every spell_wcme_ binding). Each pair read by hand on 24 Nov 2026.
 -- Not tested in game: James's testing policy, so these stay unverified until a player report or an automated test.
