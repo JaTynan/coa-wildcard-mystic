@@ -84,7 +84,8 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 -- 3. Plain bonuses, every rank.
 --   Answered Prayers (5 ranks): the healing bonus and the extra Holy damage (918155-918169).
 --   Arctic Reach (2 ranks): spell range 3 / 6 yards for Mage spells (829023, 829014). Icy Reach, a Death Knight
---     talent, quotes the same Mage companions; it is held back (a Hero with both at different ranks would get 9).
+--     talent, quotes the same Mage companions; James left it out on 24 Nov (a Hero with both at different ranks
+--     would get 9 yards, and only on Mage spells).
 --   Booming Voice (2 ranks): Demoralizing Shout's attack power cut (411140, 411141).
 --   Demonic Mind: the healing-done drawback while it is active (283943). The talent is a toggle with an aura, so the
 --     link follows it on and off.
@@ -152,8 +153,9 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (30808, 965658, 2, 'WCME: Unleashed Rage rank 2 applies its Shamanistic Rage damage companion'),
 (30809, 965659, 2, 'WCME: Unleashed Rage rank 3 applies its Shamanistic Rage damage companion');
 
--- Held back from this batch, each for a reason (later batches): Icy Reach (Mage companion on a Death Knight talent),
+-- Held back from this batch, each for a reason (later batches):
 -- Glyph of Trueshot Aura (only while Trueshot Aura is learned), Divinity (only on Path of Strength), Corrupted Bear
 -- Form (only in Bear Form), Swashbuckler: Flurry of Blows (only while Swashbuckling), Bloodletting (its companion
 -- needs code no one has written), Two-Handed Weapon Mastery (weapon-dependent companion), Thrust and Weighted
--- Reinforcement (active abilities: no aura for a link to hang off).
+-- Reinforcement (active abilities: no aura for a link to hang off). Icy Reach is not held back but left out, by
+-- James's decision.

@@ -78,7 +78,7 @@ talent's own effect.
 | 3 | Conditional: only in a form, on a stat path, while Swashbuckling, while a spell is learned (aura-link recipe R7) | Corrupted Bear Form, Divinity, Swashbuckler: Flurry of Blows, Glyph of Trueshot Aura |
 | 4 | Needs code: weapon-dependent linked auras, unimplemented class-script overrides, Ascension aura types | Two-Handed Weapon Mastery, Bloodletting, Careful Aim, Harbinger of Plague, Reave |
 | 5 | Active abilities with a passive companion (no aura to link from) | Thrust, Weighted Reinforcement |
-| - | Outliers for James | Icy Reach (Mage companion on a Death Knight talent) |
+| - | Left out by James (24 Nov 2026) | Icy Reach: a Death Knight talent whose tooltip quotes the Mage range companions (829023, 829014). Linking them would add range to Mage spells only, and stack with Arctic Reach at a different rank. James: "Leave it out." Do not link it in a later batch. |
 
 Lessons from batch 1, for every later batch:
 - A tooltip that says "does not stack" over a companion with the adding duration aura (232): own a copy with
