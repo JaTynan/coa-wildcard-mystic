@@ -260,3 +260,150 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_nemesis_hand_of_guldan);`n    RegisterSpellScript(spell_wcme_nemesis_window);`n    RegisterSpellScript(spell_wcme_nemesis_form_end);`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Demonic Persistence (276506, issue #149; the Epic Mystic Enchant of the same spell too)
+Write-Host "Patch: Demonic Persistence sacrifices the lowest-health Wild Imp on Incinerate and Mind Blast"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# CoA's own rule (coa_mystic_enchant_proc, unchanged) fires 276508 when Incinerate or Mind Blast is cast. 276508 is a
+# "script spell": in the game data its effects only stand in for Ascension's server code (a hidden marker aura, the
+# demon buff 276509, and the explosion 276511 centred on the caster). So it gave the demon a buff with no sacrifice,
+# exploded around the warlock, and killed no imp. This script replaces those stand-ins with the tooltip's rules:
+#   1. No living Wild Imp from Hand of Gul'dan (creatures 855350 and 855352) of the caster's: nothing happens.
+#   2. Otherwise the one with the least health is sacrificed (equal health: the one closest to expiring). It casts the
+#      explosion 276511 at itself (Fire, 8 yd, the warlock's spell power and kill credit) and dies.
+#   3. The warlock gains a stack of 276513 (up to 4, 20 sec): Hand of Gul'dan's imps last 1 sec longer per stack
+#      (game data, the same way Master Summoner lengthens them). The demon gains a stack of 276509 (+20% damage).
+#   4. Every Wild Imp from Hand of Gul'dan the warlock has, and every one summoned while the stacks last, gets 276512
+#      at the same number of stacks for the time the stacks have left (+20% damage per stack).
+#   5. "Deteriorate over time": every Wild Imp from Hand of Gul'dan summoned by a warlock with the talent carries
+#      990142, Ascension's own deterioration for this talent's Legendary version, at a fixed 4% of its health a second.
+#      The longest an imp can live is 21 sec (12 base, +5 Master Summoner, +4 at 4 stacks), so at most 84% is lost: it
+#      never dies of this alone, and the oldest imp is reliably the weakest (rule 2). Our copy ignores immunities,
+#      cannot crit and deals fixed damage, so the rate is steady.
+# 276509, 276512 and 990142 are given working data in sql/enchants/140-talent-fixes.sql. Bound to 276508 there too.
+$class = @'
+// Wildcard: Demonic Persistence (issue #149).
+#include "AllCreatureScript.h"
+#include "TemporarySummon.h"
+#include <limits>
+#include <vector>
+
+constexpr uint32 WCME_DP_EXPLOSION = 276511;
+constexpr uint32 WCME_DP_DEMON_DAMAGE = 276509;
+constexpr uint32 WCME_DP_IMP_DAMAGE = 276512;
+constexpr uint32 WCME_DP_STACKS = 276513;
+constexpr uint32 WCME_DP_TALENT = 276506;
+constexpr uint32 WCME_DP_DETERIORATION = 990142;
+
+static bool WcmeIsHandOfGuldanImp(Unit const* unit)
+{
+    return unit && unit->IsInWorld() && unit->IsAlive() && unit->GetTypeId() == TYPEID_UNIT &&
+        (unit->GetEntry() == 855350 || unit->GetEntry() == 855352);
+}
+
+static uint32 WcmeTimeLeft(Unit* unit)
+{
+    TempSummon* summon = unit->ToTempSummon();
+    return summon ? summon->GetTimer() : std::numeric_limits<uint32>::max();
+}
+
+// Rule 4: the imp's damage stacks follow its owner's stacks of Demonic Persistence, and end with them.
+static void WcmeEmpowerImp(Unit* owner, Unit* imp)
+{
+    Aura const* stacks = owner->GetAura(WCME_DP_STACKS);
+    if (!stacks || stacks->GetDuration() <= 0)
+        return;
+    Aura* aura = imp->GetAura(WCME_DP_IMP_DAMAGE);
+    if (!aura)
+        aura = imp->AddAura(WCME_DP_IMP_DAMAGE, imp);
+    if (!aura)
+        return;
+    aura->SetStackAmount(stacks->GetStackAmount());
+    aura->SetMaxDuration(stacks->GetDuration());
+    aura->SetDuration(stacks->GetDuration());
+}
+
+class spell_wcme_demonic_persistence_talent : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_demonic_persistence_talent);
+
+    void PreventTrigger(SpellEffIndex effIndex)
+    {
+        PreventHitDefaultEffect(effIndex);  // the stand-in demon buff and the explosion around the caster
+    }
+
+    void PreventMarker(SpellEffIndex /*effIndex*/)
+    {
+        PreventHitAura();  // the stand-in hidden marker aura
+    }
+
+    void HandleCast()
+    {
+        Unit* owner = GetCaster();
+        if (!owner)
+            return;
+        std::vector<Unit*> const minions(owner->m_Controlled.begin(), owner->m_Controlled.end());
+        Unit* imp = nullptr;
+        for (Unit* minion : minions)
+            if (WcmeIsHandOfGuldanImp(minion) && (!imp || minion->GetHealth() < imp->GetHealth() ||
+                (minion->GetHealth() == imp->GetHealth() && WcmeTimeLeft(minion) < WcmeTimeLeft(imp))))
+                imp = minion;
+        if (!imp)
+            return;  // rule 1
+        imp->CastSpell(imp, WCME_DP_EXPLOSION, true, nullptr, nullptr, owner->GetGUID());  // rule 2
+        imp->KillSelf(false);
+        owner->CastSpell(owner, WCME_DP_STACKS, true);  // rule 3
+        owner->CastSpell(owner, WCME_DP_DEMON_DAMAGE, true);
+        for (Unit* minion : minions)  // rule 4
+            if (WcmeIsHandOfGuldanImp(minion))
+                WcmeEmpowerImp(owner, minion);
+    }
+
+    void Register() override
+    {
+        OnEffectLaunch += SpellEffectFn(spell_wcme_demonic_persistence_talent::PreventTrigger, EFFECT_ALL,
+            SPELL_EFFECT_TRIGGER_SPELL);
+        OnEffectLaunchTarget += SpellEffectFn(spell_wcme_demonic_persistence_talent::PreventTrigger, EFFECT_ALL,
+            SPELL_EFFECT_TRIGGER_SPELL);
+        OnEffectHit += SpellEffectFn(spell_wcme_demonic_persistence_talent::PreventTrigger, EFFECT_ALL,
+            SPELL_EFFECT_TRIGGER_SPELL);
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_demonic_persistence_talent::PreventTrigger, EFFECT_ALL,
+            SPELL_EFFECT_TRIGGER_SPELL);
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_demonic_persistence_talent::PreventMarker, EFFECT_0,
+            SPELL_EFFECT_APPLY_AURA);
+        OnCast += SpellCastFn(spell_wcme_demonic_persistence_talent::HandleCast);
+    }
+};
+
+// Rules 4 and 5 for each new Wild Imp from Hand of Gul'dan.
+class wcme_demonic_persistence_new_imps : public AllCreatureScript
+{
+public:
+    wcme_demonic_persistence_new_imps() : AllCreatureScript("wcme_demonic_persistence_new_imps") { }
+
+    void OnCreatureAddWorld(Creature* creature) override
+    {
+        if (!creature->IsSummon() || (creature->GetEntry() != 855350 && creature->GetEntry() != 855352))
+            return;
+        Unit* owner = creature->GetOwner();
+        if (!owner)
+            return;
+        if (owner->HasAura(WCME_DP_TALENT))  // rule 5
+            creature->AddAura(WCME_DP_DETERIORATION, creature);
+        if (owner->HasAura(WCME_DP_STACKS))  // rule 4
+            WcmeEmpowerImp(owner, creature);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_demonic_persistence_talent);`n    new wcme_demonic_persistence_new_imps();`n")
+Set-Content $file $text -NoNewline
+}

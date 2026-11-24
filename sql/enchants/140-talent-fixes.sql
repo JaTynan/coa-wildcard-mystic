@@ -84,3 +84,29 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (990224, 'spell_wcme_nemesis_form_end'),
 (1147241, 'spell_wcme_nemesis_form_end'),
 (1247241, 'spell_wcme_nemesis_form_end');
+
+-- Demonic Persistence (issue #149; also the Epic Mystic Enchant of the same spell, 276506). CoA's own rule fires
+-- 276508 on Incinerate and Mind Blast; spell_wcme_demonic_persistence_talent in patches/55-talent-fixes.ps1 gives
+-- 276508 the tooltip's rules (sacrifice the lowest-health Wild Imp from Hand of Gul'dan, explode it at its own spot,
+-- stack the warlock's, the demon's and the imps' bonuses; nothing at all when no such imp is alive). These rows:
+--   bind that script to 276508 (needs the build with the patch; on an older build the server logs the name as
+--   unknown and carries on, and 276508 keeps its old stand-in effects);
+--   give the two damage bonuses auras that work here. In the game data the demon's (276509) uses an aura the core
+--   honours only for a short reviewed list of spells, with no school set, and the imps' (276512) is a dummy. Our
+--   copies (spell_dbc, owned) use "damage done +%, every school" at the same 20% per stack, up to 4 stacks. The
+--   demon's tooltip names no restriction to monsters, so the bonus applies against everything.
+--   give the deterioration (990142: Ascension's own "damage over time to Wild Imps" for this talent's Legendary
+--   version, unused by anything else) a fixed 4% of max health a second (its data rolls 4-5%) and three flags in our
+--   copy: ignores immunities, cannot crit, fixed damage. The longest an imp can live is 21 sec (12 base, +5 Master
+--   Summoner rank 2, +4 at 4 stacks): 84% lost, so it never dies of this alone. A 5% roll would kill it at 20 sec.
+--   The script puts it on each Wild Imp from Hand of Gul'dan a warlock with the talent summons.
+-- Needs a server start to take effect.
+DELETE FROM `spell_script_names` WHERE `ScriptName` = 'spell_wcme_demonic_persistence_talent';
+INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
+(276508, 'spell_wcme_demonic_persistence_talent');
+INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_dbc', 276509), ('spell_dbc', 276512), ('spell_dbc', 990142);
+DELETE FROM `spell_dbc` WHERE `ID` IN (276509, 276512, 990142);
+INSERT INTO `spell_dbc` VALUES
+(276509, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 4, 0.0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 6, 0, 0, 1, 1, 1, 0.0, 0.0, 0.0, 19, -1, -1, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 79, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6042, 0, 0, 'Demonic Persistence', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 'Pet Damage', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0),
+(276512, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 4, 0.0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 6, 0, 0, 1, 1, 1, 0.0, 0.0, 0.0, 19, -1, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 79, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6042, 0, 0, 'Demonic Persistence', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 'Wild Imp Damage', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0),
+(990142, 0, 0, 0, 536871296, 0, 536870912, 0, 257, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 100, 0, 80, 1, 0, 18, 0, 0, 0, 0, 0, 4, 0.0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 6, 0, 0, 1, 1, 1, 0.0, 0.0, 0.0, 3, -1, -1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 1000, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11028, 0, 6042, 0, 0, 'Demonic Persistence', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0);
