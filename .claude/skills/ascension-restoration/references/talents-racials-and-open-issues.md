@@ -157,6 +157,11 @@ Lessons from batch 4:
 - Look for the core's own version before scripting: the Bloodmage class's Reave (800490) is scripted in
   `AscensionBloodmageSecondary.cpp`, and its conditions (aura state bleeding, health below 35%, not in the front
   arc) were reused for the Hero version (280990).
+- A talent with no proc flags in Spell.dbc may still fire: the core's `coa_mystic_enchant_proc` rules (in
+  `data/sql/updates/pending_db_world`) cover many talents too (Harbinger of Plague's Wrath buff). Search those
+  files for the id before writing a `spell_proc` row, and never own a row the core ships.
+- A spell aimed at enemies around a destination drops its unit target when cast at a unit
+  (`Spell::InitExplicitTargets`): in its scripts `GetExplTargetUnit()` is null; use `GetSpell()->GetOriginalTarget()`.
 - Passives held by an ability: patch 55's `wcme_spell_companion` (ability, passive, flags). Use it for an active
   ability's passive and for any passive with a weapon requirement (a linked aura is lost at the first weapon swap).
 - A fast compile check exists without a build: after pre-flight with `--keep --workspace /tmp/pf`, run

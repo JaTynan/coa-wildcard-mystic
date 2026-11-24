@@ -8,9 +8,8 @@
 --
 -- 1. Harbinger of Plague (talent 276427). Casting Wrath gives Harbinger of Plague (276430 on Haunt, 276432 on
 --   diseases, +15% each, stacking to 5); while it is up, Haunt also hits up to 10 enemies near its target for 30% of
---   its damage (Harbinger's Bile, 276435). Neither half works today: the talent's two effects have no proc flags and
---   no rule (Wrath never gives the buff), and the companion 276433 is not applied.
---   - The talent's rule: on casting Wrath (druid class flag, every rank), both effects fire together.
+--   its damage (Harbinger's Bile, 276435). The buff from Wrath already works (the core's own Mystic Enchant proc
+--   rules for 276427; not touched here). The splash does not: the companion 276433 is not applied.
 --   - The companion is linked to the talent, with a rule for Haunt's hits (its class flag). The script checks the
 --     buff and casts the bile; the bile's own script spares Haunt's target.
 -- 2. Reave (280990-280997, the Hero version of the Bloodmage ability). Each hit adds Shadow damage for each
@@ -18,15 +17,14 @@
 --   35% health. Its passive (280998) is held while the player knows any rank (patch 55's ability companions); a rule
 --   for Reave's hits and the script do the rest. The Bloodmage class's own Reave (800490) is already scripted by the
 --   core and is not touched.
--- The bonus spells keep their own data: Harbinger's Bile has no spell power coefficient, and Reave's three bonus
--- spells have 0.35 (as in Ascension's data, and as the core's Bloodmage Reave uses them).
+-- The bonus spells are plain copies of the share: their data ignores the caster's damage modifiers (no spell power,
+-- no damage bonuses), as the core's Bloodmage Reave copies do.
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (276427, 276433, 2, 'WCME: Harbinger of Plague applies its Haunt splash companion');
 
-INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_proc', 276427), ('spell_proc', 276433), ('spell_proc', 280998);
-DELETE FROM `spell_proc` WHERE `SpellId` IN (276427, 276433, 280998);
+INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_proc', 276433), ('spell_proc', 280998);
+DELETE FROM `spell_proc` WHERE `SpellId` IN (276433, 280998);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
-(276427, 0, 7, 1, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
 (276433, 0, 5, 0, 262144, 0, 65536, 1, 2, 0, 0, 0, 0, 100, 0, 0),
 (280998, 0, 0, 0, 0, 0, 16, 1, 2, 0, 0, 0, 0, 100, 0, 0);
 

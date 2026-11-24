@@ -703,7 +703,7 @@ class spell_wcme_harbinger_bile : public SpellScript
     {
         SpellInfo const* from = GetTriggeringSpell();
         if (from && from->Id == 276433)
-            if (Unit* primary = GetExplTargetUnit())
+            if (Unit* primary = GetSpell()->GetOriginalTarget()) // the explicit unit is dropped for a destination spell
                 targets.remove(primary);
     }
 
