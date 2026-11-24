@@ -170,9 +170,12 @@ worldserver.conf | Wildcard.MysticEnchantGoldCostPct = 1
 # forever; patches/42-mystic-enchant-cost-steps.ps1). Learning an enchant costs 1 Mystic Extract. Each pair is
 # "from altar level:amount"; the last pair holds for every level above it. Empty = the core's own curve.
 # Altar points per altar level (one extract per level; a reforge gives 60 uncommon, 80 rare, 100 epic, 200 legendary).
-# The core's own: about 360 at level 0, 660 at level 20, 1,860 at level 100, rising without end.
-worldserver.conf | Wildcard.MysticAltarLevelSteps = "0:120 5:240 10:400 20:640"
-# Marks of Ascension for buying one extract (only while holding none). The core's own: 1,000 + 200 per altar level,
+# The core's own: the first reforge completes level 0, then about 360 at level 1, 660 at level 20, 1,860 at level 100,
+# rising without end. At most 5 altar levels are gained per reforge (a character the new steps put far ahead catches
+# up over a few reforges). Pairs are separated by spaces only.
+worldserver.conf | Wildcard.MysticAltarLevelSteps = "0:60 1:120 5:240 10:400 20:640"
+# Marks of Ascension for buying one extract (the core allows it only while holding none, so the hourly extract makes
+# this the fallback for players who have spent theirs). The core's own: 1,000 + 200 per altar level,
 # up to 5,000.
 worldserver.conf | Wildcard.MysticExtractMarkSteps = "0:100 5:250 10:500 20:1000"
 # Each Battleground Spoils also holds a Case of Fortune (ability or talent at random, as Manastorm gives), so a win
