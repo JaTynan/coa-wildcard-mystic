@@ -1012,7 +1012,8 @@ public:
 };
 // Corrupted Bear Form (271403, the core's own script syncs its -20% Physical penalty, 271408): each melee hit in Bear
 // Form also deals Shadow damage (Corrupted Paw, 271411), which the data leaves at a flat 2. Ours scales it to 25% of
-// the hit as dealt, after armour and the penalty, so the total matches a plain bear (0.8 x 1.25 = 1.0). Ascension's
+// the hit as dealt, after armour and the penalty, so the total matches a plain bear (0.8 x 1.25 = 1.0). The penalty
+// needs the core's form script on the CoA forms too (bound in 147). Ascension's
 // own elemental weapon attacks keep Physical in their school so armour still counts; taking the share from the hit
 // after armour does the same for a pure Shadow spell. James asked for scaling on 25 Nov 2026 (patch 55).
 class spell_wcme_corrupted_bear_paw : public AuraScript
@@ -1041,8 +1042,35 @@ class spell_wcme_corrupted_bear_paw : public AuraScript
     }
 };
 
+// Corrupted Paw (271411) has no spell power coefficient in the data, so the core would add its default for an instant
+// spell (about 43% of spell power) and the caster's damage-done bonuses on top of the share above. The Paw keeps only
+// the value it was cast with; crits and the target's damage-taken modifiers still apply afterwards.
+class spell_wcme_corrupted_paw : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_corrupted_paw);
+
+    int32 _base = -1;
+
+    void RememberBase(SpellEffIndex /*effIndex*/)
+    {
+        _base = GetEffectValue();
+    }
+
+    void KeepBase()
+    {
+        if (_base >= 0)
+            SetHitDamage(_base);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_corrupted_paw::RememberBase, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnHit += SpellHitFn(spell_wcme_corrupted_paw::KeepBase);
+    }
+};
+
 '@
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
-$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_beacon_of_virtue);`n    RegisterSpellScript(spell_wcme_beacon_of_virtue_heals);`n    RegisterSpellScript(spell_wcme_holy_concentration_renew);`n    RegisterSpellScript(spell_wcme_corrupted_bear_paw);`n    new wcme_talent_companion_hooks();`n")
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_beacon_of_virtue);`n    RegisterSpellScript(spell_wcme_beacon_of_virtue_heals);`n    RegisterSpellScript(spell_wcme_holy_concentration_renew);`n    RegisterSpellScript(spell_wcme_corrupted_bear_paw);`n    RegisterSpellScript(spell_wcme_corrupted_paw);`n    new wcme_talent_companion_hooks();`n")
 Set-Content $file $text -NoNewline
 }
