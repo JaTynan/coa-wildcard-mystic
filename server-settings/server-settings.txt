@@ -564,6 +564,13 @@ modules\playerbots.conf | AiPlayerbot.WildcardLevelNearPlayersPct = 70
 worldserver.conf | Log.Async.Enable = 1
 worldserver.conf | Logger.coa = 4,Server
 worldserver.conf | Logger.module.coa_challenges = 3,Console Server
+# What your own bots do on their own (24 Nov, James, issue #248; needs a build after 24 Nov): the class spells the
+# one-off clean-up removes from a Wildcard alt, the rolls an alt takes, the Books it learns because your account owns
+# them. These lines were written at Info under the bot module's categories, which no logger here passes on (root is
+# errors only), so nothing reached a file. They now have their own category and go to Server.log only (not the
+# console). Random bots write nothing here. The settings report lists the name as unknown: loggers are read by their
+# "Logger." prefix, not by name.
+worldserver.conf | Logger.wcme.alts = 4,Server
 
 # ---------------------------------------------------------------- Wildcard Mystic Enchants
 # Needs the patched world server (Install.cmd); the official one ignores it
