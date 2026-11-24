@@ -50,21 +50,24 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (277990, 277991, 2, 'WCME: Fatal Vanguard applies its Execute critical strike companion'),
 (277790, 277791, 2, 'WCME: Talonshrike applies its Raptor Strike, Counterattack and Mongoose Bite damage companion');
 
+-- Cast rules (the rows with phase 1, "on cast"): proc flags 87312, every "spell done" kind, as in 016 and 020.
+-- (Fixed 24 Nov after review on #263: these first had 104720, which holds the helpful-spell TAKEN bits instead of
+-- DONE, so a helpful trigger such as Align or a Meteor summon never fired the rule.)
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_proc', 12359), ('spell_proc', 812355), ('spell_proc', 812356), ('spell_proc', 854480), ('spell_proc', 854481), ('spell_proc', 854482), ('spell_proc', 854492), ('spell_proc', 854493), ('spell_proc', 854494), ('spell_proc', 965835), ('spell_proc', 965836), ('spell_proc', 965837), ('spell_proc', 277489), ('spell_proc', 277990), ('spell_proc', 277043), ('spell_dbc', 277791);
 DELETE FROM `spell_proc` WHERE `SpellId` IN (12359, 812355, 812356, 854480, 854481, 854482, 854492, 854493, 854494, 965835, 965836, 965837, 277489, 277990, 277043);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
-(12359, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
-(812355, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
-(812356, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(12359, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(812355, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(812356, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
 (854480, 0, 0, 0, 0, 0, 69904, 1, 2, 0, 0, 0, 0, 100, 0, 0),
 (854481, 0, 0, 0, 0, 0, 69904, 1, 2, 0, 0, 0, 0, 100, 0, 0),
 (854482, 0, 0, 0, 0, 0, 69904, 1, 2, 0, 0, 0, 0, 100, 0, 0),
-(854492, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
-(854493, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
-(854494, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
-(965835, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
-(965836, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
-(965837, 0, 0, 0, 0, 0, 104720, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(854492, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(854493, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(854494, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(965835, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(965836, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
+(965837, 0, 0, 0, 0, 0, 87312, 0, 1, 0, 0, 0, 0, 100, 0, 0),
 (277489, 0, 9, 0, 0, 0, 256, 1, 2, 0, 0, 0, 0, 100, 0, 0),
 (277990, 0, 0, 0, 0, 0, 16, 1, 2, 2, 0, 0, 0, 100, 0, 0),
 (277043, 0, 0, 0, 0, 0, 40, 0, 2, 32, 0, 0, 0, 100, 0, 0);
