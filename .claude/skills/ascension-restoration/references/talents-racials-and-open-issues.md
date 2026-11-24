@@ -76,8 +76,8 @@ talent's own effect.
 | 1 | Plain bonuses: an aura link per rank (`sql/enchants/141-talent-companions.sql`) | 25 talents; waiting for James to merge; unverified |
 | 2 | Event-driven companions: link plus proc rules, or action-table rules (`sql/enchants/142-talent-companions-procs.sql`) | 8 talents; waiting for James to merge; unverified |
 | 3 | Conditional: core aura links, recipe R7 (`sql/enchants/143-talent-companions-conditional.sql`) | Divinity (on Path of Strength), Glyph of Trueshot Aura (while Trueshot Aura is on); waiting for James to merge; unverified. Swashbuckler: Flurry of Blows was already an aura link in 007. |
-| 4 | Needs code: weapon-dependent linked auras, unimplemented class-script overrides, Ascension-only effect types and aura types | Two-Handed Weapon Mastery, Bloodletting, Careful Aim, Harbinger of Plague, Reave; from batch 2: Battle Fatigue, Beacon of Virtue, Divine Reset, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon; from batch 3: Corrupted Bear Form (its Shadow-damage proc has no trigger rules, so today the talent does nothing; the 20% penalty alone would make it worse) |
-| 5 | Active abilities with a passive companion (no aura to link from) | Thrust, Weighted Reinforcement, Jagged Reinforcement |
+| 4 | Needs code: weapon-dependent linked auras, unimplemented class-script overrides, Ascension-only effect types and aura types | Two-Handed Weapon Mastery, Bloodletting, Careful Aim, Harbinger of Plague, Reave; from batch 2: Battle Fatigue, Beacon of Virtue, Divine Reset, Flare Strike, Holy Concentration, Pack Leader, Tidecaller's Boon; from batch 3: Corrupted Bear Form (its Shadow-damage proc has no trigger rules, so today the talent does nothing; the 20% penalty alone would make it worse); from batch 5: Thrust (an active ability whose armour-ignore passive needs "while you know X, you have Y", which this core cannot express in data: it has no learn-spell table) |
+| 5 | Active abilities with a passive companion (no aura to link from) | Done 24 Nov, no SQL. Weighted and Jagged Reinforcement already work: their shield enchants (280422, 280420) carry the companion as an equip spell (SpellItemEnchantment type 3), applied while the shield is worn. Thrust moves to batch 4 (see below). |
 | - | Left out by James (24 Nov 2026) | Icy Reach: a Death Knight talent whose tooltip quotes the Mage range companions (829023, 829014). Linking them would add range to Mage spells only, and stack with Arctic Reach at a different rank. James: "Leave it out." Do not link it in a later batch. |
 | - | Outlier | One With The Light: its companion fires 275371, which is not in the game data; linking it as it is would log an error every second |
 | - | No change needed | Nature's Splendor: the talent's own effects already give longer durations (4.5 / 9 / 3 sec) than the companion its tooltip quotes (3 / 6 / 2); linking would stack them |
@@ -121,6 +121,14 @@ Lessons from batch 3:
   values, not just effect types, before linking.
 - Some aura types read a second value when the first is not valid (aura 175 falls back to MiscValueB): read the
   core's handler before "fixing" an odd number.
+
+Lessons from batch 5:
+- A spell that enchants an item (effects 53, 54) can carry its companion on the enchantment itself
+  (SpellItemEnchantment: type 1 combat proc, 3 equip spell, 7 use spell). The scan now reads that file; give it
+  the full server DBC folder (the VM's `C:\Games\CoA Server\Data\dbc`), or these show as missing.
+- This core has no `spell_learn_spell` table (newer AzerothCore removed it), so "learning ability X also teaches
+  passive Y" cannot be done in data. A generic code hook (an ability-to-passive table read at login and on learn
+  and unlearn) is the batch 4 proposal; Thrust is its first user.
 
 Before scripting, check the core does not already do it (`enchants/core-overlap-review.csv`) and read every
 version of the ability a Hero can learn (Hand of Gul'dan has 954611 and 2304611 -> 2304612; both summon guardians
