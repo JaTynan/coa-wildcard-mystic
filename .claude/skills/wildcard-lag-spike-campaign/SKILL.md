@@ -38,6 +38,13 @@ is not on `main` yet (read it with `git show origin/main:docs/agents/context/cha
 4. The next experiment is in the Phase 3 table (E1 as of 2026-11-22). Write its prediction down first.
 5. Any change at all: classify with wildcard-change-control first; James merges.
 
+**Status on 2026-11-24.** Root cause still unknown; James: "we need to find the root cause first, collecting
+evidence is first". The worst tick in the 23 Nov logs was 6,079 ms. E1 is prepared as draft PR #251
+(`AiPlayerbot.RandomBotUpdateInterval = 30`): Tuesday 24 Nov is the baseline evening, James merges #251 after
+that evening's play, Wednesday 25 Nov is the experiment evening (the 4 am patch night applies it), Thursday is
+the comparison against the prediction in the Phase 3 table. Keep other merges that change bot or world behaviour
+out of that window, or the comparison means nothing. E1 is a test of H1, not a fix.
+
 Words used: a **tick** is one pass of the world server's game loop; players feel long ticks as freezes and
 rubber-banding. A **record** is one five-line entry in `Timing.log`; its **window** is the last 500 ticks it
 summarises. A **beat** is a repeating pattern in the counters. **Bots** are SQUID's Playerbots (750 configured).

@@ -303,6 +303,21 @@ Cost settings (`server-settings.txt:467-508`): `AiPlayerbot.MinRandomBots` / `Ma
 `AiPlayerbot.botActiveAloneSmartScale` (not set here, SQUID default on: sheds awake bots as the tick goes from 50
 to 200 ms); `MapUpdate.Threads` = 6; `Visibility.Distance.Continents` = 100.
 
+**Altbots on Wildcard (22-24 Nov 2026, issues #233 and #248).** Five patches make a player's own Wildcard Hero
+alts look after themselves, each with its own switch in `server-settings.txt`:
+
+| Patch | Does | Setting |
+|---|---|---|
+| 97 | Hero altbots train from the Wildcard trainer's list at its prices | `AiPlayerbot.WildcardHeroesUseWildcardTrainer` |
+| 98 | They learn from a class book that is out within 30 yards | `AiPlayerbot.WildcardAltsUseNearbyClassBook` |
+| 43 | SQUID's "learn what is available" step skips class trainers for Hero altbots (it had taught them a slice of every class), plus a one-off clean-up of class abilities never rolled | `AiPlayerbot.WildcardAltsSkipClassTrainers`, `...RemoveUnrolledClassSpells` (a counter: raise it to run again) |
+| 44 | They take the ability, talent and stat-path rolls their level has earned; never rerolls or spends a scroll | `AiPlayerbot.WildcardAltsRollOnLevelUp` |
+| 99 | Altbots, and characters a player logs in to, learn the books the account already owns (core half in `AscensionCompat.cpp`) | `AiPlayerbot.WildcardAltsLearnOwnedBooks`, `Wildcard.LearnOwnedBooks` |
+
+What they do is logged under the category `wcme.alts` (`Logger.wcme.alts = 4,Server`, Server.log only): the
+root logger passes errors only, so lines at Info under SQUID's own categories reached no file (PR #255). Random
+bots never run any of this. Verified in game: nothing yet.
+
 The manager switches both bot systems off on Wildcard whenever its own Start button is used. Start with
 `patch-night\Start-Server.cmd` (README.md).
 

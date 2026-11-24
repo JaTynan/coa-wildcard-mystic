@@ -124,6 +124,12 @@ Rules that follow:
   either, because the `LOAD_DBC` call sits inside that `if`.
 - A modifier that carries a mask never reaches the SpellAffect lookup. Do not give a named-target spell a mask
   "to be safe": it switches the named rows off.
+- **Reading the mask from the raw data.** In `Spell.dbc` (and in the 234-column `spell_dbc` row, same order) the
+  mask is three 32-bit words **per effect**, stored effect by effect: effect `e` (0, 1, 2) uses fields
+  `122+3*e`, `123+3*e`, `124+3*e` (effect 0: 122-124, effect 1: 125-127, effect 2: 128-130). Reading it word by
+  word instead (`122+e`, `125+e`, `128+e`) mixes the effects, and on 23 Nov 2026 that misread made Master
+  Summoner's companion look maskless and the Nemesis cuts look broken; both conclusions were wrong and were
+  withdrawn. Check one known spell by hand before trusting a new reader.
 
 ## 4. Procs
 

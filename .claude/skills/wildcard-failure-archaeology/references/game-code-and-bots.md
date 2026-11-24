@@ -80,6 +80,32 @@ Reading aid:
 - **Lesson:** Wildcard characters can hold pets of several kinds, which no stock class can. Code written for one
   class's pet must be checked for the others.
 
+## G-08 · 2026-11-23 · Wildcard alts had been taught a slice of every class
+
+- **Symptom:** James's level 38 Hero alt Znot had 14 rolled Wildcard slots and about 200 class spells from every
+  class trainer (13 to 22 per classic class, two CoA classes). James expected at most about 30 abilities.
+- **Root cause:** SQUID's `PlayerbotFactory::InitAvailableSpells`, reached by an alt through the maintenance
+  command, teaches from every class trainer valid for the character, and the core counts every class trainer as
+  valid for a Wildcard Hero (class 10). The fault predates this repository's alt-bot work (James: "All three issues
+  existed before any changes you made"; an early note blaming PR #239 was withdrawn).
+- **Evidence:** issue #248; `7a9702d`, PR #250; `patches/43-alt-bots-unrolled-class-spells.ps1`.
+- **Tried and rejected:** none. The four-part removal rule (class ability, on a class trainer list, in no Wildcard
+  slot of any specialization, not a stat path) was tried on the alt's saved spells first: 154 out, every rolled
+  ability, proficiency and profession kept. James approved it.
+- **Status:** merged; in build 74 (24 Nov); no alt had logged in since, so no clean-up line yet. Unverified.
+- **Lesson:** stock "is this trainer valid for me" logic treats class 10 as every class. Any SQUID or core path that
+  walks trainers or class tables needs a Wildcard guard.
+
+## G-09 · 2026-11-24 · Alt-bot log lines reached no file
+
+- **Symptom:** the alt-bot patches log every removal, roll and book at Info, but nothing appeared in `Server.log`.
+- **Root cause:** they used SQUID's own logger categories, which no `Logger.` line passes on, and the root logger is
+  set to errors only (level 2).
+- **Evidence:** `ed97e40`, PR #255; `server-settings.txt`, `Logger.wcme.alts = 4,Server`.
+- **Status:** changed: own category `wcme.alts`, Server.log only, needs a build after 24 Nov.
+- **Lesson:** a new log line at Info needs its own `Logger.` line, or it is silent. The settings report lists
+  logger names as unknown; that is expected.
+
 ## G-07 · Smaller ones
 
 | Date | Symptom | Root cause | Evidence | Status |

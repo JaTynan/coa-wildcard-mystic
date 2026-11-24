@@ -114,6 +114,7 @@ Rules for using the ladder:
 | Settings script rewrites | Old and new run side by side on copies of the config files, outputs compared | commit d802f8c |
 | Client patch | Tried on one private client first: `GetSpellInfo(911367)` | commit 34083eb |
 | Going live | Merge to `main`; SQL, settings and addons arrive at the 4:00 am restart, builds at the next 3:30 am patch night after the evening build; players are the soak | PatchNight.ps1, Register-PatchNight.ps1 |
+| **Testing policy (James, 23 Nov 2026)** | James no longer tests by hand: "either I wait for players to report issues or discrepancies or they have to be automated". So a merged fix stays **unverified** until a player report or an automated test says otherwise, and a PR or skill never calls it tested. Proof before merge comes from reading, independent review (`patch-reviewer`), pre-flight and scratch-database runs; proof after merge from player reports and automated checks. The automated in-game test rig is NOT BUILT YET | James in chat, 23 Nov 2026 (not yet written in the repository) |
 | Merge cadence | CHANGES.md says "one PR per patch night". History shows up to 31 merged pull requests in a day (8 Nov) and 205 in 24 days. Both are facts; this skill does not resolve the difference (wildcard-change-control owns it) | CHANGES.md; `git log origin/main --merges --first-parent` |
 
 ## 3. Proposed acceptance thresholds (not yet adopted by James)

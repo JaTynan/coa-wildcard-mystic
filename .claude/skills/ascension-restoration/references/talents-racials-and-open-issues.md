@@ -1,7 +1,7 @@
 # Talents, racials and the open issues
 
 Read this when the broken thing is a talent or a racial rather than a Mystic Enchant, or when you pick up one of
-issues #148-#151. Checked on 2026-11-22 against the checkout `fcfee51` (PR #232's head on `62a26e4`; `origin/main`
+issues #148-#151 (fixed 23-24 Nov). Checked on 2026-11-22, updated 2026-11-24, against the checkout `fcfee51` (PR #232's head on `62a26e4`; `origin/main`
 `d3e030f` differs only under `signup/`).
 
 ## Talents: the same method, a different pair of files
@@ -31,62 +31,33 @@ way as an enchant's (`.lookup spell id <id>`).
 
 Use it as the template for "tooltip names more triggers than the proc row allows".
 
-## Open issues #148-#151 (opened 14 Nov 2026, still open on 22 Nov): how you would start
+## Issues #148-#151: fixed 23-24 Nov 2026, not yet verified
 
-No fix exists for any of these. The steps below are a starting plan, not a result. Read each issue first:
+All four warlock talent issues have merged fixes in `patches/55-talent-fixes.ps1` and
+`sql/enchants/140-talent-fixes.sql`. James does not test by hand: a fix stays **unverified** until a player
+report or an automated test says otherwise (see "Testing policy" in `wildcard-validation-and-qa`). The C++ parts
+need the build after 24 Nov; the SQL parts went live at the next start.
 
-```
-gh issue view 148 --repo JaTynan/coa-wildcard-mystic     # and 149, 150, 151
-```
+| Issue | Talent | What was wrong | Fix | PR |
+|---|---|---|---|---|
+| #151 | Master Summoner 18710 | The Wild Imp bonus (2.5 s / 5 s) sits in hidden companion spells 818709, 818710 that nothing applied, and which have a mask but were never linked | Aura links talent rank -> companion. No named targets were needed: the companion's mask already selects Hand of Gul'dan (an early read said otherwise; it was the mask misread, see the spell-system reference) | #243 |
+| #148 | Demonic Recurrence 272730 | Cooldown cut, armour loss and crit drawback sit in companions 272731, 272733; 272733 named only the CoA-class helper | Aura links 272730 -> 272731, 272733; named target 272733 -> 54879 (the Hero Metamorphosis helper); owned `spell_dbc` copy of 272731 with effect 3 blanked (its counterpart uses aura 341, honoured only for an allowlist). The twin-linked enchant 1570995 gains the same | #252 |
+| #150 | Nemesis 63123 | No second Hand of Gul'dan cast | Script state machine: the first cast in the window does not start the cooldown, the second does; the window ending, logout or leaving the form restarts the opener's cooldown; a 250 ms watch for a cast still in flight. Scripts `spell_wcme_nemesis_hand_of_guldan`, `spell_wcme_nemesis_window`, `spell_wcme_nemesis_form_end` | #253 |
+| #149 | Demonic Persistence 276506 | The stand-in effects did nothing | Script on 276508 (`spell_wcme_demonic_persistence_talent`): prevents the stand-in, the lowest-health imp (ties: shortest timer) sacrifices itself (276511, owner as original caster), then 276513 and 276509, and the other imps are empowered with 276512. New imps get Deterioration 990142 (a fixed 4% of health a second, new spell id) and 276512 when due (`wcme_demonic_persistence_new_imps`). Owned `spell_dbc` rows 276509, 276512 (aura 79, all schools) and 990142 | #254 |
 
-What the repository itself records about them:
+### Talent recipes learnt from these
 
-| Issue | What the repo says | Where |
-|---|---|---|
-| #148 | The Epic copy of Demonic Reoccurence (spell 272730) was found doing nothing in James's talent testing; "that copy's modifiers name no spell". | `enchants/legendary-notes.csv`, row 1570995 |
-| #149 | The Epic copy of Demonic Persistence (spell 276506) was reported broken in the same testing. | `enchants/legendary-notes-header.md`, "Open items" |
-| #150 | Not in the repository. From the GitHub issue page as read on 22 Nov (not re-checked through the API): Nemesis (63123), no second Hand of Gul'dan cast. | `gh issue view 150` |
-| #151 | Not in the repository. From the same read: Master Summoner (18710), Wild Imps do not last longer. | `gh issue view 151` |
+| Recipe | When | How | Example |
+|---|---|---|---|
+| T1 Hidden companion link | A talent's tooltip promises more than its own effects do, and a hidden spell with the same name or the next id carries the rest | `spell_linked_spell` type 2 from each talent rank to its companion, comment `WCME:`. If the companion's mask is empty or names the wrong spell, add `wcme_spellaffect_dbc` rows (check the ID with `enchant_sql_lint.py`) | #151, #148 |
+| T2 Script on the stand-in spell | The talent fires a placeholder spell whose effects mean nothing to our core | A `spell_wcme_*` SpellScript or AuraScript on the placeholder; prevent its default effects, then cast the real spells with the owner as original caster | #149 (276508) |
+| T3 Aura 341 / 322 allowlist | An effect uses Ascension's PvE or PvP damage aura | The core honours these only for spells listed in patch 65 (`65-enchant-tuning-auras.ps1`). Adding a spell is C++; otherwise blank the effect or swap it for a stock aura | #148 (272731 effect 3 blanked); patch 65 lists 990138, 979038 |
+| T4 `spell_dbc` aura swap | The effect is right in spirit but uses an aura the core ignores | Owned `spell_dbc` copy (`wcme_owned`, DELETE, INSERT the full 234-column row) with the aura changed, for example to 79 (damage done %, misc 127 = all schools) | #149 (276509, 276512) |
+| T5 State across casts | A talent changes cooldown rules for a window | A per-player state struct in the script file; cover every way the window ends (expiry, logout, form change, a cast still in flight); start cooldowns with `AddSpellAndCategoryCooldowns` and send the packet | #150 |
 
-All four were opened on 14 Nov by JaTynan with labels talent + warlock and were open on 22 Nov. The issue page
-titles #148 "Demonic Recurrence" and #149 "Demonic Persistence", which agrees with the repository's notes above.
-
-### #148, Demonic Reoccurence 272730
-
-1. Tracker row: Epic, audit `standard`, status `working (audit)`, scroll item 200876. Lesson: `standard` means "built
-   only from effects the core handles", not "works".
-2. Export the spell data (`enchants/export_spell_data.py`) and read 272730's three effects. The note says its
-   modifiers name no spell: a spell-modifier aura with an empty class mask changes nothing.
-3. Compare with the Legendary copy 1570995, whose modifiers do target the Wildcard Metamorphosis (1147241) and
-   were reported working from data in `legendary-notes.csv`.
-4. Candidate recipe: R8 "named targets" (rows in `wcme_spellaffect_dbc` naming every learnable Metamorphosis
-   version), or a `spell_dbc` copy with the class mask filled in. Which one depends on step 2.
-5. Knock-on to check: `sql/enchants/001-twin-links.sql` links the Legendary 1570995 **to** 272730 as its "working
-   twin". If 272730 does nothing, that link adds nothing; if 272730 is repaired, the Legendary gets its effect a
-   second time. Decide which copy carries the effect before changing either.
-6. Record the source (client data), any assumption, and add a checklist row: `.aura 272730`, then what the tooltip
-   promises about Metamorphosis.
-
-### #149, Demonic Persistence 276506
-
-1. Tracker row: Epic, audit `standard`, status `working (audit)`, scroll item 201334; `epic-history.csv` shows no
-   change by us.
-2. A lead already in the repo: `enchants/core-rule-version-gaps.csv` has a row for 276506 (effect 0, rule 0, event
-   `cast`): the core's rule lists 23 spells and leaves out two versions a player here can learn (1108092, 1129722),
-   status `to review`. If the reported failure is "nothing happens when I cast the ability", check whether the
-   character had one of those two versions.
-3. The Legendary of the same name (990130) is a different design, scripted in `046-legendary-gaps.sql`. Do not copy
-   its behaviour onto the Epic without a source.
-4. If the lead holds, the fix pattern is the one used for other version gaps (`core-version-gaps.csv`, status
-   `covered`): our rule runs only when the core's own test fails, so nothing doubles. That is C++: hand to
-   wildcard-patch-authoring.
-
-### #150 (Nemesis 63123) and #151 (Master Summoner 18710)
-
-Nothing in the repository describes these two. Start the same way: issue text, tracker or talent id, exported
-data, core overlap check, then the decision tree. Both are talents by their labels, so the home is patch 55 +
-file 140. Possibly related, UNVERIFIED: the Legendary Hand of Gul'dan (1398206) has an open item "check that the
-Wild Imps appear" in `enchants/legendary-notes-header.md`.
+Before scripting, check the core does not already do it (`enchants/core-overlap-review.csv`) and read every
+version of the ability a Hero can learn (Hand of Gul'dan has 954611 and 2304611 -> 2304612; both summon guardians
+through summon properties row 61).
 
 ## Racials: new designs built with the same machinery
 

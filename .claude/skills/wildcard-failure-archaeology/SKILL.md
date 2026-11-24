@@ -1,6 +1,6 @@
 ---
 name: wildcard-failure-archaeology
-description: The dated chronicle of every investigation, dead end, revert, retry and rejected fix in the coa-wildcard-mystic repository (30 Oct to 22 Nov 2026), each with symptom, root cause, evidence (commit, PR, file), what was tried and rejected, status and lesson. Load it before repeating a fix or experiment that feels familiar, or changing a value that looks odd, to check whether it was already tried (bot count 1000/1500/1250/1000/750, view distance 75/150, zone waking, logging, twin links, Arcane Charge, dud filter, runaway procs, core overlap review). Load it when asked "why is X set this way", "was this tried before", "why was this reverted", "what happened with for-083", "which branches are unmerged or abandoned", "what is still an open question", or when adding a new entry after an incident. Covers builds and core updates (.83 to .114), patch night and settings kit, performance and bots, enchants and spells, client patch, launcher and site, unmerged branches and lost commits. Not for quick symptom lookup.
+description: The dated chronicle of every investigation, dead end, revert, retry and rejected fix in the coa-wildcard-mystic repository (30 Oct to 24 Nov 2026), each with symptom, root cause, evidence (commit, PR, file), what was tried and rejected, status and lesson. Load it before repeating a fix or experiment that feels familiar, or changing a value that looks odd, to check whether it was already tried (bot count 1000/1500/1250/1000/750, view distance 75/150, zone waking, logging, twin links, Arcane Charge, dud filter, runaway procs, core overlap review). Load it when asked "why is X set this way", "was this tried before", "why was this reverted", "what happened with for-083", "which branches are unmerged or abandoned", "what is still an open question", or when adding a new entry after an incident. Covers builds and core updates (.83 to .114), patch night and settings kit, performance and bots, enchants and spells, client patch, launcher and site, unmerged branches and lost commits. Not for quick symptom lookup.
 ---
 
 # Wildcard failure archaeology
@@ -166,6 +166,8 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | E-17 | 11 to 18 Nov | Twelve other root causes in one table | see table |
 | E-18 | 19 Nov | Worldforged enchants neither dropped nor worked | awaiting in-game test |
 | E-19 | 19 Nov | Enchant gold prices: client and server could disagree | changed |
+| E-20 | 23 Nov | Ten named-target IDs replaced stock SpellAffect rows | fixed, lint check added |
+| E-21 | 23 Nov | Spell mask read word by word: two wrong conclusions | corrected |
 
 ### Client, launcher, site (`references/client-launcher-site.md`)
 
@@ -189,6 +191,8 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | G-05 | 21 Nov | Dungeon Finder dropped requests with more than 50 dungeons | fixed; Ragefire Chasm question open |
 | G-06 | 20 Nov | Pet spells brought back the wrong pet, two fixes | fixed |
 | G-07 | various | Smaller ones, and "the shield and stance bug of 22 Nov" | last one unknown |
+| G-08 | 23 Nov | Wildcard alts taught a slice of every class | merged, unverified |
+| G-09 | 24 Nov | Alt-bot log lines reached no file (root logs errors only) | changed |
 
 ### Unmerged, lost, reversed (`references/unmerged-and-abandoned.md`)
 
