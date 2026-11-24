@@ -893,7 +893,8 @@ def check_parse(root, files, report):
             if rows:
                 width = len(rows[0])
                 odd = [n for n, row in enumerate(rows[1:], 2) if row and len(row) != width]
-                if odd:
+                # SYNTHETIC-* test samples carry wrong-shaped rows on purpose (the parsers must survive them).
+                if odd and not os.path.basename(path).startswith("SYNTHETIC-"):
                     report.warning("csv-width", path, "%d row(s) do not have the header's %d columns (first at line %d); tools "
                                    "that read by column name see an empty or missing value" % (len(odd), width, odd[0]), odd[0])
         elif ext == ".ps1":

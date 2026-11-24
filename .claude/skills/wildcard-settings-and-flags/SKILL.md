@@ -73,7 +73,7 @@ running server.   Checks written to server-settings\settings-report.txt
 
 ## 2. The file format (`server-settings/server-settings.txt`)
 
-As of 2026-11-22: 618 lines, of which 273 are not comments or blank: 270 settings plus 3 special lines (`realm`,
+As of 2026-11-24 (`ed97e40`): 669 lines, of which 282 are not comments or blank: 279 settings plus 3 special lines (`realm`,
 two `realmlist`). Plain ASCII. This is the count rule other skills refer to.
 
 ```
@@ -263,7 +263,7 @@ What the catalogue holds (numbers as of 2026-11-22):
 
 | Section | Content |
 |---|---|
-| 1 | The 99 option names our patches read: type, default in code, value in the file, config file, patch and line, first build, status, what it does |
+| 1 | The 106 option names our patches read (24 Nov): type, default in code, value in the file, config file, patch and line, first build, status, what it does |
 | 2 | Every other line of the file (upstream options set on purpose), grouped by the file's own sections, with the upstream default, the commit and PR that first set it and that set today's value, and the reason from the comment |
 | 3 | Performance-relevant settings with full value history; 3b lists option reads inside per-tick hooks |
 | 4 | Mismatches (below) |
@@ -458,7 +458,7 @@ Re-verify with (repository root):
 | The catalogue is current | `settings_catalogue.py` with the four `--upstream` clones and `--check` (`references/regenerating-the-catalogue.md`) |
 | Mismatch counts, file hygiene | `python3 -I .claude/skills/wildcard-settings-and-flags/scripts/settings_catalogue.py --lint` |
 | Every option our patches read | `grep -rnoE 'GetOption<[^>]+>\([^,]+' patches/` (108 reads on 2026-11-22; in `.patch` files only `+` lines are ours) |
-| Settings line count (270 + 3) | `grep -vc '^\s*\(#\|$\)' server-settings/server-settings.txt` |
+| Settings line count (279 + 3 on 24 Nov) | `grep -vc '^\s*\(#\|$\)' server-settings/server-settings.txt` |
 | Lines per config file | `grep -v '^\s*#' server-settings/server-settings.txt \| grep '\|' \| sed 's/ *\|.*//' \| sort \| uniq -c \| sort -rn` |
 | The file is still ASCII | `grep -nP '[^\x00-\x7F]' server-settings/server-settings.txt` (no output) |
 | Where patch night applies settings | `grep -n 'Apply-ServerSettings\|ReportConfigWarnings\|RestoreRealmAddress' patch-night/PatchNight.ps1` |
