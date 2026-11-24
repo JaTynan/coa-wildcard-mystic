@@ -86,8 +86,8 @@ Use this table when a period shows up. "Thread" is where the work runs. "Setting
 | 600-2,400 s per bot | bot teleports to a new area (750 bots: about 10 per 20 s cycle) | world | `MinRandomBotTeleportInterval` / `Max` | not in the file |
 | 900 s per character | autosave (`PlayerSaveInterval`, first one 7.5-22.5 min after login; bots too unless `RandomBotSaveInterval` is raised) | map, then DB threads | `PlayerUpdates.cpp`, `PlayerStorage.cpp` | not in the file |
 | 45-240 min | CoA World events: skirmishes (45-90), resource rushes (60-120), invasions (120-240) | world | `playerbots.conf.dist` `AiPlayerbot.CoaWorld.*` | not in the file |
-| 04:00 daily | nightly restart (countdown from 03:30) | - | `patch-night/Register-PatchNight.ps1` | - |
-| Tuesday 23:00 | weekly patch night (the script's default; what is registered on the VM is UNVERIFIED) | - | same | - |
+| 04:00 daily | patch night (countdown from 03:30; installs any new build since 23 Nov 2026) | - | `patch-night/Register-PatchNight.ps1` | - |
+| about 20:37 to 22:50 daily | GitHub build starts when `patches/` changed (runs on GitHub, not the VM) | - | `.github/workflows/build-worldserver.yml` | - |
 
 Settings named in many AzerothCore guides that do **not** exist in this core's
 `worldserver.conf.dist`: `GridUnload`, `GridCleanUpDelay`. `MaxCoreStuckTime` exists (default 0 = off) and would

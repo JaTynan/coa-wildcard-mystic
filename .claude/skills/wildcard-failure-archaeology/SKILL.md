@@ -63,8 +63,8 @@ the entry says "not known" and stops. It does not guess.
 | The manager | CF-Server-Manager, the program that installs and normally starts the CoA server |
 | The core | CoA's server code (a fork of AzerothCore 3.3.5a) |
 | Release `.NN` | last part of a manager release tag: `server-0.261119.114` is "release .114" |
-| Build N | one of this repository's releases, tag `wcme-server-<release>-buildN`. A build takes 2 to 3 hours on GitHub Actions |
-| Patch night | `patch-night/PatchNight.ps1` on the VM: weekly install of a new build, and a nightly restart that applies settings and SQL only (schedule: `wildcard-run-and-operate`) |
+| Build N | one of this repository's releases, tag `wcme-server-<release>-buildN`. A build takes about 3½ hours on GitHub Actions |
+| Patch night | `patch-night/PatchNight.ps1` on the VM: one daily run from 3:30 am that applies settings and SQL and installs any new build (since 23 Nov; before that a weekly install plus a nightly restart; schedule: `wildcard-run-and-operate`) |
 | Settings kit | `server-settings/server-settings.txt` and `Apply-ServerSettings.ps1`, which writes it into the config files at every start |
 | SQUID | SQUID's Playerbots, the random bots |
 | Tick | one pass of the world server's game loop. A long tick is a freeze |
@@ -102,6 +102,7 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | B-14 | 19 Nov | Build stopped at 1288/3197: command line too long | fixed |
 | B-15 | 19 to 22 Nov | Five things the core changed, or did differently from what we assumed | four fixed, one lost (U-03) |
 | B-16 | 21 Nov | Patch 90: a missing line break hid an include | fixed |
+| B-17 | 23 Nov | Merged patches waited for a by-hand rebuild | adopted: automatic rebuild |
 
 ### Patch night and settings (`references/patch-night-and-settings.md`)
 
@@ -116,13 +117,14 @@ change replaced it), **changed, awaiting in-game test** (merged, compile-checked
 | P-07 | 1 Nov | Manager update kept our patched world server | fixed (go by the auth server) |
 | P-08 | 7 Nov | MySQL error 1046 | fixed |
 | P-09 | 8 Nov | Countdown while the world was still loading | fixed |
-| P-10 | 8 Nov | Weekly patch night plus nightly 4 am restart | adopted |
+| P-10 | 8 Nov | Weekly patch night plus nightly 4 am restart | superseded by P-17 |
 | P-11 | 19 Nov | Wildcard started on the other realm's characters | fixed, with a guard that refuses to start |
 | P-12 | 21 Nov | Patch night overwrote a settings line | fixed |
 | P-13 | 22 Nov | 3 minutes of downtime applying settings | fixed |
 | P-14 | 22 Nov | Config files grew to 22 MB (encoding) | fixed |
 | P-15 | 22 Nov | Settings the server does not know; 49 new options on defaults | check live, refinement lost (U-05) |
 | P-16 | 22 Nov | Staged patch night | adopted, no run recorded yet |
+| P-17 | 23 Nov | Patch night every night, installing builds | adopted |
 
 ### Performance and bots (`references/performance-and-bots.md`)
 
@@ -231,7 +233,7 @@ again. "Settled" means history has an answer, not that the answer can never chan
 | Publish the client folder as it stands | Shipped the host's `realmlist.wtf` and IIS's `web.config` | C-03 |
 | Hook an item's `OnUse` without checking how it opens | Loot-container items never call it | G-02 |
 | Take the build's sources from the release list and stop there | The official build also patches modules and passes its own CMake flags | B-13, B-14 |
-| Check a patch script locally with a "tidied" copy of its output | The real output failed the 2 to 3 hour build | B-16 |
+| Check a patch script locally with a "tidied" copy of its output | The real output failed the build | B-16 |
 | Read config files with `Get-Content` and no encoding (PowerShell 5.1) | A 240 KB file became 22 MB | P-14 |
 | Push one more commit to a branch after its PR merged | Four changes are missing from `main` today | U-03 to U-06 |
 

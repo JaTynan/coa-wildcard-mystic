@@ -60,7 +60,7 @@ OPEN) are defined in `wildcard-change-control`, section 1. The risk matrix and h
 | Proc | An aura "firing" on an event (a hit, a cast, a crit). `spell_proc` is the table of when each may fire. |
 | `Spell.dbc` / `spell_dbc` | The client's spell list / the server table that overrides or adds to the server's copy of it. |
 | Core | The CoA fork of AzerothCore that the server is built from. It has its own partial enchant code. |
-| Build | Compiling the server with our `patches/`. Takes 2-3 hours. SQL needs no build; C++ does. |
+| Build | Compiling the server with our `patches/`. Takes about 3½ hours, and runs by itself the evening a patch is merged. SQL needs no build; C++ does. |
 | WCME | "Wildcard Mystic Enchants": the prefix that marks rows and tables this repository owns. |
 | GM | Game master: an account level that may type dot-commands such as `.aura` in game. |
 | DBC | The client's data-table file format (`Spell.dbc` and friends); the server reads its own copies. |
@@ -294,7 +294,7 @@ The contract:
 
 How the files reach the database (`patch-night/PatchNight.ps1`, functions `FetchRepo` and `ApplyEnchantFixes`):
 
-- Every run (weekly patch night, the nightly restart, `Start-Server.cmd`) downloads the **`main` branch** as a zip
+- Every run (the daily 3:30 am patch night, a by-hand run, `Start-Server.cmd`) downloads the **`main` branch** as a zip
   and copies `sql/enchants/*.sql` to `patch-night\enchants`. An unmerged branch is never applied.
 - After MySQL is up and before the world server starts, each file is piped, in name order, to `mysql.exe` against
   the world database named in `worldserver.conf` (`WorldDatabaseInfo`), using `mysql\admin-client.ini`.
@@ -306,7 +306,7 @@ How the files reach the database (`patch-night/PatchNight.ps1`, functions `Fetch
 - Tooltip id pairs ship in the WildcardEnchants addon, which the same run copies into the VM's client folder.
 
 **Sequencing warning.** SQL goes live at the next restart; C++ goes live only when a new build is installed (the
-weekly patch night or a run by hand). Times and the full table: `wildcard-run-and-operate`, "When does my merged
+automatic evening build, then the next 3:30 am patch night). Times and the full table: `wildcard-run-and-operate`, "When does my merged
 change go live?". A file that binds a `spell_wcme_*` script, or removes an old rule in favour of one, takes effect before the
 build that contains the script: "unknown script names are only logged" (`017` header), so the enchant does nothing
 in between. Say in the file header which build it needs, and tell James in the pull request.
@@ -340,7 +340,7 @@ write down how; this is a *proposed procedure (not yet adopted by James; written
 ## 6. When SQL is not enough
 
 Hand the C++ to **wildcard-patch-authoring**; classify with wildcard-change-control first (server C++ scores
-higher on likelihood, and a mistake costs a 2-3 hour build). What already exists to build on:
+higher on likelihood, and a mistake costs a 3½ hour build). What already exists to build on:
 
 | Route | File | What it gives you |
 |---|---|---|

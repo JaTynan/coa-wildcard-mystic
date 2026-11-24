@@ -23,8 +23,9 @@ Words used here, defined once:
 - **Generated file**: a file a script writes. Never edit it by hand; edit its inputs and run the script.
 - **Patch night**: the scheduled job on the server PC that updates and restarts the server
   (`patch-night/PatchNight.ps1`). Details: sibling skill `wildcard-run-and-operate`.
-- **Build**: compiling the patched world server on GitHub Actions. It takes **2 to 3 hours**
-  (`docs/agents/context/patches.md`; README says "about 1.5-3 hours").
+- **Build**: compiling the patched world server on GitHub Actions. It takes **about 3½ hours**
+  (builds 61 to 74: 3h30 to 3h45; `docs/agents/context/patches.md` says 2 to 3 hours and README "about 1.5-3
+  hours", both out of date).
 - **Upstream**: the projects this one is built on top of (section 8).
 - **Hard stop**: one of eight kinds of change that always wait for James, whatever their risk score
   (`docs/agents/context/change-risk.md`, Step 1). Sibling skill `wildcard-change-control` is the home for them.
@@ -138,8 +139,8 @@ Evidence base: the 487 non-merge commits and 205 merged PRs on `main`, 30 Oct to
 - **Dates:** in prose and comments, day then short month: `22 Nov` (62 uses in `server-settings.txt`); add the year in
   a heading or where it could be unclear: `7 Nov 2026`. In tables and CSV columns, ISO: `2026-11-16`. The tracker's
   `tested` column starts with the ISO date: `2026-10-31 pass: <what happened>`.
-- **Builds take "2 to 3 hours".** Never call a build slow, stuck or hung because it has run for two hours (James's
-  own instruction, not written in the repository; README gives "about 1.5-3 hours").
+- **Builds take about 3½ hours.** Never call a build slow, stuck or hung because it has run for hours (James's
+  own instruction, not written in the repository; README's "about 1.5-3 hours" is out of date).
 - **Spelling:** Australian/British, as the docs already use: honour, armour, customisation.
 - **Numbers:** thousands with a comma (1,250); `sec`, `min`, `ms`, `yards`, `%` as CHANGES.md does.
 - **For James on his phone:** the answer in the first line, at most about 12 short lines, no wide tables, no code
@@ -183,7 +184,7 @@ Verified by reading `launcher/Publish-WildcardSite.ps1` (lines 76-109) and `laun
 `changes.html`, `site.js` on 2026-11-22. Not run (no PowerShell there, no access to the live site).
 
 1. Patch night calls the publish script after each start, once the site folder exists (`PatchNight.ps1`, function
-   `PublishFriendsSite`). So the list refreshes at the nightly restart, at patch night, or when someone runs
+   `PublishFriendsSite`). So the list refreshes at each patch night (daily, 4:00 am), at `Start-Server.cmd`, or when someone runs
    `Publish-WildcardSite.cmd` by hand. **Not at the moment of merging.**
 2. The script asks GitHub for the 100 most recently updated closed pull requests **whose base is `main`**, keeps the
    merged ones from the last 7 days (today counts as day 1; the server PC's local time), and writes `changelog.json`.
@@ -211,12 +212,10 @@ nothing to a player. The mechanism above (items 1 to 5) is fact; when to use the
   to `main`, so that PR's title must cover it.
 
 Known gap (an inference from the code, not something observed live): the Changes page says its list is what "went
-live in the last week", but the list is of **merged** PRs. A change under `patches/` is live only after the weekly
-patch night installs a build that contains it; the nightly restart does not install builds (README, "Patch night").
-Until someone changes the mechanism, say so in the line when it matters, for example "... (arrives with the
-weekly update)" (Proposed practice; the weekly patch night is Tuesday 11 pm by the script's default, and what
-is registered on the VM is UNVERIFIED: `wildcard-run-and-operate`). A merged patch is also not built until the
-workflow is run with `rebuild` ticked.
+live in the last week", but the list is of **merged** PRs. A change under `patches/` is live only once a build that
+contains it is installed: the evening build (since PR #241) and then the next 3:30 am patch night, so normally the
+morning after the merge, later if the build started late or failed. The gap is now about a day, not up to a week, so
+a note such as "(arrives with the weekly update)" is no longer needed.
 
 Whether any PR has used a `Changelog:` line so far is UNVERIFIED (PR descriptions could not be read on 2026-11-22).
 Check: `gh api "repos/JaTynan/coa-wildcard-mystic/pulls?state=closed&per_page=100" --jq '.[] | select(.body // "" | test("(?m)^Changelog:")) | "\(.number) \(.title)"'`.

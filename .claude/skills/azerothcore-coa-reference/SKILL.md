@@ -348,7 +348,7 @@ world.
 | `spell_script_names` | Restart (no reload command at the pin) |
 | `wcme_enchant_teach`, `wcme_enchant_override`, `wcme_enchant_action`, `coa_mystic_enchant_*` | Restart (read in start-up code) |
 | `wcme_proc_target_cooldown` | Restart (read once, at the first proc) |
-| Anything in `patches/` | A build (2 to 3 hours) and an install |
+| Anything in `patches/` | A build (automatic that evening, about 3½ hours) and the next 3:30 am install |
 
 In practice the project does not hot-reload: SQL is applied by patch night just before the world server starts,
 and `000-reset.sql` must never run against a live world. Treat the reload rows as knowledge for a test realm.

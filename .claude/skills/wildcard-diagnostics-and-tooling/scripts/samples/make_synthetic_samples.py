@@ -192,7 +192,7 @@ def patch_night():
     def log(ts, message, level="INFO"):
         out.append(f"{ts:%Y-%m-%d %H:%M:%S} [{level}] {message}")
 
-    # 1. a weekly patch night that installed a build, failed to come up, and fell back
+    # 1. a by-hand run (10-minute countdown) that installed a build, failed to come up, and fell back
     t = datetime(2026, 11, 17, 23, 0, 3)
     log(t, "---- patch night started ----")
     log(t, "Patched build available: wcme-server-0.000000.000-build2.")
@@ -210,7 +210,7 @@ def patch_night():
         "(no Mystic Enchants). See patch-night.log.", "FAIL")
     log(t + timedelta(minutes=16, seconds=21), "---- patch night finished ----")
 
-    # 2. a nightly restart that went well
+    # 2. a 3:30 am patch night that went well
     t = datetime(2026, 11, 20, 3, 30, 2)
     log(t, "---- patch night started ----")
     log(t, "The manager's installed core is 000000000000 (from worldserver.official.exe).")

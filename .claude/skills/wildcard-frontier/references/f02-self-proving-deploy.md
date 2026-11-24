@@ -22,7 +22,7 @@ What `patch-night/PatchNight.ps1` does today:
 | Start check | Waits up to 30 minutes for "World Initialized In" in this start's `Server.log`; checks the core revision on line 1 is the expected one; waits 60 s; checks the process is still alive | `function StartAndCheck` |
 | Fallback | If that check fails and the live program is ours: copy `worldserver.official.exe` back, start again. The result is the **official** server: no patches at all | section "5. The patched server did not come up" |
 | Record | `patch-night.log`, `last-run.txt`, "Downtime: N s", `Core\worldserver.patched-release.txt` | `Finish`, end of script |
-| Schedules | Two tasks: "CoA Patch Night" Tuesday 11:00 pm (the script's default; what is registered on the VM is UNVERIFIED, see `wildcard-run-and-operate`), "CoA Nightly Restart" daily 3:30 am with `-NoInstall`. Both run only while James is signed in on the VM | `Register-PatchNight.ps1` |
+| Schedules | One task since 23 Nov 2026: "CoA Patch Night", daily, countdown from 3:30 am, restart 4:00 am, installs new builds (PR #240; the old "CoA Nightly Restart" `-NoInstall` task is removed by the register script). It runs only while James is signed in on the VM | `Register-PatchNight.ps1` |
 
 What `docs/agents/context/change-risk.md` says the LOW path is: "fix, Opus analyst agrees, build and smoke test,
 merge, installed at the next nightly restart, checked at 4:37 am, rolled back if the check fails. One automatic
@@ -35,7 +35,7 @@ change per night."
 | A smoke test | "World came up on the right core and lived 60 seconds" | Says nothing about whether SQL applied, enchants loaded, players can log in, or the tick time is sane |
 | A check at 4:37 am | Nothing is scheduled at 4:37. The `patch-night-checker` agent is read-only and run by hand (on `main` since PR #232 merged on 22 Nov 2026) | **NOT BUILT YET** |
 | Roll back if the check fails | Only the program is swapped, and only to the official one | No "previous patched build". No rollback of settings, SQL, addons or site: the run always takes the head of `main`, so there is no notion of "what we ran last night" |
-| Installed at the next nightly restart | True for settings, SQL, addons | C++ builds wait for the weekly patch night (`-NoInstall`), and a merged patch is built only when the workflow is run with `rebuild` ticked |
+| Installed at the next nightly restart | True for settings, SQL, addons, and (since 23 Nov 2026) for C++ once the evening build has finished | A build that finishes after 3:30 am waits a night; a failed build waits for a fix |
 | One automatic change per night | No counter, no automatic merge | **NOT BUILT YET** |
 
 Two concrete failure stories the current check cannot see:
@@ -105,7 +105,7 @@ too, and the run ends with "the server is not up".
 
 ### Step 3. Automatic rollback, proven by drills
 
-- If the health check fails after a nightly restart: run once more with `-Ref <last good>`; if the failure was
+- If the health check fails after a patch night: run once more with `-Ref <last good>`; if the failure was
   after a build install, put `worldserver.previous.exe` back first (not the official one). Never more than one
   automatic attempt a night. Always end by saying plainly in `last-run.txt` what was rolled back and from what.
 - A scheduled "4:37" task is then just `Check-Health.ps1` run again 30 to 40 minutes after the restart, with the

@@ -43,7 +43,7 @@ notes with sources and assumptions (`enchants/*-notes.csv`, generated `*-notes.m
   snapshots protect it only while the Proxmox host does.
 - **The record of "why" is spread** over pull request descriptions on GitHub, commit messages, CSV notes and chat.
   Pull request text lives only on GitHub; the notes files quote some of it.
-- **Core updates arrive every two or three days** and each can cost a hand re-fit plus a 2 to 3 hour build. The
+- **Core updates arrive every two or three days** and each can cost a hand re-fit plus a 3½ hour build. The
   update of 10 Nov also silently reset a setting (`MaxPlayerLevel`, commit 2a033cd), and updates have added 49
   options that ran on defaults until someone looked (commit 6223bc8).
 - **Nothing has ever been restored from the archive.** An archive that has not been restored from is a hope.

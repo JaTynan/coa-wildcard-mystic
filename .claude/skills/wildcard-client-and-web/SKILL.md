@@ -46,8 +46,8 @@ Words used once and then assumed:
   the game client (`F:\CoAClient`).
 - **The manager**: CF-Server-Manager, the program that installs and runs the server. Its command-line side is
   `Scripts\manage.py`, run through `patch-night\launcher_bridge.py`.
-- **Patch night**: `patch-night/PatchNight.ps1`. It runs weekly (Tuesday 11:00 pm, with a new build) and nightly
-  (starts 3:30 am, restart at 4:00 am Sydney, no new build), and by hand through `Start-Server.cmd` or
+- **Patch night**: `patch-night/PatchNight.ps1`. It runs every night (starts 3:30 am, restart at 4:00 am Sydney,
+  installing any new build), and by hand through `Start-Server.cmd` or
   `Run-PatchNight-Now.cmd`. Every run downloads `main` from GitHub first.
 - **The tunnel**: a Cloudflare tunnel that publishes two web ports of the VM as `wildcard.jtlab.cc` and
   `join.jtlab.cc`. The game itself does NOT go through it.
@@ -262,7 +262,7 @@ The website and the game use different roads (tunnel versus port forwards), so o
 
 | What the friend sees | Most likely | Check |
 |---|---|---|
-| Between 3:30 and about 4:10 am Sydney, or Tuesday from 11 pm (30-minute countdown, then the restart) | the restart | wait; the site's status pill says Restarting or Offline |
+| Between 3:30 and about 4:10 am Sydney (30-minute countdown, then the restart) | the restart | wait; the site's status pill says Restarting or Offline |
 | Launcher: `Game server: not answering (wow.jtlab.cc)` and the site says Online | the road from outside to port 3724: DNS for `wow.jtlab.cc`, the gateway's forward, or the friend's own firewall | from outside the home network: `Test-NetConnection wow.jtlab.cc -Port 3724` and `-Port 8085`. Fixing it is hard stop 3: **[James]** |
 | Launcher: not answering, and the site says Offline or Restarting | the server is down | wildcard-run-and-operate |
 | Launcher says online, login works, the realm shows, then stuck on connecting to the realm | the realm list holds the wrong address (the home address or 127.0.0.1) or port 8085 is not forwarded | the status board's "Realm" rows (minimised `Wildcard server status` window on the VM), or `patch-night.log`: `Realm list points friends at wow.jtlab.cc again, from server-settings (realm ...)` |

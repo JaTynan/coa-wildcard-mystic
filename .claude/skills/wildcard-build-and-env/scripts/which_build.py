@@ -64,8 +64,8 @@ def main():
                    if git(args.repo, "merge-base", "--is-ancestor", wanted, b["sha"], check=False).returncode == 0]
         if not holding:
             print(f"{wanted[:7]} is in no published build yet (newest build: {builds[-1]['tag']}).")
-            print("A merged patch change is only built when the workflow is run with 'rebuild' ticked (James's say-so),")
-            print("or when the manager publishes a newer release.")
+            print("Since PR #241 the daily workflow builds a merged patch change the same evening (scheduled runs start")
+            print("about 8:30-11 pm Sydney; a build takes about 3.5 h). Over a day old means a missed or failed build.")
             return 1
         print(f"{wanted[:7]} is in {len(holding)} build(s); the first was {holding[0]['tag']}.")
         for b in holding:
@@ -87,8 +87,8 @@ def main():
     print()
     print(f"{len(builds)} builds published out of {highest} workflow runs. Run numbers with no release ({len(missing)}): "
           f"{', '.join(map(str, missing))}.")
-    print("A run with no release either failed, was cancelled, or was a run that found the release already built")
-    print("(the daily schedule does that most days). Tags cannot tell these apart; the Actions run list can.")
+    print("A run with no release either failed, was cancelled, or was a run that found nothing to build")
+    print("(the daily schedule does that whenever patches/ did not change). Tags cannot tell these apart; the Actions run list can.")
     print("The date column is the date of the repository commit that was built, not the time the build ran.")
     return 0
 

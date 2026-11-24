@@ -2,7 +2,7 @@
 #
 # What it is: the pre-flight (.claude/skills/wildcard-patch-authoring/scripts/preflight.py) as a check on every pull
 # request that touches patches/. It proves in about two minutes that every *.patch and NN-*.ps1 still applies to the
-# newest manager release, so a failed anchor is found before a 2-3 hour build, not during it.
+# newest manager release, so a failed anchor is found before a 3.5 hour build, not during it.
 #
 # To install (James only): copy this file to .github/workflows/patch-preflight.yml in a pull request of its own.
 # Adding a workflow is build-pipeline work: hard stop 5 in docs/agents/context/change-risk.md ("Patch night itself,

@@ -88,8 +88,8 @@ cannot be read off the calendar.
   (`DungeonClear.Enable = 1`, ce4780b, 19 Nov 10:57 pm).
 - **Which build was live on which evening is not in the repository.** It is in
   `C:\Games\CoA Server\patch-night\patch-night.log` ("Server is up on core ...", "Patched build available: ...").
-  The weekly install is Tuesday 11 pm by the script's default (what is registered on the VM is UNVERIFIED;
-  17 Nov was a Tuesday); any run of `Run-PatchNight-Now.cmd` also installs.
+  Until 23 Nov builds were installed only by the weekly run (Tuesday 11 pm by the script's default; 17 Nov was a
+  Tuesday) or by `Run-PatchNight-Now.cmd`; since 23 Nov every 3:30 am run installs (PR #240).
 - **VM size:** `docs/performance.md` says 8 vCPUs; the settings comment of 8 Nov says "the VM at 10 cores"; the
   22 Nov counter file has columns `Processor(0)` to `Processor(9)`: **10 logical processors**.
 

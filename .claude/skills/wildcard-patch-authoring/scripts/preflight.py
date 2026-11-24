@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Pre-flight for patches/: prove every *.patch and NN-*.ps1 applies to the pinned sources, in minutes,
-before a 2-3 hour build is spent finding out.
+before a 3.5 hour build is spent finding out.
 
 It lays out a scratch workspace the way .github/workflows/build-worldserver.yml does (job "build", from
 "Core at the release commit" to "Apply our patch scripts") and runs the same commands in the same order:

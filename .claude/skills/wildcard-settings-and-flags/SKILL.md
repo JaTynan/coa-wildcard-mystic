@@ -42,8 +42,8 @@ came with PR #232, merged on 22 Nov 2026 (`0802d4f`), and is on `main`: what res
 | `.dist` | The template of a config file that ships with the server (`worldserver.conf.dist`): every option that version knows, with its default. |
 | the kit | `server-settings/Apply-ServerSettings.ps1` and its three `.cmd` wrappers. |
 | the manager | CF-Server-Manager, the desktop program that installs and starts the CoA server. |
-| patch night | `patch-night/PatchNight.ps1`: the scheduled script that restarts the server every night and installs builds weekly. |
-| the build | Our patched `worldserver.exe`, made by GitHub Actions in 2 to 3 hours. |
+| patch night | `patch-night/PatchNight.ps1`: the scheduled script that restarts the server every night (countdown from 3:30 am) and installs any new build. |
+| the build | Our patched `worldserver.exe`, made by GitHub Actions in about 3½ hours, the evening a patch is merged. |
 | `GetOption` | `sConfigMgr->GetOption<T>("Name", default)`: how C++ code reads a setting. |
 | any other term | `.claude/skills/azerothcore-coa-reference/references/glossary.md` |
 
@@ -65,7 +65,7 @@ running server.   Checks written to server-settings\settings-report.txt
 - **Nothing is edited on the running server by hand** (CHANGES.md, first paragraph). A value changed in a config
   file on the VM is put back at the next start, and a `server-settings.txt` edited on the VM is overwritten by the
   next download from GitHub (`FetchRepo`, patch-night/PatchNight.ps1:220-238).
-- **Merging a settings change to `main` deploys it.** It goes live at the next nightly restart, with no build
+- **Merging a settings change to `main` deploys it.** It goes live at the next patch night (4:00 am restart), with no build
   (times and the go-live table: `wildcard-run-and-operate`, "When does my merged change go live?").
 - **A setting only does something if the installed program reads it.** A line for an option our patch adds is
   ignored without complaint by a build that does not have the patch yet. The catalogue gives each option's first
@@ -163,7 +163,7 @@ What Apply does, in order (Apply-ServerSettings.ps1):
 
 | Trigger | Where | Notes |
 |---|---|---|
-| Nightly restart and weekly patch night | PatchNight.ps1:930 | During the countdown, with the server still up ("The servers read their configs only when they start"). Applied a second time straight after a new build is installed, because the installer sets a value itself (line 966-967). |
+| Patch night (daily task or by hand) | PatchNight.ps1:930 | During the countdown, with the server still up ("The servers read their configs only when they start"). Applied a second time straight after a new build is installed, because the installer sets a value itself (line 966-967). |
 | `patch-night\Start-Server.cmd` (`-StartOnly`) | PatchNight.ps1:824 | Downloads `main` first like every run, applies, then starts. Use this instead of the manager's Start button (section 9, trap 3). |
 | `patch-night\Rebuild-WildcardBots.cmd` | PatchNight.ps1:806 | One-off tool; applies the settings before its final start. |
 | `Apply-Settings.cmd` by hand | kit | Writes the files; the running server does not notice until a restart or `.reload config`. |
@@ -206,7 +206,7 @@ how the code reads it.
 One comment in the file disagrees with the code: `Wildcard.RestingManaRate` says "Read at server start", but
 77-resting-mana-regen.ps1:20 reads it inside the regeneration update. Trust the code.
 
-The safe default, and the only path the pipeline uses: change the file on GitHub and let the nightly restart apply
+The safe default, and the only path the pipeline uses: change the file on GitHub and let the next patch night apply
 it. Applying by hand plus `.reload config` on the live server is James's call (GM and console commands are a hard
 stop in docs/agents/context/change-risk.md).
 
@@ -361,7 +361,7 @@ stops, and James merges.
    ASCII (section 9, trap 6).
 6. **CHANGES.md.** Add or extend the patch's row and put the option name in the "Setting" column, every name, not
    "and the ones after it".
-7. **Check before pushing** (seconds, instead of finding out after a 2 to 3 hour build):
+7. **Check before pushing** (seconds, instead of finding out after a 3½ hour build):
    ```
    python3 -I .claude/skills/wildcard-settings-and-flags/scripts/settings_catalogue.py --lint
    ```
@@ -380,7 +380,7 @@ stops, and James merges.
    ```
    python3 -I .claude/skills/wildcard-settings-and-flags/scripts/settings_change_report.py origin/main my-branch
    ```
-4. Classify (section 8d), open the PR, James merges. It applies at the next nightly restart.
+4. Classify (section 8d), open the PR, James merges. It applies at the next patch night.
 5. Auction prices and level limits: expect the relisting side effect (section 3).
 
 ### 8c. Retire a setting
@@ -430,7 +430,7 @@ check is still to do. It decides nothing.
 | 4 | Config files growing on every write | `Get-Content` read the UTF-8 config files as Windows-1252 and they were written back as UTF-8, so each write multiplied every non-ASCII character. After 16 writes `playerbots.conf` was 22 MB instead of 240 KB and a SQUID value with a Cyrillic prefix no longer matched. Fixed 22 Nov (`ba59783`): files are read as UTF-8 (1252 only if not valid UTF-8), written back in the encoding read, and garbled lines are repaired on reading; the commit reports the live file back at 243 KB. | If a config file is suddenly large, look for a kit older than 22 Nov. The kit prints "repaired: N garbled line(s)" when it fixes one. |
 | 5 | Editing on the VM | A value edited in a `.conf` is overwritten at the next start; a `server-settings.txt` edited on the VM is overwritten by the next download. | Change it on GitHub. |
 | 6 | Non-ASCII characters in `server-settings.txt` itself | The list is still read with plain `Get-Content` (kit line 41), the reader that caused trap 4. Worked out from the code, not observed: an en dash or accented letter in a value would reach the config file garbled. The file is pure ASCII today. | `grep -nP '[^\x00-\x7F]' server-settings/server-settings.txt` must print nothing. **Proposed practice (not yet adopted by James):** keep the file ASCII-only. |
-| 7 | Expecting a line to work without its build | The nightly restart applies settings but installs no build; a line for a new patch does nothing until the weekly patch night (or a manual run) installs the build. | Check "First build" in the catalogue against `Core\worldserver.patched-release.txt` on the VM. |
+| 7 | Expecting a line to work without its build | Settings apply at the next run, but a line for a new patch does nothing until a build containing the patch is installed: the evening build plus the next 3:30 am run, so usually one night, longer if the build was late or failed. Until then the server reports the name as unknown. | Check "First build" in the catalogue against `Core\worldserver.patched-release.txt` on the VM. |
 | 8 | Reading "Missing property" as an error | It only means the default in code was used. | Compare the count with the previous run. "Bad value" is the real error. |
 | 9 | Removing a line to undo a change | The old value stays in the config file (section 8c). | Set the stock value instead. |
 | 10 | End-of-line comments and stray spaces | Everything after `=` is the value. | Comments go on their own line above. |

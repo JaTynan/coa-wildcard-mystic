@@ -44,9 +44,9 @@ relying on that too: the repo moves at up to 30 merged PRs a day.
 |---|---|
 | Frontier | An open problem: the project wants something it cannot do yet. |
 | Tick | One pass of the world server's game loop. Its length in milliseconds is the lag measure ("update time diff"). |
-| Patch | A C++ change, applied to CoA's source at build time by a file in `patches/`. Needs a 2 to 3 hour build. |
+| Patch | A C++ change, applied to CoA's source at build time by a file in `patches/`. Needs a build (about 3½ hours, automatic the evening it is merged). |
 | Anchor | The exact piece of upstream source a patch script looks for. Found zero or two times = the build stops. |
-| Patch night | `patch-night/PatchNight.ps1`: the weekly run installs new builds, the nightly restart does not. Schedule and go-live table: `wildcard-run-and-operate`. |
+| Patch night | `patch-night/PatchNight.ps1`: one daily run (countdown from 3:30 am) that also installs new builds, since 23 Nov 2026. Schedule and go-live table: `wildcard-run-and-operate`. |
 | Smoke test | A quick automatic check that the thing starts and its main parts respond. Not a full test. |
 | LOW / MEDIUM / HIGH | The risk class from `docs/agents/context/change-risk.md` (likelihood x impact). |
 | Hard stop | One of eight kinds of change that is always HIGH and always waits for James (same file, Step 1). |
@@ -59,7 +59,7 @@ relying on that too: the repo moves at up to 30 merged PRs a day.
 
 1. Lag spikes. 2. Pipeline, testing and validation. 3. Broken enchants. Everything else after.
 The frontiers and the order of the first ten PRs below follow it: the lag campaign's measuring and its first
-experiment come first. The costliest ongoing failure is the build: 2 to 3 hours on GitHub, with problems
+experiment come first. The costliest ongoing failure is the build: about 3½ hours on GitHub, with problems
 often found late (failed anchor, compile error, link error, start-up failure after install). That is the normal
 build time, not a fault; the frontier is finding failures *before* spending it.
 
@@ -76,7 +76,7 @@ its own table header says "Phase 1 (now)", but several parts of the LOW path do 
 | In-game Report Bug to GitHub issue relay | Built and merged | `signup/WildcardSignup.py` `report_issue`, `bug_report_relay`; settings `CoABugReport.*` |
 | "Build and smoke test" | The build exists. The only runtime check is `worldserver.exe --version` | `.github/workflows/build-worldserver.yml`, step "Check it starts and reports its revision" |
 | Any check on a pull request | **None.** The one workflow runs on a daily timer or by hand | same file, `on:` has `schedule` and `workflow_dispatch` only |
-| "Installed at the next nightly restart" | True for settings, SQL, addons, site. **False for C++**: the nightly task passes `-NoInstall` | `patch-night/Register-PatchNight.ps1` line `' -NoInstall'`; `PatchNight.ps1` "left for the weekly patch night" |
+| "Installed at the next nightly restart" | True for settings, SQL, addons, site. True for C++ since 23 Nov 2026 once the evening build has finished (PRs #240, #241); before that the nightly task passed `-NoInstall` | `patch-night/Register-PatchNight.ps1` (one daily task); workflow step `decide` |
 | "Checked at 4:37 am" | **NOT BUILT YET.** Exactly two scheduled tasks are registered, neither is a 4:37 check | `Register-PatchNight.ps1` |
 | "Rolled back if the check fails" | Partly. If the patched server does not come up, the **official** server is put back (all patches lost). No rollback of settings, SQL or addons, and no "previous good build" | `PatchNight.ps1` section "5. The patched server did not come up" |
 | "One automatic change per night" | **NOT BUILT YET.** Nothing merges automatically and nothing counts | no code |
@@ -117,7 +117,7 @@ first three steps, a falsifiable milestone, wrong paths, dependencies.
 | # | Frontier | Whose goal | One-line state today | "You have a result when ..." (short form) | Read this when |
 |---|---|---|---|---|---|
 | F4 | [A lag budget and regression gate](references/f04-lag-budget-and-gate.md) | James, priority 1 | Measuring exists since 21 Nov; no pass/fail number, no check after a patch night | 14 evenings with players on each get an automatic PASS/FAIL against a written budget | planning anything after the live spike hunt, or defining "is it laggy" as a number |
-| F1 | [Minutes-not-hours feedback for C++](references/f01-fast-cpp-feedback.md) | Pipeline (James's biggest pain) | Nothing runs on a PR; anchors, compile and start-up are all found inside or after a 2 to 3 h build | 10 patch PRs in a row get an anchor verdict in under 10 minutes; a one-file change builds on the VM in under 15 | a build failed late, or someone asks how to test a patch before pushing |
+| F1 | [Minutes-not-hours feedback for C++](references/f01-fast-cpp-feedback.md) | Pipeline (James's biggest pain) | Nothing runs on a PR; anchors, compile and start-up are all found inside or after a 3½ h build | 10 patch PRs in a row get an anchor verdict in under 10 minutes; a one-file change builds on the VM in under 15 | a build failed late, or someone asks how to test a patch before pushing |
 | F2 | [A self-proving overnight deploy](references/f02-self-proving-deploy.md) | Pipeline | Start check is "world came up on the right core and lived 60 s"; fallback is the official server only | 3 of 3 drills with a deliberately broken change end on the last good state inside 30 minutes, no human | anyone says "LOW is automatic", "4:37 check" or "rollback" |
 | F3 | [Player issue to overnight fix](references/f03-issue-pipeline.md) | James, goal A | Relay built; triage, fix and automatic path NOT BUILT YET | 20 issues triaged with zero false LOW, and the first LOW fix goes live with no human touch | designing triage, the threat model, or the metrics for phase 2 |
 | F5 | [Bots and the console as testers](references/f05-bots-as-testers.md) | Pipeline, serves B | No automated functional test; console cannot run `.aura`, `.cast` or `.list auras` | 20 enchants of one type checked by script in under 10 minutes, agreeing with hand tests on at least 19 | someone proposes "let a bot test it" |
@@ -176,7 +176,7 @@ Lag first, then pipeline, testing and validation, enchants last, as James ordere
 | 1 | Lag campaign, measure only: shorten `RecordUpdateTimeDiffInterval` (campaign Phase 1 step 4; an existing setting whose comment states no range, so scored) and record a new baseline evening | 22 Nov is not the baseline for what runs next (#229 to #231 were not live that day); full coverage of the minute is needed to judge any experiment |
 | 2 | Lag campaign experiment **E1**: `AiPlayerbot.RandomBotUpdateInterval = 30` for one evening, prediction written first | The one experiment that separates the two leading hypotheses; root cause is UNKNOWN until it runs |
 | 3 | F4 step 1: James adopts or amends the campaign's proposed exit metric; "Budget" section in `docs/performance.md` | One written test of "not laggy" that F2 and F10 can reuse |
-| 4 | F1 step 1: promote the existing `preflight.py` and its workflow file from `wildcard-patch-authoring` into the repository (adding a workflow is hard stop 5: HIGH, James merges) | Cheap to catch before a 2 to 3 hour build. No anchor failure is on record; the recorded losses are five compile-step failures and one start-up failure, of which the pre-flight's text checks catch the 21 Nov glued include and flag the 16 Nov macro. Touches nothing on the server, so it does not disturb the campaign's one-change-a-night rule |
+| 4 | F1 step 1: promote the existing `preflight.py` and its workflow file from `wildcard-patch-authoring` into the repository (adding a workflow is hard stop 5: HIGH, James merges) | Cheap to catch before a 3½ hour build. No anchor failure is on record; the recorded losses are five compile-step failures and one start-up failure, of which the pre-flight's text checks catch the 21 Nov glued include and flag the 16 Nov macro. Touches nothing on the server, so it does not disturb the campaign's one-change-a-night rule |
 | 5 | F2 step 1: health check after start, report only | First real "proof after go-live"; no behaviour change |
 | 6 | F3 step 1: fix the relay's context split and the account number in the hidden marker; triage summary template | Small; closes real gaps before any agent reads issues (defects: `wildcard-client-and-web`) |
 | 7 | F2 step 2: last-good pin and manual `-Ref` rollback | Gives James a one-command undo for a bad night |
@@ -233,7 +233,7 @@ grep -n 'pull_request' .github/workflows/*.yml
 # What does the build check at run time?
 grep -n -A6 'Check it starts' .github/workflows/build-worldserver.yml
 # Which scheduled tasks exist, and does the nightly one install builds?
-grep -n -e 'Register-Run' -e 'NoInstall' patch-night/Register-PatchNight.ps1
+grep -n -e 'Register-ScheduledTask' -e 'Nightly Restart' patch-night/Register-PatchNight.ps1
 # What does the start check prove?
 grep -n -A40 '^function StartAndCheck' patch-night/PatchNight.ps1
 # What is the fallback?

@@ -44,7 +44,7 @@ check. Do not use `-Force` unless patch night's own log explained why the saved 
 **The build record is not updated by a hand install.** `Core\worldserver.patched-release.txt` is written only by
 `PatchNight.ps1`. From the code, the consequences are:
 
-| Record says | Then the next weekly patch night or by-hand run |
+| Record says | Then the next 3:30 am patch night or by-hand run |
 |---|---|
 | Nothing, or the file is missing | Installs the newest matching release |
 | The newest matching tag, while you installed an older build by hand | Logs `It is already installed.` and leaves your build alone |
@@ -65,12 +65,13 @@ manager release were builds 57, 61, 62, 68 and 70 of `wcme-server-0.261119.114`.
 3. Decide what stops patch night from reinstalling the bad build. From the code there are three cases:
    - The record still names the bad build and it is the newest release: patch night says `It is already installed.`
      and your rollback holds, until a newer build is published.
-   - A newer build gets published: the weekly patch night installs it (whatever branch built it). That is what you want if it has the fix.
+   - A newer build gets published: the next 3:30 am patch night installs it (whatever branch built it). That is what you want if it has the fix.
    - You want certainty: James can delete the bad release on GitHub or mark it as a draft. Patch night skips drafts
      and takes the next matching release. This is a rollback decision, hard stop 5.
-4. Fix forward. Revert or repair the patch on `main` (James merges), then the build is run with **rebuild** ticked:
-   by James, or a session he has told to, because the release it publishes is what patch night installs (hard
-   stop 5). A build takes 2 to 3 hours. See `wildcard-build-and-env`.
+4. Fix forward. Revert or repair the patch on `main` (James merges). The evening build picks up the change by itself
+   (since PR #241) and the next 3:30 am run installs it. A by-hand **rebuild** run to go faster is started by James,
+   or a session he has told to, because the release it publishes is what patch night installs (hard stop 5). A
+   build takes about 3½ hours. See `wildcard-build-and-env`.
 
 If the bad change has a setting that turns it off, changing that setting is quicker than any of this and needs no
 build (`CHANGES.md`: "Turn a change off with its setting where it has one").
@@ -92,9 +93,9 @@ What it does: copies `Core\worldserver.official.exe` over `Core\worldserver.exe`
 server ignores settings and tables it does not know.
 
 **It does not last by itself.** From the code: with the marker gone, patch night sees the live program as the
-manager's, finds the matching release and installs it again at the next weekly patch night or by-hand run. The
-nightly restart leaves it alone. To stay on the official server past the weekly patch night, James has to disable the
-`CoA Patch Night` task or remove the release.
+manager's, finds the matching release and installs it again at the next run: the 3:30 am patch night the same night, or a
+by-hand run. To stay on the official server past 3:30 am, James has to disable the `CoA Patch Night` task or remove
+the release.
 
 Patch night does the same swap itself when a patched server fails its check. See `patch-night-timeline.md`,
 phase 12.
@@ -161,7 +162,7 @@ What can be said from the repository:
   is lost. Compare the snapshot's age with the 15-minute tolerance and let James choose. Hard stops 5 and 7.
 - After a rollback the VM boots with nobody signed in, so "After a Windows Update reboot" below applies.
 - The first run afterwards downloads `main` again, so scripts, settings, SQL and addons return to the current
-  repository state. A bad build would be reinstalled by the next weekly patch night unless the release was dealt with.
+  repository state. A bad build would be reinstalled by the next 3:30 am patch night unless the release was dealt with.
 
 Before a risky by-hand operation, the manager's own backup is the tool the repository names
 (`Rebuild-WildcardBots.cmd`: "Make a backup in the manager first"; README: "keep a backup").
@@ -186,15 +187,14 @@ Steps:
 1. Before clicking Update, check whether our patches still fit the new release. That is the costly part and belongs to
    `wildcard-build-and-env` and `wildcard-patch-authoring`. README: if a patch no longer fits, the build stops at
    "Apply our patches" and nothing is published.
-2. After the update, a build for the new release is needed. The daily workflow builds each new manager release once
-   by itself. It takes 2 to 3 hours once it starts.
-3. When the release exists, the weekly patch night installs it; the nightly restart will not. README (DOCTRINE)
-   says of the Update button: "click it any time before patch night and the new release is picked up". Read from
-   the code, not observed: a nightly run between the Update click and the install can end FAILED (the dangerous
-   case below). **Proposed practice (not yet adopted by James):** after the manager's Update, James runs
-   `Run-PatchNight-Now.cmd` the same day once the build exists (it restarts the server and installs a build:
-   classify with `wildcard-change-control`; hard stop 5). Purpose: avoid a nightly run that ends FAILED. Incident:
-   none recorded. The README sentence and this proposal are not reconciled; James decides.
+2. A build for the new release is needed. The daily workflow builds a manager release with no build yet by itself, in
+   the evening run (starts about 8:37 to 10:50 pm Sydney). It takes about 3½ hours once it starts.
+3. When the release exists, the next 3:30 am patch night installs it (every run installs since 23 Nov 2026). README
+   (DOCTRINE) says of the Update button: "click it any time before patch night and the new release is picked up".
+   That holds when the build already exists. Read from the code, not observed: a run between the Update click and
+   the build finishing can end FAILED (the dangerous case below), and will do so every night until the build
+   exists. **Proposed practice (not yet adopted by James):** click Update only after `gh release list` shows a
+   `wcme-` build for the new release. Purpose: avoid nights that end FAILED. Incident: none recorded.
 4. Until then, start with `Start-Server.cmd` as usual.
 
 From the code, the second case with no build for NEW yet is the dangerous one. The live program is ours but built for
@@ -219,7 +219,7 @@ boot. Whether Windows signs in automatically and whether the manager auto-starts
 
 ```powershell
 Get-Process worldserver, authserver, mysqld -ErrorAction SilentlyContinue | Select-Object Name, StartTime
-Get-ScheduledTask -TaskName 'CoA Patch Night','CoA Nightly Restart','Wildcard Sign-up' | Select-Object TaskName, State
+Get-ScheduledTask -TaskName 'CoA Patch Night','CoA Nightly Restart','Wildcard Sign-up' -ErrorAction SilentlyContinue | Select-Object TaskName, State
 Get-Content 'C:\Games\CoA Server\patch-night\last-run.txt'
 ```
 
@@ -231,7 +231,7 @@ Get-Content 'C:\Games\CoA Server\patch-night\last-run.txt'
 6. Afterwards check `patch-night.log` as in the main skill. No lines at 3:30 am on a given night means that run was
    missed.
 
-James has said Windows Update runs on Wednesday at 3 am. That is 30 minutes before the nightly task. Whether the
+James has said Windows Update runs on Wednesday at 3 am. That is 30 minutes before the 3:30 am patch-night task. Whether the
 reboot has ever cut a run short is UNVERIFIED. Compare Wednesday entries in `patch-night.log` with other days.
 
 ## Rebuild the Wildcard bots

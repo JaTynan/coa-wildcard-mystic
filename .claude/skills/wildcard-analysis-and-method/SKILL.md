@@ -6,7 +6,7 @@ description: First-principles analysis recipes and the research method for the W
 # Wildcard: analysis recipes and research method
 
 **Purpose.** Stop two failures that cost this project the most: a change shipped on a guess that later has to be
-undone, and a 2 to 3 hour build spent to learn something a sum on paper would have told you. Part A is eleven
+undone, and a 3½ hour build spent to learn something a sum on paper would have told you. Part A is eleven
 ways to work a problem out first. Part B is the method that turns a hunch into a change James can accept.
 
 Everything dated "as of 2026-11-22" was checked against the repository on that day. Numbers quoted from the live
@@ -407,7 +407,7 @@ now be separated.
 2. Change one thing.
 3. Order of preference, cheapest and most reversible first: read-only measurement; a setting in
    `server-settings.txt` (undo at the next restart: I3 = 1 in the matrix); SQL that `000-reset.sql` or a
-   deleted file removes; an addon; a C++ patch (undo is revert and rebuild, 2 to 3 hours: I3 = 2).
+   deleted file removes; an addon; a C++ patch (undo is revert and rebuild, about 3½ hours: I3 = 2).
 4. If a C++ change is unavoidable, give it a setting (doctrine) so the experiment after the build is a toggle.
 
 ## B5 to B7. The idea lifecycle, where good ideas came from, patterns to avoid

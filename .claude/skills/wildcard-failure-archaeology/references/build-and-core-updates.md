@@ -9,7 +9,7 @@ Reading aid:
 - **Release `.NN`** is the last part of a CF-Server-Manager release tag (`server-0.261119.114` is "release .114").
 - **Build N** is one of this repository's releases, tagged `wcme-server-<release>-buildN`
   (`git tag -l 'wcme-server-*'`).
-- A build runs on GitHub Actions for 2 to 3 hours, so every entry below that ends in "the build stopped" cost that
+- A build runs on GitHub Actions for about 3½ hours (2 to 3 hours before mid-November), so every entry below that ends in "the build stopped" cost that
   long before the cause was visible.
 - Every entry has the same seven fields. "Tried and rejected" says "none recorded" when history shows only the fix.
 
@@ -217,6 +217,18 @@ release brought the change.
 - **Status:** fixed.
 - **Lesson:** a local check must run the patch script's real output, byte for byte. A check that "helps" the
   input passes things the build will fail.
+
+## B-17 · 2026-11-23 · Merged patches waited for a by-hand rebuild
+
+- **Symptom:** not a failure. The scheduled build made each manager release once, so a merged patch was in no build
+  until someone ticked **rebuild** (patch 96, merged 21 Nov, was still unbuilt on 22 Nov).
+- **Evidence:** `0cce318`, PR #241 (James, 23 Nov); `.github/workflows/build-worldserver.yml`, step `decide`.
+- **Status:** adopted. The workflow now builds when `patches/`, the workflow or `scripts/resolve_release.py`
+  changed since the commit the newest build was made from. Build 74 (24 Nov) was the first under the rule.
+- **Observed since:** scheduled runs start late, about 8:37 to 10:50 pm Sydney, not 2:17 pm as the cron line
+  suggests; builds take 3h30 to 3h45 (one outlier, run 62, 6h11); a scheduled run queued behind a by-hand run
+  found nothing new and skipped (run 75).
+- **Lesson:** a merge late in the evening, or a build that runs past 3:30 am Sydney, costs a day.
 
 ---
 

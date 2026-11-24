@@ -91,7 +91,7 @@ batches by settings, or patch SQUID to spread ProcessBot over ticks?">
 
 ## Options considered
 1. Settings only: ... cost, risk, how it is undone.
-2. Patch: ... (per-tick code for all bots: HIGH; 2-3 h build; patch-reviewer).
+2. Patch: ... (per-tick code for all bots: HIGH; 3½ h build; patch-reviewer).
 3. Report upstream and wait.
 4. Do nothing; stay at 750 bots.
 

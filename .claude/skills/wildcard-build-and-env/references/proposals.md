@@ -140,7 +140,7 @@ What. A third input, for example `draft`, that publishes with `gh release create
 Patch night already skips drafts (`patch-night/PatchNight.ps1:861`).
 
 Purpose. Build a branch to see whether it compiles without that build being installed at
-the weekly patch night. Status: NOT BUILT YET.
+the next 3:30 am patch night. Status: NOT BUILT YET.
 
 Motivating fact. Today any published build for the installed core is a candidate for patch
 night, whatever branch it came from.

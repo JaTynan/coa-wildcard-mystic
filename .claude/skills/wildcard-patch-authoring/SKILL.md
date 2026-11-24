@@ -1,13 +1,13 @@
 ---
 name: wildcard-patch-authoring
-description: Writing, changing, porting and pre-flighting the server C++ patches of coa-wildcard-mystic - the patches/NN-name.ps1 scripts and *.patch files the 2-3 hour build applies to the CoA core and the bot modules. Load it before creating or editing anything under patches/, before pushing a branch that touches patches/, when the build stops at the step "Apply our patch scripts" or "Apply our patches", when a build log says "Core changed", "CoA changed", "SQUID changed", "was not found exactly once" or "no longer fits release", when a new CoA core release needs the patches re-anchored, or when mystic-enchants-scripts.patch must be regenerated. Covers the Edit-Core contract, choosing anchors, script order and numbering, where new code goes, the bots / Wildcard Hero class 10 / null / database / Windows-compile checklists, the CHANGES.md row, setting line and SQL companion, and scripts/preflight.py, which proves in about a minute, with no build, that every patch applies to the pinned sources.
+description: Writing, changing, porting and pre-flighting the server C++ patches of coa-wildcard-mystic - the patches/NN-name.ps1 scripts and *.patch files the 3½ hour build applies to the CoA core and the bot modules. Load it before creating or editing anything under patches/, before pushing a branch that touches patches/, when the build stops at the step "Apply our patch scripts" or "Apply our patches", when a build log says "Core changed", "CoA changed", "SQUID changed", "was not found exactly once" or "no longer fits release", when a new CoA core release needs the patches re-anchored, or when mystic-enchants-scripts.patch must be regenerated. Covers the Edit-Core contract, choosing anchors, script order and numbering, where new code goes, the bots / Wildcard Hero class 10 / null / database / Windows-compile checklists, the CHANGES.md row, setting line and SQL companion, and scripts/preflight.py, which proves in about a minute, with no build, that every patch applies to the pinned sources.
 ---
 
 # Wildcard patch authoring
 
 A **patch** here is C++ that we add to somebody else's source code at build time. Nothing under `patches/` is
 compiled as it stands: the build checks out CoA's code for one release, lays our edits on top, and compiles the
-result. One build takes 2 to 3 hours on GitHub, and an edit that no longer fits is found partway into it. This
+result. One build takes about 3½ hours on GitHub, and an edit that no longer fits is found partway into it. This
 skill is how to write those edits so they fit, and how to prove that they fit in about a minute before you push.
 
 All facts below were checked on 2026-11-22 against `origin/main` (`d3e030f`) and manager release
@@ -71,7 +71,7 @@ Consequences you must hold in your head:
 ## 2. Before you write a patch
 
 1. **Does it need C++ at all?** A setting is applied at every server start and SQL at every start too; a patch
-   needs a 2-3 hour build and scores highest for risk. Use the layer table in sibling skill
+   needs a 3½ hour build and scores highest for risk. Use the layer table in sibling skill
    **wildcard-architecture-contract** to choose; settings are in **wildcard-settings-and-flags**, enchant and
    spell data in **ascension-restoration**, C++ background (hooks, spell scripts, config API) in
    **azerothcore-coa-reference**.
@@ -451,8 +451,9 @@ changing any `*.patch` file.
 
 1. Open the pull request: what and why in plain words, the checklist answers, the pre-flight line, the
    risk class from **wildcard-change-control**. The patch reviewer reads it; James merges.
-2. The build runs daily, or by hand with "rebuild" ticked (how to trigger and watch it, and the catalogue of
-   build failures by step: **wildcard-build-and-env**). A build is 2 to 3 hours by design.
+2. The evening build picks up the merged patch by itself (since PR #241) and the next 3:30 am patch night installs
+   it (how to trigger and watch it, and the catalogue of build failures by step: **wildcard-build-and-env**). A
+   build is about 3½ hours by design.
 3. A built patch is still untested. What counts as tested, how to test in game, and how to record it:
    **wildcard-validation-and-qa**. Installing and rolling back: **wildcard-run-and-operate**.
 

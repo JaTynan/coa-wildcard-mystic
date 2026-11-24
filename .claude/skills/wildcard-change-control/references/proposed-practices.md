@@ -16,7 +16,7 @@ Hashes can be read with `git show <hash>`. Facts are as of 2026-11-22.
 - **Proposal.** The PR description must include the output of applying every script in `patches/`, in name
   order, to the pinned sources of the current release, using the script files exactly as committed. No merge
   without it. Procedure and tooling: `wildcard-patch-authoring`.
-- **Purpose.** A build takes 2 to 3 hours and fails late. An anchor or insert error can be found in minutes.
+- **Purpose.** A build takes about 3½ hours and fails late. An anchor or insert error can be found in minutes.
 - **Incident.** `e0cc2f5` (21 Nov): patch 90 failed the build because its inserted text had no final newline. A
   local check had been run, but the check added the newline itself, so it tested something other than the
   committed script. Also `0220a49` (12 Nov) and `a4048e7` (16 Nov), compile errors found by the build.
@@ -126,8 +126,8 @@ line saying whether a build is required).
 - **Proposal.** No session starts, stops, installs, restores or hand-edits anything on the game VM, starts a
   workflow run with `rebuild` ticked, or deletes or drafts a release, unless James has said to. Read-only checks
   are not limited.
-- **Purpose.** A merge is a deployment and there is no staging server. A finished build is a release the weekly
-  patch night will install whatever branch built it.
+- **Purpose.** A merge is a deployment and there is no staging server. A finished build is a release the next
+  3:30 am patch night will install whatever branch built it.
 - **What the documents say today.** Only the three agents in `.claude/agents/` are limited in writing (the analyst and the
   reviewer never merge, deploy or comment; `patch-night-checker` is read only). CHANGES.md says nothing is edited
   on the running server by hand. Nothing covers every session, and sessions do have VM access.

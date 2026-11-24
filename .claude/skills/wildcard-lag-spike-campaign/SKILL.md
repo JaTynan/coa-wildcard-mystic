@@ -102,7 +102,7 @@ decides. The login ramp may have a second cause of its own (the database pulse).
 | A value change to a setting already in `server-settings.txt`, **inside the range its comment states** | Pre-approved "standard change" (LOW) per `change-risk.md`. |
 | Bot count (`AiPlayerbot.MinRandomBots` / `MaxRandomBots`), `RecordUpdateTimeDiffInterval`, and any other setting whose comment states **no range** | **Not** a standard change. The bot-count comment (`server-settings.txt:505-506`) records history, not a range, as of 2026-11-22. Score it with wildcard-change-control; James merges. |
 | A setting line that is **not yet** in `server-settings.txt` (most experiments here) | Not pre-approved. Score it. It acts on all 750 bots and can only be seen working live, so do not assume LOW. |
-| C++ (a patch) | Scores high on "kind of change" and usually on "every tick"; expect HIGH with a patch-reviewer (Fable) review. A build takes 2-3 hours. |
+| C++ (a patch) | Scores high on "kind of change" and usually on "every tick"; expect HIGH with a patch-reviewer (Fable) review. A build takes about 3½ hours. |
 | Patch night, the installer, `Restore-Official.cmd`, rollback, console/GM commands | **Hard stops** (1 and 5). James does these himself. Never from an agent session on its own. |
 | Editing config files on the VM by hand | Never. `CHANGES.md` (DOCTRINE): "Nothing is edited on the running server by hand". Settings go in the repository and apply at the next start (go-live table: wildcard-run-and-operate). |
 
@@ -111,7 +111,7 @@ change did what. Incident that motivates them: 21-22 Nov, when bot count, auctio
 diagnostics and four core options all changed within a day and no clean "before" exists
 (`references/timeline.md` section 3).
 
-- **One change per night.** The nightly restart applies it; the next evening tests it. If anything else merged
+- **One change per night.** The 4 am patch night applies it; the next evening tests it. If anything else merged
   that day changes load, the night is void: say so in the campaign log.
 - **Write the prediction before the run** (template in `references/templates.md`). An experiment without a
   written prediction is a look, not a test.
@@ -323,8 +323,9 @@ on a hunch. Incident: 1,500 and 1,250 bots both had to come back down (7 and 9 N
    the number the prediction named. One good evening is not a result.
 2. **Promotion.** Settings fix: PR with the campaign log entries in the description -> classify with
    wildcard-change-control -> James merges -> live at the next restart. Patch: wildcard-patch-authoring
-   pre-flight, HIGH path, patch-reviewer, 2-3 hour build (a merged patch is built only when someone runs the
-   workflow with `rebuild` ticked), installed at the weekly patch night or by James. When each kind of change
+   pre-flight, HIGH path, patch-reviewer, 3½ hour build (automatic the evening after the merge, since PR #241),
+   installed at the next 3:30 am patch night. A patch merge and a settings experiment on the same night break
+   the one-change rule. When each kind of change
    goes live: wildcard-run-and-operate, "When does my merged change go live?".
 3. **Bot ladder.** Only after 7 passing evenings at the current count: 750 -> 1,000 -> 1,250, one step at a
    time, **each step classified with wildcard-change-control** (a bot-count change is not a standard change;

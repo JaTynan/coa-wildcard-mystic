@@ -70,7 +70,7 @@ Any other term: `.claude/skills/azerothcore-coa-reference/references/glossary.md
  Zyth45:    mod-playerbots (SQUID), mod-dungeon-clear        | patches/            | everything else
  DustinHendrickson: mod-ollama-chat (pinned by us)           v                     |
         \____________________________________    Actions: "Build patched worldserver"
-                                             \-> (windows-latest, 2-3 h, cron 03:17 UTC or by hand)
+                                             \-> (windows-latest, ~3.5 h, daily when patches/ changed, or by hand)
                                                   resolve_release.py -> *.patch -> modules -> *.ps1
                                                   -> cmake/ninja -> worldserver.exe --version
                                                          |                         |
@@ -79,13 +79,12 @@ Any other term: `.claude/skills/azerothcore-coa-reference/references/glossary.md
                                                          |                         |
  ==================== WINDOWS 11 VM  C:\Games\CoA Server   F:\CoAClient ============================
   Scheduled tasks (run as James, only while he is signed in):
-    "CoA Nightly Restart"  daily 3:30 am, restart 4:00 am   PatchNight.ps1 -Unattended -NoInstall
-    "CoA Patch Night"      Tuesday 11:00 pm                 PatchNight.ps1 -Unattended   (installs builds)
-    (times are Register-PatchNight.ps1's defaults; what the VM has registered is UNVERIFIED)
+    "CoA Patch Night"      daily 3:30 am, restart 4:00 am   PatchNight.ps1 -Unattended   (installs builds)
+    (one task since 23 Nov 2026; the old "CoA Nightly Restart" -NoInstall task is removed by the register script)
   PatchNight.ps1
     FetchRepo        main.zip -> settings kit, addons, pinned third-party addons, SQL, launcher+site,
                      ollama-chat files, sign-up service, and the patch-night scripts themselves
-    Install-WildcardServer.ps1   (weekly only) swaps Core\worldserver.exe, keeps worldserver.official.exe
+    Install-WildcardServer.ps1   (when a new build exists) swaps Core\worldserver.exe, keeps worldserver.official.exe
     Apply-ServerSettings.ps1     server-settings.txt -> Core\configs\*.conf (+ Settings\*.template)
     launcher_bridge.py           -> the manager's Scripts\manage.py: start-mysql, start-all, stop-all, ra-once
     mysql.exe                    sql/enchants/*.sql -> world DB (every start); AI chat tables -> characters DB (once)
@@ -108,7 +107,7 @@ Component list with the file that defines each one:
 | Build | `.github/workflows/build-worldserver.yml`, `scripts/resolve_release.py` | Ours |
 | Code patches | `patches/*.patch` (5), `patches/NN-name.ps1` (56) | Ours |
 | Installer and restore | `vm/Install-WildcardServer.ps1`, `vm/Install.cmd`, `vm/Restore-Official.cmd` | Ours |
-| Patch night and nightly restart | `patch-night/PatchNight.ps1`, `Register-PatchNight.ps1`, `Start-Server.cmd`, `Run-PatchNight-Now.cmd`, `Rebuild-WildcardBots.cmd` | Ours |
+| Patch night | `patch-night/PatchNight.ps1`, `Register-PatchNight.ps1`, `Start-Server.cmd`, `Run-PatchNight-Now.cmd`, `Rebuild-WildcardBots.cmd` | Ours |
 | Bridge to the manager | `patch-night/launcher_bridge.py` | The manager's file (AGPL-3.0) plus one marked Wildcard addition |
 | Settings kit | `server-settings/server-settings.txt` (273 lines: 270 settings plus the `realm` and two `realmlist` lines), `Apply-ServerSettings.ps1` | Ours |
 | SQL fixes | `sql/enchants/*.sql` (64 files, `000-reset.sql` first) | Ours |
@@ -127,8 +126,8 @@ There are four speeds. Know which one your change is on before you promise anyon
 goes live when, with times, sources and the log line that proves it: `wildcard-run-and-operate`, "When does my
 merged change go live?". In two lines: settings, SQL, addons, site, sign-up and patch-night scripts arrive at the
 next restart (a merged `PatchNight.ps1` runs that same night); C++ arrives only after a build that contains it
-(the daily build makes each manager release once, so a run with **rebuild** ticked is needed) and then the weekly
-patch night. Two rows that table may not carry, kept here because they are architecture:
+(the daily workflow rebuilds by itself when `patches/` changed; it starts about 8:30-11 pm Sydney and takes about
+3½ hours) and then the next 3:30 am patch night. Two rows that table may not carry, kept here because they are architecture:
 
 | Layer | Goes live when | Check it arrived |
 |---|---|---|
@@ -137,8 +136,10 @@ patch night. Two rows that table may not carry, kept here because they are archi
 
 Two consequences people get wrong:
 
-1. **A fix that needs both a patch and SQL goes live in two steps.** The SQL arrives the next morning; the C++ arrives
-   only after a build and the weekly patch night (or a manual run). Write the SQL so the *old* build ignores it. The repo does this
+1. **A fix that needs both a patch and SQL can go live in two steps.** The SQL arrives at the next run; the C++
+   arrives only once a build containing it has finished. When the evening build finishes before 3:30 am both land
+   together; when it does not (a late merge, a late start, a failed build) the SQL runs a night or more ahead of
+   its code. Write the SQL so the *old* build ignores it. The repo does this
    already: tables "read by the patched world server ... Servers without the patch ignore it" (`000-reset.sql`).
 2. **`CHANGES.md` describes `main`, not the running server.** A row there can be merged but unbuilt (see Known
    violations, V1).
@@ -151,7 +152,7 @@ What one patch night run does, in order (`PatchNight.ps1`, main path from line 8
 4. Announces the restart in game, then prepares **while the server is still up**: downloads and unpacks the build,
    writes the settings (888-932).
 5. Stops only the world server (`StopWorld`, line 153); MySQL and the auth server keep running.
-6. Only when run without `-NoInstall` (Tuesday, or by hand) and a new build exists: runs the installer, then the
+6. Only when a new build exists (and the run was not given the old `-NoInstall` switch, which no task passes now): runs the installer, then the
    settings again so the list has the last word (951-968).
 7. `StartAndCheck` (694-734): `start-mysql`; refuses to go on if the config points at the wrong realm's databases;
    runs every SQL file; `start-all`; restores the realm address; waits for "World Initialized In" in `Server.log`
@@ -218,18 +219,18 @@ repository or the server, so classify with `wildcard-change-control` first.
 
 | # | What | Detail | Suggested handling |
 |---|---|---|---|
-| V1 | One patch is merged but in no build. | `patches/96-bots-ignore-commands.ps1` (commit 13a03d3, PR #228, 21 Nov) came after build 70 (tag at 3aa3d99). Its `CHANGES.md` row and its setting `OllamaChat.BlacklistCommands` are already on `main`; the running server ignores the setting. The daily build will not pick it up, because release .114 is already built. | A workflow run with rebuild ticked (`wildcard-build-and-env`). A finished build is a release the weekly patch night will install, so James starts it or says go (hard stop 5 territory). This state is normal between a merge and a build; it is a violation only if nobody knows. |
+| V1 | Cleared 2026-11-24. | Patch 96 (PR #228) was merged on 21 Nov after build 70 and was in no build; build 74 (installed 24 Nov) contains it. Since PR #241 the evening build picks up any merged patch, so an unbuilt patch commit is normal for about a day; `check_contract.py` I14 prints INFO for that and FAIL only when the oldest is over 36 hours old. | Keep the row as history; a FAIL on I14 now means a missed or failed build (`wildcard-build-and-env`). |
 | V2 | README names a patch file that no longer exists. | `patches/mystic-enchants-skip-missing.patch` was folded into `mystic-enchants-wildcard.patch` in f83171d (PR #29). | Doc fix (`wildcard-docs-and-publishing`). |
 | V3 | Some SQL files change things `000-reset.sql` cannot put back. | The one list, verified file by file, lives in `ascension-restoration` (SKILL.md section 5 item 3, and `ascension-restoration/references/reset-limits.md`). Three groups: (a) outside the reset's tables, 8 files: `090`, `095` (`SET PERSIST`, server-wide), `100`, `110`, `120`, `130`, `160`, `161`; (b) a core row changed in place: `026`; (c) core rows removed, or replaced by a row we own, so deleting the file does not bring the stock row back: `027`, `140`, and rows in `005`, `018`, `020`. `013` is not one. `check_contract.py` prints (a) and (b) as a KNOWN line and what it can see of (c) as an INFO line. | The rider files say they "ride along" on purpose. Treat the rule as "enchant rows are resettable; rider files and replaced core rows are one-way" until James decides otherwise. To undo one, write the reverse statement in a new file. |
 | V4 | Seven `spell_proc` rows are written without an entry in `wcme_owned`. | Files `005` (282040, 285100), `007` (276302, 979137), `017` (1587050), `020` (1180480), `038` (1544910). `enchants/core-proc-row-replacements.csv` records several as "core row restored", so these writes put CoA's own row back on purpose. | Leave as is; know that deleting the file does not remove the row. |
 | V5 | Two files delete script bindings by spell id with no name filter. | `015` (24 spell ids) and `016` (31) run `DELETE FROM spell_script_names WHERE spell_id IN (...)`. If CoA binds a script of its own to one of those spells, it is removed at every start and nothing restores it (the one-off backups cover `spell_linked_spell` and `spell_proc` only). Whether any of the 55 has a core binding today is UNVERIFIED (needs the live world database: `SELECT * FROM spell_script_names WHERE spell_id IN (...) AND ScriptName NOT LIKE 'spell\_wcme\_%'` on a database where the two files have not run, or the core's SQL at the pinned commit). | Candidate fix: add `AND ScriptName LIKE 'spell\_wcme\_%'`, as files `040`-`048` already do. |
-| V6 | A never-expiring share link to the whole client archive is committed. | A share link in `launcher/launcher-settings.json`. The repo holds no client data, but it publishes where to download all of it. `launcher/README.md` says the site is not behind a login either. | James's call. The launcher already supports a Cloudflare Access token (`launcher-secret.json`). |
+| V6 | Moved out of tracked files 2026-11-23; still in git history. | PR #242 moved the client archive link from `launcher/launcher-settings.json` to `launcher-local.json` in the patch-night folder on the VM, which is not in the repository. The old link is still in the repository's history and stays usable until James replaces it; until he confirms, assume it has not been replaced. James's instruction: leave the history alone. | Never paste the link into the repository, a PR or an issue. `check_contract.py` I8 checks tracked files only. |
 | V7 | Rebuilt spell rows carry description text. | `009` and `011` hold about 1,200 `spell_dbc` rows built "from the archived Ascension description" (`docs/enchant-restoration.md`), with long text in roughly 860 and 337 string fields (four more rows in `012`/`013`). The written rule is "no verbatim client tooltip text" (`docs/agents/context/patches.md`). Whether rebuilt rows from the archived builder page count is not written down anywhere. | OPEN: ask James to rule; record the ruling in `wildcard-docs-and-publishing`. Do not add more until then: new SQL leaves description columns empty or paraphrases (`ascension-restoration`, recipes R2 and R8). |
-| V8 | Three compiled Python files are tracked. | `launcher/__pycache__/*.pyc`, `signup/__pycache__/*.pyc`, although `.gitignore` lists `__pycache__/`. Harmless, but `FetchRepo` copies them to the VM. | Remove from the index in a housekeeping PR. |
+| V8 | Cleared by 2026-11-24. | The tracked `__pycache__/*.pyc` files are gone (`check_contract.py` I8 passes). | None. |
 | V9 | Doc and practice disagree on batching. | `CHANGES.md` ("How changes are made") says changes go in as one PR per patch night. History: 205 merged PRs on 22 days, up to 31 in one day (8 Nov). | Not resolved here. `wildcard-change-control` owns it. |
 | V10 | README's Branches section is stale. | It calls `for-083` "the build branch for the server's current core (release .83)". Builds 57 to 70 were made from `main` for release .114, and `for-083` last moved on 9 Nov. | Doc fix; the "never merge" rule still stands. |
 | V11 | README and the script disagree about manager updates. | README: "After a manager update the official server comes back on its own." `PatchNight.ps1:842-854`: a manager update keeps a world server it sees was changed. The script is newer (PR #29). | Trust the script; fix the README. See W5 for what follows from it. |
-| V12 | README and the code trace disagree on when to click Update. | README: the Update button "stays manual: click it any time before patch night and the new release is picked up". The trace in W5 predicts a nightly restart between the click and the weekly patch night ends FAILED. Not observed. | Ask James; see W5 for the proposed practice. |
+| V12 | README and the code trace disagree on when to click Update. | README: the Update button "stays manual: click it any time before patch night and the new release is picked up". Since patch night installs every night (23 Nov), the README is right when a build for the new core already exists before 3:30 am; the trace in W5 still predicts FAILED when it does not. Not observed. | Ask James; see W5. |
 
 ## 7. Known weak points
 
@@ -242,13 +243,13 @@ patch night does in a failure.
 | # | Weak point | Severity | Detail |
 |---|---|---|---|
 | W1 | No automated tests. | High | The only CI is the build. Its only runtime check is `worldserver.exe --version` (workflow line 281). Patch night's check is "the world finished loading on the right core and was still running 60 s later". Nothing checks that any feature works. The "smoke test", the "4:37 am check" and the rollback after a failed check named in `change-risk.md` are **NOT BUILT YET** (the start-up fall-back to the official server does exist: D8). |
-| W2 | The build is the only gate and takes 2-3 hours. | High | A failed anchor, compile error or link error is found deep into a run. Roadmap item 1 (a build loop on the VM) is planned, not built. Anything that catches a failure before the build is worth more than almost any other tooling. |
+| W2 | The build is the only gate and takes about 3½ hours. | High | A failed anchor, compile error or link error is found deep into a run. Roadmap item 1 (a build loop on the VM) is planned, not built. Anything that catches a failure before the build is worth more than almost any other tooling. |
 | W3 | Merging to `main` is deploying, to the VM and to friends' PCs. | High | Every run downloads `main` and executes the newest `PatchNight.ps1` the same night; the guard is only that it parses. The launcher on each friend's PC replaces itself with whatever the site publishes. There is no staging branch and no signature. |
 | W4 | SQL failures do not stop the start. | Medium | A file that errors is logged as `[WARN] Enchant fix NNN failed` and the server starts anyway. Because `000-reset.sql` ran first, a failed file means its fixes are missing until it is repaired. The run still ends "Patch night OK". |
-| W5 | After the manager's Update button, the nightly restart can report failure. | Medium | Traced from the code, not observed: the manager keeps our old-core world server; the nightly run expects the new core, sees the old one, "falls back" to a saved official copy that is also from the old core, and ends FAILED. A prediction from the code, not observed. **Proposed practice (not yet adopted by James):** after the manager's Update, James runs `Run-PatchNight-Now.cmd` the same day (it restarts the server and installs a build: classify with `wildcard-change-control`; hard stop 5, James decides). Purpose: avoid a nightly run that ends FAILED. Incident: none recorded. README says the opposite in plain words: the Update button "stays manual: click it any time before patch night and the new release is picked up". The two are not reconciled (V12). |
+| W5 | After the manager's Update button, patch night can report failure until a build for the new core exists. | Medium | Traced from the code, not observed: the manager keeps our old-core world server; the next run expects the new core. If a release for the new core exists, the run installs it (every run installs since 23 Nov). If none exists yet, it sees the old core, "falls back" to a saved official copy that is also from the old core, and ends FAILED, and does so every night until the evening build for the new release has finished (the workflow builds a manager release with no build yet by itself). **Proposed practice (not yet adopted by James):** click Update only after the workflow has published a build for the new release. Purpose: avoid nights that end FAILED. Incident: none recorded. |
 | W6 | Patch night installs the newest release for the core, whichever branch built it. | Medium | Selection is by the core commit in the release notes only. A workflow run started by hand on a feature branch publishes an installable release. It has happened by design once (build 20, from `for-083`). |
-| W7 | After a fall-back to the official server, nothing remembers the bad build. | Medium | Nightly runs keep the official server (no Mystic Enchants) until Tuesday; Tuesday's run installs the same build again. `Start-Server.cmd` has no fall-back at all. |
-| W8 | One VM; the tasks run only while James is signed in. | Medium | Both tasks use an interactive logon (`Register-PatchNight.ps1:17-18`). A reboot or sign-out stops patch night, the nightly restart and the sign-up service. No log lines at 3:30 am means the task did not run. |
+| W7 | After a fall-back to the official server, nothing remembers the bad build. | Medium | The fall-back deletes `worldserver.patched-release.txt`, so the next night installs the same build again, fails its check again and falls back again: every night until a newer release exists or someone acts (until 23 Nov this happened only on Tuesdays). `Start-Server.cmd` has no fall-back at all. |
+| W8 | One VM; the tasks run only while James is signed in. | Medium | The patch-night task uses an interactive logon (`Register-PatchNight.ps1`). A reboot or sign-out stops patch night and the sign-up service. No log lines at 3:30 am means the task did not run. |
 | W9 | Anchors are coupled to upstream text, with uneven strictness. | Medium | Every CoA or SQUID update can break any of 56 scripts. 6 scripts (`46`, `47`, `55`, `56`, `62`, `80`) never check "exactly once": they check "present" and then replace every occurrence. Others mix both kinds of check. Several scripts also depend on an earlier script's inserted text (their errors say "or 40-battlegrounds.ps1 did not run"). |
 | W10 | One busy thread per continent. | Medium | Each map is updated by one thread; most bots are on Eastern Kingdoms and Kalimdor, so more vCPUs or map threads add little (`docs/performance.md`, measured 7 Nov; its "8 vCPUs" is stale: 10 logical processors were seen on 22 Nov). This is the structural limit behind the lag work; see `wildcard-lag-spike-campaign`. |
 | W11 | Rules exist twice, on the client and on the server. | Medium | The client hides Mystic Enchants from Wildcard characters and keeps its own copy of spell data, so one change can need a patch, SQL, an addon change and a client patch together (`52-racials.ps1` and `client-patch/racials.py`; `150-custom-spells.sql` and `custom_spells.py`; enchant gold costs named in the client config). Only the custom spell ids are checked for agreement (I11). |
@@ -260,16 +261,16 @@ patch night does in a failure.
 
 ## 8. Boundaries: which layer does my change belong in?
 
-Pick the first row that fits. Lower rows cost more: a setting is live tomorrow and undone tomorrow; a patch needs a
-2-3 hour build and the weekly patch night. **Whatever the row: classify with `wildcard-change-control` first; James
-merges.** "Next restart" below means the nightly restart (times: `wildcard-run-and-operate`).
+Pick the first row that fits. Lower rows cost more: a setting is live tomorrow and undone tomorrow; a patch needs the
+evening build (about 3½ hours) and the next 3:30 am patch night, and a mistake costs another build to undo. **Whatever the row: classify with `wildcard-change-control` first; James
+merges.** "Next restart" below means the daily 3:30 am patch night (times: `wildcard-run-and-operate`).
 
 | I want to... | It is a... | Lives in | Live when | How-to |
 |---|---|---|---|---|
 | Change a number or switch the server already reads (rates, bot counts, a feature flag) | Setting | `server-settings/server-settings.txt` | Next restart | `wildcard-settings-and-flags` |
 | Fix an enchant, proc, linked spell or teach rule using data the server already understands | SQL | `sql/enchants/NNN-*.sql`, with ownership markers | Next restart | `ascension-restoration` |
 | Change world data that is not an enchant (a vendor, a loot rate, an item flag) | SQL "ride-along" | `sql/enchants/1NN-*.sql`; say in the header that the reset does not undo it (V3) | Next restart | `ascension-restoration` for file conventions; `azerothcore-coa-reference` for the tables |
-| Make the server do something no data can express (a new rule, hook, command, bot behaviour) | Patch | `patches/NN-name.ps1`, plus a `CHANGES.md` row, plus a setting to turn it off where practical | Build, then the weekly patch night | `wildcard-patch-authoring`, then `wildcard-build-and-env` |
+| Make the server do something no data can express (a new rule, hook, command, bot behaviour) | Patch | `patches/NN-name.ps1`, plus a `CHANGES.md` row, plus a setting to turn it off where practical | Evening build, then the next 3:30 am patch night | `wildcard-patch-authoring`, then `wildcard-build-and-env` |
 | Change what the client *shows* or *allows* using its Lua interface (a tab, a tooltip, a window) | Addon | `addon/Wildcard*/` | Next restart, then each friend's next launcher run | `wildcard-client-and-web` |
 | Add someone else's addon for everyone | Pinned line | `addon/third-party-addons.txt` (full commit hash; never copy the code) | As above | `wildcard-client-and-web` |
 | Make the client know a spell, icon, name or cooldown it lacks | Client patch | `client-patch/*.py`; output built and copied by hand, never committed | When someone rebuilds and copies it, then the next start and launcher run | `wildcard-client-and-web` |
@@ -315,10 +316,10 @@ python3 -I .claude/skills/wildcard-architecture-contract/scripts/check_contract.
 python3 -I scripts/resolve_release.py latest
 # Schedules
 grep -n "cron:" .github/workflows/build-worldserver.yml
-grep -n "Day = \|Time = \|WarnMinutes = " patch-night/Register-PatchNight.ps1
-# The build still skips releases already built; the nightly restart still never installs
-grep -n "already built" .github/workflows/build-worldserver.yml
-grep -n "NoInstall" patch-night/PatchNight.ps1 patch-night/Register-PatchNight.ps1
+grep -n "Time = \|WarnMinutes = \|Daily\|Nightly Restart" patch-night/Register-PatchNight.ps1
+# The build decides by what changed since the newest build; no task passes -NoInstall any more
+grep -n "INPUTS=\|already built" .github/workflows/build-worldserver.yml
+grep -n "NoInstall" patch-night/PatchNight.ps1 patch-night/Register-PatchNight.ps1   # expect the script only
 # What FetchRepo copies; the start-up check; the fall-back
 grep -n "^function FetchRepo" -A 122 patch-night/PatchNight.ps1
 grep -n "^function StartAndCheck" -A 40 patch-night/PatchNight.ps1

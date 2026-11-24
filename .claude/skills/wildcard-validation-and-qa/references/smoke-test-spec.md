@@ -59,7 +59,7 @@ Three limits of today's fallback worth stating plainly:
 
 ## 3. Stage 1: at pull request time (minutes, ubuntu runner)
 
-Purpose: fail before a 2-3 hour build is spent.
+Purpose: fail before a 3½ hour build is spent.
 
 | # | Check | Tool | Pass | Fail action |
 |---|---|---|---|---|
