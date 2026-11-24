@@ -244,8 +244,9 @@ What is BUILT (PR #147, merged 14 Nov 2026): the game's Report Bug window sends 
 saved in `C:\Games\CoA Server\BugReports`; `signup/WildcardSignup.py` (`bug_report_relay`, `report_issue`) files
 each as a GitHub issue titled `[Player report] ...` with the label `player report` and strips @mentions and #links
 from the player's text. It sends no character name, but the hidden marker at the end of each issue carries the
-spool file name, which begins with the **account number**, and the server-written context gives class, level, map
-and position. The code comment "Account numbers never leave the VM" is therefore wrong today (defect list and
+spool file name, which begins with the **account number** (on purpose, so James can go back to the player; PR
+#237 corrected the docs and the code comment), and the server-written context gives class, level, map and position
+(defect list and
 home: `wildcard-client-and-web/references/bug-report-relay.md`). The relay needs a `githubToken` in
 `signup-settings.json` on the VM. Whether that token is set on the VM today is UNVERIFIED (check `signup.log` for
 "GitHub issue #" lines). Open issues on 2026-11-22, from a read of the GitHub issue page that day (not re-checked

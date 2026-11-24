@@ -47,8 +47,8 @@ Patch night republishes the site, manifest and launcher after every start (`Publ
   anything. That is the hard part of a launcher and it is done.
 - **The news feed already exists** as one small JSON file generated from merged pull requests, with a per-PR
   override. The launcher only has to read it.
-- **The issue relay already exists** and leaves out the account and character names (known defect: its hidden
-  marker carries the account number; home: `wildcard-client-and-web`, `references/bug-report-relay.md`). A report from the launcher only has to arrive in
+- **The issue relay already exists** and leaves out the account and character names (its hidden marker
+  carries the account number on purpose, PR #237; home: `wildcard-client-and-web`, `references/bug-report-relay.md`). A report from the launcher only has to arrive in
   the same spool folder in the same format (first line `COABUG1`).
 - **The status service already exists** and is public and cached.
 - **The sign-up service already has rate limits and a human check** (Turnstile) that a report form can reuse.

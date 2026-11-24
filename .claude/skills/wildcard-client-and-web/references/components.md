@@ -103,7 +103,7 @@ What it writes into the site folder:
 |---|---|
 | `manifest.json` | `{ "generated": ISO time (UTC), "files": [ { "path", "size", "md5", "mtime" } ... ], "remove": [...] }`. `path` is relative to the client folder with backslashes; `md5` lower-case hex; `mtime` Unix seconds (UTC). Written to `manifest.json.new` then moved, so a launcher never reads half a file. |
 | `.hash-cache.json` | publish's own cache: a file whose `size|ticks` stamp is unchanged keeps its MD5 without being read again |
-| `launcher.json` | `realm`, `clientArchiveUrl`, `clientArchiveBytes` (from `launcher-settings.json`), `launcherVersion` (read from the line `$LauncherVersion = N` in the `.ps1`), `linuxLauncherVersion` (from `LAUNCHER_VERSION = N` in the `.py`) |
+| `launcher.json` | `realm`, `clientArchiveBytes` (from `launcher-settings.json`), `clientArchiveUrl` (from `launcher-local.json` on the VM since PR #242), `launcherVersion` (read from the line `$LauncherVersion = N` in the `.ps1`), `linuxLauncherVersion` (from `LAUNCHER_VERSION = N` in the `.py`) |
 | `WildcardLauncher.ps1`, `WildcardLauncher.py` | copies, for self-update and the Linux download |
 | `WildcardLauncher.zip` | `WildcardLauncher.ps1`, `Start Wildcard.cmd` and a `launcher-site.txt` holding the `site` value: the Windows download button |
 | everything in `launcher/site/` | pages, `site.js`, `style.css`, `images/`, `steam/` |
@@ -127,11 +127,12 @@ Its one output line, which patch night writes to `patch-night.log`:
 |---|---|
 | `site` | the site address written into the zip's `launcher-site.txt` |
 | `realm` | the address the launchers write into the game's realm list files (`wow.jtlab.cc`) |
-| `clientArchiveUrl` | the seedbox share link for `CoAClient.tar` (first install) |
+| `clientArchiveUrl` | empty since PR #242 (23 Nov 2026). The seedbox share link for `CoAClient.tar` now lives in `launcher-local.json` in the patch-night folder on the VM (gitignored); the publisher reads it from there, falls back to this key, and stops with "No client archive link" if neither has one, leaving the site's last good `launcher.json` in place |
 | `clientArchiveBytes` | the archive's exact size; drives the free-space check and the progress text |
 | `remove` | client-relative paths every launcher deletes at its next run (empty today) |
 
-Not gitignored, and public by design: `launcher.json` on the site repeats all but `site` and `remove`.
+Not gitignored, and public by design: `launcher.json` on the site repeats all but `site` and `remove`, with the
+archive link taken from `launcher-local.json`. Never write the link into this file, a PR or an issue.
 
 ### The pages (`launcher/site/`)
 

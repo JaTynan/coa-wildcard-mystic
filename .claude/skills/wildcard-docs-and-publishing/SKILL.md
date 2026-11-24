@@ -248,7 +248,7 @@ Each rule, where it is written, and why. The first four are doctrine (`docs/agen
 | **No third-party addon code** | Other people's work, under their own terms; and a pinned download is easier to review and update. | One line per addon in `addon/third-party-addons.txt`: `owner/repository \| commit \| folders`. The commit must be the **full 40 characters** (patch night skips the line otherwise: `PatchNight.ps1` line 260). A branch name is not allowed because it "would take untested changes". Before adding one, check it is for game version 3.3.5 and contains nothing but Lua, XML and art, and say so in a comment with the date, as the file does. Patch night downloads it into the client folder; the code never enters this repository. Only `addon/Wildcard*` folders are ours. |
 | **Keep provenance and licence notes with copied files** | So anyone can see what came from where, and under what terms. | `patch-night/launcher_bridge.py` is copied from CF-Server-Manager and says so in its first lines (AGPL-3.0, with the one Wildcard addition marked). `ollama-chat/` holds unchanged copies from mod-ollama-chat (AGPL-3.0, author Dustin Hendrickson, commit `906eb2a`) with its `LICENSE`. New C++ files written by the patches carry AzerothCore's AGPL header. If you copy a file in, add: source repository, path, **commit**, licence, and what you changed. |
 | **Keep the credits list current** | Credit is the minimum owed to the projects this stands on. | README "Credits" names Conquest of Azeroth, the CF-Server-Manager builds (Corfirean), SQUID's Playerbots (Zyth45) and AzerothCore. A new upstream part (as mod-ollama-chat and mod-dungeon-clear were) gets a mention where it is described; propose adding it to Credits too. |
-| **Player reports are public** | The in-game Report Bug relay files reports as GitHub issues labelled `player report` (`signup/README.md`). | The relay leaves out the account name and the character, but its hidden marker carries the account **number**, and the server-written context carries class, level, map and position (home for relay defects: `wildcard-client-and-web`, `references/bug-report-relay.md`, weak point 1). Do not add any more: no account names, character names, IP addresses or e-mail addresses in replies, PRs and docs. |
+| **Player reports are public** | The in-game Report Bug relay files reports as GitHub issues labelled `player report` (`signup/README.md`). | The relay leaves out the account name and the character, and its hidden marker carries the account **number** on purpose so James can go back to the player (PR #237); the server-written context carries class, level, map and position (relay details: `wildcard-client-and-web`, `references/bug-report-relay.md`). Do not add any more: no account names, character names, IP addresses or e-mail addresses in replies, PRs and docs. |
 
 ### Before every push
 
@@ -304,9 +304,10 @@ repository's commit and the build time. When you tell someone outside "this fixe
 
 - This is a private server for a game mode whose original home, Ascension, is gone; intended behaviour is rebuilt
   from what remains. Say that plainly; do not argue about whether it is allowed.
-- Client files are never put in the repository. Note for accuracy: `launcher/launcher-settings.json` holds a public
-  share link to the first-install client archive, and `launcher/README.md` says the site is not behind a login. That
-  is James's decision to make or revisit; do not add further links to client files, and do not advertise that one.
+- Client files are never put in the repository, and nor is the link to them. Since PR #242 (23 Nov 2026) the
+  first-install archive link lives in `launcher-local.json` on the VM, not in `launcher/launcher-settings.json`.
+  The old link is still in git history: leave the history alone (James) and never paste either link into a file,
+  PR or issue. `launcher/README.md` says the site is not behind a login; that is James's decision.
 - The repository has **no licence file of its own** (as of 2026-11-22). Do not tell anyone they may reuse it under
   some licence, and do not add one yourself. Upstream licence files on that date: the CoA core and SQUID's playerbots
   carry GPL v2 text (SQUID also ships an AGPL-3 file); CF-Server-Manager and mod-dungeon-clear carry AGPL-3.0.

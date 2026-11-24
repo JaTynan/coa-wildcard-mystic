@@ -5,7 +5,7 @@ that kind of configuration lives and which skill owns it. As of 2026-11-22.
 
 | Where | What | Owner skill |
 |---|---|---|
-| `launcher/launcher-settings.json` | Friends' launcher: site address, realm address (`wow.jtlab.cc`), client archive address and size, files to remove | wildcard-client-and-web |
+| `launcher/launcher-settings.json` | Friends' launcher: site address, realm address (`wow.jtlab.cc`), client archive size (the address is in `launcher-local.json` on the VM since PR #242), files to remove | wildcard-client-and-web |
 | `signup-settings.json` (VM only, next to the patch-night scripts, never in GitHub) | **Secrets**: Turnstile keys, invite codes, GitHub token for the bug-report relay; also sign-up limits. Hard stop 4. | wildcard-client-and-web |
 | `ollama-chat/mod_ollama_chat.conf.dist` | Template of the AI chat module's config, copied to the VM at every start; its values are overridden by the `OllamaChat.*` lines of the settings file | this skill for the values; azerothcore-coa-reference for the module |
 | `sql/enchants/090-mysql-tuning.sql`, `095-slow-query-log.sql` | MySQL server settings (buffer pool, slow query log), applied as SQL at every start | wildcard-run-and-operate, wildcard-diagnostics-and-tooling |

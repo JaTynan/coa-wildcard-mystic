@@ -97,9 +97,10 @@ May NOT rely on:
 
 ## Known weak points (from reading the code; none observed live)
 
-1. **The account number leaves the VM.** The hidden marker contains the spool file's name, which starts with the
-   account number. The relay's own comment and `signup/README.md` say account numbers never leave. It is a number,
-   not a name or a password, but it is public and it contradicts the documents.
+1. **Settled, not a defect: the account number is in the hidden marker on purpose.** The marker holds the spool
+   file's name, which starts with the account number, so James can go back to the player when more detail is
+   needed (James, 23-24 Nov 2026: "I cannot think of a single risk"). PR #237 corrected `signup/README.md` and the
+   relay's comment to say so. It is a number, not a name or a password. Do not "fix" it.
 2. **The "### Server context" split** described above.
 3. **One refused report blocks the queue.** On any HTTP error the relay stops and retries the same oldest file
    every 30 seconds for ever. An expired token recovers by itself once fixed; a report GitHub will never accept
