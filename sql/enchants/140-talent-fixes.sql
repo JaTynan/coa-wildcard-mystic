@@ -32,3 +32,35 @@ INSERT INTO `wcme_spellaffect_dbc` (`ID`, `ModifierSpellID`, `AffectedSpellID`) 
 (960001, 818709, 2304612),
 (960002, 818710, 954611),
 (960003, 818710, 2304612);
+
+-- Demonic Recurrence (issue #148; the game data spells it "Demonic Reoccurence"): talent 272730. Only one of its
+-- four parts worked, and that part is a drawback, so the talent made Metamorphosis worse and gave nothing back.
+--   What it should do: halve Metamorphosis's cooldown; in return the form gives nine tenths less bonus armour and
+--   no longer cuts the chance to be critically hit or the length of stuns and snares.
+--   How the data does it: the talent itself removes the stun and snare cut (worked: its target, the form's helper
+--   54817, is named in SpellAffect.dbc). The rest sits in hidden companion spells Ascension's server applied and
+--   ours never did: 272731 (cooldown and armour; its target, Metamorphosis 47241, is named in SpellAffect.dbc) and
+--   272733 (critical hits; it names only the CoA-class helper, not 54879, the one a Hero's form uses).
+-- Three steps, no code:
+--   1. While the talent is on a character, both companions are too (aura links, as for Master Summoner above).
+--   2. Companion 272733 names the helper it changes: 54879. ID 960010 is used by neither SpellAffect.dbc nor
+--      another file.
+--   3. Companion 272731 has a third effect that takes 10 points off the form's damage bonus for every target. The
+--      talent's text limits that loss to fights against players, and Ascension gave the points back against
+--      monsters with a further companion (272732) whose aura the core only honours for a fixed list of spells that
+--      does not include it. So our copy of 272731 (spell_dbc, owned) has that third effect blanked: the damage
+--      bonus stays whole against everything. Known gap: it is not reduced against players either.
+-- Metamorphosis versions: 47241 is the one in the Hero catalogue. The CoA-class version (1147241) is not touched.
+-- Side effect, wanted: the Mystic Enchant of the same name (1570995) is linked to this talent as its twin by
+-- 001-twin-links.sql, so it now gets the whole talent, not just the drawback. Its own numbers differ (a
+-- flat cooldown cut and half the armour); that enchant is for a later review.
+-- Needs a server start to take effect.
+INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_dbc', 272731);
+DELETE FROM `spell_dbc` WHERE `ID` = 272731;
+INSERT INTO `spell_dbc` VALUES
+(272731, 0, 0, 0, 2147484112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 65536, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0.0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 6, 6, 0, 1, 1, 0, 0.0, 0.0, 0.0, -91, -51, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 108, 108, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 12, 11, 0, 0, 0, 0, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3639, 0, 0, 'Demonic Reoccurence', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 'SLS', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 16712190, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 1.0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0.0, 0.0, 0.0, 0, 0);
+INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
+(272730, 272731, 2, 'WCME: Demonic Recurrence applies its cooldown and armour companion (#148)'),
+(272730, 272733, 2, 'WCME: Demonic Recurrence applies its critical hit companion (#148)');
+INSERT INTO `wcme_spellaffect_dbc` (`ID`, `ModifierSpellID`, `AffectedSpellID`) VALUES
+(960010, 272733, 54879);
