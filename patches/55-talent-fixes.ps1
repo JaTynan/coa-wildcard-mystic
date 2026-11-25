@@ -762,3 +762,315 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_harbinger_of_plague);`n    RegisterSpellScript(spell_wcme_harbinger_bile);`n    RegisterSpellScript(spell_wcme_reave_passive);`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Talent companion scripts (talent companions batch 4, part 4: Beacon of Virtue, Holy Concentration, Pack
+#      Leader, Flare Strike, Bloodletting, Corrupted Bear Form)
+Write-Host "Patch: talent companion scripts (Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form)"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# Six talents whose hidden companion or scaling lived in Ascension's own server code. The rows that hold each companion
+# and give the scripts their proc rules are in sql/enchants/147-talent-companion-scripts.sql.
+$class = @'
+// Wildcard (patch 55, talent companions part 4): does the target carry an aura of this class family and flag
+// (SpellFamilyFlags[0]) from this caster? Rend 4/0x20, Rupture 8/0x100000, Hunter's Mark 9/0x400.
+static bool WcmeHasOwnFamilyAura(Unit const* target, ObjectGuid caster, uint32 family, uint32 flags0)
+{
+    for (auto const& [id, application] : target->GetAppliedAuras())
+    {
+        Aura const* aura = application->GetBase();
+        SpellInfo const* info = aura->GetSpellInfo();
+        if (info->SpellFamilyName == family && (info->SpellFamilyFlags[0] & flags0) && aura->GetCasterGUID() == caster)
+            return true;
+    }
+    return false;
+}
+
+// Ascension's class-script auras (aura 112) carry a script id in MiscValue; ours read them by that id. A class mask on
+// the aura effect limits it to those spells, as the core's own spell modifiers do.
+static int32 WcmeClassScriptPct(Unit const* unit, int32 script, SpellInfo const* spell)
+{
+    int32 pct = 0;
+    for (AuraEffect const* effect : unit->GetAuraEffectsByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS))
+        if (effect->GetMiscValue() == script &&
+            (!effect->GetSpellInfo()->Effects[effect->GetEffIndex()].SpellClassMask || effect->IsAffectedOnSpell(spell)))
+            pct += effect->GetAmount();
+    return pct;
+}
+
+// The player and their party or raid members within range (the player alone when not grouped).
+static std::vector<Unit*> WcmeGroupWithin(Player* player, float range)
+{
+    std::vector<Unit*> units{ player };
+    if (Group* group = player->GetGroup())
+        for (GroupReference* ref = group->GetFirstMember(); ref; ref = ref->next())
+            if (Player* member = ref->GetSource())
+                if (member != player && member->IsInWorld() && member->IsAlive() && member->IsInMap(player) &&
+                    member->IsWithinDistInMap(player, range))
+                    units.push_back(member);
+    return units;
+}
+
+// Beacon of Virtue (277680): beacons the target and up to 4 injured allies of its party near it (the most injured
+// first) with 277682 for 10 sec. The heal itself is the companion's (277684, held by wcme_spell_companion). The caster
+// keeps the list of what it beaconed last, so the heals reach every beacon, in a group or not, pets included.
+struct WcmeBeaconTargets final : DataMap::Base
+{
+    std::vector<ObjectGuid> Targets;
+};
+constexpr char WcmeBeaconTargetsKey[] = "wcme_beacon_of_virtue_targets";
+
+class spell_wcme_beacon_of_virtue : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_beacon_of_virtue);
+
+    void ClearTargets()
+    {
+        GetCaster()->CustomData.GetDefault<WcmeBeaconTargets>(WcmeBeaconTargetsKey)->Targets.clear();
+    }
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        Unit* primary = GetExplTargetUnit();
+        targets.remove_if([primary](WorldObject* object)
+        {
+            Unit* unit = object->ToUnit();
+            return !unit || unit == primary || !unit->IsAlive() || unit->IsFullHealth();
+        });
+        targets.sort([](WorldObject* left, WorldObject* right)
+        {
+            return left->ToUnit()->GetHealthPct() < right->ToUnit()->GetHealthPct();
+        });
+        uint32 const others = GetSpellInfo()->MaxAffectedTargets > 1 ? GetSpellInfo()->MaxAffectedTargets - 1 : 4;
+        if (targets.size() > others)
+            targets.resize(others);
+    }
+
+    void HandleDummy(SpellEffIndex /*effIndex*/)
+    {
+        if (Unit* target = GetHitUnit())
+        {
+            GetCaster()->CastSpell(target, 277682, true);
+            GetCaster()->CustomData.GetDefault<WcmeBeaconTargets>(WcmeBeaconTargetsKey)->Targets.push_back(target->GetGUID());
+        }
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_beacon_of_virtue::FilterTargets, EFFECT_0, TARGET_UNIT_LASTTARGET_AREA_PARTY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_beacon_of_virtue::FilterTargets, EFFECT_1, TARGET_UNIT_LASTTARGET_AREA_PARTY);
+        BeforeCast += SpellCastFn(spell_wcme_beacon_of_virtue::ClearTargets);
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_beacon_of_virtue::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
+    }
+};
+
+// Beacon of Virtue's companion (277684): each hit of your Holy heals with a cast time also heals everyone carrying
+// your beacon (277682) within 60 yards, other than the heal's own target, for 25% of it (277681, a plain heal).
+class spell_wcme_beacon_of_virtue_heals : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_beacon_of_virtue_heals);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        HealInfo* heal = eventInfo.GetHealInfo();
+        SpellInfo const* spell = eventInfo.GetSpellInfo();
+        return GetTarget()->IsPlayer() && eventInfo.GetActor() == GetTarget() && heal && heal->GetHeal() && spell &&
+            spell->Id != 277681 && (spell->GetSchoolMask() & SPELL_SCHOOL_MASK_HOLY) && spell->CastTimeEntry &&
+            spell->CastTimeEntry->CastTime > 0;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        Player* player = GetTarget()->ToPlayer();
+        int32 const amount = int32(uint64(eventInfo.GetHealInfo()->GetHeal()) * uint32(std::max(0, aurEff->GetAmount())) / 100);
+        if (!amount)
+            return;
+        Unit* healed = eventInfo.GetActionTarget();
+        WcmeBeaconTargets const* beacons = player->CustomData.Get<WcmeBeaconTargets>(WcmeBeaconTargetsKey);
+        if (!beacons)
+            return;
+        std::vector<ObjectGuid> const targets = beacons->Targets;
+        for (ObjectGuid const& guid : targets)
+            if (Unit* unit = ObjectAccessor::GetUnit(*player, guid))
+                if (unit != healed && unit->IsAlive() && unit->IsWithinDistInMap(player, 60.0f) &&
+                    unit->HasAura(277682, player->GetGUID()))
+                    player->CastCustomSpell(unit, 277681, &amount, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_beacon_of_virtue_heals::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_beacon_of_virtue_heals::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Holy Concentration's companions (966083-966085, ranks 1-3, linked to the talent ranks): Flash Heal, Greater Heal,
+// Binding Heal and Circle of Healing (their proc rules) have the rank's chance to extend your Renew on you and your
+// party or raid within 40 yards by 3 sec. Capped at +50% of Renew's duration per application (James, 24 November:
+// the tooltip's cap value is missing from the client data); each extension raises the aura's maximum by the same
+// amount, and a fresh Renew resets it, so "maximum minus base" is what has been added since it was applied.
+class spell_wcme_holy_concentration_renew : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_holy_concentration_renew);
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        Player* player = GetTarget()->ToPlayer();
+        if (!player)
+            return;
+        int32 const step = std::max(0, aurEff->GetAmount()) * IN_MILLISECONDS;
+        for (Unit* unit : WcmeGroupWithin(player, 40.0f))
+            for (auto const& [id, application] : unit->GetAppliedAuras())
+            {
+                Aura* aura = application->GetBase();
+                SpellInfo const* info = aura->GetSpellInfo();
+                if (info->SpellFamilyName != SPELLFAMILY_PRIEST || !(info->SpellFamilyFlags[0] & 0x40) ||
+                    !info->HasAura(SPELL_AURA_PERIODIC_HEAL) || aura->GetCasterGUID() != player->GetGUID())
+                    continue;
+                int32 const base = aura->CalcMaxDuration();
+                if (base <= 0)
+                    continue;
+                int32 const add = std::min(step, base + base / 2 - aura->GetMaxDuration());
+                if (add <= 0)
+                    continue;
+                aura->SetMaxDuration(aura->GetMaxDuration() + add);
+                aura->SetDuration(aura->GetDuration() + add);
+            }
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_wcme_holy_concentration_renew::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+// Damage and healing changes that hang on the target's state:
+// - Bloodletting (283986, Rupture +25% on targets with your Rend; its companion 283987, Rend +30% on targets with your
+//   Rupture) and the Mystic Enchant Garrote (982178, Garrote +5% on targets with your Rend): class scripts 982178 and
+//   982132, limited by the aura's class mask.
+// - Flare Strike (283151-283155): its rain of arrows (417802, 417816-417819) deals 100% more to the target of your Hunter's Mark (companion
+//   283150, class script 417800, held by wcme_spell_companion). The rain is cast by the flare on its owner's behalf.
+// - Pack Leader (277566; companion 277750): Spirit Wolves' Spirit Hunt heals (58879) heal for 30% (Pack Leader adds
+//   wolves). The heal is a direct heal, so the hook's first unit is the healing wolf.
+class wcme_talent_companion_hooks : public UnitScript
+{
+public:
+    wcme_talent_companion_hooks() : UnitScript("wcme_talent_companion_hooks", true,
+        { UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK, UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN, UNITHOOK_MODIFY_HEAL_RECEIVED }) { }
+
+    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override
+    {
+        if (!target || !attacker || !spellInfo || !damage || spellInfo->HasAura(SPELL_AURA_PERIODIC_HEAL))
+            return;
+        // The attacker's class scripts first: an empty list for nearly everyone, so the target is rarely scanned.
+        int32 const rend = WcmeClassScriptPct(attacker, 982178, spellInfo);
+        int32 const rupture = WcmeClassScriptPct(attacker, 982132, spellInfo);
+        if (!rend && !rupture)
+            return;
+        int32 pct = 0;
+        if (rend && WcmeHasOwnFamilyAura(target, attacker->GetGUID(), SPELLFAMILY_WARRIOR, 0x20))
+            pct += rend;
+        if (rupture && WcmeHasOwnFamilyAura(target, attacker->GetGUID(), SPELLFAMILY_ROGUE, 0x100000))
+            pct += rupture;
+        if (pct > 0)
+            damage = uint32(std::min<uint64>(std::numeric_limits<uint32>::max(), uint64(damage) * (100 + pct) / 100));
+    }
+
+    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
+    {
+        // The rain of each Flare Strike rank (the core's AscensionSummonedEffects payloads), not Volley and its kin,
+        // which share the class flag.
+        if (!target || !attacker || !spellInfo || damage <= 0 ||
+            (spellInfo->Id != 417802 && (spellInfo->Id < 417816 || spellInfo->Id > 417819)))
+            return;
+        Unit* owner = attacker->GetCharmerOrOwnerOrSelf();
+        if (!owner || !WcmeHasOwnFamilyAura(target, owner->GetGUID(), SPELLFAMILY_HUNTER, 0x400))
+            return;
+        if (int32 const pct = WcmeClassScriptPct(owner, 417800, spellInfo); pct > 0)
+            damage = int32(std::min<int64>(std::numeric_limits<int32>::max(), int64(damage) * (100 + pct) / 100));
+    }
+
+    void ModifyHealReceived(Unit* first, Unit* second, uint32& heal, SpellInfo const* spellInfo) override
+    {
+        if (!spellInfo || spellInfo->Id != 58879 || !heal || !first)
+            return;
+        Unit* owner = first->GetOwner();
+        if (!owner && second)
+            owner = second->GetOwner();
+        if (!owner)
+            return;
+        if (AuraEffect const* pack = owner->GetAuraEffect(277750, EFFECT_0))
+            heal = uint32(uint64(heal) * uint32(std::clamp(pack->GetAmount(), 0, 100)) / 100);
+    }
+};
+// Corrupted Bear Form (271403, the core's own script syncs its -20% Physical penalty, 271408): each melee hit in Bear
+// Form also deals Shadow damage (Corrupted Paw, 271411), which the data leaves at a flat 2. Ours scales it to 25% of
+// the hit as dealt, after armour and the penalty, so the total matches a plain bear (0.8 x 1.25 = 1.0). The penalty
+// needs the core's form script on the CoA forms too (bound in 147). Ascension's
+// own elemental weapon attacks keep Physical in their school so armour still counts; taking the share from the hit
+// after armour does the same for a pure Shadow spell. James asked for scaling on 25 Nov 2026 (patch 55).
+class spell_wcme_corrupted_bear_paw : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_corrupted_bear_paw);
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        Unit* owner = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        DamageInfo* damage = eventInfo.GetDamageInfo();
+        if (!owner || !target || target == owner || !damage)
+            return;
+        // Never from the Paw itself, so it cannot feed on its own damage.
+        if (SpellInfo const* spell = eventInfo.GetSpellInfo(); spell && spell->Id == 271411)
+            return;
+        int32 const amount = WcmePercentOfDamage(damage->GetDamage(), 25);
+        if (amount)
+            owner->CastCustomSpell(target, 271411, &amount, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        OnEffectProc += AuraEffectProcFn(spell_wcme_corrupted_bear_paw::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Corrupted Paw (271411) has no spell power coefficient in the data, so the core would add its default for an instant
+// spell (about 43% of spell power) and the caster's damage-done bonuses on top of the share above. The Paw keeps only
+// the value it was cast with; crits and the target's damage-taken modifiers still apply afterwards.
+class spell_wcme_corrupted_paw : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_corrupted_paw);
+
+    int32 _base = -1;
+
+    void RememberBase(SpellEffIndex /*effIndex*/)
+    {
+        _base = GetEffectValue();
+    }
+
+    void KeepBase()
+    {
+        if (_base >= 0)
+            SetHitDamage(_base);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_corrupted_paw::RememberBase, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        OnHit += SpellHitFn(spell_wcme_corrupted_paw::KeepBase);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_beacon_of_virtue);`n    RegisterSpellScript(spell_wcme_beacon_of_virtue_heals);`n    RegisterSpellScript(spell_wcme_holy_concentration_renew);`n    RegisterSpellScript(spell_wcme_corrupted_bear_paw);`n    RegisterSpellScript(spell_wcme_corrupted_paw);`n    new wcme_talent_companion_hooks();`n")
+Set-Content $file $text -NoNewline
+}
