@@ -13,7 +13,8 @@
 --   attack: Ascension made an off-hand twin of each of them and of each elemental version (named "<ability>
 --   (Off-hand)", e.g. 1003049 Mortal Strike, 1003050 Overpower, 1003052 Slam), and the follow-up casts the twin of
 --   the ability that hit. The talent's class flags (Warrior 0x2200004) pick the abilities; only those with a twin are
---   followed up or penalised.
+--   followed up or penalised, 22 in all. Abilities that already trigger their own twin in their data (Hateful
+--   Strike, Loa's Assault, Overwhelm: they strike with both weapons by themselves) are left out.
 -- Proc rule for 988258: those class flags, melee spell damage done, on a hit, triggered spells allowed (stock Slam's
 -- damage, 50783, is cast by Slam's script).
 -- Righteous Fury (25780): its buff text promises a 60% higher chance to block Fierce Blow (975011, the CoA strike

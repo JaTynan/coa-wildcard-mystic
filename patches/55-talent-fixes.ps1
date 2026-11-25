@@ -1384,12 +1384,16 @@ static std::unordered_map<std::string, uint32> const& WcmeOffHandTwins()
     static std::unordered_map<std::string, uint32> const twins = []
     {
         std::unordered_map<std::string, uint32> map;
+        std::unordered_set<uint32> alreadyTriggered;
         std::string const suffix = " (off-hand)";
         for (uint32 id = 0; id < sSpellMgr->GetSpellInfoStoreSize(); ++id)
         {
             SpellInfo const* info = sSpellMgr->GetSpellInfo(id);
             if (!info || info->SpellFamilyName != SPELLFAMILY_WARRIOR || !info->SpellName[0])
                 continue;
+            for (SpellEffectInfo const& effect : info->Effects)
+                if (effect.Effect == SPELL_EFFECT_TRIGGER_SPELL && effect.TriggerSpell)
+                    alreadyTriggered.insert(effect.TriggerSpell);
             std::string name = info->SpellName[0];
             if (name.size() <= suffix.size())
                 continue;
@@ -1399,6 +1403,9 @@ static std::unordered_map<std::string, uint32> const& WcmeOffHandTwins()
                 continue;
             map.try_emplace(name.substr(0, name.size() - suffix.size()), id); // lowest id wins: the Ascension twin
         }
+        // Abilities that strike with both weapons by themselves (Hateful Strike, Loa's Assault, Overwhelm) trigger
+        // their twin through their own data; they are not Single-Minded Fury abilities and get no second twin.
+        std::erase_if(map, [&](auto const& entry) { return alreadyTriggered.contains(entry.second); });
         return map;
     }();
     return twins;
