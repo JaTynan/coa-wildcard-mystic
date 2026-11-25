@@ -1331,7 +1331,8 @@ class spell_wcme_health_state_passive : public AuraScript
 // Presence's heal only. The stock script also casts 63611 in Frost and Unholy Presence with the talent (2%), and the
 // modifier would reach that too (James, 25 Nov 2026: hold it at 2%). Outside Blood Presence, its share is taken
 // back out. The stock script casts 63611 after the new presence is on, and the core recalculates it when the
-// capstone comes or goes, so the check always sees the current presence.
+// capstone comes or goes, so the check always sees the current presence. Only the stock Blood Presence (48266)
+// counts: it is the one in the presence group with Frost and Unholy, and the one the stock script casts 63611 for.
 class spell_wcme_blood_presence_capstone_scope : public AuraScript
 {
     PrepareAuraScript(spell_wcme_blood_presence_capstone_scope);
@@ -1342,7 +1343,7 @@ class spell_wcme_blood_presence_capstone_scope : public AuraScript
         if (!owner)
             return;
         AuraEffect const* capstone = owner->GetAuraEffect(51376, EFFECT_0);
-        if (!capstone || owner->HasAnyAuras(48266, 333002, 333003, 1148266))
+        if (!capstone || owner->HasAura(48266))
             return;
         amount = std::max(0, amount - capstone->GetAmount());
     }
