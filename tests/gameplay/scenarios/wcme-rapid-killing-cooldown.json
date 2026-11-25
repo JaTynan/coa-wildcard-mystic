@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "name": "Rapid Killing rank 1 cuts Rapid Fire's cooldown by 90 sec (sql 148, PR #271)",
+  "contract": "Rapid Killing rank 1 (34948) links its companion 984492 (Rapid Fire cooldown -90000 ms, Hunter flag 0x20). With it, Rapid Fire (3045, 5 min) goes on a 210 sec cooldown when cast.",
+  "timeout_ms": 60000,
+  "players": [
+    {
+      "id": "hunter",
+      "race": 3,
+      "class": 3,
+      "level": 80,
+      "spell_hit_rating": 10000,
+      "melee_hit_rating": 10000,
+      "expertise_rating": 10000
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "ms": 5000
+    },
+    {
+      "action": "learn",
+      "actor": "hunter",
+      "spell": 34948
+    },
+    {
+      "action": "assert",
+      "label": "Companion applied by the talent",
+      "actor": "hunter",
+      "metric": "aura",
+      "spell": 984492,
+      "equals": 1,
+      "within_ms": 2000
+    },
+    {
+      "action": "learn",
+      "actor": "hunter",
+      "spell": 3045
+    },
+    {
+      "action": "cast_no_target",
+      "actor": "hunter",
+      "spell": 3045
+    },
+    {
+      "action": "assert",
+      "label": "Rapid Fire cast accepted",
+      "actor": "hunter",
+      "metric": "cast_failure",
+      "spell": 3045,
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "label": "Cooldown is 300 sec less 90",
+      "actor": "hunter",
+      "metric": "cooldown_ms",
+      "spell": 3045,
+      "min": 200000,
+      "max": 210000,
+      "within_ms": 2000
+    }
+  ]
+}

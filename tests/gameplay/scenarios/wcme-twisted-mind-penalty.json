@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "name": "Twisted Mind carries its healing and absorb penalty (sql 148, PR #271)",
+  "contract": "Twisted Mind (284448) links 978705 (-5% healing and absorbs done) for exactly as long as the form is on.",
+  "timeout_ms": 60000,
+  "players": [
+    {
+      "id": "priest",
+      "race": 1,
+      "class": 5,
+      "level": 80,
+      "spell_hit_rating": 10000,
+      "melee_hit_rating": 10000,
+      "expertise_rating": 10000
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "ms": 5000
+    },
+    {
+      "action": "learn",
+      "actor": "priest",
+      "spell": 284448
+    },
+    {
+      "action": "cast_no_target",
+      "actor": "priest",
+      "spell": 284448
+    },
+    {
+      "action": "assert",
+      "label": "Form on",
+      "actor": "priest",
+      "metric": "aura",
+      "spell": 284448,
+      "equals": 1,
+      "within_ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "Penalty on with the form",
+      "actor": "priest",
+      "metric": "aura",
+      "spell": 978705,
+      "equals": 1,
+      "within_ms": 2000
+    },
+    {
+      "action": "cancel_aura",
+      "actor": "priest",
+      "spell": 284448
+    },
+    {
+      "action": "assert",
+      "label": "Penalty leaves with the form",
+      "actor": "priest",
+      "metric": "aura",
+      "spell": 978705,
+      "equals": 0,
+      "within_ms": 2000
+    }
+  ]
+}
