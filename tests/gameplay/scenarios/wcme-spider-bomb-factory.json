@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "name": "Spider Bomb Factory builds its factory and sends a bomb that detonates on the target (PR #276)",
+  "contract": "Build: Spider Bomb Factory (289200) summons the factory 289203. While it stands, a damaging spell sends a Spider Bomb (289204) that detonates with 801982 on the target.",
+  "timeout_ms": 90000,
+  "players": [
+    {
+      "id": "mage",
+      "race": 1,
+      "class": 8,
+      "level": 80,
+      "spell_hit_rating": 10000,
+      "melee_hit_rating": 10000,
+      "expertise_rating": 10000
+    }
+  ],
+  "creatures": [
+    {
+      "id": "enemy",
+      "owner": "mage",
+      "entry": 36,
+      "level": 80,
+      "health": 1000000,
+      "distance": 12
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "ms": 5000
+    },
+    {
+      "action": "learn",
+      "actor": "mage",
+      "spell": 289200
+    },
+    {
+      "action": "cast_no_target",
+      "actor": "mage",
+      "spell": 289200
+    },
+    {
+      "action": "assert",
+      "label": "Factory built",
+      "actor": "mage",
+      "metric": "owned_creature_count",
+      "entry": 289203,
+      "equals": 1,
+      "within_ms": 3000
+    },
+    {
+      "action": "learn",
+      "actor": "mage",
+      "spell": 133
+    },
+    {
+      "action": "cast",
+      "actor": "mage",
+      "spell": 133,
+      "target": "enemy"
+    },
+    {
+      "action": "assert",
+      "label": "A bomb leaves the factory",
+      "actor": "mage",
+      "metric": "owned_creature_count",
+      "entry": 289204,
+      "min": 1,
+      "within_ms": 6000
+    },
+    {
+      "action": "assert",
+      "label": "The bomb's explosion hits the target",
+      "actor": "mage",
+      "metric": "spell_damage_count",
+      "spell": 801982,
+      "target": "enemy",
+      "min": 1,
+      "within_ms": 15000
+    }
+  ]
+}

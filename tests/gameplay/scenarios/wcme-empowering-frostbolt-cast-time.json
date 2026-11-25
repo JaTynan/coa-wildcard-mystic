@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "name": "Empowering Frostbolt rank 3: Frostbolt casts 0.3 sec faster (PR #273)",
+  "contract": "Learning Empowering Frostbolt rank 3 (31684) applies its companion 31711, which cuts Frostbolt's cast time (Mage flag 0x20) by 300 ms. Fireball, which lacks that flag, is unchanged.",
+  "timeout_ms": 30000,
+  "players": [
+    {
+      "id": "p",
+      "race": 1,
+      "class": 8,
+      "level": 80
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "ms": 5000
+    },
+    {
+      "action": "snapshot",
+      "actor": "p",
+      "metric": "spell_cast_time_ms",
+      "spell": 42842,
+      "save_as": "frostbolt"
+    },
+    {
+      "action": "snapshot",
+      "actor": "p",
+      "metric": "spell_cast_time_ms",
+      "spell": 133,
+      "save_as": "fireball"
+    },
+    {
+      "action": "learn",
+      "actor": "p",
+      "spell": 31684
+    },
+    {
+      "action": "assert",
+      "label": "Frostbolt 300 ms faster",
+      "actor": "p",
+      "metric": "spell_cast_time_ms",
+      "spell": 42842,
+      "relative_to": "frostbolt",
+      "equals": -300,
+      "within_ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "Fireball unchanged",
+      "actor": "p",
+      "metric": "spell_cast_time_ms",
+      "spell": 133,
+      "relative_to": "fireball",
+      "equals": 0,
+      "within_ms": 2000
+    }
+  ]
+}

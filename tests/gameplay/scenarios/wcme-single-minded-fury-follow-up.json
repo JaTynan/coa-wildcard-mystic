@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "name": "Single-Minded Fury: two one-handers keep its companion on and Mortal Strike is followed by its off-hand twin (PR #275)",
+  "contract": "With 988256 and a one-handed non-dagger weapon in each hand, the talent keeps 988258 on (half-second check). A landed Mortal Strike (12294) is followed by Mortal Strike (Off-hand) (1003049).",
+  "timeout_ms": 60000,
+  "players": [
+    {
+      "id": "warrior",
+      "race": 1,
+      "class": 1,
+      "level": 80,
+      "spell_hit_rating": 10000,
+      "melee_hit_rating": 10000,
+      "expertise_rating": 10000
+    }
+  ],
+  "creatures": [
+    {
+      "id": "enemy",
+      "owner": "warrior",
+      "entry": 36,
+      "level": 80,
+      "health": 1000000,
+      "distance": 3
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "ms": 5000
+    },
+    {
+      "action": "learn",
+      "actor": "warrior",
+      "spell": 674
+    },
+    {
+      "action": "add_item",
+      "actor": "warrior",
+      "item": 25
+    },
+    {
+      "action": "add_item",
+      "actor": "warrior",
+      "item": 25
+    },
+    {
+      "action": "equip",
+      "actor": "warrior",
+      "item": 25,
+      "slot": 15
+    },
+    {
+      "action": "equip",
+      "actor": "warrior",
+      "item": 25,
+      "slot": 16
+    },
+    {
+      "action": "learn",
+      "actor": "warrior",
+      "spell": 988256
+    },
+    {
+      "action": "assert",
+      "label": "Companion on with two one-handers",
+      "actor": "warrior",
+      "metric": "aura",
+      "spell": 988258,
+      "equals": 1,
+      "within_ms": 2000
+    },
+    {
+      "action": "learn",
+      "actor": "warrior",
+      "spell": 12294
+    },
+    {
+      "action": "set_power",
+      "actor": "warrior",
+      "power": 1,
+      "value": 1000
+    },
+    {
+      "action": "cast",
+      "actor": "warrior",
+      "spell": 12294,
+      "target": "enemy"
+    },
+    {
+      "action": "assert",
+      "label": "Mortal Strike accepted",
+      "actor": "warrior",
+      "metric": "cast_failure",
+      "spell": 12294,
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "label": "Off-hand twin follows",
+      "actor": "warrior",
+      "metric": "spell_cast_count",
+      "spell": 1003049,
+      "equals": 1,
+      "within_ms": 3000
+    }
+  ]
+}
