@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "name": "Improved Blood Presence rank 5: the capstone heal applies in Blood Presence only (PR #274)",
+  "contract": "Rank 5 (51375) links 51376, +3 to the heal share of 63611 (base 2). In Blood Presence (48266) 63611 resolves to 5. James, 25 Nov 2026: in Frost Presence (48263) it stays at 2, so the patch 55 script takes the +3 back out there.",
+  "timeout_ms": 60000,
+  "players": [
+    {
+      "id": "dk",
+      "race": 1,
+      "class": 6,
+      "level": 80
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "label": "Let login settle",
+      "ms": 5000
+    },
+    {
+      "action": "learn",
+      "actor": "dk",
+      "spell": 51375
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: capstone companion linked",
+      "actor": "dk",
+      "metric": "aura",
+      "spell": 51376,
+      "equals": 1,
+      "within_ms": 2000
+    },
+    {
+      "action": "set_aura",
+      "actor": "dk",
+      "spell": 48266,
+      "stacks": 1
+    },
+    {
+      "action": "set_aura",
+      "actor": "dk",
+      "spell": 63611,
+      "stacks": 1
+    },
+    {
+      "action": "assert",
+      "label": "Blood Presence: heal share 5",
+      "actor": "dk",
+      "metric": "aura_amount",
+      "spell": 63611,
+      "effect": 0,
+      "equals": 5
+    },
+    {
+      "action": "set_aura",
+      "actor": "dk",
+      "spell": 63611,
+      "stacks": 0
+    },
+    {
+      "action": "set_aura",
+      "actor": "dk",
+      "spell": 48266,
+      "stacks": 0
+    },
+    {
+      "action": "set_aura",
+      "actor": "dk",
+      "spell": 48263,
+      "stacks": 1
+    },
+    {
+      "action": "set_aura",
+      "actor": "dk",
+      "spell": 63611,
+      "stacks": 1
+    },
+    {
+      "action": "assert",
+      "label": "Frost Presence: heal share held at 2",
+      "actor": "dk",
+      "metric": "aura_amount",
+      "spell": 63611,
+      "effect": 0,
+      "equals": 2
+    }
+  ]
+}

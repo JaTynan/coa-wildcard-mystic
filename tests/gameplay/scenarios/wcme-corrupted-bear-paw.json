@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "name": "Corrupted Bear Form: Corrupted Paw deals 25% of each melee hit as Shadow (PR #270)",
+  "contract": "In Bear Form with Corrupted Bear Form (271403), each melee hit fires Corrupted Paw (271411) for 25% of the hit as dealt, with no spell power or damage bonuses added (patch 55). Over 20 sec of melee, Paw damage is 20-30% of melee damage (allowing for rounding and the odd resisted Paw).",
+  "timeout_ms": 90000,
+  "players": [
+    {
+      "id": "bear",
+      "race": 4,
+      "class": 11,
+      "level": 80,
+      "melee_hit_rating": 10000,
+      "expertise_rating": 10000,
+      "spell_hit_rating": 10000
+    }
+  ],
+  "creatures": [
+    {
+      "id": "enemy",
+      "owner": "bear",
+      "entry": 36,
+      "level": 80,
+      "health": 10000000,
+      "distance": 3
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "label": "Let login settle",
+      "ms": 5000
+    },
+    {
+      "action": "learn",
+      "actor": "bear",
+      "spell": 5487
+    },
+    {
+      "action": "learn",
+      "actor": "bear",
+      "spell": 271403
+    },
+    {
+      "action": "cast_no_target",
+      "actor": "bear",
+      "spell": 5487
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: in Bear Form",
+      "actor": "bear",
+      "metric": "aura",
+      "spell": 5487,
+      "equals": 1,
+      "within_ms": 2000
+    },
+    {
+      "action": "attack",
+      "actor": "bear",
+      "target": "enemy"
+    },
+    {
+      "action": "wait",
+      "ms": 20000
+    },
+    {
+      "action": "stop_attack",
+      "actor": "bear"
+    },
+    {
+      "action": "wait",
+      "ms": 1000
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: melee landed",
+      "actor": "bear",
+      "metric": "melee_damage_count",
+      "min": 5
+    },
+    {
+      "action": "snapshot",
+      "actor": "bear",
+      "metric": "melee_damage_total",
+      "save_as": "melee"
+    },
+    {
+      "action": "assert",
+      "label": "Paw is 25% of melee damage",
+      "actor": "bear",
+      "metric": "spell_damage_total",
+      "spell": 271411,
+      "target": "enemy",
+      "ratio_to": "melee",
+      "min": 0.2,
+      "max": 0.3
+    }
+  ]
+}

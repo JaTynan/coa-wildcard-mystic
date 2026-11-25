@@ -1,0 +1,130 @@
+{
+  "schema": 1,
+  "name": "Authority: Shield of Righteousness consumes the Authority stacks into damage reduction (PR #272)",
+  "contract": "With Authority (299120), Shield of Righteousness (61411) removes the paladin's Authority stacks (299121) from its target and gives the paladin 299122 with the same number of stacks (3% less damage taken each, any school: our owned copy). Three stacks in, three stacks out.",
+  "timeout_ms": 60000,
+  "location": {
+    "map": 0,
+    "x": -9617.06,
+    "y": -288.949,
+    "z": 57.3053,
+    "o": 0
+  },
+  "players": [
+    {
+      "id": "pal",
+      "race": 1,
+      "class": 2,
+      "level": 80,
+      "melee_hit_rating": 10000,
+      "expertise_rating": 10000,
+      "spell_hit_rating": 10000
+    }
+  ],
+  "creatures": [
+    {
+      "id": "enemy",
+      "owner": "pal",
+      "entry": 36,
+      "level": 80,
+      "health": 1000000,
+      "distance": 3
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "label": "Let login settle",
+      "ms": 5000
+    },
+    {
+      "action": "learn",
+      "label": "Block",
+      "actor": "pal",
+      "spell": 107
+    },
+    {
+      "action": "learn",
+      "label": "Shield proficiency",
+      "actor": "pal",
+      "spell": 9116
+    },
+    {
+      "action": "add_item",
+      "actor": "pal",
+      "item": 2362
+    },
+    {
+      "action": "equip",
+      "label": "Shield in the off hand",
+      "actor": "pal",
+      "item": 2362,
+      "slot": 16
+    },
+    {
+      "action": "wait",
+      "ms": 1000
+    },
+    {
+      "action": "learn",
+      "actor": "pal",
+      "spell": 299120
+    },
+    {
+      "action": "learn",
+      "actor": "pal",
+      "spell": 61411
+    },
+    {
+      "action": "set_aura",
+      "label": "Three Authority stacks from the paladin",
+      "actor": "pal",
+      "spell": 299121,
+      "target": "enemy",
+      "caster": "pal",
+      "stacks": 3
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: three stacks on the target",
+      "actor": "enemy",
+      "metric": "aura_stacks",
+      "spell": 299121,
+      "caster": "pal",
+      "equals": 3
+    },
+    {
+      "action": "cast",
+      "actor": "pal",
+      "spell": 61411,
+      "target": "enemy"
+    },
+    {
+      "action": "assert",
+      "label": "Shield of Righteousness accepted",
+      "actor": "pal",
+      "metric": "cast_failure",
+      "spell": 61411,
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "label": "Paladin has three stacks of the reduction",
+      "actor": "pal",
+      "metric": "aura_stacks",
+      "spell": 299122,
+      "equals": 3,
+      "within_ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "Authority stacks gone from the target",
+      "actor": "enemy",
+      "metric": "aura",
+      "spell": 299121,
+      "caster": "pal",
+      "equals": 0,
+      "within_ms": 2000
+    }
+  ]
+}

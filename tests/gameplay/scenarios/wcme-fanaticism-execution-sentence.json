@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "name": "Fanaticism rank 3: Crusader Strike and Judgements deal 20% more to a target with your Execution Sentence (PR #274)",
+  "contract": "With Fanaticism rank 3 (31881, companion 31895: 20), the patch 55 damage hook raises Crusader Strike (35395) and Judgement of Light (20271) by 20% against a target carrying the paladin's own Execution Sentence (954818, Paladin flag 0x2000000 in the third mask). Without the debuff, or for Exorcism (48801, not in the list), no change. Measured through the script damage hooks on a base of 1000.",
+  "timeout_ms": 60000,
+  "players": [
+    {
+      "id": "pal",
+      "race": 1,
+      "class": 2,
+      "level": 80
+    }
+  ],
+  "creatures": [
+    {
+      "id": "enemy",
+      "owner": "pal",
+      "entry": 36,
+      "level": 80,
+      "health": 1000000,
+      "distance": 3
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "label": "Let login settle",
+      "ms": 5000
+    },
+    {
+      "action": "learn",
+      "actor": "pal",
+      "spell": 31881
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: the companion is linked",
+      "actor": "pal",
+      "metric": "aura",
+      "spell": 31895,
+      "equals": 1,
+      "within_ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "No Execution Sentence: Crusader Strike unchanged",
+      "actor": "pal",
+      "metric": "script_spell_damage_taken",
+      "spell": 35395,
+      "entry": 36,
+      "target": "pal",
+      "equals": 1000
+    },
+    {
+      "action": "set_aura",
+      "label": "Your Execution Sentence on the target",
+      "actor": "pal",
+      "spell": 954818,
+      "target": "enemy",
+      "caster": "pal",
+      "stacks": 1
+    },
+    {
+      "action": "assert",
+      "label": "With it: Crusader Strike +20%",
+      "actor": "pal",
+      "metric": "script_spell_damage_taken",
+      "spell": 35395,
+      "entry": 36,
+      "target": "pal",
+      "equals": 1200,
+      "within_ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "With it: Judgement of Light +20%",
+      "actor": "pal",
+      "metric": "script_spell_damage_taken",
+      "spell": 20271,
+      "entry": 36,
+      "target": "pal",
+      "equals": 1200
+    },
+    {
+      "action": "assert",
+      "label": "Exorcism unchanged",
+      "actor": "pal",
+      "metric": "script_spell_damage_taken",
+      "spell": 48801,
+      "entry": 36,
+      "target": "pal",
+      "equals": 1000
+    },
+    {
+      "action": "set_aura",
+      "actor": "pal",
+      "spell": 954818,
+      "target": "enemy",
+      "caster": "pal",
+      "stacks": 0
+    },
+    {
+      "action": "assert",
+      "label": "Debuff gone: back to normal",
+      "actor": "pal",
+      "metric": "script_spell_damage_taken",
+      "spell": 35395,
+      "entry": 36,
+      "target": "pal",
+      "equals": 1000,
+      "within_ms": 2000
+    }
+  ]
+}

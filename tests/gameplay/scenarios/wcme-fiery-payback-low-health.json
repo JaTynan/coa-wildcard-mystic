@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "name": "Fiery Payback rank 2: the below-35% half starts off and follows health (PR #274)",
+  "contract": "Learning Fiery Payback rank 2 (64357) links its companion 44441, whose effects need the below-35%-health state: 20% less damage taken, Pyroblast (Mage flag 0x400000) 3.5 sec faster and 5 sec longer cooldown. At full health the companion must start switched off (the patch 55 fix: a linked aura otherwise starts on). Below 35% it switches on; back above, off again. Measured on Pyroblast's cast time and cooldown modifier, relative to before learning.",
+  "timeout_ms": 60000,
+  "players": [
+    {
+      "id": "mage",
+      "race": 1,
+      "class": 8,
+      "level": 80,
+      "allow_regeneration": false
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "label": "Let login settle",
+      "ms": 5000
+    },
+    {
+      "action": "set_health",
+      "actor": "mage",
+      "maximum": 100000,
+      "value": 100000
+    },
+    {
+      "action": "snapshot",
+      "actor": "mage",
+      "metric": "spell_cast_time_ms",
+      "spell": 42891,
+      "save_as": "cast"
+    },
+    {
+      "action": "snapshot",
+      "actor": "mage",
+      "metric": "spell_modifier",
+      "spell": 42891,
+      "op": 11,
+      "base": 0,
+      "save_as": "cd"
+    },
+    {
+      "action": "learn",
+      "actor": "mage",
+      "spell": 64357
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: the companion is linked",
+      "actor": "mage",
+      "metric": "aura",
+      "spell": 44441,
+      "equals": 1,
+      "within_ms": 2000
+    },
+    {
+      "action": "wait",
+      "ms": 1000
+    },
+    {
+      "action": "assert",
+      "label": "Full health: Pyroblast cast time unchanged",
+      "actor": "mage",
+      "metric": "spell_cast_time_ms",
+      "spell": 42891,
+      "relative_to": "cast",
+      "equals": 0
+    },
+    {
+      "action": "assert",
+      "label": "Full health: Pyroblast cooldown unchanged",
+      "actor": "mage",
+      "metric": "spell_modifier",
+      "spell": 42891,
+      "op": 11,
+      "base": 0,
+      "relative_to": "cd",
+      "equals": 0
+    },
+    {
+      "action": "set_health",
+      "actor": "mage",
+      "value": 30000
+    },
+    {
+      "action": "assert",
+      "label": "Below 35%: Pyroblast 3.5 sec faster",
+      "actor": "mage",
+      "metric": "spell_cast_time_ms",
+      "spell": 42891,
+      "relative_to": "cast",
+      "equals": -3500,
+      "within_ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "Below 35%: Pyroblast cooldown 5 sec longer",
+      "actor": "mage",
+      "metric": "spell_modifier",
+      "spell": 42891,
+      "op": 11,
+      "base": 0,
+      "relative_to": "cd",
+      "equals": 5000,
+      "within_ms": 2000
+    },
+    {
+      "action": "set_health",
+      "actor": "mage",
+      "value": 100000
+    },
+    {
+      "action": "assert",
+      "label": "Back to full: cast time back",
+      "actor": "mage",
+      "metric": "spell_cast_time_ms",
+      "spell": 42891,
+      "relative_to": "cast",
+      "equals": 0,
+      "within_ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "Back to full: cooldown back",
+      "actor": "mage",
+      "metric": "spell_modifier",
+      "spell": 42891,
+      "op": 11,
+      "base": 0,
+      "relative_to": "cd",
+      "equals": 0,
+      "within_ms": 2000
+    }
+  ]
+}

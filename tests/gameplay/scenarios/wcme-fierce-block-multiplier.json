@@ -1,0 +1,9994 @@
+{
+  "schema": 1,
+  "name": "Righteous Fury's Fierce Block: Fierce Blows are blocked 1.6 times as often (PRs #275, #279)",
+  "contract": "With Righteous Fury (25780, linked companion 986051: 6000) and a shield, the chance to block a Fierce Blow is multiplied by 1.6 (James, 25 Nov 2026). A dummy casts Tank Dummy Fierce Blow (2180275, one of the 44 Fierce Blow ids) at the paladin 800 times without and 800 times with Righteous Fury; block chance is raised to about 30% by a fixture aura so the change is measurable. Expected ratio of blocked strikes 1.6; the bounds 1.35-1.9 hold for 800 strikes each at about 3 standard deviations, and exclude both no effect (1.0) and the old flat +60 points (about 3).",
+  "timeout_ms": 600000,
+  "location": {
+    "map": 0,
+    "x": -9617.06,
+    "y": -288.949,
+    "z": 57.3053,
+    "o": 0
+  },
+  "players": [
+    {
+      "id": "pal",
+      "race": 1,
+      "class": 2,
+      "level": 80,
+      "allow_regeneration": false
+    }
+  ],
+  "creatures": [
+    {
+      "id": "dummy",
+      "owner": "pal",
+      "entry": 36,
+      "level": 80,
+      "health": 1000000,
+      "distance": 3,
+      "spell_hit_bonus": 100
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "label": "Let login settle",
+      "ms": 5000
+    },
+    {
+      "action": "learn",
+      "label": "Block",
+      "actor": "pal",
+      "spell": 107
+    },
+    {
+      "action": "learn",
+      "label": "Shield proficiency",
+      "actor": "pal",
+      "spell": 9116
+    },
+    {
+      "action": "add_item",
+      "actor": "pal",
+      "item": 2362
+    },
+    {
+      "action": "equip",
+      "label": "Shield in the off hand",
+      "actor": "pal",
+      "item": 2362,
+      "slot": 16
+    },
+    {
+      "action": "wait",
+      "ms": 1000
+    },
+    {
+      "action": "set_combat_avoidance",
+      "actor": "pal",
+      "dodge": 0,
+      "parry": 0
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "maximum": 1000000,
+      "value": 1000000
+    },
+    {
+      "action": "set_aura",
+      "label": "Fixture: +25% block chance (Sword and Board)",
+      "actor": "pal",
+      "spell": 2153442,
+      "stacks": 1
+    },
+    {
+      "action": "wait",
+      "ms": 1000
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: block chance in the middle range, so 1.6 times is measurable",
+      "actor": "pal",
+      "metric": "block_chance",
+      "min": 20,
+      "max": 45
+    },
+    {
+      "action": "snapshot",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "blocked": true,
+      "save_as": "plain_blocked"
+    },
+    {
+      "action": "snapshot",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "save_as": "plain_hits"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "wait",
+      "ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: enough strikes landed",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "relative_to": "plain_hits",
+      "min": 700
+    },
+    {
+      "action": "snapshot",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "blocked": true,
+      "relative_to": "plain_blocked",
+      "save_as": "plain"
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: blocks happen without Righteous Fury",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "blocked": true,
+      "relative_to": "plain_blocked",
+      "min": 100
+    },
+    {
+      "action": "learn",
+      "actor": "pal",
+      "spell": 25780
+    },
+    {
+      "action": "cast",
+      "actor": "pal",
+      "spell": 25780,
+      "target": "pal"
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: Righteous Fury applies Fierce Block",
+      "actor": "pal",
+      "metric": "aura",
+      "spell": 986051,
+      "equals": 1,
+      "within_ms": 2000
+    },
+    {
+      "action": "snapshot",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "blocked": true,
+      "save_as": "fury_start"
+    },
+    {
+      "action": "snapshot",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "blocked": true,
+      "save_as": "fury_blocked"
+    },
+    {
+      "action": "snapshot",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "save_as": "fury_hits"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "cast",
+      "actor": "dummy",
+      "spell": 2180275,
+      "target": "pal"
+    },
+    {
+      "action": "set_health",
+      "actor": "pal",
+      "value": 1000000
+    },
+    {
+      "action": "wait",
+      "ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "SETUP: enough strikes landed",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "relative_to": "fury_hits",
+      "min": 700
+    },
+    {
+      "action": "assert",
+      "label": "Fierce Blows blocked about 1.6 times as often (not 1.0, not the +60 points' ~3)",
+      "actor": "pal",
+      "metric": "spell_damage_count",
+      "spell": 2180275,
+      "caster": "dummy",
+      "target": "pal",
+      "blocked": true,
+      "relative_to": "fury_start",
+      "ratio_to": "plain",
+      "min": 1.35,
+      "max": 1.9
+    }
+  ]
+}
