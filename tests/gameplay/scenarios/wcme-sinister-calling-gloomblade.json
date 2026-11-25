@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "name": "Sinister Calling rank 3: the Gloomblade buff lasts 3 sec longer (PR #273)",
+  "contract": "Learning Sinister Calling rank 3 (31218) applies its companion 31232, which lengthens the Gloomblade buff (760187, Rogue flag 0x80000000 in the third mask) by 3000 ms. Slice and Dice is unchanged.",
+  "timeout_ms": 30000,
+  "players": [
+    {
+      "id": "p",
+      "race": 1,
+      "class": 4,
+      "level": 80
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "ms": 5000
+    },
+    {
+      "action": "snapshot",
+      "actor": "p",
+      "metric": "spell_duration_ms",
+      "spell": 760187,
+      "save_as": "gloom"
+    },
+    {
+      "action": "snapshot",
+      "actor": "p",
+      "metric": "spell_duration_ms",
+      "spell": 5171,
+      "save_as": "snd"
+    },
+    {
+      "action": "learn",
+      "actor": "p",
+      "spell": 31218
+    },
+    {
+      "action": "assert",
+      "label": "Gloomblade buff 3 sec longer",
+      "actor": "p",
+      "metric": "spell_duration_ms",
+      "spell": 760187,
+      "relative_to": "gloom",
+      "equals": 3000,
+      "within_ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "Slice and Dice unchanged",
+      "actor": "p",
+      "metric": "spell_duration_ms",
+      "spell": 5171,
+      "relative_to": "snd",
+      "equals": 0,
+      "within_ms": 2000
+    }
+  ]
+}

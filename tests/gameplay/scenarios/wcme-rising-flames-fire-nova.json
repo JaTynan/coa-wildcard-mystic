@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "name": "Rising Flames rank 2: Fire Nova deals 20% more damage (PR #273)",
+  "contract": "Learning Rising Flames rank 2 (16544) applies its companion 16546, which raises Fire Nova damage (Shaman flags 0x80040000 in the second mask) by 20%: a base of 1000 becomes 1200. Lightning Bolt is unchanged.",
+  "timeout_ms": 30000,
+  "players": [
+    {
+      "id": "p",
+      "race": 2,
+      "class": 7,
+      "level": 80
+    }
+  ],
+  "steps": [
+    {
+      "action": "wait",
+      "ms": 5000
+    },
+    {
+      "action": "snapshot",
+      "actor": "p",
+      "metric": "spell_modifier",
+      "spell": 61650,
+      "op": 0,
+      "base": 1000,
+      "save_as": "nova"
+    },
+    {
+      "action": "snapshot",
+      "actor": "p",
+      "metric": "spell_modifier",
+      "spell": 403,
+      "op": 0,
+      "base": 1000,
+      "save_as": "bolt"
+    },
+    {
+      "action": "learn",
+      "actor": "p",
+      "spell": 16544
+    },
+    {
+      "action": "assert",
+      "label": "Fire Nova damage +20%",
+      "actor": "p",
+      "metric": "spell_modifier",
+      "spell": 61650,
+      "op": 0,
+      "base": 1000,
+      "relative_to": "nova",
+      "equals": 200,
+      "within_ms": 2000
+    },
+    {
+      "action": "assert",
+      "label": "Lightning Bolt unchanged",
+      "actor": "p",
+      "metric": "spell_modifier",
+      "spell": 403,
+      "op": 0,
+      "base": 1000,
+      "relative_to": "bolt",
+      "equals": 0,
+      "within_ms": 2000
+    }
+  ]
+}

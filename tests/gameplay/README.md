@@ -6,8 +6,9 @@ clients, creates throwaway characters, plays out each scenario's steps (learn a 
 target dummy, wait) and checks its assertions (an aura is on, a cooldown is this long, a spell hit this target).
 It is the only way our fixes can become "verified" without someone testing them by hand.
 
-Status, 25 Nov 2026: **written and checked for structure only; not run yet.** Nothing here runs a server, and no
-script, patch night step or workflow calls these files. Where and when they run is still to be decided (below).
+Status, 25 Nov 2026: **written and checked for structure only; not run yet.** PR #278 (open) runs them every night
+on the scheduled patch night, in a throwaway test world server, before the live world starts (James chose this on
+25 Nov: no players are expected from 3:30 to 5:30 am). Until #278 and this folder are both on `main`, nothing runs.
 
 ## What is here
 
@@ -18,6 +19,14 @@ script, patch night step or workflow calls these files. Where and when they run 
 | `wcme-twisted-mind-penalty` | Twisted Mind's healing penalty comes and goes with the form | sql 148, PR #271 (live) |
 | `wcme-single-minded-fury-follow-up` | two one-handers keep the companion on; Mortal Strike is followed by its off-hand twin | PR #275 |
 | `wcme-spider-bomb-factory` | the factory is built, a bomb leaves it and its explosion hits the target | PR #276 |
+| `wcme-empowering-frostbolt-cast-time` | rank 3 makes Frostbolt 300 ms faster; Fireball unchanged | sql 151, PR #273 (live) |
+| `wcme-rising-flames-fire-nova` | rank 2 adds 20% to Fire Nova damage; Lightning Bolt unchanged | sql 151, PR #273 (live) |
+| `wcme-sinister-calling-gloomblade` | rank 3 makes the Gloomblade buff 3 sec longer; Slice and Dice unchanged | sql 151, PR #273 (live) |
+| `wcme-improved-blood-presence-damage` | rank 5 adds 8 to Blood Presence's damage bonus; Frost Presence unchanged | sql 151, PR #273 (live) |
+
+The last four measure the change itself: they read the value before learning the talent and check the difference
+after, so they do not depend on the exact base numbers in our data. Each also checks one similar spell that must not
+change.
 
 The format is the core's scenario schema 1. Each file says in `contract` what it expects, from the tooltip and our
 fix, independent of how the fix is written.
@@ -45,12 +54,9 @@ From the core's own guide (`apps/coa-gameplay-test/README.md`, `docs/coa/verific
 
 The VM has the first two. The world copy and the test server's memory are why a run should not overlap with play.
 
-## Open decision (James)
+## Where and when they run
 
-Where and when to run. Options, cheapest first:
-
-1. **On demand on the VM**, by one command, while nobody is playing. No change to patch night.
-2. **Inside patch night**, after the new build is installed and before the server starts again. Fully automatic,
-   but it adds to the nightly downtime and changes patch night (hard stop 5).
-3. **Elsewhere** (GitHub Actions, another machine): needs the client data there, which must not go into this
-   public repository.
+Decided by James on 25 Nov 2026: inside the scheduled patch night, after the new build and tonight's SQL are in
+place and before the live world starts (PR #278, `patch-night/Run-GameplayTests.ps1`). The results go to
+`patch-night.log` and `gameplay-tests\latest.txt` on the VM. A by-hand run of the same script works too, while the
+live world is stopped.
