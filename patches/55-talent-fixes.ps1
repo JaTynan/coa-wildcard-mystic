@@ -1591,3 +1591,172 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    WcmeSpellBlockChanceBonus = &WcmeFierceBlockBonus;`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Talent companion scripts, part 10 (Spider Bomb Factory)
+Write-Host "Patch: Spider Bomb Factory (Ascension Tinker build: factory, spider bombs)"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# The creatures (289203 factory, 289204 spider bomb), the proc rule and the binding are in
+# sql/enchants/154-spider-bomb-factory.sql.
+$class = @'
+#include "MotionMaster.h"
+#include "ScriptedCreature.h"
+
+// Spider Bomb Factory (289200, an Ascension Tinker build in the Wildcard pool): builds a factory in front of you for
+// 20 sec; meanwhile damaging spells and abilities send 2 Spider Bombs from it to your target, which detonate for
+// Fire damage, at most once every 4 sec. The spell summons creature 289203, which our world data lacked, and the
+// rest ran in Ascension's code. The core's own Tinker factory and bombs work for Tinkers only (their scripts drop
+// anyone else), so these are copies with scripts of their own: 289203 copies the CoA factory (467073), 289204 the
+// CoA Spider Bomb (226012), and the bombs detonate with the CoA Spider Bomb Explosion (801982), with the player as
+// its caster for the damage, as the CoA bombs scale with their Tinker.
+struct WcmeSpiderBombFactory final : DataMap::Base
+{
+    ObjectGuid Factory;
+};
+static constexpr char const* WcmeSpiderBombFactoryKey = "WcmeSpiderBombFactory";
+
+struct npc_wcme_spider_bomb_factory : public ScriptedAI
+{
+    explicit npc_wcme_spider_bomb_factory(Creature* creature) : ScriptedAI(creature) { }
+
+    void IsSummonedBy(WorldObject* summoner) override
+    {
+        me->SetReactState(REACT_PASSIVE);
+        me->GetMotionMaster()->MoveIdle();
+        Player* player = summoner ? summoner->ToPlayer() : nullptr;
+        if (!player)
+            return;
+        player->CustomData.GetDefault<WcmeSpiderBombFactory>(WcmeSpiderBombFactoryKey)->Factory = me->GetGUID();
+        // The bombs come while the factory stands: the trigger aura lasts as long as the factory does.
+        int32 duration = 20000;
+        if (TempSummon* summon = me->ToTempSummon(); summon && summon->GetTimer())
+            duration = int32(summon->GetTimer());
+        if (Aura* bombs = player->AddAura(289201, player))
+        {
+            bombs->SetMaxDuration(duration);
+            bombs->SetDuration(duration);
+        }
+    }
+
+    void AttackStart(Unit* /*victim*/) override { }
+
+    void UpdateAI(uint32 /*diff*/) override
+    {
+        // A guardian is told to follow its owner; the factory stays where it was built.
+        if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+            me->GetMotionMaster()->MoveIdle();
+    }
+};
+
+struct npc_wcme_spider_bomb : public ScriptedAI
+{
+    explicit npc_wcme_spider_bomb(Creature* creature) : ScriptedAI(creature) { }
+
+    ObjectGuid _owner;
+    ObjectGuid _target;
+    uint32 _checkTimer = 200;
+    bool _done = false;
+
+    void IsSummonedBy(WorldObject* summoner) override
+    {
+        me->SetReactState(REACT_PASSIVE);
+        me->SetWalk(false);
+        if (Player* player = summoner ? summoner->ToPlayer() : nullptr)
+        {
+            _owner = player->GetGUID();
+            me->SetOwnerGUID(_owner);
+            me->SetFaction(player->GetFaction());
+        }
+    }
+
+    void SetGUID(ObjectGuid const& guid, int32 id) override
+    {
+        if (id != 1)
+            return;
+        _target = guid;
+        if (Unit* target = ObjectAccessor::GetUnit(*me, guid))
+            me->GetMotionMaster()->MoveFollow(target, 0.0f, 0.0f, MOTION_SLOT_ACTIVE, false, false);
+    }
+
+    void AttackStart(Unit* /*victim*/) override { }
+
+    void UpdateAI(uint32 diff) override
+    {
+        if (_done)
+            return;
+        if (_checkTimer > diff)
+        {
+            _checkTimer -= diff;
+            return;
+        }
+        _checkTimer = 200;
+        Player* player = ObjectAccessor::FindPlayer(_owner);
+        Unit* target = ObjectAccessor::GetUnit(*me, _target);
+        if (!player || !player->IsInMap(me) || !target || !target->IsAlive() || !player->IsValidAttackTarget(target))
+        {
+            _done = true;
+            me->DespawnOrUnsummon();
+            return;
+        }
+        if (!me->IsWithinDistInMap(target, 2.0f))
+            return;
+        _done = true;
+        me->CastSpell(target, 801982, TRIGGERED_FULL_MASK, nullptr, nullptr, _owner);
+        me->DespawnOrUnsummon(100ms);
+    }
+};
+
+// 289201 is on while the factory stands; its proc rule (154) brings each damaging spell or ability here, at most
+// once every 4 sec. Two bombs: the tooltip's count, from 289201's own data (its second value less one).
+class spell_wcme_spider_bomb_factory_bombs : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_spider_bomb_factory_bombs);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Unit* owner = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        DamageInfo* damage = eventInfo.GetDamageInfo();
+        return owner && owner->IsPlayer() && eventInfo.GetActor() == owner && target && target != owner &&
+            damage && damage->GetDamage() && owner->IsValidAttackTarget(target);
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        Player* player = GetTarget()->ToPlayer();
+        Unit* target = eventInfo.GetActionTarget();
+        WcmeSpiderBombFactory const* state = player->CustomData.Get<WcmeSpiderBombFactory>(WcmeSpiderBombFactoryKey);
+        Creature* factory = state ? ObjectAccessor::GetCreature(*player, state->Factory) : nullptr;
+        if (!factory || !factory->IsAlive() || !factory->IsInMap(player))
+        {
+            GetAura()->SetDuration(0);
+            return;
+        }
+        for (uint8 n = 0; n < 2; ++n)
+        {
+            Position position = factory->GetPosition();
+            factory->MovePositionToFirstCollision(position, 1.5f, float(M_PI) * n);
+            if (TempSummon* bomb = player->SummonCreature(289204, position, TEMPSUMMON_TIMED_DESPAWN, 15000))
+                bomb->AI()->SetGUID(target->GetGUID(), 1);
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_spider_bomb_factory_bombs::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_spider_bomb_factory_bombs::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterCreatureAI(npc_wcme_spider_bomb_factory);`n    RegisterCreatureAI(npc_wcme_spider_bomb);`n    RegisterSpellScript(spell_wcme_spider_bomb_factory_bombs);`n")
+Set-Content $file $text -NoNewline
+}
