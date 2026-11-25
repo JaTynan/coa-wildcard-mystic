@@ -1548,17 +1548,40 @@ foreach ($anchor in @($register, $loader)) {
 }
 # The link that gives Righteous Fury its companion is in sql/enchants/153-single-minded-fury.sql.
 $class = @'
-// Righteous Fury: "your chance to block Fierce Blows increased by 60%". The amount is its companion's (986051, in
-// hundredths of a percent: 6000), linked to Righteous Fury. Fierce Blow (975011) is the CoA strike creatures use
-// on their target. Only with something to block with: no shield, no bonus.
+// Righteous Fury: "your chance to block Fierce Blows increased by 60%" (60 points, added to the block chance). The
+// amount is its companion's (986051, in hundredths of a percent: 6000), linked to Righteous Fury. Fierce Blow is the
+// CoA strike creatures use on their target (975011), plus the boss strikes whose text says they count as a Fierce
+// Blow (Sartura's cuts, the Fierce Draconic Strikes and the rest, listed from our spell data on 25 Nov 2026). Only
+// with something to block with: a player needs the block skill and an unbroken shield.
 extern float (*WcmeSpellBlockChanceBonus)(Unit const*, SpellInfo const*); // defined in Unit.cpp (this patch)
+
+static bool WcmeIsFierceBlow(uint32 spellId)
+{
+    static std::unordered_set<uint32> const fierceBlows = { 975011,
+        2108314, 2111425, 2116056, 2116116, 2116118, 2116120, 2116122, 2116124, 2118250, 2118251, 2119102, 2119402,
+        2119502, 2119602, 2119702, 2123500, 2123902, 2124092, 2124093, 2125490, 2125491, 2125492, 2130936, 2131355,
+        2132021, 2141704, 2145508, 2145807, 2147154, 2148902, 2149952, 2152161, 2152162, 2152165, 2154026, 2154402,
+        2157500, 2157902, 2158092, 2158093, 2159002, 2165014, 2180275 };
+    return fierceBlows.contains(spellId);
+}
+
+static bool WcmeCanBlockWithShield(Unit const* victim)
+{
+    Player const* player = victim->ToPlayer();
+    if (!player)
+        return victim->GetUnitBlockChance() > 0.0f;
+    if (!player->CanBlock())
+        return false;
+    Item const* shield = player->GetUseableItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+    return shield && !shield->IsBroken() && shield->GetTemplate()->Block;
+}
 
 static float WcmeFierceBlockBonus(Unit const* victim, SpellInfo const* spell)
 {
-    if (!victim || !spell || spell->Id != 975011)
+    if (!victim || !spell || !WcmeIsFierceBlow(spell->Id))
         return 0.0f;
     AuraEffect const* fierceBlock = victim->GetAuraEffect(986051, EFFECT_0);
-    if (!fierceBlock || fierceBlock->GetAmount() <= 0 || victim->GetUnitBlockChance() <= 0.0f)
+    if (!fierceBlock || fierceBlock->GetAmount() <= 0 || !WcmeCanBlockWithShield(victim))
         return 0.0f;
     return fierceBlock->GetAmount() / 100.0f;
 }

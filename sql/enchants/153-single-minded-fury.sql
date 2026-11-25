@@ -17,10 +17,10 @@
 --   Strike, Loa's Assault, Overwhelm: they strike with both weapons by themselves) are left out.
 -- Proc rule for 988258: those class flags, melee spell damage done, on a hit, triggered spells allowed (stock Slam's
 -- damage, 50783, is cast by Slam's script).
--- Righteous Fury (25780): its buff text promises a 60% higher chance to block Fierce Blow (975011, the CoA strike
--- creatures use on their target). That lives in a companion (986051, 6000 = 60.00%) nothing applied; now linked. The
--- core has no hook for a spell's block chance, so patch 55 part 9 adds one to Unit::isSpellBlocked; the bonus counts
--- only with a shield (no block chance, no bonus). The CoA copy of Righteous Fury (1125780) promises nothing of the
+-- Righteous Fury (25780): its buff text promises a 60% higher chance to block Fierce Blows (975011, the CoA strike
+-- creatures use on their target, and the boss strikes whose text says they count as one). That lives in a companion
+-- (986051, 6000 = 60.00%, added as 60 points) nothing applied; now linked. The core has no hook for a spell's block
+-- chance, so patch 55 part 9 adds one to Unit::isSpellBlocked; the bonus needs the block skill and a shield. The CoA copy of Righteous Fury (1125780) promises nothing of the
 -- kind and is left alone. Without the build the link does nothing.
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (25780, 986051, 2, 'WCME: Righteous Fury applies its Fierce Block chance');
