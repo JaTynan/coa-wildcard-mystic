@@ -17,7 +17,8 @@ What it touches:
   - Writes results to gameplay-tests\results\<date_time> (the newest 14 kept) and a summary to latest.txt.
 
 It never decides anything: it prints lines for patch-night.log and always exits 0. A time limit (default 40
-minutes, and never past 04:50) stops the test server, so the live start is delayed by that much at most.
+minutes, and never past 04:50) stops the test server; clean-up after it takes a few minutes more, and PatchNight.ps1
+stops everything at 45 minutes, so the live start is delayed by 45 minutes at most.
 #>
 param(
     [string] $Server = 'C:\Games\CoA Server',
@@ -65,6 +66,17 @@ function DropLeftoverSchemas {
     }
 }
 
+function StopTestQueries {
+    # Killing the runner kills its mysql.exe clients, but MySQL carries on with their copy statements (and a DROP
+    # would wait behind them). Stops every query on a coa_test_ database or naming one, except this connection.
+    $ids = Sql ("SELECT ID FROM information_schema.PROCESSLIST WHERE ID <> CONNECTION_ID() AND " +
+                "(DB LIKE 'coa\_test\_%' OR INFO LIKE '%coa\_test\_%');")
+    foreach ($id in $ids) {
+        if ($id -notmatch '^\d+$') { continue }
+        try { $null = Sql "KILL $id;"; Say "stopped test database query $id." } catch { }
+    }
+}
+
 function StopTestServers {
     # A test world server always runs from a config the harness writes in a coa-gameplay-batch-* temporary folder;
     # the live one never does.
@@ -90,7 +102,7 @@ function Prune([string] $folder, [int] $keep) {
 
 function Runner([string] $short) {
     # The runner must match the harness compiled into the world server, so it comes from the same core commit.
-    $commit = (Invoke-RestMethod -Uri "https://api.github.com/repos/$CoreRepo/commits/$short" -Headers $headers).sha
+    $commit = (Invoke-RestMethod -Uri "https://api.github.com/repos/$CoreRepo/commits/$short" -Headers $headers -TimeoutSec 60).sha
     if ($commit -notmatch '^[0-9a-f]{40}$') { throw "cannot resolve core revision $short" }
     $folder = Join-Path $root "runner\$commit"
     $app = Join-Path $folder 'apps\coa-gameplay-test'
@@ -100,7 +112,7 @@ function Runner([string] $short) {
         foreach ($name in $runnerFiles) {
             $target = Join-Path $app $name
             Invoke-WebRequest -Uri "https://raw.githubusercontent.com/$CoreRepo/$commit/apps/coa-gameplay-test/$name" `
-                -OutFile $target -Headers $headers -UseBasicParsing
+                -OutFile $target -Headers $headers -UseBasicParsing -TimeoutSec 60
             if ((Get-Item $target).Length -lt 100) { throw "downloaded $name is empty" }
         }
         Set-Content -Path (Join-Path $app 'checks.json') -Value '{"schema": 1, "checks": []}' -Encoding ascii
@@ -132,10 +144,11 @@ function TestModules([string] $target) {
 }
 
 function HasClientKeys {
-    # The harness can use the admin client file only if it names host, port, user and password. Only the key names
-    # are looked at; nothing from the file is printed or copied. Otherwise it uses the world server's own login.
-    if (-not (Test-Path $ini)) { return $false }
+    # The harness can use the admin client file only if it has a [client] section naming host, port, user and
+    # password. Only those names are looked at; nothing from the file is printed or copied. Otherwise it uses the
+    # world server's own login.
     $text = Get-Content $ini -Raw
+    if ($text -notmatch '(?m)^\s*\[client\]') { return $false }
     foreach ($key in 'host', 'port', 'user', 'password') { if ($text -notmatch "(?m)^\s*$key\s*=") { return $false } }
     return $true
 }
@@ -148,7 +161,7 @@ try {
     if (($deadline - $start).TotalMinutes -lt 15) { Say "skipped: less than 15 minutes left before $NotAfter."; exit 0 }
     $files = @(Get-ChildItem $Scenarios -Filter *.json -File -ErrorAction SilentlyContinue | Sort-Object Name)
     if (-not $files.Count) { Say "skipped: no scenarios in $Scenarios."; exit 0 }
-    foreach ($needed in $exe, $config, $python, $mysql, $dump) {
+    foreach ($needed in $exe, $config, $python, $mysql, $dump, $ini) {
         if (-not (Test-Path $needed)) { Say "skipped: missing $needed."; exit 0 }
     }
     if (Get-Process worldserver -ErrorAction SilentlyContinue) { Say 'skipped: a world server is running.'; exit 0 }
@@ -198,6 +211,7 @@ try {
         Say "stopped at the time limit ($([int] ((Get-Date) - $start).TotalMinutes) minutes); results are incomplete."
     }
     StopTestServers
+    StopTestQueries
     RemoveCredentials $out
     Remove-Item (Join-Path $out 'module-source') -Recurse -Force -ErrorAction SilentlyContinue
     DropLeftoverSchemas
@@ -213,7 +227,7 @@ try {
         Set-Content -Path (Join-Path $root 'latest.txt') -Encoding utf8
 } catch {
     Say "could not run: $($_.Exception.Message)"
-    try { StopTestServers; if ($out) { RemoveCredentials $out } } catch { }
+    try { StopTestServers; StopTestQueries; if ($out) { RemoveCredentials $out } } catch { }
     try { DropLeftoverSchemas } catch { }
 }
 exit 0

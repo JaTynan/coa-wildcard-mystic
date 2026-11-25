@@ -80,8 +80,9 @@ picked up. `Run-PatchNight-Now.cmd` runs it straight away, with the window open.
 **Gameplay tests (proposed 25 November 2026):** on the scheduled run, before the live world starts,
 `patch-night\Run-GameplayTests.ps1` runs the scenarios in `tests/gameplay/scenarios` in a separate test world server,
 with the CoA core's own test harness: the new build, tonight's SQL, and throwaway copies of the databases
-(`coa_test_*`, dropped afterwards), with bots off. It stops itself after 40 minutes or at 04:50, whichever is first,
-so the live start is delayed by that much at most (no players are expected between 3:30 and 5:30 am). It never stops
+(`coa_test_*`, dropped afterwards), with bots off. The tests stop after 40 minutes or at 04:50, whichever is first,
+and patch night stops everything at 45 minutes, so the live start is delayed by 45 minutes at most (no players are
+expected between 3:30 and 5:30 am); the Downtime line leaves the test minutes out and names them. It never stops
 the start: results are only written down, as lines in `patch-night.log`, in `gameplay-tests\latest.txt` and in
 `gameplay-tests\results\<date_time>` (the newest 14 kept). A by-hand run and `Start-Server.cmd` skip it.
 
