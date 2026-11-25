@@ -1314,6 +1314,9 @@ class spell_wcme_health_state_passive : public AuraScript
         AuraStateType const state = AuraStateType(GetSpellInfo()->CasterAuraState);
         if (!target || state == AURA_STATE_NONE || target->HasAuraState(state))
             return;
+        // At login the health states are not set yet; the core sets them afterwards and switches such auras off itself.
+        if (Player* player = target->ToPlayer(); player && player->isBeingLoaded())
+            return;
         if (AuraApplication* application = GetAura()->GetApplicationOfTarget(target->GetGUID()))
             GetAura()->HandleAllEffects(application, AURA_EFFECT_HANDLE_REAL, false);
     }

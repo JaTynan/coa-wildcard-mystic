@@ -1,13 +1,14 @@
 -- Talent companions, batch 6 (the scan's "stock-data" list), part 2: three talents whose companion also needs code
--- (patch 55, its "part 7" section). Needs the build with that section: until then the links apply the companions,
--- which do nothing on their own, and the binding names a script the server does not have yet (it logs an error and
--- carries on). Safe to run again (000-reset removes WCME: links and spell_wcme_ bindings). Each read by hand on
+-- (patch 55, its "part 7" section). Ship it with the build that has that section, not before: without the script,
+-- the Fiery Payback passive learned in play would start switched on at full health and count twice below 35% until
+-- the next login. The binding names a script an older server does not have (it logs an error and carries on). Safe to run again (000-reset removes WCME: links and spell_wcme_ bindings). Each read by hand on
 -- 25 Nov 2026, with the stock scripts checked for each id. Not tested in game: unverified until a player report or
 -- an automated test.
 --
 -- 1. Improved Kick (13754, 13867): a Kick that interrupts gives 20 / 40 energy. The amount sits in a companion per
 --   rank (13869, 13870), which nothing applied, and the core has no proc result for "interrupted"; the patch uses
---   the core's successful-interrupt hook and reads the amount from the companion. The silence part already works
+--   the core's successful-interrupt hook and reads the amount from the companion. The companions have no proc flags
+--   in their data and no proc rule, so they never fire by themselves (no double energy). The silence part already works
 --   (the stock proc rule for Improved Kick).
 -- 2. Fanaticism (31879, 31880, 31881): Crusader Strike, Seals and Judgements deal 7 / 14 / 20% more to a target
 --   carrying your own Execution Sentence. The amount sits in a companion per rank (31891, 31894, 31895) whose data
