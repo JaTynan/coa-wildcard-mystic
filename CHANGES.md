@@ -155,6 +155,8 @@ Shadows, Spell Shredder, ...).
 `146-talent-companions-percent-damage.sql`: talent companions, batch 4 part 3 (needs the build with patch 55). Harbinger of Plague: the Haunt splash companion is linked (the buff from Wrath already worked through the core's rules). Reave (Hero version, every rank): its condition bonuses are held through patch 55's ability companions. Proc rules and script bindings for both. Unverified in game.
 
 `148-talent-companions-data-links.sql`: talent companions, batch 5 part 1, data only (no build). Rapid Killing now cuts Rapid Fire's cooldown (90 or 180 seconds by rank); Holy Focus rank 5 gets its capstone (Holy damage crits: 50% chance of +5% magic damage for 8 seconds, once every 8 seconds); Temple Guardian gives 5% block chance while Inner Fire is on you; Twisted Mind now carries its 5% healing and absorb penalty. Unverified in game.
+
+`151-talent-companions-stock-ids.sql`: talent companions, batch 6 part 1, data only (no build). Sinister Calling rank 3 lengthens Gloomblade by 3 seconds; Rising Flames raises Fire Nova's damage by 10% or 20%; Empowering Frostbolt cuts Frostbolt's cast time by 0.1, 0.2 or 0.3 seconds; Improved Blood Presence rank 5 gets its capstone (Blood Presence damage +8%, its heal +3% of damage dealt, from the next time you enter it). Unverified in game.
 `161-wisdomball-tiraxis.sql`: the Wondrous Wisdomball (the pet that offers your dungeon quests) is back on Tiraxis' Convenience Items list for 800 Bazaar Tokens; the core had made it unobtainable.
 `016-dead-triggers.sql`: 33 Legendary enchants whose trigger never fired now work: 31 fire from the abilities their
 tooltip names (through the enchant action table; missing chances and sequences are best guesses, marked in each
