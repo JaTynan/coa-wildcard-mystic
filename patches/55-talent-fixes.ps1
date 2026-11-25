@@ -1074,3 +1074,119 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_beacon_of_virtue);`n    RegisterSpellScript(spell_wcme_beacon_of_virtue_heals);`n    RegisterSpellScript(spell_wcme_holy_concentration_renew);`n    RegisterSpellScript(spell_wcme_corrupted_bear_paw);`n    RegisterSpellScript(spell_wcme_corrupted_paw);`n    new wcme_talent_companion_hooks();`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Talent companion scripts, part 6 (scan "probable" list: Explosive Shot's Explosive Charge, Authority)
+Write-Host "Patch: talent companion scripts part 6 (Explosive Charge, Authority)"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# The rows that hold each companion and give the scripts their proc rules are in
+# sql/enchants/149-talent-companion-scripts-2.sql.
+$class = @'
+// Explosive Charge (906142, held while you know Explosive Shot): each hit of Explosive Shot's damage (53352, the
+// first blast and every tick) also deals the companion's share (40%) to the other enemies within 5 yards (906143).
+// Only 53352 itself: its class flag is shared with other area shots, whose every hit would splash again.
+// Ascension ran this percent-of-damage aura (354) in its own code; this core runs it only for its own list.
+class spell_wcme_explosive_charge : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_explosive_charge);
+
+    bool CheckProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        Unit* owner = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        DamageInfo* damage = eventInfo.GetDamageInfo();
+        return owner && eventInfo.GetActor() == owner && target && target != owner && damage && damage->GetDamage() &&
+            aurEff->GetAmount() > 0 && eventInfo.GetSpellInfo() && eventInfo.GetSpellInfo()->Id == 53352;
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        int32 const amount = WcmePercentOfDamage(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount());
+        if (amount)
+            GetTarget()->CastCustomSpell(eventInfo.GetActionTarget(), 906143, &amount, nullptr, nullptr, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckEffectProc += AuraCheckEffectProcFn(spell_wcme_explosive_charge::CheckProc, EFFECT_0, SPELL_AURA_ASCENSION_PROC_PERCENT_EVENT);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_explosive_charge::HandleProc, EFFECT_0, SPELL_AURA_ASCENSION_PROC_PERCENT_EVENT);
+    }
+};
+
+// The splash (906143) spares the shot's own target and splits the share between the enemies it does hit, as the
+// companion's tooltip says. Any other use of the spell is left whole.
+class spell_wcme_explosive_charge_splash : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_explosive_charge_splash);
+
+    uint32 _targets = 0;
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        SpellInfo const* from = GetTriggeringSpell();
+        if (!from || from->Id != 906142)
+            return;
+        if (Unit* primary = GetSpell()->GetOriginalTarget()) // the explicit unit is dropped for a destination spell
+            targets.remove(primary);
+        _targets = uint32(targets.size());
+    }
+
+    void Split()
+    {
+        if (_targets > 1)
+            SetHitDamage(GetHitDamage() / int32(_targets));
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_explosive_charge_splash::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ENEMY);
+        OnHit += SpellHitFn(spell_wcme_explosive_charge_splash::Split);
+    }
+};
+
+// Authority (299120): Execution Sentence's ticks stack Authority (299121) on the target (the talent's own trigger,
+// given its proc rule in 149). Shield of Righteousness then consumes the stacks: after its hit, the paladin's own
+// stacks on that target are removed and the paladin takes 3% less damage per stack consumed (299122, 8 sec; a new
+// consume replaces the old buff, it does not add to it). The
+// stacks' damage bonus to Shield of Righteousness itself is the debuff's own data and applies before they go.
+class spell_wcme_authority_consume : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_authority_consume);
+
+    void Consume()
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (!caster || !target || !caster->HasAura(299120))
+            return;
+        Aura* authority = target->GetAura(299121, caster->GetGUID());
+        if (!authority)
+            return;
+        uint8 const stacks = authority->GetStackAmount();
+        authority->Remove();
+        if (!stacks)
+            return;
+        // 299122 is "per stack" in its data (3% each, up to 4): a fresh buff with one stack per Authority consumed.
+        caster->RemoveAurasDueToSpell(299122);
+        if (Aura* reduction = caster->AddAura(299122, caster))
+            reduction->SetStackAmount(stacks);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_wcme_authority_consume::Consume);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_explosive_charge);`n    RegisterSpellScript(spell_wcme_explosive_charge_splash);`n    RegisterSpellScript(spell_wcme_authority_consume);`n")
+Set-Content $file $text -NoNewline
+}
