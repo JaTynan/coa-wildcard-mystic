@@ -1,5 +1,5 @@
 -- Talent companions, batch 6 (the scan's "stock-data" list), part 1: four talents whose companion uses an old
--- Blizzard spell id that Ascension re-used, and only needs to be held. Data only: no build needed, live at the next
+-- Blizzard spell id that Ascension re-used, and only needs to be held (all of it, or the part named below). Data only: no build needed, live at the next
 -- server start. Safe to run again (000-reset removes WCME: links). Each read by hand
 -- on 25 Nov 2026, with the stock scripts checked for each id. Not tested in game: unverified until a player report
 -- or an automated test.
@@ -15,13 +15,10 @@
 --   31710 / 31711 (Mage flag 0x20; also Water Bolt and other spells Ascension marks as using Frostbolt modifiers).
 --   Linked per rank. The core's Hero mage script only gives the after-cast buff
 --   (831682); it does not touch the cast time. The scan listed ranks 1 and 3; rank 2 has the same gap.
--- 4. Improved Blood Presence, rank 5 (51375): its capstone lives in two companions, both linked to rank 5.
---   51377: Blood Presence's damage bonus +8 (Death Knight flag 0x800000, every Blood Presence version).
---   51376: +3 to the heal share of 63611, the heal the stock script casts. The server's own SpellAffect.dbc already
---   names 63611 as its target (row 918522), so only the link was missing. Both take effect at once: the core
---   recalculates permanent self-auras when a modifier comes or goes.
---   Side effect from Ascension's own data, worth knowing: the stock script also casts 63611 in Frost and Unholy
---   Presence with the talent (the tooltip's 2% there), and the +3 reaches it too, so that share becomes 5%.
+-- 4. Improved Blood Presence, rank 5 (51375): the damage half of its capstone, 51377: Blood Presence's damage bonus
+--   +8 (Death Knight flag 0x800000, every Blood Presence version). Takes effect at once (the core recalculates
+--   permanent self-auras when a modifier comes or goes). The heal half (51376) is in 152 with a script: James asked
+--   on 25 Nov 2026 for it to stay out of the Frost and Unholy Presence heal, which Ascension's data would also raise.
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (31218, 31232, 2, 'WCME: Sinister Calling rank 3 applies its Gloomblade duration companion'),
 (16086, 16545, 2, 'WCME: Rising Flames rank 1 applies its Fire Nova damage companion'),
@@ -29,5 +26,4 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (31682, 31695, 2, 'WCME: Empowering Frostbolt rank 1 applies its Frostbolt cast time companion'),
 (31683, 31710, 2, 'WCME: Empowering Frostbolt rank 2 applies its Frostbolt cast time companion'),
 (31684, 31711, 2, 'WCME: Empowering Frostbolt rank 3 applies its Frostbolt cast time companion'),
-(51375, 51376, 2, 'WCME: Improved Blood Presence rank 5 applies its capstone healing companion'),
 (51375, 51377, 2, 'WCME: Improved Blood Presence rank 5 applies its capstone damage companion');
