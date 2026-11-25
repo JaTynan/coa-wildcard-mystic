@@ -1514,3 +1514,50 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_single_minded_fury);`n    RegisterSpellScript(spell_wcme_single_minded_fury_follow_up);`n    new wcme_single_minded_fury_hooks();`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Talent companion scripts, part 9 (Righteous Fury's Fierce Block)
+Write-Host "Patch: Righteous Fury raises the chance to block Fierce Blow (Unit.cpp hook and its rule)"
+& {
+# The core has no script hook for a spell's block chance, so Unit::isSpellBlocked asks a function pointer, set by
+# the rule below at start-up; a plain pointer keeps the game library from depending on the coa one. Null: no change.
+$file = 'core/src/server/game/Entities/Unit/Unit.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$head = "bool Unit::isSpellBlocked(Unit* victim, SpellInfo const* spellProto, WeaponAttackType attackType)`n{`n"
+$skill = "        else`n            blockChance += (weaponSkill - victimMaxSkill) * 0.04f;`n"
+foreach ($anchor in @($head, $skill)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed: Unit::isSpellBlocked was not found as expected in $file" }
+}
+$text = $text.Replace($head, "float (*WcmeSpellBlockChanceBonus)(Unit const*, SpellInfo const*) = nullptr; // set by patch 55 (Fierce Block)`n`n" + $head)
+$text = $text.Replace($skill, $skill + "`n        if (WcmeSpellBlockChanceBonus)`n            blockChance += WcmeSpellBlockChanceBonus(victim, spellProto);`n")
+Set-Content $file $text -NoNewline
+}
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# The link that gives Righteous Fury its companion is in sql/enchants/153-single-minded-fury.sql.
+$class = @'
+// Righteous Fury: "your chance to block Fierce Blows increased by 60%". The amount is its companion's (986051, in
+// hundredths of a percent: 6000), linked to Righteous Fury. Fierce Blow (975011) is the CoA strike creatures use
+// on their target. Only with something to block with: no shield, no bonus.
+extern float (*WcmeSpellBlockChanceBonus)(Unit const*, SpellInfo const*); // defined in Unit.cpp (this patch)
+
+static float WcmeFierceBlockBonus(Unit const* victim, SpellInfo const* spell)
+{
+    if (!victim || !spell || spell->Id != 975011)
+        return 0.0f;
+    AuraEffect const* fierceBlock = victim->GetAuraEffect(986051, EFFECT_0);
+    if (!fierceBlock || fierceBlock->GetAmount() <= 0 || victim->GetUnitBlockChance() <= 0.0f)
+        return 0.0f;
+    return fierceBlock->GetAmount() / 100.0f;
+}
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    WcmeSpellBlockChanceBonus = &WcmeFierceBlockBonus;`n")
+Set-Content $file $text -NoNewline
+}

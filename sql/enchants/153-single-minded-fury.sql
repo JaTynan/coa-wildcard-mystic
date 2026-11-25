@@ -1,6 +1,7 @@
--- Single-Minded Fury (988256), the Ascension talent. Needs the build with patch 55's "part 8" section: without it
--- the bindings name scripts the server does not have (it logs an error for each and carries on) and nothing else
--- changes. Safe to run again (000-reset removes owned spell_proc rows and spell_wcme_ bindings). Read by hand on
+-- Single-Minded Fury (988256), the Ascension talent, and Righteous Fury's Fierce Block. Needs the build with patch
+-- 55's "part 8" and "part 9" sections: without it the bindings name scripts the server does not have (it logs an
+-- error for each and carries on) and nothing else changes. Safe to run again (000-reset removes WCME: links, owned
+-- spell_proc rows and spell_wcme_ bindings). Read by hand on
 -- 25 Nov 2026. Not tested in game: unverified until a player report or an automated test.
 --
 -- The talent did nothing: its effects are a half-second weapon check, a placeholder and a modifier type this core
@@ -15,6 +16,14 @@
 --   followed up or penalised.
 -- Proc rule for 988258: those class flags, melee spell damage done, on a hit, triggered spells allowed (stock Slam's
 -- damage, 50783, is cast by Slam's script).
+-- Righteous Fury (25780): its buff text promises a 60% higher chance to block Fierce Blow (975011, the CoA strike
+-- creatures use on their target). That lives in a companion (986051, 6000 = 60.00%) nothing applied; now linked. The
+-- core has no hook for a spell's block chance, so patch 55 part 9 adds one to Unit::isSpellBlocked; the bonus counts
+-- only with a shield (no block chance, no bonus). The CoA copy of Righteous Fury (1125780) promises nothing of the
+-- kind and is left alone. Without the build the link does nothing.
+INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
+(25780, 986051, 2, 'WCME: Righteous Fury applies its Fierce Block chance');
+
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_proc', 988258);
 DELETE FROM `spell_proc` WHERE `SpellId` IN (988258);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
