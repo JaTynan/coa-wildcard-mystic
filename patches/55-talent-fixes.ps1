@@ -1190,3 +1190,172 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_explosive_charge);`n    RegisterSpellScript(spell_wcme_explosive_charge_splash);`n    RegisterSpellScript(spell_wcme_authority_consume);`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Talent companion scripts, part 7 (scan "stock-data" list: Improved Kick, Fanaticism, Fiery Payback, Improved Blood Presence)
+Write-Host "Patch: talent companion scripts part 7 (Improved Kick, Fanaticism, Fiery Payback, Improved Blood Presence)"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# The rows that hold each companion and bind the aura script are in sql/enchants/152-talent-companion-scripts-3.sql.
+$class = @'
+// Improved Kick: a Kick that interrupts a cast gives the rogue energy, the amount held by the rank's companion
+// (13869: 20, 13870: 40) and given by 813868. The core has no proc result for "interrupted", so this uses its
+// successful-interrupt hook. Kick is Rogue class flag 0x10; the other spells with that flag cannot interrupt.
+class wcme_improved_kick_energy : public AllSpellScript
+{
+public:
+    wcme_improved_kick_energy() : AllSpellScript("wcme_improved_kick_energy", { ALLSPELLHOOK_ON_SUCCESSFUL_INTERRUPT }) { }
+
+    void OnSpellSuccessfulInterrupt(Spell* spell, Unit* /*target*/) override
+    {
+        if (!spell)
+            return;
+        SpellInfo const* info = spell->GetSpellInfo();
+        if (info->SpellFamilyName != SPELLFAMILY_ROGUE || !(info->SpellFamilyFlags[0] & 0x10))
+            return;
+        Unit* caster = spell->GetCaster();
+        if (!caster)
+            return;
+        for (uint32 companion : { 13870u, 13869u })
+            if (AuraEffect const* energy = caster->GetAuraEffect(companion, EFFECT_0))
+            {
+                int32 amount = energy->GetAmount();
+                if (amount > 0)
+                    caster->CastCustomSpell(caster, 813868, &amount, nullptr, nullptr, true, nullptr, energy);
+                return;
+            }
+    }
+};
+
+// Fanaticism: Crusader Strike, Seals and Judgements deal more damage to a target carrying the paladin's own
+// Execution Sentence (Paladin flag 0x2000000 in the third mask). The amount is the rank's companion (31891, 31894,
+// 31895), whose data is a modifier with no target. The spell groups by class flag: Judgements (0x800000 / 0x8 in
+// the third mask, as the talent's own crit bonus picks them), Seal of Command (0x2000000), the Seal of
+// Righteousness family (0x20000000 in the second), Vengeance and Corruption (0x800, their damage over time too),
+// Blood and the Martyr (0x400), Crusader Strike and its elemental versions (0x8000), the Judgements of Command
+// and Blood (0x8 / 0x200 in the second, 0x10 in the third).
+static bool WcmeIsFanaticismSpell(SpellInfo const* spell)
+{
+    if (!spell || spell->SpellFamilyName != SPELLFAMILY_PALADIN)
+        return false;
+    flag96 const& flags = spell->SpellFamilyFlags;
+    return (flags[0] & (0x800000 | 0x2000000)) || (flags[1] & (0x20000000 | 0x800 | 0x400 | 0x8000 | 0x8 | 0x200)) ||
+        (flags[2] & (0x8 | 0x10));
+}
+
+static bool WcmeHasOwnExecutionSentence(Unit const* target, ObjectGuid caster)
+{
+    for (auto const& [id, application] : target->GetAppliedAuras())
+    {
+        Aura const* aura = application->GetBase();
+        SpellInfo const* info = aura->GetSpellInfo();
+        if (info->SpellFamilyName == SPELLFAMILY_PALADIN && (info->SpellFamilyFlags[2] & 0x2000000) &&
+            aura->GetCasterGUID() == caster)
+            return true;
+    }
+    return false;
+}
+
+static int32 WcmeFanaticismPct(Unit const* attacker, Unit const* target, SpellInfo const* spell)
+{
+    if (!attacker || !target || attacker == target || !WcmeIsFanaticismSpell(spell))
+        return 0;
+    int32 pct = 0;
+    for (uint32 companion : { 31895u, 31894u, 31891u })
+        if (AuraEffect const* effect = attacker->GetAuraEffect(companion, EFFECT_0))
+        {
+            pct = effect->GetAmount();
+            break;
+        }
+    if (pct <= 0 || !WcmeHasOwnExecutionSentence(target, attacker->GetGUID()))
+        return 0;
+    return pct;
+}
+
+class wcme_fanaticism_hooks : public UnitScript
+{
+public:
+    wcme_fanaticism_hooks() : UnitScript("wcme_fanaticism_hooks", true,
+        { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN, UNITHOOK_MODIFY_PERIODIC_DAMAGE_AURAS_TICK }) { }
+
+    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
+    {
+        if (damage <= 0)
+            return;
+        if (int32 const pct = WcmeFanaticismPct(attacker, target, spellInfo))
+            damage = int32(std::min<int64>(std::numeric_limits<int32>::max(), int64(damage) * (100 + pct) / 100));
+    }
+
+    void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override
+    {
+        if (!damage)
+            return;
+        if (int32 const pct = WcmeFanaticismPct(attacker, target, spellInfo))
+            damage = uint32(std::min<uint64>(std::numeric_limits<uint32>::max(), uint64(damage) * (100 + pct) / 100));
+    }
+};
+
+// Fiery Payback (44440, 44441): passives that only count below 35% health (their data asks for that health state).
+// The core switches such an aura's effects on and off as the state comes and goes, but only a learned spell starts
+// switched off. Held through a link instead, the aura starts switched off here when the state is missing, the way
+// the core does it for a learned spell.
+class spell_wcme_health_state_passive : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_health_state_passive);
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        Unit* target = GetTarget();
+        AuraStateType const state = AuraStateType(GetSpellInfo()->CasterAuraState);
+        if (!target || state == AURA_STATE_NONE || target->HasAuraState(state))
+            return;
+        // At login the health states are not set yet; the core sets them afterwards and switches such auras off itself.
+        if (Player* player = target->ToPlayer(); player && player->isBeingLoaded())
+            return;
+        if (AuraApplication* application = GetAura()->GetApplicationOfTarget(target->GetGUID()))
+            GetAura()->HandleAllEffects(application, AURA_EFFECT_HANDLE_REAL, false);
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_wcme_health_state_passive::HandleApply, EFFECT_2, SPELL_AURA_ADD_FLAT_MODIFIER, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Improved Blood Presence, rank 5 capstone (51376, +3 to the heal share of 63611): the tooltip gives it to Blood
+// Presence's heal only. The stock script also casts 63611 in Frost and Unholy Presence with the talent (2%), and the
+// modifier would reach that too (James, 25 Nov 2026: hold it at 2%). Outside Blood Presence, its share is taken
+// back out. The stock script casts 63611 after the new presence is on, and the core recalculates it when the
+// capstone comes or goes, so the check always sees the current presence. Only the stock Blood Presence (48266)
+// counts: it is the one in the presence group with Frost and Unholy, and the one the stock script casts 63611 for.
+class spell_wcme_blood_presence_capstone_scope : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_blood_presence_capstone_scope);
+
+    void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
+    {
+        Unit* owner = GetUnitOwner();
+        if (!owner)
+            return;
+        AuraEffect const* capstone = owner->GetAuraEffect(51376, EFFECT_0);
+        if (!capstone || owner->HasAura(48266))
+            return;
+        amount = std::max(0, amount - capstone->GetAmount());
+    }
+
+    void Register() override
+    {
+        DoEffectCalcAmount += AuraEffectCalcAmountFn(spell_wcme_blood_presence_capstone_scope::CalculateAmount, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    new wcme_improved_kick_energy();`n    new wcme_fanaticism_hooks();`n    RegisterSpellScript(spell_wcme_health_state_passive);`n    RegisterSpellScript(spell_wcme_blood_presence_capstone_scope);`n")
+Set-Content $file $text -NoNewline
+}
