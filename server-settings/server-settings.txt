@@ -450,6 +450,15 @@ modules\mod_ahbot.conf | AuctionHouseBot.DisabledCustomItemIDs = 22459-22460,230
 # at 20 it is not. Side effect: bots come online and swap in more slowly after you log in. To end the experiment
 # set this back to 20; deleting the line leaves 30 in the config file on the server.
 modules\playerbots.conf | AiPlayerbot.RandomBotUpdateInterval = 30
+# E1 result (25 Nov evening, value confirmed live): the 20-second beat weakened and part of it moved to 30 seconds,
+# but the long ticks did not fall (2-second-plus freezes in 26% of player-online records, 15% the evening before).
+# The bot manager's timing is not the main cause. Left at 30 for now so the next experiment differs from the 25 Nov
+# evening by one setting only (James: one change at a time).
+# Lag experiment E3 (25 Nov, James). SQUID's CoA Live (bots typing in channels, greetings, chat timers) runs timers
+# on the world thread; the next suspect for the beat. Off for ONE evening: if the long ticks fall, CoA Live is the
+# cause; if not, it is not. Side effect: no bot chatter in channels that evening. To end the experiment set this
+# back to 1; deleting the line leaves 0 in the config file on the server.
+modules\playerbots.conf | AiPlayerbot.CoaLive.Enable = 0
 # Measuring only. The world server records how long one pass of its game loop took, once a minute, every time (it
 # used to sample every 5 minutes and only above 100 ms), with the time of day, in Logs\Timing.log. That file is
 # appended to, not replaced, so it keeps the history across restarts (about 100 KB a day). The lines still go to
