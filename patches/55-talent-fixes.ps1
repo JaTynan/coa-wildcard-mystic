@@ -1525,8 +1525,9 @@ Set-Content $file $text -NoNewline
 # ---- Talent companion scripts, part 9 (Righteous Fury's Fierce Block)
 Write-Host "Patch: Righteous Fury raises the chance to block Fierce Blow (Unit.cpp hook and its rule)"
 & {
-# The core has no script hook for a spell's block chance, so Unit::isSpellBlocked asks a function pointer, set by
-# the rule below at start-up; a plain pointer keeps the game library from depending on the coa one. Null: no change.
+# The core has no script hook for a spell's block chance, so Unit::isSpellBlocked hands its chance to a function
+# pointer, set by the rule below at start-up, and uses what comes back; a plain pointer keeps the game library from
+# depending on the coa one. Null: no change.
 $file = 'core/src/server/game/Entities/Unit/Unit.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
 $head = "bool Unit::isSpellBlocked(Unit* victim, SpellInfo const* spellProto, WeaponAttackType attackType)`n{`n"
@@ -1534,8 +1535,8 @@ $skill = "        else`n            blockChance += (weaponSkill - victimMaxSkill
 foreach ($anchor in @($head, $skill)) {
     if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed: Unit::isSpellBlocked was not found as expected in $file" }
 }
-$text = $text.Replace($head, "float (*WcmeSpellBlockChanceBonus)(Unit const*, SpellInfo const*) = nullptr; // set by patch 55 (Fierce Block)`n`n" + $head)
-$text = $text.Replace($skill, $skill + "`n        if (WcmeSpellBlockChanceBonus)`n            blockChance += WcmeSpellBlockChanceBonus(victim, spellProto);`n")
+$text = $text.Replace($head, "float (*WcmeSpellBlockChance)(Unit const*, SpellInfo const*, float) = nullptr; // set by patch 55 (Fierce Block)`n`n" + $head)
+$text = $text.Replace($skill, $skill + "`n        if (WcmeSpellBlockChance)`n            blockChance = WcmeSpellBlockChance(victim, spellProto, blockChance);`n")
 Set-Content $file $text -NoNewline
 }
 & {
@@ -1548,12 +1549,14 @@ foreach ($anchor in @($register, $loader)) {
 }
 # The link that gives Righteous Fury its companion is in sql/enchants/153-single-minded-fury.sql.
 $class = @'
-// Righteous Fury: "your chance to block Fierce Blows increased by 60%" (60 points, added to the block chance). The
-// amount is its companion's (986051, in hundredths of a percent: 6000), linked to Righteous Fury. Fierce Blow is the
+// Righteous Fury makes Fierce Blows easier to block: the block chance against them is multiplied by 1 + amount, so
+// 6000 (986051's amount, in hundredths of a percent) gives 1.6 times the usual chance. James, 25 Nov 2026: a
+// multiplier, not 60 points added, so block gear keeps mattering instead of near immunity for anyone with a shield.
+// 986051 is linked to Righteous Fury (sql/enchants/153-single-minded-fury.sql). Fierce Blow is the
 // CoA strike creatures use on their target (975011), plus the boss strikes whose text says they count as a Fierce
 // Blow (Sartura's cuts, the Fierce Draconic Strikes and the rest, listed from our spell data on 25 Nov 2026). Only
 // with something to block with: a player needs the block skill and an unbroken shield.
-extern float (*WcmeSpellBlockChanceBonus)(Unit const*, SpellInfo const*); // defined in Unit.cpp (this patch)
+extern float (*WcmeSpellBlockChance)(Unit const*, SpellInfo const*, float); // defined in Unit.cpp (this patch)
 
 static bool WcmeIsFierceBlow(uint32 spellId)
 {
@@ -1576,18 +1579,18 @@ static bool WcmeCanBlockWithShield(Unit const* victim)
     return shield && !shield->IsBroken() && shield->GetTemplate()->Block;
 }
 
-static float WcmeFierceBlockBonus(Unit const* victim, SpellInfo const* spell)
+static float WcmeFierceBlockChance(Unit const* victim, SpellInfo const* spell, float blockChance)
 {
-    if (!victim || !spell || !WcmeIsFierceBlow(spell->Id))
-        return 0.0f;
+    if (blockChance <= 0.0f || !victim || !spell || !WcmeIsFierceBlow(spell->Id))
+        return blockChance;
     AuraEffect const* fierceBlock = victim->GetAuraEffect(986051, EFFECT_0);
     if (!fierceBlock || fierceBlock->GetAmount() <= 0 || !WcmeCanBlockWithShield(victim))
-        return 0.0f;
-    return fierceBlock->GetAmount() / 100.0f;
+        return blockChance;
+    return blockChance * (1.0f + fierceBlock->GetAmount() / 10000.0f);
 }
 
 '@
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
-$text = $text.Replace($register, $register + "    WcmeSpellBlockChanceBonus = &WcmeFierceBlockBonus;`n")
+$text = $text.Replace($register, $register + "    WcmeSpellBlockChance = &WcmeFierceBlockChance;`n")
 Set-Content $file $text -NoNewline
 }
