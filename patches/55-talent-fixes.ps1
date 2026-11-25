@@ -1605,6 +1605,7 @@ foreach ($anchor in @($register, $loader)) {
 # The creatures (289203 factory, 289204 spider bomb), the proc rule and the binding are in
 # sql/enchants/154-spider-bomb-factory.sql.
 $class = @'
+#include "AscensionTinker.h"
 #include "MotionMaster.h"
 #include "ScriptedCreature.h"
 
@@ -1613,8 +1614,10 @@ $class = @'
 // Fire damage, at most once every 4 sec. The spell summons creature 289203, which our world data lacked, and the
 // rest ran in Ascension's code. The core's own Tinker factory and bombs work for Tinkers only (their scripts drop
 // anyone else), so these are copies with scripts of their own: 289203 copies the CoA factory (467073), 289204 the
-// CoA Spider Bomb (226012), and the bombs detonate with the CoA Spider Bomb Explosion (801982), with the player as
-// its caster for the damage, as the CoA bombs scale with their Tinker.
+// CoA Spider Bomb (226012). A bomb detonates like the CoA ones: the CoA Spider Bomb Explosion (801982) on every
+// enemy within its radius (at most its target limit). Its damage follows the explosion's own tooltip (its base +
+// 28.85% of the player's attack power + 15% of their Fire spell power), worked out here and cast as a fixed amount:
+// the core's own scaling of that spell is for Tinkers only, and the bomb has no owner set so it never applies twice.
 struct WcmeSpiderBombFactory final : DataMap::Base
 {
     ObjectGuid Factory;
@@ -1648,9 +1651,12 @@ struct npc_wcme_spider_bomb_factory : public ScriptedAI
 
     void UpdateAI(uint32 /*diff*/) override
     {
-        // A guardian is told to follow its owner; the factory stays where it was built.
+        // A guardian is told to follow its owner after it is summoned; the factory stays where it was built.
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
+        {
+            me->GetMotionMaster()->Clear(false);
             me->GetMotionMaster()->MoveIdle();
+        }
     }
 };
 
@@ -1670,7 +1676,6 @@ struct npc_wcme_spider_bomb : public ScriptedAI
         if (Player* player = summoner ? summoner->ToPlayer() : nullptr)
         {
             _owner = player->GetGUID();
-            me->SetOwnerGUID(_owner);
             me->SetFaction(player->GetFaction());
         }
     }
@@ -1685,6 +1690,23 @@ struct npc_wcme_spider_bomb : public ScriptedAI
     }
 
     void AttackStart(Unit* /*victim*/) override { }
+
+    void Explode(Player* player)
+    {
+        SpellInfo const* explosion = sSpellMgr->GetSpellInfo(801982);
+        if (!explosion)
+            return;
+        float const radius = explosion->Effects[EFFECT_0].RadiusEntry ? explosion->Effects[EFFECT_0].CalcRadius() : 8.0f;
+        std::list<Unit*> enemies = AscensionTinker::Nearby(me, radius);
+        enemies.remove_if([player](Unit* enemy) { return !enemy->IsAlive() || !player->IsValidAttackTarget(enemy); });
+        if (explosion->MaxAffectedTargets && enemies.size() > explosion->MaxAffectedTargets)
+            enemies.resize(explosion->MaxAffectedTargets);
+        int32 const amount = explosion->Effects[EFFECT_0].BasePoints + // the spell adds its 1-point roll itself
+            int32(player->GetTotalAttackPowerValue(BASE_ATTACK) * 0.2885f) +
+            int32(std::max(0, player->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_FIRE)) * 0.15f);
+        for (Unit* enemy : enemies)
+            me->CastCustomSpell(enemy, 801982, &amount, nullptr, nullptr, true, nullptr, nullptr, _owner);
+    }
 
     void UpdateAI(uint32 diff) override
     {
@@ -1707,13 +1729,15 @@ struct npc_wcme_spider_bomb : public ScriptedAI
         if (!me->IsWithinDistInMap(target, 2.0f))
             return;
         _done = true;
-        me->CastSpell(target, 801982, TRIGGERED_FULL_MASK, nullptr, nullptr, _owner);
+        Explode(player);
         me->DespawnOrUnsummon(100ms);
     }
 };
 
 // 289201 is on while the factory stands; its proc rule (154) brings each damaging spell or ability here, at most
-// once every 4 sec. Two bombs: the tooltip's count, from 289201's own data (its second value less one).
+// once every 4 sec. Spells cast by a spell (and the bombs' own explosions, cast in the player's name) do not count:
+// 289201 is allowed to proc from procs in its data. Bomb count: the tooltip's, 289201's second value less one (1 in
+// our data; Ascension's text says "Spider Bombs").
 class spell_wcme_spider_bomb_factory_bombs : public AuraScript
 {
     PrepareAuraScript(spell_wcme_spider_bomb_factory_bombs);
@@ -1723,8 +1747,11 @@ class spell_wcme_spider_bomb_factory_bombs : public AuraScript
         Unit* owner = GetTarget();
         Unit* target = eventInfo.GetActionTarget();
         DamageInfo* damage = eventInfo.GetDamageInfo();
+        SpellInfo const* spell = eventInfo.GetSpellInfo();
+        Spell const* cast = eventInfo.GetProcSpell();
         return owner && owner->IsPlayer() && eventInfo.GetActor() == owner && target && target != owner &&
-            damage && damage->GetDamage() && owner->IsValidAttackTarget(target);
+            damage && damage->GetDamage() && owner->IsValidAttackTarget(target) && spell && spell->Id != 801982 &&
+            (!cast || !cast->IsTriggered());
     }
 
     void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
@@ -1739,10 +1766,12 @@ class spell_wcme_spider_bomb_factory_bombs : public AuraScript
             GetAura()->SetDuration(0);
             return;
         }
-        for (uint8 n = 0; n < 2; ++n)
+        SpellInfo const* bombs = sSpellMgr->GetSpellInfo(289201);
+        int32 const count = std::clamp(bombs ? bombs->Effects[EFFECT_1].CalcValue() - 1 : 1, 1, 5);
+        for (int32 n = 0; n < count; ++n)
         {
             Position position = factory->GetPosition();
-            factory->MovePositionToFirstCollision(position, 1.5f, float(M_PI) * n);
+            factory->MovePositionToFirstCollision(position, 1.5f, float(M_PI) * 2 * n / count);
             if (TempSummon* bomb = player->SummonCreature(289204, position, TEMPSUMMON_TIMED_DESPAWN, 15000))
                 bomb->AI()->SetGUID(target->GetGUID(), 1);
         }

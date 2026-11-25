@@ -6,15 +6,19 @@
 -- player report or an automated test.
 --
 -- What it should do (the tooltip): build a factory in front of you for 20 sec; meanwhile damaging spells and
--- abilities send 2 Spider Bombs from it, which run to your target and detonate for Fire damage, at most once every
--- 4 sec. What it did: nothing. The spell summons creature 289203, which our world data did not have, and the bombs
--- were Ascension's own code. The core's Tinker class has a working factory (467073) and Spider Bomb (226012), but
--- their script drops anyone who is not a Tinker, so they cannot be used as they are. Copies with scripts of their own:
--- - 289203 copies the CoA factory, script npc_wcme_spider_bomb_factory: stands still, and while it stands the
---   builder holds 289201, which brings the damaging hits to the patch (proc rule below: melee, ranged and magic
---   spell damage done, on a hit, not from triggered spells, once every 4 sec).
--- - 289204 copies the CoA Spider Bomb, script npc_wcme_spider_bomb: two per trigger, they run to the target and
---   detonate with the CoA Spider Bomb Explosion (801982), the player counting as its caster for the damage.
+-- abilities send Spider Bombs from it, which run to your target and detonate for Fire damage, at most once every
+-- 4 sec. The count is the tooltip's formula on 289201's data: 1 bomb in our data (the text says "Spider Bombs").
+-- What it did: nothing. The spell summons creature 289203, which our world data did not have, and the bombs were
+-- Ascension's own code. The core's Tinker class has a working factory (467073) and Spider Bomb (226012), but their
+-- script drops anyone who is not a Tinker, so they cannot be used as they are. Copies with scripts of their own:
+-- - 289203 copies the CoA factory, script npc_wcme_spider_bomb_factory: stays where it was built, and while it
+--   stands the builder holds 289201, which brings the damaging hits to the patch (proc rule below: melee, ranged and
+--   magic spell damage done, on a hit, once every 4 sec; the patch also skips spells cast by spells and the bombs'
+--   own explosions, as 289201's data lets it proc from procs).
+-- - 289204 copies the CoA Spider Bomb, script npc_wcme_spider_bomb: runs to the target and detonates like the CoA
+--   bombs, the CoA Spider Bomb Explosion (801982) on every enemy within its radius, for the explosion tooltip's own
+--   amount (base + 28.85% of attack power + 15% of Fire spell power, the player's), as the core's own scaling of that
+--   spell is for Tinkers only.
 -- The copies are made by selecting the CoA rows into a temporary table, so every column carries over whatever this
 -- database's creature_template holds. 289203 and 289204 were free (read from the live data, 25 Nov 2026).
 DELETE FROM `creature_template` WHERE `entry` IN (289203, 289204);
