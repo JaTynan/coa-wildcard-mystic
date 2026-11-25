@@ -13,8 +13,8 @@
 -- script drops anyone who is not a Tinker, so they cannot be used as they are. Copies with scripts of their own:
 -- - 289203 copies the CoA factory, script npc_wcme_spider_bomb_factory: stays where it was built, and while it
 --   stands the builder holds 289201, which brings the damaging hits to the patch (proc rule below: melee, ranged and
---   magic spell damage done, on a hit, once every 4 sec; the patch also skips spells cast by spells and the bombs'
---   own explosions, as 289201's data lets it proc from procs).
+--   magic spell damage done, on a hit, once every 4 sec; abilities whose damage comes from a spell they trigger
+--   count too, as 289201's data lets it proc from procs; the bombs' own explosions do not).
 -- - 289204 copies the CoA Spider Bomb, script npc_wcme_spider_bomb: runs to the target and detonates like the CoA
 --   bombs, the CoA Spider Bomb Explosion (801982) on every enemy within its radius, for the explosion tooltip's own
 --   amount (base + 28.85% of attack power + 15% of Fire spell power, the player's), as the core's own scaling of that
@@ -41,7 +41,7 @@ DROP TEMPORARY TABLE `wcme_tmp_creature_template_model`;
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_proc', 289201);
 DELETE FROM `spell_proc` WHERE `SpellId` IN (289201);
 INSERT INTO `spell_proc` (`SpellId`, `SchoolMask`, `SpellFamilyName`, `SpellFamilyMask0`, `SpellFamilyMask1`, `SpellFamilyMask2`, `ProcFlags`, `SpellTypeMask`, `SpellPhaseMask`, `HitMask`, `AttributesMask`, `DisableEffectsMask`, `ProcsPerMinute`, `Chance`, `Cooldown`, `Charges`) VALUES
-(289201, 0, 0, 0, 0, 0, 65808, 1, 2, 0, 0, 0, 0, 100, 4000, 0);
+(289201, 0, 0, 0, 0, 0, 65808, 1, 2, 0, 2, 0, 0, 100, 4000, 0);
 
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (289201, 'spell_wcme_spider_bomb_factory_bombs');

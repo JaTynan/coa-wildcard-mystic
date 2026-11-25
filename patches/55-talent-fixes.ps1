@@ -1655,6 +1655,7 @@ struct npc_wcme_spider_bomb_factory : public ScriptedAI
         if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() != IDLE_MOTION_TYPE)
         {
             me->GetMotionMaster()->Clear(false);
+            me->StopMoving(); // the follow has already launched a short walk; stop it where it is
             me->GetMotionMaster()->MoveIdle();
         }
     }
@@ -1701,7 +1702,7 @@ struct npc_wcme_spider_bomb : public ScriptedAI
         enemies.remove_if([player](Unit* enemy) { return !enemy->IsAlive() || !player->IsValidAttackTarget(enemy); });
         if (explosion->MaxAffectedTargets && enemies.size() > explosion->MaxAffectedTargets)
             enemies.resize(explosion->MaxAffectedTargets);
-        int32 const amount = explosion->Effects[EFFECT_0].BasePoints + // the spell adds its 1-point roll itself
+        int32 const amount = explosion->Effects[EFFECT_0].CalcValue() + // its base with the roll: 29
             int32(player->GetTotalAttackPowerValue(BASE_ATTACK) * 0.2885f) +
             int32(std::max(0, player->SpellBaseDamageBonusDone(SPELL_SCHOOL_MASK_FIRE)) * 0.15f);
         for (Unit* enemy : enemies)
@@ -1735,8 +1736,8 @@ struct npc_wcme_spider_bomb : public ScriptedAI
 };
 
 // 289201 is on while the factory stands; its proc rule (154) brings each damaging spell or ability here, at most
-// once every 4 sec. Spells cast by a spell (and the bombs' own explosions, cast in the player's name) do not count:
-// 289201 is allowed to proc from procs in its data. Bomb count: the tooltip's, 289201's second value less one (1 in
+// once every 4 sec. Abilities whose damage arrives as a spell they trigger count too ("damaging spells and
+// abilities"); the bombs' own explosions, cast in the player's name, do not. Bomb count: the tooltip's, 289201's second value less one (1 in
 // our data; Ascension's text says "Spider Bombs").
 class spell_wcme_spider_bomb_factory_bombs : public AuraScript
 {
@@ -1748,10 +1749,8 @@ class spell_wcme_spider_bomb_factory_bombs : public AuraScript
         Unit* target = eventInfo.GetActionTarget();
         DamageInfo* damage = eventInfo.GetDamageInfo();
         SpellInfo const* spell = eventInfo.GetSpellInfo();
-        Spell const* cast = eventInfo.GetProcSpell();
         return owner && owner->IsPlayer() && eventInfo.GetActor() == owner && target && target != owner &&
-            damage && damage->GetDamage() && owner->IsValidAttackTarget(target) && spell && spell->Id != 801982 &&
-            (!cast || !cast->IsTriggered());
+            damage && damage->GetDamage() && owner->IsValidAttackTarget(target) && spell && spell->Id != 801982;
     }
 
     void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
