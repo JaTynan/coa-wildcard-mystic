@@ -1,4 +1,4 @@
--- Talent companions, batch 6 (the scan's "stock-data" list), part 2: three talents whose companion also needs code
+-- Talent companions, batch 6 (the scan's "stock-data" list), part 2: four talents whose companion also needs code
 -- (patch 55, its "part 7" section). Ship it with the build that has that section, not before: without the script,
 -- the Fiery Payback passive learned in play would start switched on at full health and count twice below 35% until
 -- the next login. The binding names a script an older server does not have (it logs an error and carries on). Safe to run again (000-reset removes WCME: links and spell_wcme_ bindings). Each read by hand on
@@ -21,6 +21,11 @@
 --     cooldown. Their data asks for the "below 35% health" state; the core switches them on and off with it, but a
 --     linked aura would start switched on at full health, so the patch starts it switched off when the state is
 --     missing, as the core does for a learned spell.
+-- 4. Improved Blood Presence, rank 5 (51375), the heal half of its capstone (51376: +3 to the heal share of 63611;
+--   the server's SpellAffect.dbc names 63611 as its target). The damage half (51377) is in 151. The stock script also
+--   casts 63611 in Frost and Unholy Presence with the talent (2%), and the +3 would reach it there (5%). James, 25 Nov
+--   2026: hold it at 2%. The patch takes the +3 back out of 63611 whenever no Blood Presence is on, so the link
+--   lives here, with the script, rather than in 151.
 INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comment`) VALUES
 (13754, 13869, 2, 'WCME: Improved Kick rank 1 holds its interrupt energy amount'),
 (13867, 13870, 2, 'WCME: Improved Kick rank 2 holds its interrupt energy amount'),
@@ -30,8 +35,10 @@ INSERT INTO `spell_linked_spell` (`spell_trigger`, `spell_effect`, `type`, `comm
 (64353, 64350, 2, 'WCME: Fiery Payback rank 1 applies its disarm chance'),
 (64353, 44440, 2, 'WCME: Fiery Payback rank 1 applies its below-35% health passive'),
 (64357, 64349, 2, 'WCME: Fiery Payback rank 2 applies its disarm chance'),
-(64357, 44441, 2, 'WCME: Fiery Payback rank 2 applies its below-35% health passive');
+(64357, 44441, 2, 'WCME: Fiery Payback rank 2 applies its below-35% health passive'),
+(51375, 51376, 2, 'WCME: Improved Blood Presence rank 5 applies its capstone healing companion');
 
 INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (44440, 'spell_wcme_health_state_passive'),
-(44441, 'spell_wcme_health_state_passive');
+(44441, 'spell_wcme_health_state_passive'),
+(63611, 'spell_wcme_blood_presence_capstone_scope');
