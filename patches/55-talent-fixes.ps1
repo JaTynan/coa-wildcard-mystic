@@ -1359,3 +1359,235 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_improved_kick_energy();`n    new wcme_fanaticism_hooks();`n    RegisterSpellScript(spell_wcme_health_state_passive);`n    RegisterSpellScript(spell_wcme_blood_presence_capstone_scope);`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Talent companion scripts, part 8 (Single-Minded Fury)
+Write-Host "Patch: talent companion scripts part 8 (Single-Minded Fury)"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# The bindings and the proc rule are in sql/enchants/153-single-minded-fury.sql.
+$class = @'
+#include "Item.h"
+#include <cctype>
+
+// Single-Minded Fury (988256, the Ascension talent; the core scripts only its own copy, 1988256): while a one-handed
+// weapon that is not a dagger is in each hand, Mortal Strike, Overpower and Slam deal 5% less damage (988258's
+// amount) and are followed by an off-hand attack. Ascension made an off-hand twin for each of them and for each
+// elemental version, named "<ability> (Off-hand)"; the follow-up casts the twin of the ability that hit.
+static std::unordered_map<std::string, uint32> const& WcmeOffHandTwins()
+{
+    static std::unordered_map<std::string, uint32> const twins = []
+    {
+        std::unordered_map<std::string, uint32> map;
+        std::unordered_set<uint32> alreadyTriggered;
+        std::string const suffix = " (off-hand)";
+        for (uint32 id = 0; id < sSpellMgr->GetSpellInfoStoreSize(); ++id)
+        {
+            SpellInfo const* info = sSpellMgr->GetSpellInfo(id);
+            if (!info || info->SpellFamilyName != SPELLFAMILY_WARRIOR || !info->SpellName[0])
+                continue;
+            for (SpellEffectInfo const& effect : info->Effects)
+                if (effect.Effect == SPELL_EFFECT_TRIGGER_SPELL && effect.TriggerSpell)
+                    alreadyTriggered.insert(effect.TriggerSpell);
+            std::string name = info->SpellName[0];
+            if (name.size() <= suffix.size())
+                continue;
+            std::string tail = name.substr(name.size() - suffix.size());
+            std::transform(tail.begin(), tail.end(), tail.begin(), [](unsigned char c) { return std::tolower(c); });
+            if (tail != suffix)
+                continue;
+            map.try_emplace(name.substr(0, name.size() - suffix.size()), id); // lowest id wins: the Ascension twin
+        }
+        // Abilities that strike with both weapons by themselves (Hateful Strike, Loa's Assault, Overwhelm) trigger
+        // their twin through their own data; they are not Single-Minded Fury abilities and get no second twin.
+        std::erase_if(map, [&](auto const& entry) { return alreadyTriggered.contains(entry.second); });
+        return map;
+    }();
+    return twins;
+}
+
+static uint32 WcmeSingleMindedFuryTwin(SpellInfo const* spell)
+{
+    if (!spell || spell->SpellFamilyName != SPELLFAMILY_WARRIOR || !(spell->SpellFamilyFlags[0] & 0x2200004) ||
+        !spell->SpellName[0])
+        return 0;
+    auto const twin = WcmeOffHandTwins().find(spell->SpellName[0]);
+    return twin != WcmeOffHandTwins().end() ? twin->second : 0;
+}
+
+static bool WcmeSingleMindedFuryWeapons(Player const* player)
+{
+    for (WeaponAttackType attack : { BASE_ATTACK, OFF_ATTACK })
+    {
+        Item const* weapon = player->GetWeaponForAttack(attack, true);
+        if (!weapon)
+            return false;
+        ItemTemplate const* proto = weapon->GetTemplate();
+        if (proto->InventoryType == INVTYPE_2HWEAPON || proto->SubClass == ITEM_SUBCLASS_WEAPON_DAGGER)
+            return false;
+    }
+    return true;
+}
+
+class spell_wcme_single_minded_fury : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_single_minded_fury);
+
+    bool Validate(SpellInfo const* /*spellInfo*/) override
+    {
+        WcmeOffHandTwins(); // built once at startup, not at the first hit
+        return ValidateSpellInfo({ 988258 });
+    }
+
+    void HandlePeriodic(AuraEffect const* aurEff)
+    {
+        Player* player = GetTarget()->ToPlayer();
+        if (!player)
+            return;
+        bool const qualifies = WcmeSingleMindedFuryWeapons(player);
+        bool const active = player->HasAura(988258);
+        if (qualifies && !active)
+            player->CastSpell(player, 988258, true, nullptr, aurEff);
+        else if (!qualifies && active)
+            player->RemoveAurasDueToSpell(988258);
+    }
+
+    void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        GetTarget()->RemoveAurasDueToSpell(988258);
+    }
+
+    void Register() override
+    {
+        OnEffectPeriodic += AuraEffectPeriodicFn(spell_wcme_single_minded_fury::HandlePeriodic, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_single_minded_fury::HandleRemove, EFFECT_0, SPELL_AURA_PERIODIC_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// 988258 is on while the weapons qualify; its proc rule (153) brings every warrior hit with the talent's class
+// flags here, and only an ability with an off-hand twin is followed up. The twins carry no twin of their own.
+class spell_wcme_single_minded_fury_follow_up : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_single_minded_fury_follow_up);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        Unit* owner = GetTarget();
+        Unit* target = eventInfo.GetActionTarget();
+        DamageInfo* damage = eventInfo.GetDamageInfo();
+        Player* player = owner ? owner->ToPlayer() : nullptr;
+        return player && eventInfo.GetActor() == owner && target && target != owner && damage && damage->GetDamage() &&
+            WcmeSingleMindedFuryTwin(eventInfo.GetSpellInfo()) && WcmeSingleMindedFuryWeapons(player);
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        if (uint32 const twin = WcmeSingleMindedFuryTwin(eventInfo.GetSpellInfo()))
+            GetTarget()->CastSpell(eventInfo.GetActionTarget(), twin, true, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_single_minded_fury_follow_up::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_single_minded_fury_follow_up::HandleProc, EFFECT_0, SPELL_AURA_ANY);
+    }
+};
+
+class wcme_single_minded_fury_hooks : public UnitScript
+{
+public:
+    wcme_single_minded_fury_hooks() : UnitScript("wcme_single_minded_fury_hooks", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN }) { }
+
+    void ModifySpellDamageTaken(Unit* /*target*/, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
+    {
+        if (damage <= 0 || !attacker || !spellInfo || spellInfo->SpellFamilyName != SPELLFAMILY_WARRIOR)
+            return;
+        AuraEffect const* penalty = attacker->GetAuraEffect(988258, EFFECT_0);
+        if (!penalty || !WcmeSingleMindedFuryTwin(spellInfo))
+            return;
+        int32 const pct = std::clamp(penalty->GetAmount(), -100, 0);
+        damage = int32(int64(damage) * (100 + pct) / 100);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_single_minded_fury);`n    RegisterSpellScript(spell_wcme_single_minded_fury_follow_up);`n    new wcme_single_minded_fury_hooks();`n")
+Set-Content $file $text -NoNewline
+}
+
+# ---- Talent companion scripts, part 9 (Righteous Fury's Fierce Block)
+Write-Host "Patch: Righteous Fury raises the chance to block Fierce Blow (Unit.cpp hook and its rule)"
+& {
+# The core has no script hook for a spell's block chance, so Unit::isSpellBlocked asks a function pointer, set by
+# the rule below at start-up; a plain pointer keeps the game library from depending on the coa one. Null: no change.
+$file = 'core/src/server/game/Entities/Unit/Unit.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$head = "bool Unit::isSpellBlocked(Unit* victim, SpellInfo const* spellProto, WeaponAttackType attackType)`n{`n"
+$skill = "        else`n            blockChance += (weaponSkill - victimMaxSkill) * 0.04f;`n"
+foreach ($anchor in @($head, $skill)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed: Unit::isSpellBlocked was not found as expected in $file" }
+}
+$text = $text.Replace($head, "float (*WcmeSpellBlockChanceBonus)(Unit const*, SpellInfo const*) = nullptr; // set by patch 55 (Fierce Block)`n`n" + $head)
+$text = $text.Replace($skill, $skill + "`n        if (WcmeSpellBlockChanceBonus)`n            blockChance += WcmeSpellBlockChanceBonus(victim, spellProto);`n")
+Set-Content $file $text -NoNewline
+}
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (-not $text.Contains($anchor)) { throw "Core changed (or an earlier patch did not run): AscensionAdventurerCache.cpp has no: $($anchor.Split("`n")[0])" }
+}
+# The link that gives Righteous Fury its companion is in sql/enchants/153-single-minded-fury.sql.
+$class = @'
+// Righteous Fury: "your chance to block Fierce Blows increased by 60%" (60 points, added to the block chance). The
+// amount is its companion's (986051, in hundredths of a percent: 6000), linked to Righteous Fury. Fierce Blow is the
+// CoA strike creatures use on their target (975011), plus the boss strikes whose text says they count as a Fierce
+// Blow (Sartura's cuts, the Fierce Draconic Strikes and the rest, listed from our spell data on 25 Nov 2026). Only
+// with something to block with: a player needs the block skill and an unbroken shield.
+extern float (*WcmeSpellBlockChanceBonus)(Unit const*, SpellInfo const*); // defined in Unit.cpp (this patch)
+
+static bool WcmeIsFierceBlow(uint32 spellId)
+{
+    static std::unordered_set<uint32> const fierceBlows = { 975011,
+        2108314, 2111425, 2116056, 2116116, 2116118, 2116120, 2116122, 2116124, 2118250, 2118251, 2119102, 2119402,
+        2119502, 2119602, 2119702, 2123500, 2123902, 2124092, 2124093, 2125490, 2125491, 2125492, 2130936, 2131355,
+        2132021, 2141704, 2145508, 2145807, 2147154, 2148902, 2149952, 2152161, 2152162, 2152165, 2154026, 2154402,
+        2157500, 2157902, 2158092, 2158093, 2159002, 2165014, 2180275 };
+    return fierceBlows.contains(spellId);
+}
+
+static bool WcmeCanBlockWithShield(Unit const* victim)
+{
+    Player const* player = victim->ToPlayer();
+    if (!player)
+        return victim->GetUnitBlockChance() > 0.0f;
+    if (!player->CanBlock())
+        return false;
+    Item const* shield = player->GetUseableItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+    return shield && !shield->IsBroken() && shield->GetTemplate()->Block;
+}
+
+static float WcmeFierceBlockBonus(Unit const* victim, SpellInfo const* spell)
+{
+    if (!victim || !spell || !WcmeIsFierceBlow(spell->Id))
+        return 0.0f;
+    AuraEffect const* fierceBlock = victim->GetAuraEffect(986051, EFFECT_0);
+    if (!fierceBlock || fierceBlock->GetAmount() <= 0 || !WcmeCanBlockWithShield(victim))
+        return 0.0f;
+    return fierceBlock->GetAmount() / 100.0f;
+}
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    WcmeSpellBlockChanceBonus = &WcmeFierceBlockBonus;`n")
+Set-Content $file $text -NoNewline
+}
