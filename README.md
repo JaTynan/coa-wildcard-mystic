@@ -69,12 +69,21 @@ installed on Tuesday nights. Patch night:
 2. downloads the patched build of that release, if there is one, and the current
    `server-settings` from this repository (edit them here on GitHub and they apply on the night);
 3. counts down in game chat for 30 minutes (30, 15, 10, 5 and 1 minute warnings), stops the server, installs the build if it is new,
-   applies the settings, starts the server and checks it came up on the right build;
+   applies the settings and the SQL fixes, runs the gameplay tests (scheduled run only, see below), starts the server
+   and checks it came up on the right build;
 4. if the patched server does not come up, puts the official one back and starts that.
 
 Results go to `patch-night\patch-night.log` and `patch-night\last-run.txt`. The manager's own
 **Update** button stays manual: click it any time before patch night and the new release is
 picked up. `Run-PatchNight-Now.cmd` runs it straight away, with the window open.
+
+**Gameplay tests (proposed 25 November 2026):** on the scheduled run, before the live world starts,
+`patch-night\Run-GameplayTests.ps1` runs the scenarios in `tests/gameplay/scenarios` in a separate test world server,
+with the CoA core's own test harness: the new build, tonight's SQL, and throwaway copies of the databases
+(`coa_test_*`, dropped afterwards), with bots off. It stops itself after 40 minutes or at 04:50, whichever is first,
+so the live start is delayed by that much at most (no players are expected between 3:30 and 5:30 am). It never stops
+the start: results are only written down, as lines in `patch-night.log`, in `gameplay-tests\latest.txt` and in
+`gameplay-tests\results\<date_time>` (the newest 14 kept). A by-hand run and `Start-Server.cmd` skip it.
 
 **SQUID's bots on Wildcard:** the manager switches both bot systems off on Wildcard whenever its
 own Start button is used. `server-settings` turns SQUID's bots on, and `patch-night\Start-Server.cmd`

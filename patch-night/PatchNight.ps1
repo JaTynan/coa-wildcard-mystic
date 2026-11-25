@@ -691,15 +691,43 @@ function PublishFriendsSite {
     catch { Log "Publishing the friends' download site failed: $_" 'WARN' }
 }
 
+function RunGameplayTests {
+    # Scheduled runs only, once per run: this repository's gameplay scenarios (tests\gameplay\scenarios) in a
+    # throwaway test world server, against the build and the SQL just applied, before the live world starts. No
+    # players are expected then (James, 25 Nov: none from 3:30 to 5:30 am). Run-GameplayTests.ps1 stops itself at
+    # 40 minutes or 04:50; this never blocks the start, and the results are only written down.
+    if (-not $Unattended -or $StartOnly -or $RebuildWildcardBots -or $script:gameplayTested) { return }
+    $script:gameplayTested = $true
+    $runner = Join-Path $here 'Run-GameplayTests.ps1'
+    $repoRoot = Get-ChildItem (Join-Path $work 'repo') -Directory -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not (Test-Path $runner) -or -not $repoRoot) { return }
+    $scenarios = Join-Path $repoRoot.FullName 'tests\gameplay\scenarios'
+    if (-not (Test-Path $scenarios)) { return }
+    Log 'Running the gameplay tests before the world starts (40 minutes at most)...'
+    try {
+        $result = Invoke-Quiet 'powershell.exe' @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$runner`"",
+                                                  '-Server', "`"$Server`"", '-Scenarios', "`"$scenarios`"") '' 50
+        foreach ($line in ($result.Text -split "`r?`n")) { if ($line.Trim()) { Log "  $($line.Trim())" } }
+        if ($result.Code -eq -1) { Log 'The gameplay tests did not stop by themselves; stopping them now.' 'WARN' }
+    } catch { Log "The gameplay tests could not run: $_" 'WARN' }
+    # Whatever happened, no test world server may still run when the live one starts (WorldRunning would see it).
+    Get-CimInstance Win32_Process -Filter "Name = 'powershell.exe' OR Name = 'python.exe' OR Name = 'worldserver.exe'" |
+        Where-Object { $_.CommandLine -and ($_.CommandLine.Contains('Run-GameplayTests.ps1') -or
+                       $_.CommandLine.Contains('coa-gameplay-test') -or $_.CommandLine.Contains('coa-gameplay-batch-')) } |
+        ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue; Log "Stopped leftover test process $($_.Name) $($_.ProcessId)." 'WARN' }
+}
+
 function StartAndCheck([string] $expected) {
     $started = Get-Date
     Log 'Starting the server (this waits until the world is up, up to 25 minutes)...'
     # Database first, so the Wildcard bot names can be checked before the world starts and creates bots.
     $db = Launcher 'start-mysql' '' 10
     if (-not (OnActiveRealm)) { return $false }
-    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems; RepriceAuctionsWhenPricesChange; EnsureCharacterSpellIndexes; AllowCrossFactionFriends }
+    if ($db.Code) { Log "start-mysql reported a problem: $($db.Text)" 'WARN' } else { EnsureWildcardBotNames; ApplyEnchantFixes; PrepareOllamaChat; SkipUnusedAuctionItems; RepriceAuctionsWhenPricesChange; EnsureCharacterSpellIndexes; AllowCrossFactionFriends; RunGameplayTests }
     # The Report Bug window's spool folder (CoABugReport.SpoolDirectory); the world server only uses it if it exists.
     New-Item -ItemType Directory -Force -Path (Join-Path $Server 'BugReports') | Out-Null
+    # From here: the gameplay tests above can take minutes, and the checks below time the world's own start.
+    $started = Get-Date
     $result = Launcher 'start-all' '' 60
     if ($result.Code) { Log "start-all reported a problem: $($result.Text)" 'WARN'; return $false }
     RestoreRealmAddress
