@@ -449,7 +449,7 @@ modules\mod_ahbot.conf | AuctionHouseBot.DisabledCustomItemIDs = 22459-22460,230
 # evening the pass runs every 30 seconds: if the beat moves to 30 seconds the bot manager is the cause, if it stays
 # at 20 it is not. Side effect: bots come online and swap in more slowly after you log in. To end the experiment
 # set this back to 20; deleting the line leaves 30 in the config file on the server.
-modules\playerbots.conf | AiPlayerbot.RandomBotUpdateInterval = 30
+modules\playerbots.conf | AiPlayerbot.RandomBotUpdateInterval = 20
 # E1 result (25 Nov evening, value confirmed live): the 20-second beat weakened and part of it moved to 30 seconds,
 # but the long ticks did not fall (2-second-plus freezes in 26% of player-online records, 15% the evening before).
 # The bot manager's timing is not the main cause. Left at 30 for now so the next experiment differs from the 25 Nov
@@ -461,7 +461,30 @@ modules\playerbots.conf | AiPlayerbot.RandomBotUpdateInterval = 30
 # E3 result (26 Nov evening, confirmed live): the 10- and 20-second CPU beats went away (CoA Live caused them) and
 # the bot manager's 30-second beat stood out, but the 2-second-plus freezes stayed (18% of player-online records, 15%
 # on 24 Nov, worst 4.5 s). CoA Live is not the cause of the freezes. Held off for one more evening during E4.
-modules\playerbots.conf | AiPlayerbot.CoaLive.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaLive.Enable = 1
+
+# Lag experiment E5 (27 Nov, James: "Yes"). James ran 1,250 bots without these freezes before the 19 Nov update;
+# the console history agrees (player-online tick median 326 ms and 1% of 2 s+ before, 1,020 ms and 10% after, with
+# fewer bots). That update moved SQUID's bots from 2.9.4 to 3.0, which added 287 settings, many of them new
+# "living world" systems on by default that run only while a real player is online. Over 10 suspects, so halves
+# (James: binary search above 10). First half: the CoaWorld systems below, off for ONE evening. Bots back to 750,
+# CoA Live back on and the manager back to every 20 s (E1, E3 and E4 are over). If the freezes go, the cause is in
+# this half (split it next); if not, the other half (CoaEconomy, CoaSoul and smaller 3.0 features) is next.
+# Players see no invasions, gathering rushes, simulated dungeons, world PvP events or bot guild life that evening.
+# To end it: set each back to 1 (deleting a line leaves 0 in the config file on the server).
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Density.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Invasions.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.ResourceRush.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.DungeonSim.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.WorldPvp.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.CapitalRaid.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Guilds.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Travel.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Events.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Leveling.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Recovery.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.BotOnlyBgPace.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.StateFile.Enable = 0
 # Measuring only. The world server records how long one pass of its game loop took, once a minute, every time (it
 # used to sample every 5 minutes and only above 100 ms), with the time of day, in Logs\Timing.log. That file is
 # appended to, not replaced, so it keeps the history across restarts (about 100 KB a day). The lines still go to
@@ -586,8 +609,8 @@ worldserver.conf | LoginDatabase.WorkerThreads = 2
 # 18% of player-online records on 24, 25 and 26 Nov). The freezes come in bursts while the player is active, which
 # fits too many bots awake around the player (H5). If they fall clearly below 15%, bot load is the lever; if not,
 # it is not. The interval (30) and CoA Live (off) stay as on 26 Nov so this is the only difference. To end it: 750.
-modules\playerbots.conf | AiPlayerbot.MinRandomBots = 500
-modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 500
+modules\playerbots.conf | AiPlayerbot.MinRandomBots = 750
+modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 750
 # Capitals felt empty: bots pick a city visit three times as often (bank, auction house, trainers; 10-30 minutes).
 modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.GoCity = 30
 # Bot levels near the real players: 70% of bots roll within 5 levels of a random online player when they are
