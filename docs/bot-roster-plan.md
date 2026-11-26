@@ -1,7 +1,11 @@
 # Bot roster plan (long-term)
 
-Status: direction agreed with James on 27 Nov 2026. Nothing here is built yet. It starts after the lag spikes are
-fixed, so the two effects can be told apart.
+Status: one of the project's major goals, agreed with James on 27 Nov 2026. It is a large piece of work, not a quick
+task, and nothing here is built yet.
+
+Priority (James, 27 Nov): solving the lag comes first. The other uplift work already planned (pipeline, testing and
+validation, then the enchant and talent fixes) also comes before this. Starting after the lag fix also means the
+two effects can be told apart.
 
 ## The goal
 
@@ -31,7 +35,7 @@ The bots' expensive work is not standing around. It is these operations:
 
 A fixed roster with set builds and gear removes most of the rebuilds and logins.
 
-## Order of work
+## Order of work, once its turn comes
 
 1. Find and fix the lag spikes (experiments E1 to E5 and on; see `server-settings/server-settings.txt`). The likely
    fix is loading the map data for every teleport and quest spot once at start-up, off the world thread.
