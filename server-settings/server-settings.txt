@@ -458,6 +458,9 @@ modules\playerbots.conf | AiPlayerbot.RandomBotUpdateInterval = 30
 # on the world thread; the next suspect for the beat. Off for ONE evening: if the long ticks fall, CoA Live is the
 # cause; if not, it is not. Side effect: no bot chatter in channels that evening. To end the experiment set this
 # back to 1; deleting the line leaves 0 in the config file on the server.
+# E3 result (26 Nov evening, confirmed live): the 10- and 20-second CPU beats went away (CoA Live caused them) and
+# the bot manager's 30-second beat stood out, but the 2-second-plus freezes stayed (18% of player-online records, 15%
+# on 24 Nov, worst 4.5 s). CoA Live is not the cause of the freezes. Held off for one more evening during E4.
 modules\playerbots.conf | AiPlayerbot.CoaLive.Enable = 0
 # Measuring only. The world server records how long one pass of its game loop took, once a minute, every time (it
 # used to sample every 5 minutes and only above 100 ms), with the time of day, in Logs\Timing.log. That file is
@@ -578,8 +581,13 @@ worldserver.conf | CharacterDatabase.SynchThreads = 2
 worldserver.conf | LoginDatabase.WorkerThreads = 2
 # 1,000 bots (9 Nov, was 1,250): lag spikes with 3 players on (95% under 74 ms, 99% 147 ms, worst 1.3 s).
 # 750 bots (21 Nov, James, while the spikes are worked through): 2 players on, median 36 ms but worst ticks of 2-5 s.
-modules\playerbots.conf | AiPlayerbot.MinRandomBots = 750
-modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 750
+# Lag experiment E4 (27 Nov; James away, mandate for one-line reversible lag settings): 500 bots for ONE evening.
+# E1 and E3 cleared the bot manager's timing and CoA Live of the long ticks (2-second-plus freezes in 15%, 27% and
+# 18% of player-online records on 24, 25 and 26 Nov). The freezes come in bursts while the player is active, which
+# fits too many bots awake around the player (H5). If they fall clearly below 15%, bot load is the lever; if not,
+# it is not. The interval (30) and CoA Live (off) stay as on 26 Nov so this is the only difference. To end it: 750.
+modules\playerbots.conf | AiPlayerbot.MinRandomBots = 500
+modules\playerbots.conf | AiPlayerbot.MaxRandomBots = 500
 # Capitals felt empty: bots pick a city visit three times as often (bank, auction house, trainers; 10-30 minutes).
 modules\playerbots.conf | AiPlayerbot.RpgStatusProbWeight.GoCity = 30
 # Bot levels near the real players: 70% of bots roll within 5 levels of a random online player when they are
