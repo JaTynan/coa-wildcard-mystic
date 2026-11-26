@@ -482,6 +482,12 @@ modules\playerbots.conf | AiPlayerbot.CoaWorld.Guilds.Enable = 0
 modules\playerbots.conf | AiPlayerbot.CoaWorld.Travel.Enable = 0
 modules\playerbots.conf | AiPlayerbot.CoaWorld.Events.Enable = 0
 modules\playerbots.conf | AiPlayerbot.CoaWorld.Leveling.Enable = 0
+# Same half, added 27 Nov after reading SQUID 3.0's code: Leveling.Enable turns off only the teleport filter;
+# the area guard (CoaWorldAreaTooHigh, called while bots pick quest and travel spots) has its own switch. Both look
+# up the zone and area of every candidate spot on the world thread, which can load map data from disk the first
+# time each spot is seen after a restart (SQUID's own comment on the same lookup in RandomTeleport: up to 128 ms a
+# call). To end it: 1.
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Leveling.AreaGuard = 0
 modules\playerbots.conf | AiPlayerbot.CoaWorld.Recovery.Enable = 0
 modules\playerbots.conf | AiPlayerbot.CoaWorld.BotOnlyBgPace.Enable = 0
 modules\playerbots.conf | AiPlayerbot.CoaWorld.StateFile.Enable = 0
