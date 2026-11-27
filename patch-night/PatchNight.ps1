@@ -150,11 +150,27 @@ function StopServer {
     Log 'Server stopped.'
 }
 
+function DumpBotPerformance {
+    # Lag work (James, 27 Nov): on a night with SQUID's performance monitor on (AiPlayerbot.PerfMonEnabled = 1 in
+    # server-settings.txt), ask the world for the monitor's table just before it stops. The table is the slowest and
+    # total time of every bot action, trigger, value and bot-manager job since the start, written by the server to
+    # its log (the playerbots logger). Read-only; with the monitor off this does nothing. Never stops the restart.
+    try {
+        $conf = Join-Path $configs 'modules\playerbots.conf'
+        if (-not (Test-Path $conf)) { return }
+        if ((Get-Content $conf -Raw) -notmatch '(?m)^\s*AiPlayerbot\.PerfMonEnabled\s*=\s*1\b') { return }
+        Ra 'playerbots pmon' | Out-Null
+        Start-Sleep -Seconds 5
+        Log 'Bot performance table written to the server log (SQUID performance monitor, playerbots pmon).'
+    } catch { Log "Could not ask for the bot performance table: $_" 'WARN' }
+}
+
 function StopWorld {
     # Staged patch night (22 Nov): only the world server restarts. MySQL and the auth server keep running, so the
     # database keeps its cache warm and does not shut down and start again (server-settings never change their
     # configs). The same console command the manager's Stop All sends; if the world does not go, Stop All does it.
     if (-not (WorldRunning)) { Log 'Server is already stopped.'; return }
+    DumpBotPerformance
     Ra 'server shutdown 1s 0' | Out-Null
     $deadline = (Get-Date).AddMinutes(2)
     while ((WorldRunning) -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 2 }
