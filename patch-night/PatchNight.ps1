@@ -151,17 +151,21 @@ function StopServer {
 }
 
 function DumpBotPerformance {
-    # Lag work (James, 27 Nov): on a night with SQUID's performance monitor on (AiPlayerbot.PerfMonEnabled = 1 in
-    # server-settings.txt), ask the world for the monitor's table just before it stops. The table is the slowest and
+    # Lag work (James, 27 Nov): on a night with SQUID's performance monitor on (AiPlayerbot.PerfMonEnabled = 1, set in
+    # server-settings.txt and written into the live playerbots.conf at the previous start, which is what is read
+    # here), ask the world for the monitor's table just before it stops. The table is the slowest and
     # total time of every bot action, trigger, value and bot-manager job since the start, written by the server to
     # its log (the playerbots logger). Read-only; with the monitor off this does nothing. Never stops the restart.
     try {
         $conf = Join-Path $configs 'modules\playerbots.conf'
         if (-not (Test-Path $conf)) { return }
         if ((Get-Content $conf -Raw) -notmatch '(?m)^\s*AiPlayerbot\.PerfMonEnabled\s*=\s*1\b') { return }
-        Ra 'playerbots pmon' | Out-Null
+        # The console runs the command on the world thread and answers once it has run, so the table is in the log by
+        # then; 2 minutes at most, then the stop goes on.
+        $result = Launcher 'ra-once' 'playerbots pmon' 2
+        if ($result.Code) { Log "The bot performance table was not confirmed: $($result.Text)" 'WARN'; return }
         Start-Sleep -Seconds 5
-        Log 'Bot performance table written to the server log (SQUID performance monitor, playerbots pmon).'
+        Log 'Asked the world for the bot performance table (SQUID performance monitor, playerbots pmon); it is in the server log.'
     } catch { Log "Could not ask for the bot performance table: $_" 'WARN' }
 }
 
