@@ -463,6 +463,14 @@ modules\playerbots.conf | AiPlayerbot.RandomBotUpdateInterval = 20
 # on 24 Nov, worst 4.5 s). CoA Live is not the cause of the freezes. Held off for one more evening during E4.
 modules\playerbots.conf | AiPlayerbot.CoaLive.Enable = 1
 
+# Monitor night (29 Nov, James: "Yes"): E5 is over and its systems are back on (the lines below), so the table shows
+# the slow bot operations in the normal state. SQUID's performance monitor on for ONE day, its table logged to its own
+# file (Core\Logs\Playerbots.log); patch night asks for the table just before the 3:30 am stop (PR #286). The
+# monitor adds a little load of its own, so no other experiment runs that day. To end it: PerfMonEnabled = 0 (the
+# logger lines can stay; with the monitor off nothing writes the table).
+modules\playerbots.conf | AiPlayerbot.PerfMonEnabled = 1
+worldserver.conf | Appender.PlayerbotsPerf=2,4,0,Playerbots.log,w
+worldserver.conf | Logger.playerbots=4,PlayerbotsPerf
 # Lag experiment E5 (27 Nov, James: "Yes"). James ran 1,250 bots without these freezes before the 19 Nov update;
 # the console history agrees (player-online tick median 326 ms and 1% of 2 s+ before, 1,020 ms and 10% after, with
 # fewer bots). That update moved SQUID's bots from 2.9.4 to 3.0, which added 287 settings, many of them new
@@ -472,25 +480,25 @@ modules\playerbots.conf | AiPlayerbot.CoaLive.Enable = 1
 # this half (split it next); if not, the other half (CoaEconomy, CoaSoul and smaller 3.0 features) is next.
 # Players see no invasions, gathering rushes, simulated dungeons, world PvP events or bot guild life that evening.
 # To end it: set each back to 1 (deleting a line leaves 0 in the config file on the server).
-modules\playerbots.conf | AiPlayerbot.CoaWorld.Density.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.Invasions.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.ResourceRush.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.DungeonSim.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.WorldPvp.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.CapitalRaid.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.Guilds.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.Travel.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.Events.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.Leveling.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Density.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Invasions.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.ResourceRush.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.DungeonSim.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.WorldPvp.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.CapitalRaid.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Guilds.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Travel.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Events.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Leveling.Enable = 1
 # Same half, added 27 Nov after reading SQUID 3.0's code: Leveling.Enable turns off only the teleport filter;
 # the area guard (CoaWorldAreaTooHigh, called while bots pick quest and travel spots) has its own switch. Both look
 # up the zone and area of every candidate spot on the world thread, which can load map data from disk the first
 # time each spot is seen after a restart (SQUID's own comment on the same lookup in RandomTeleport: up to 128 ms a
 # call). To end it: 1.
-modules\playerbots.conf | AiPlayerbot.CoaWorld.Leveling.AreaGuard = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.Recovery.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.BotOnlyBgPace.Enable = 0
-modules\playerbots.conf | AiPlayerbot.CoaWorld.StateFile.Enable = 0
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Leveling.AreaGuard = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.Recovery.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.BotOnlyBgPace.Enable = 1
+modules\playerbots.conf | AiPlayerbot.CoaWorld.StateFile.Enable = 1
 # Measuring only. The world server records how long one pass of its game loop took, once a minute, every time (it
 # used to sample every 5 minutes and only above 100 ms), with the time of day, in Logs\Timing.log. That file is
 # appended to, not replaced, so it keeps the history across restarts (about 100 KB a day). The lines still go to
