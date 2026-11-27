@@ -462,6 +462,9 @@ modules\playerbots.conf | AiPlayerbot.RandomBotUpdateInterval = 20
 # the bot manager's 30-second beat stood out, but the 2-second-plus freezes stayed (18% of player-online records, 15%
 # on 24 Nov, worst 4.5 s). CoA Live is not the cause of the freezes. Held off for one more evening during E4.
 modules\playerbots.conf | AiPlayerbot.CoaLive.Enable = 1
+# Patch 21 (bots remember map lookups across restarts; draft PR #288): 1 = on, 0 = memory-only as in SQUID. Read at
+# start-up. Harmless before the build that has patch 21 (an unknown setting is ignored).
+modules\playerbots.conf | AiPlayerbot.WildcardRememberMapLookups = 1
 
 # Lag experiment E5 (27 Nov, James: "Yes"). James ran 1,250 bots without these freezes before the 19 Nov update;
 # the console history agrees (player-online tick median 326 ms and 1% of 2 s+ before, 1,020 ms and 10% after, with

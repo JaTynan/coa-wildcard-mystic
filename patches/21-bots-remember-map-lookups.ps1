@@ -6,7 +6,8 @@
 # Now the answers are also kept in two tables of the playerbots database (wcme_teleport_spot, wcme_area_spot),
 # created here if missing, read once at start-up and added to as new spots come up. A spot's zone, area, water and
 # ground never change, so a remembered answer stays right. If the tables cannot be created or read, the bots work as
-# before (memory only) and the start-up log says so.
+# before (memory only) and the start-up log says so. A new core build starts the tables again (a CoA release can
+# bring new map data). AiPlayerbot.WildcardRememberMapLookups = 0 turns it all off without a rebuild.
 # Builds on nothing else; runs after 20-bots.ps1. Run by the build (step "Apply our patch scripts") after the modules
 # are checked out. Throws if an anchor is gone. Listed in CHANGES.md.
 $ErrorActionPreference = 'Stop'
@@ -66,6 +67,8 @@ Edit-Core $mgr @'
         if (it != wcmeSavedSpots.end())
         {
             std::lock_guard<std::mutex> guard(teleportSpotsLock);
+            if (teleportSpots.size() > 200000)
+                teleportSpots.clear();
             teleportSpots.emplace(key, it->second);
             return it->second;
         }
@@ -92,7 +95,7 @@ void WcmeLoadTeleportSpots()
 {
     PlayerbotsDatabase.DirectExecute("CREATE TABLE IF NOT EXISTS wcme_teleport_spot (spot VARCHAR(96) NOT NULL, "
                                      "zone INT UNSIGNED NOT NULL, area INT UNSIGNED NOT NULL, water TINYINT UNSIGNED "
-                                     "NOT NULL, ground FLOAT NOT NULL, PRIMARY KEY (spot)) ENGINE=InnoDB");
+                                     "NOT NULL, ground DOUBLE NOT NULL, PRIMARY KEY (spot)) ENGINE=InnoDB");
     if (!PlayerbotsDatabase.Query("SELECT COUNT(*) FROM wcme_teleport_spot"))
     {
         LOG_ERROR("server.loading", "Wildcard: table wcme_teleport_spot is missing; teleport spots are kept in memory only");
@@ -107,7 +110,7 @@ void WcmeLoadTeleportSpots()
             spot.zoneId = fields[1].Get<uint32>();
             spot.areaId = fields[2].Get<uint32>();
             spot.inWater = fields[3].Get<uint8>() != 0;
-            spot.ground = fields[4].Get<float>();
+            spot.ground = float(fields[4].Get<double>());
             wcmeSavedSpots[fields[0].Get<std::string>()] = spot;
         } while (result->NextRow());
     }
@@ -130,6 +133,7 @@ Edit-Core $leveling @'
 #include <unordered_map>
 
 #include "DatabaseEnv.h"  // Wildcard (patch 21)
+#include "GitRevision.h"  // Wildcard (patch 21)
 
 void WcmeLoadTeleportSpots();  // Wildcard (patch 21), RandomPlayerbotMgr.cpp
 '@ 'the includes'
@@ -172,6 +176,25 @@ Edit-Core $leveling @'
         std::unique_lock<std::shared_mutex> lock(g_zoneLock);
         g_areaOf[key] = area;
         return area;
+    }
+
+    // Wildcard (patch 21): remembered answers belong to one server build. A new core (a CoA release, which can bring
+    // new map or area data) starts the tables again, so a wrong answer cannot outlive the build it came from.
+    void WcmeForgetOnNewCore()
+    {
+        PlayerbotsDatabase.DirectExecute("CREATE TABLE IF NOT EXISTS wcme_map_lookup_stamp (name VARCHAR(32) NOT NULL, "
+                                         "value VARCHAR(64) NOT NULL, PRIMARY KEY (name)) ENGINE=InnoDB");
+        std::string const core = GitRevision::GetHash();
+        std::string saved;
+        if (QueryResult result = PlayerbotsDatabase.Query("SELECT value FROM wcme_map_lookup_stamp WHERE name = 'core'"))
+            saved = result->Fetch()[0].Get<std::string>();
+        if (saved == core)
+            return;
+        PlayerbotsDatabase.DirectExecute("DROP TABLE IF EXISTS wcme_teleport_spot");
+        PlayerbotsDatabase.DirectExecute("DROP TABLE IF EXISTS wcme_area_spot");
+        PlayerbotsDatabase.DirectExecute("REPLACE INTO wcme_map_lookup_stamp (name, value) VALUES ('core', '" + core + "')");
+        LOG_INFO("server.loading", ">> Wildcard: new core {} (was {}); remembered map lookups start again", core,
+                 saved.empty() ? "none" : saved);
     }
 
     // Wildcard (patch 21): the zones and areas of earlier runs, straight into the caches above. Once at start-up,
@@ -218,7 +241,13 @@ Edit-Core $leveling @'
     void OnStartup() override
     {
         LoadSettings();
-        WcmeLoadAreaSpots();      // Wildcard (patch 21)
-        WcmeLoadTeleportSpots();  // Wildcard (patch 21)
+        // Wildcard (patch 21): off with AiPlayerbot.WildcardRememberMapLookups = 0 (read once, here): the tables are
+        // then not touched and the lookups are memory-only, as in SQUID.
+        if (sConfigMgr->GetOption<bool>("AiPlayerbot.WildcardRememberMapLookups", true, false))
+        {
+            WcmeForgetOnNewCore();
+            WcmeLoadAreaSpots();
+            WcmeLoadTeleportSpots();
+        }
     }
 '@ 'OnStartup'
