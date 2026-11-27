@@ -150,22 +150,42 @@ function StopServer {
     Log 'Server stopped.'
 }
 
-function DumpBotPerformance {
-    # Lag work (James, 27 Nov): on a night with SQUID's performance monitor on (AiPlayerbot.PerfMonEnabled = 1, set in
-    # server-settings.txt and written into the live playerbots.conf at the previous start, which is what is read
-    # here), ask the world for the monitor's table just before it stops. The table is the slowest and
-    # total time of every bot action, trigger, value and bot-manager job since the start, written by the server to
-    # its log (the playerbots logger). Read-only; with the monitor off this does nothing. Never stops the restart.
+function MonitorWasOn {
+    # What the RUNNING server started with: read before tonight's settings rewrite the configs (finding of the #286
+    # review). The bot performance monitor must be on in playerbots.conf, and a `playerbots` logger at info level or
+    # more must exist in worldserver.conf, or the table is dropped (the root logger is at error level). The last line
+    # of a key wins, as for the server and the settings kit.
     try {
         $conf = Join-Path $configs 'modules\playerbots.conf'
-        if (-not (Test-Path $conf)) { return }
-        if ((Get-Content $conf -Raw) -notmatch '(?m)^\s*AiPlayerbot\.PerfMonEnabled\s*=\s*1\b') { return }
-        # The console runs the command on the world thread and answers once it has run, so the table is in the log by
-        # then; 2 minutes at most, then the stop goes on.
+        $world = Join-Path $configs 'worldserver.conf'
+        if (-not (Test-Path $conf) -or -not (Test-Path $world)) { return $false }
+        $on = @(Select-String -Path $conf -Pattern '^\s*AiPlayerbot\.PerfMonEnabled\s*=\s*"?(\w+)"?' | Select-Object -Last 1)
+        if (-not $on -or $on[0].Matches[0].Groups[1].Value -notmatch '^(1|true)$') { return $false }
+        $logger = @(Select-String -Path $world -Pattern '^\s*Logger\.playerbots\s*=\s*(\d+)' | Select-Object -Last 1)
+        if (-not $logger -or [int] $logger[0].Matches[0].Groups[1].Value -lt 4) {
+            Log 'The bot performance monitor is on but no playerbots logger at info level exists; the table would be lost, so it is not asked for.' 'WARN'
+            return $false
+        }
+        return $true
+    } catch { return $false }
+}
+
+function DumpBotPerformance {
+    # Lag work (James, 27 Nov): on a monitor night, ask the world for SQUID's bot performance table (the slowest and
+    # total time of every bot action, trigger, value and bot-manager job since the start) just before the stop. Only
+    # when MonitorWasOn said so before the settings were rewritten. Read-only; never stops the restart.
+    if (-not $script:perfMonWasOn) { return }
+    try {
+        $perfLog = Join-Path $core 'Logs\Playerbots.log'
+        $before = if (Test-Path $perfLog) { (Get-Item $perfLog).Length } else { 0 }
+        # The console runs the command on the world thread and queues it ahead of the shutdown. When it works it
+        # answers nothing (the table goes to the log), so any reply text is an error. 2 minutes at most.
         $result = Launcher 'ra-once' 'playerbots pmon' 2
-        if ($result.Code) { Log "The bot performance table was not confirmed: $($result.Text)" 'WARN'; return }
+        if ($result.Code -or $result.Text.Trim()) { Log "The bot performance table was not confirmed: $($result.Text.Trim())" 'WARN'; return }
         Start-Sleep -Seconds 5
-        Log 'Asked the world for the bot performance table (SQUID performance monitor, playerbots pmon); it is in the server log.'
+        $written = (Test-Path $perfLog) -and (Get-Item $perfLog).Length -gt $before -and (Select-String -Path $perfLog -Pattern 'TOTAL BOT' -SimpleMatch -Quiet)
+        if ($written) { Log "Bot performance table written to $perfLog." }
+        else { Log "Asked for the bot performance table, but $perfLog shows no new table." 'WARN' }
     } catch { Log "Could not ask for the bot performance table: $_" 'WARN' }
 }
 
@@ -174,7 +194,6 @@ function StopWorld {
     # database keeps its cache warm and does not shut down and start again (server-settings never change their
     # configs). The same console command the manager's Stop All sends; if the world does not go, Stop All does it.
     if (-not (WorldRunning)) { Log 'Server is already stopped.'; return }
-    DumpBotPerformance
     Ra 'server shutdown 1s 0' | Out-Null
     $deadline = (Get-Date).AddMinutes(2)
     while ((WorldRunning) -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 2 }
@@ -947,6 +966,7 @@ if ($installNeeded) {
     if (-not (Test-Path (Join-Path $package 'Install-WildcardServer.ps1'))) { Finish 'The downloaded package has no installer; nothing was changed.' 1 }
 }
 # The servers read their configs only when they start, so the settings can be written while the world still runs.
+$script:perfMonWasOn = [bool] (MonitorWasOn | Select-Object -Last 1)   # before the rewrite below: what the running server started with
 Log 'Applying server-settings (used from the restart)...'
 if (RunScript $applySettings @('-Server', "`"$Server`"", '-Unattended')) { Log 'Applying the settings reported a problem.' 'WARN' }
 Log "Prepared in $([int] ((Get-Date) - $prepared).TotalSeconds) s, with the server up."
@@ -963,6 +983,7 @@ for ($i = 1; $i -lt $marks.Count; $i++) {
 $wait = ($restartAt - (Get-Date)).TotalSeconds
 if ($wait -gt 0) { Start-Sleep -Seconds ([int] [math]::Ceiling($wait)) }
 
+DumpBotPerformance   # monitor nights only; before the downtime clock starts
 $script:stopping = $true
 $downFrom = Get-Date
 StopWorld
