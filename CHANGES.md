@@ -170,6 +170,8 @@ version of their trigger ability (the CoA copy, or the stock spell), which the c
 Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw,
 Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light,
 Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis. Data only (no build).
+`174-showcase-good-fortune-shot-weaving.sql`: Good Fortune now gives its Holy critical strike buff, and Shot Weaving
+fires a ranged shot with each Arcane Missile; both stopped one step short. Data only.
 `172-showcase-sundering-maledictive.sql`: Cataclysmic Sundering now leaves three burning patches in a line in front of
 the shaman after each Sundering; Maledictive Assault makes Shadow Bolt hit two more targets for reduced damage while
 Nightfall or Backlash is up. Both never worked. Data only.
