@@ -2132,3 +2132,92 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_preservation_grant);`n    RegisterSpellScript(spell_wcme_preservation);`n    RegisterSpellScript(spell_wcme_preservation_heal);`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Showcase talents, batch 5 (docs/bot-builds/showcase-audit.md): Heavyweight (Titan's Grip Crush build).
+# sql/enchants/181-talent-code-showcase-5.sql gives the stack buff its effects, Ready to Strike its charge, and binds
+# the script. James, 28 Nov 2026: Heroic Strike resets the stacks; auto attacks do not.
+Write-Host "Patch: Heavyweight stacks (2 from Overpower and Execute), Ready to Strike at 6, Heroic Strike resets, Thunder Clap aftershock"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Heavyweight (talent 273378). The core's rule gives one stack of Heavyweight (273379; 3% slower swings and
+// 4% more Physical damage per stack, from sql 181's copy) for each Slam, Overpower or Execute. This adds:
+// - a second stack for Overpower and Execute (added before the core's rule runs, in the same cast);
+// - Heroic Strike removes the stacks (James, 28 Nov: Heroic Strike resets them, auto attacks do not; the tooltip's
+//   "auto attacks reset" line would make 6 stacks unreachable);
+// - Thunder Clap with Ready to Strike (273381) up casts its aftershock (273384, 275% weapon damage around you) and
+//   uses Ready to Strike up. Mortal Strike uses it up through its proc row (sql 181).
+class wcme_heavyweight_casts : public PlayerScript
+{
+public:
+    wcme_heavyweight_casts() : PlayerScript("wcme_heavyweight_casts", { PLAYERHOOK_ON_SPELL_CAST }) { }
+
+    void OnPlayerSpellCast(Player* player, Spell* spell, bool /*skipCheck*/) override
+    {
+        if (!player || !spell || !spell->GetSpellInfo())
+            return;
+        static std::unordered_set<uint32> const doubleStack = { 7384, 1107384, 5308, 5309, 20658, 20660, 20661, 20662,
+            25234, 25236, 47470, 47471, 1105308, 1120658, 1120660, 1120661, 1120662, 1125234, 1125236, 1147470, 1147471 };
+        static std::unordered_set<uint32> const heroicStrike = { 78, 284, 285, 1608, 11564, 11565, 11566, 11567, 25286,
+            29707, 30324, 47449, 47450, 1100078, 1100284, 1100285, 1101608, 1111564, 1111565, 1111566, 1111567, 1125286,
+            1129707, 1130324, 1147449, 1147450 };
+        static std::unordered_set<uint32> const thunderClap = { 6343, 8198, 8204, 8205, 11580, 11581, 25264, 47501, 47502,
+            1106343, 1108198, 1108204, 1108205, 1111580, 1111581, 1125264, 1147501, 1147502 };
+        uint32 const id = spell->GetSpellInfo()->Id;
+        if (doubleStack.contains(id))
+        {
+            if (player->HasAura(273378))
+                player->CastSpell(player, 273379, true);
+        }
+        else if (heroicStrike.contains(id))
+        {
+            if (player->HasAura(273378))
+                player->RemoveAurasDueToSpell(273379);
+        }
+        else if (thunderClap.contains(id) && player->HasAura(273381))
+        {
+            if (SpellInfo const* aftershock = sSpellMgr->GetSpellInfo(273384))
+            {
+                SpellCastTargets targets;
+                targets.SetDst(*player);
+                player->CastSpell(targets, aftershock, nullptr, TRIGGERED_FULL_MASK);
+            }
+            player->RemoveAurasDueToSpell(273381);
+        }
+    }
+};
+
+// Heavyweight's stack buff gives Ready to Strike when it reaches its most stacks (6), once per climb: staying at 6
+// does not give it again; losing the stacks and building them back does.
+class spell_wcme_heavyweight_stacks : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_heavyweight_stacks);
+
+    uint8 _lastStacks = 0;
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        uint8 const stacks = GetStackAmount();
+        uint8 const max = uint8(GetSpellInfo()->StackAmount);
+        if (max && stacks >= max && _lastStacks < max)
+            GetTarget()->CastSpell(GetTarget(), 273381, true);
+        _lastStacks = stacks;
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_wcme_heavyweight_stacks::HandleApply, EFFECT_0, SPELL_AURA_MOD_MELEE_HASTE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    new wcme_heavyweight_casts();`n    RegisterSpellScript(spell_wcme_heavyweight_stacks);`n")
+Set-Content $file $text -NoNewline
+}
