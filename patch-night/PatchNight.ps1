@@ -769,7 +769,8 @@ function RebuildClientPatch {
             -RedirectStandardOutput $out -RedirectStandardError $err
         $null = $run.Handle   # keeps the exit code readable after it ends
         if (-not $run.WaitForExit(10 * 60000)) {
-            try { $run.Kill() } catch { }
+            # The whole tree: the builder starts racials_off_gcd.py, which Kill() alone would leave running.
+            & taskkill.exe /PID $run.Id /T /F 2>&1 | Out-Null
             throw 'it ran for 10 minutes and was stopped'
         }
         $said = @((Get-Content $out, $err -ErrorAction SilentlyContinue) | Where-Object { $_.Trim() })
@@ -809,7 +810,12 @@ function KeepCardsWithClientPatch {
     $lastGood = Join-Path $here 'cards-live\184-custom-cards.sql'
     try {
         if (-not (Test-Path $cards) -or -not (Test-Path (Join-Path $here 'client-patch\rebuild_client_patch.py'))) { return }
-        if (ClientPatchCurrent) { return }
+        if (ClientPatchCurrent) {
+            # Kept in step, so a later failed rebuild falls back to tonight's cards (a hand edit of 184 included).
+            New-Item -ItemType Directory -Force -Path (Split-Path $lastGood) | Out-Null
+            Copy-Item $cards $lastGood -Force
+            return
+        }
         if (Test-Path $lastGood) {
             Copy-Item $lastGood $cards -Force
             Log 'The client patch is not built from the current files, so the enchant cards are the ones it last had (cards-live).' 'WARN'
