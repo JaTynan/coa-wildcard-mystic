@@ -1591,3 +1591,105 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    WcmeSpellBlockChanceBonus = &WcmeFierceBlockBonus;`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Showcase talents, batch 1 (docs/bot-builds/showcase-audit.md): Raging Onslaught, Master of Kunai, Toss and Throw.
+# Their data needs code: see sql/enchants/175-talent-code-showcase-1.sql, which binds these scripts and gives the
+# rest of the fixes. James, 28 Nov 2026: restore the showcase builds' talents.
+Write-Host "Patch: Raging Onslaught refunds a Raging Blow charge; Master of Kunai and Toss and Throw do their whole tooltip"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Raging Onslaught (275920). A Raging Blow cast has the talent's own 20% chance to refund its charge. The
+// core spends one Rage! charge (954881) after the cast (spell_hero_warrior_spend_rage_charge, AfterCast); this proc
+// runs on the cast phase, before that, so the charge added here is the one the cast then spends. Casting Rage! again
+// would reset its charges instead, so the charge is added directly. Bound in sql 175.
+class spell_wcme_raging_onslaught : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_raging_onslaught);
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        SpellInfo const* spell = eventInfo.GetSpellInfo();
+        return spell && spell->Id == 954836 && GetTarget()->HasAura(954881);
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        if (Aura* charges = GetTarget()->GetAura(954881))
+            charges->SetCharges(charges->GetCharges() + 1);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_raging_onslaught::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_raging_onslaught::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Wildcard: Master of Kunai's Kunai (277477) raises the damage of your next Deadly Throw by its stacks; that Deadly
+// Throw uses them up. Ascension's server removed the stacks; here, after a Deadly Throw hits, the thrower's Kunai on
+// that target goes. Bound in sql 175 to every rogue Deadly Throw (stock and CoA ranks). The stacks themselves are
+// data (sql 176 gives the Master of Kunai buff its trigger, once this build is installed).
+class spell_wcme_kunai_consume : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_kunai_consume);
+
+    void HandleAfterHit()
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (caster && target)
+            target->RemoveAurasDueToSpell(277477, caster->GetGUID());
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_wcme_kunai_consume::HandleAfterHit);
+    }
+};
+
+// Wildcard: two Shuriken Toss talents, checked when a player casts Shuriken Toss (before its spell modifiers and their
+// charges are used up, so the third cast of Toss and Throw still counts).
+// Shuriken Toss here means the ids carrying the class flag Toss and Throw's cost reduction uses (so each counted
+// cast also uses one of its three charges); 1569626, which has no class flags and is not on the talent list, is
+// left out.
+// - Master of Kunai (talent 277475): Shuriken Toss cuts Adrenaline Rush's cooldown by 4 sec (its helper 277479),
+//   for the stock spell (13750) and the CoA copy (1113750) alike.
+// - Toss and Throw (buff 277456): each of its three Shuriken Tosses gives one more combo point (34071) to the target.
+//   The buff's own proc is left without a trigger on purpose: as a proc it would also use up one of the three charges
+//   the cost reduction uses, and the buff would end after two throws.
+class wcme_shuriken_toss_talents : public PlayerScript
+{
+public:
+    wcme_shuriken_toss_talents() : PlayerScript("wcme_shuriken_toss_talents", { PLAYERHOOK_ON_SPELL_CAST }) { }
+
+    void OnPlayerSpellCast(Player* player, Spell* spell, bool /*skipCheck*/) override
+    {
+        if (!player || !spell || !spell->GetSpellInfo())
+            return;
+        static std::unordered_set<uint32> const shurikenToss = { 954835, 955223, 955224, 955225, 955226, 955227, 955228,
+            2304835 };
+        if (!shurikenToss.contains(spell->GetSpellInfo()->Id))
+            return;
+        if (player->HasAura(277475))
+            for (uint32 adrenalineRush : { 13750u, 1113750u })
+                if (player->HasSpellCooldown(adrenalineRush))
+                    player->ModifySpellCooldown(adrenalineRush, -4000);
+        if (player->HasAura(277456))
+            if (Unit* target = spell->m_targets.GetUnitTarget())
+                player->CastSpell(target, 34071, true);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_raging_onslaught);`n    RegisterSpellScript(spell_wcme_kunai_consume);`n    new wcme_shuriken_toss_talents();`n")
+Set-Content $file $text -NoNewline
+}
