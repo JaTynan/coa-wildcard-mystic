@@ -231,7 +231,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 982743,Bone Arrow,Epic,132608,needs-code,other placeholder,verified,"teaches spell 284879, as its twin does (wcme_enchant_teach)",852392,006-teach-twins.sql,2026-11-03,pass: damage and debuff
 271778,Built up Thirst,Epic,200765,needs-code,other placeholder,live,action: finishing moves grant Built up Thirst,,007-enchant-actions.sql (part 1),,
 84377,Burst of Thorns,Epic,1176089,needs-code,other placeholder,broken,"teaches spell 1582316, as its twin does (wcme_enchant_teach)",1591036,006-teach-twins.sql,2026-11-03,"buff icon and tooltip only: no armour, mana regen or procs when hit (3 Nov)"
-977940,Demonic Mind,Epic,1178659,needs-code,other placeholder,partly working,"teaches spell 1586069, as its twin does (wcme_enchant_teach)",1591064,006-teach-twins.sql,2026-11-03,crit buff works; the proc on enemies did not fire
+977940,Demonic Mind,Epic,1178659,needs-code,other placeholder,live (after restart),"teaches spell 1586069, as its twin does (wcme_enchant_teach); Demonic Wounds proc via action table",1591064,006-teach-twins.sql; 171-dead-procs-showcase.sql,2026-11-03,crit buff works; the proc on enemies did not fire
 1181190,Electric Surge,Epic,201604,needs-code,other placeholder,live,action: Lightning Bolt or Chain Lightning triggers Flurry (the extra charges are not done),,007-enchant-actions.sql,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 271997,Forbidden Dance,Epic,200780,needs-code,other placeholder,live,action: Forbidden Technique grants Forbidden Dance,,007-enchant-actions.sql (part 1),,
 977939,Frozen Mind,Epic,1178658,needs-code,other placeholder,live,"teaches spell 1586047, as its twin does (wcme_enchant_teach)",1591063,006-teach-twins.sql,,
@@ -2184,7 +2184,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 965365,Arcane Empowerment,Rare,1178505,standard,,working (audit),,,,,
 1354659,Arcane Fortitude,Rare,1013955,standard,,working (audit),,,,,
 101278,Arcane Fulmination,Uncommon,1178385,standard,,working (audit),,,,,
-274586,Arcane Gunslinger,Epic,201087,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
+274586,Arcane Gunslinger,Epic,201087,standard,,live (after restart),core rule: other ability version added; aura link 300028 while buff; Missile Barrage ends buff,,170-core-rule-versions.sql; 175-talent-code-showcase-1.sql,,
 281654,Arcane Infusion,Epic,201952,scripted,,working (audit),,,,,
 81265,Arcane Infusion,Epic,1175986,standard,,working (audit),,,,,
 1134962,Arcane Mastery,Legendary,1013874,standard,,working (audit),,,,,
@@ -4725,7 +4725,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 277515,Magical Ammunition,Epic,202370,standard,,working (audit),,,,,
 932477,Malediction,Rare,1175843,standard,,working (audit),,,,,
 850183,Malediction,Epic,405001,teaches-ok,,working (audit),,,,,
-271400,Maledictive Assault,Epic,200734,standard,,working (audit),,,,,
+271400,Maledictive Assault,Epic,200734,standard,,live (after restart),aura link: companion 271399 while Nightfall or Backlash is up,,172-showcase-sundering-maledictive.sql,,
 1314142,Malice,Rare,1013678,standard,,working (audit),,,,,
 982026,Malicious Shot,Rare,1178797,standard,,working (audit),,,,,
 81303,Mana Leech,Epic,1176003,standard,,working (audit),,,,,
@@ -4757,7 +4757,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 913958,Master of Deception,Rare,1175693,standard,,working (audit),,,,,
 1313971,Master of Deception,Rare,1013668,standard,,working (audit),,,,,
 929074,Master of Elements,Rare,1175814,standard,,working (audit),,,,,
-277475,Master of Kunai,Epic,202320,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
+277475,Master of Kunai,Epic,202320,standard,,partly working,"core rule: other ability version added; patch 55 + sql 175: Kunai stacks, consumption, CDR",,170-core-rule-versions.sql; 175-talent-code-showcase-1.sql,,code part needs the build with patch 55 showcase batch 1
 275491,Master of Shadows,Epic,201200,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
 980046,Master of Shadows,Legendary,1178766,standard,,working (audit),,,,,
 103040,Masterful Slavery,Rare,1178391,standard,,working (audit),,,,,
@@ -5892,7 +5892,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 285504,Swift Favor,Uncommon,201818,standard,,working (audit),,,,,
 81027,Swift Justice,Epic,1175920,standard,,working (audit),,,,,
 281300,Swift Justice,Uncommon,201651,standard,,working (audit),,,,,
-984616,Swirling Maelstrom,Epic,200490,standard,,working (audit),,,,,
+984616,Swirling Maelstrom,Epic,200490,standard,,partly working,"action table: Lava Lash and Stormstrike, 33%",,171-dead-procs-showcase.sql,,the guaranteed stack on spending 5 Maelstrom Weapon stacks is not done
 912281,Sword Specialization,Rare,1175672,standard,,working (audit),,,,,
 979777,Sword and Thunder,Epic,1178760,standard,,working (audit),,,,,
 1587301,Sword and Thunder,Epic,201395,standard,,working (audit),,,,,
@@ -6101,7 +6101,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 84451,Tooth and Nail,Epic,1176101,standard,,working (audit),,,,,
 955339,Torment the Weak,Rare,1175907,standard,,working (audit),,,,,
 285267,Torrential Riptide,Uncommon,201762,scripted,,working (audit),,,,,
-277455,Toss and Throw,Epic,202316,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
+277455,Toss and Throw,Epic,202316,standard,,partly working,core rule: other ability version added; patch 55: combo point per Shuriken Toss,,170-core-rule-versions.sql; 175-talent-code-showcase-1.sql,,code part needs the build with patch 55 showcase batch 1
 965282,Total Eclipse,Legendary,1178475,standard,,working (audit),,,,,
 281447,Totemic Avatar,Epic,201926,standard,,working (audit),,,,,
 916173,Totemic Focus,Rare,1175726,standard,,working (audit),,,,,
