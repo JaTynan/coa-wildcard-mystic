@@ -193,6 +193,8 @@ Client patch: patch night rebuilds `patch-ZZW.MPQ` in the client folder by itsel
 `184-custom-cards.sql`: Mystic Enchant cards we add or switch on for Wildcard, and a scroll for each new one, written by `client-patch/custom_cards.py` (the client patch carries the same cards). Echoing Warcry (an Ascension card no realm offered), Assault and Battery, Corrupted Maelstrom Weapon, Arcanesworn and Arcane Divinity (Epic), and Arcane Crusade (Legendary): Ascension talents that never had a card. Needs the build with the card loader; patch night rebuilds the client patch with the cards.
 `185-custom-card-effects-1.sql`: what those three cards do. Echoing Warcry: shouts generate 10 rage, and Physical abilities on a Battle Fatigued enemy cut 5 sec off Warcry. Assault and Battery: Thunder Clap, Execute and Shield Slam make the next Lightning Bolt or Chain Lightning instant, Lightning Bolt 100% stronger. Corrupted Maelstrom Weapon: melee abilities build up to 3 stacks that make the next Chaos Bolt, Chaos Burn, Chaos Meteor or Pure Chaos Bolt 50% stronger per stack, and Pure Chaos Bolt faster. Data only.
 `186-custom-card-effects-2.sql`: the Arcane cards' script bindings, Arcane Crusade's faster Arcane Missiles channel (its own two effects), and Arcane Divinity kept in the rolls. Needs the build with them.
+`184-custom-cards.sql`: Mystic Enchant cards we add or switch on for Wildcard, and a scroll for each new one, written by `client-patch/custom_cards.py` (the client patch carries the same cards). First three, all Epic: Echoing Warcry (an Ascension card no realm offered), Assault and Battery and Corrupted Maelstrom Weapon (Ascension talents that never had a card). Needs the build with the card loader; patch night rebuilds the client patch with the cards.
+`185-custom-card-effects-1.sql`: what those three cards do. Echoing Warcry: shouts generate 10 rage, and Physical abilities on a Battle Fatigued enemy cut 5 sec off Warcry. Assault and Battery: Thunder Clap, Execute and Shield Slam make the next Lightning Bolt or Chain Lightning instant, Lightning Bolt 100% stronger. Corrupted Maelstrom Weapon: melee abilities build up to 3 stacks that make the next Chaos Bolt, Chaos Burn, Chaos Meteor or Pure Chaos Bolt 50% stronger per stack, and Pure Chaos Bolt faster. Data only.
 `178-showcase-trace-data.sql`: four showcase talents fixed with data. Master of Shadows grants its buff (and its
 Shadow crit) only at 3 stacks; Stormborn fires with the CoA Elemental Mastery and Shamanistic Rage and scales with
 spell and attack power; Frost Bomb explodes when it ends or is dispelled; Hunting Frenzy's two free pet abilities are
@@ -206,6 +208,5 @@ row's comment), and 2 grant their bonus while an aura is up (Frost Bomb's Finger
 
 - Changes collect on one branch and go in as **one PR per patch night**, so each night is one merge, and one thing to
   roll back if it goes wrong.
-- Every new code change gets a setting to turn it off where that's practical, and a line in this file.
-- Fixes that are really CoA bugs are worth reporting to the CoA team; when they fix one, its patch stops fitting, the
+- Every new code change gets a setting to turn it off where that's practical, and a line in this file.- Fixes that are really CoA bugs are worth reporting to the CoA team; when they fix one, its patch stops fitting, the
   build says so, and we delete it.

@@ -8,6 +8,7 @@ const Wildcard = (() => {
     ["how-to-play", "how-to-play.html", "How to play"],
     ["server", "server.html", "Server"],
     ["leaderboards", "leaderboards.html", "Leaderboards"],
+    ["racials", "racials.html", "Racials"],
     ["pets", "pets.html", "Tameable pets"],
     ["enchants", "enchants.html", "Mystic Enchants"],
     ["changes", "changes.html", "Changes"],
@@ -175,6 +176,107 @@ const Wildcard = (() => {
     return changesPromise;
   }
 
+  // Spell tooltips, as the game shows them: enchant-tooltips.json and pet-tooltips.json, with icons/<name>.png.
+  // Made on the VM from the server's spell data and the client's icons (launcher/tooltips/build_spell_data.py).
+  // Every piece of text goes in with textContent.
+  const tipFiles = {};
+  function tooltips(file) {
+    if (!tipFiles[file]) {
+      tipFiles[file] = fetch(file, { cache: "no-store" }).then((r) => {
+        if (!r.ok) throw new Error(r.status);
+        return r.json();
+      });
+      tipFiles[file].catch(() => {});
+    }
+    return tipFiles[file];
+  }
+
+  function icon(name, size = 36) {
+    const img = el("img", { class: "spell-icon", width: size, height: size, alt: "", loading: "lazy",
+                            src: "icons/" + (name || "inv_misc_questionmark") + ".png" });
+    img.onerror = () => { img.onerror = null; img.src = "icons/inv_misc_questionmark.png"; };
+    return img;
+  }
+
+  function tipLines(lines) {
+    return lines.map((line) => {
+      const p = el("p", { class: line.length ? "" : "gap" });
+      for (const [text, style] of line) {
+        if (!style) p.append(text);
+        else if (style === "note") p.append(el("span", { class: "tip-note" }, text));
+        else {
+          const span = el("span", {}, text);
+          span.style.color = "#" + style;
+          p.append(span);
+        }
+      }
+      return p;
+    });
+  }
+
+  // A tooltip card. extra: { quality: "legendary", limit: 1 }
+  function tipCard(tip, extra = {}) {
+    const card = el("div", { class: "tip-card" },
+      el("div", { class: "tip-head" }, icon(tip.icon, 40),
+        el("div", {}, el("div", { class: "tip-name " + (extra.quality || "") }, tip.name),
+          extra.qualityLabel ? el("div", { class: "tip-sub" }, extra.qualityLabel) : null)));
+    for (const name of tip.req || []) card.append(el("div", { class: "tip-req" }, "Requires " + name));
+    for (const name of tip.unlock || []) card.append(el("div", { class: "tip-req" }, "Unlocked by " + name));
+    card.append(el("div", { class: "tip-body" }, tipLines(tip.lines || [])));
+    if (extra.subsLabel && (tip.subs || []).length) card.append(el("div", { class: "tip-sub tip-embed" }, extra.subsLabel));
+    for (const sub of tip.subs || []) {
+      card.append(el("div", { class: extra.subsLabel ? "tip-embed flat" : "tip-embed" },
+        el("div", { class: "tip-head small" }, icon(sub.icon, 22), el("div", { class: "tip-name" }, sub.name)),
+        el("div", { class: "tip-body" }, tipLines(sub.lines || []))));
+    }
+    if (tip.change) card.append(el("div", { class: "tip-change" }, el("b", {}, "Changed on Wildcard: "), tip.change));
+    if (tip.note) card.append(el("div", { class: "tip-change" }, tip.note));
+    if (tip.where) card.append(el("div", { class: "tip-where" }, el("b", {}, "Where to find it: "), tip.where));
+    if (extra.limit) card.append(el("div", { class: "tip-limit" },
+      extra.limit === 1 ? "One per character" : "Up to " + extra.limit + " per character"));
+    return card;
+  }
+
+  // One floating tooltip for the page: hover or keyboard focus shows it, and a tap toggles it on a phone.
+  let floating = null;
+  let owner = null;
+  function hideTip() {
+    if (floating) floating.remove();
+    floating = null;
+    owner = null;
+  }
+  function showTip(node, make, pinned = false) {
+    hideTip();
+    owner = node;
+    floating = el("div", { class: "tip-float" + (pinned ? " pinned" : ""), role: "tooltip" }, make());
+    floating.addEventListener("click", (event) => event.stopPropagation());
+    document.body.append(floating);
+    const box = node.getBoundingClientRect();
+    const w = floating.offsetWidth;
+    const h = floating.offsetHeight;
+    let left = Math.min(box.left, window.innerWidth - w - 8);
+    let top = box.bottom + 6;
+    if (top + h > window.innerHeight - 8 && box.top - h - 6 > 8) top = box.top - h - 6;
+    floating.style.left = Math.max(8, left) + "px";
+    floating.style.top = Math.max(8, top) + "px";
+  }
+  function attachTip(node, make) {
+    node.tabIndex = 0;
+    node.classList.add("has-tip");
+    node.addEventListener("mouseenter", () => showTip(node, make));
+    node.addEventListener("mouseleave", () => { if (floating && !floating.classList.contains("pinned")) hideTip(); });
+    node.addEventListener("focus", () => showTip(node, make));
+    node.addEventListener("blur", () => { if (floating && !floating.classList.contains("pinned")) hideTip(); });
+    node.addEventListener("click", (event) => {
+      event.stopPropagation();
+      // A tap pins it, so a long one can be scrolled on a phone; tap again or anywhere else to close.
+      if (owner === node && floating && floating.classList.contains("pinned")) hideTip(); else showTip(node, make, true);
+    });
+  }
+  document.addEventListener("click", hideTip);
+  document.addEventListener("scroll", hideTip, { passive: true });
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape") hideTip(); });
+
   document.addEventListener("DOMContentLoaded", () => {
     chrome();
     onStatus(showPill);
@@ -182,5 +284,5 @@ const Wildcard = (() => {
     setInterval(tick, 1000);
   });
 
-  return { el, status, onStatus, refresh, players, bots, renderEvent, changes };
+  return { el, status, onStatus, refresh, players, bots, renderEvent, changes, tooltips, icon, tipCard, attachTip };
 })();
