@@ -2001,3 +2001,132 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_blooming_growth);`n    RegisterSpellScript(spell_wcme_guldans_chosen_keep);`n    RegisterSpellScript(spell_wcme_shadow_shot);`n    RegisterSpellScript(spell_wcme_time_bomb);`n    RegisterSpellScript(spell_wcme_time_bomb_barrage);`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Showcase talents, batch 4 (docs/bot-builds/showcase-audit.md): Preservation (Prayer of Preservation build).
+# sql/enchants/180-talent-code-showcase-4.sql binds the scripts, gives Preservation its proc row and fixes its data.
+# James, 28 Nov 2026: restore the showcase builds' talents.
+Write-Host "Patch: Preservation from Prayer of Preservation, used up by your next direct heal on that ally"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Preservation (talent 276273). Each heal of your Prayer of Preservation on an injured ally gives that ally
+// Preservation (276259) for 10 sec: your heals crit it 20% more often (aura 308 in sql 180's copy of 276259), and your
+// next direct heal on it uses it up to heal 3 other allies near it (276258), give it Shield of Preservation (276257)
+// and take 3 sec off Prayer of Preservation's cooldown. All of it was placeholders. Prayer of Preservation's ranks are
+// not one rank chain in our data, so the cooldown is cut here on every version you have on cooldown. Each version of
+// the channel's heal grants it (stock S10 276261-276267 and the two other copies); none of them uses it up.
+static thread_local ObjectGuid WcmePreservationHolder;
+
+static bool WcmeIsPrayerOfPreservationHeal(uint32 spellId)
+{
+    return (spellId >= 276261 && spellId <= 276267) || (spellId >= 888581 && spellId <= 888587) ||
+        (spellId >= 1576676 && spellId <= 1576682);
+}
+
+class spell_wcme_preservation_grant : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_preservation_grant);
+
+    bool _injured = false;
+
+    void HandleBeforeHit(SpellMissInfo /*missInfo*/)
+    {
+        Unit* target = GetHitUnit();
+        _injured = target && !target->IsFullHealth();
+    }
+
+    void HandleAfterHit()
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (_injured && caster && target && target->IsAlive() && caster->HasAura(276273))
+            caster->AddAura(276259, target);
+        _injured = false;
+    }
+
+    void Register() override
+    {
+        BeforeHit += BeforeSpellHitFn(spell_wcme_preservation_grant::HandleBeforeHit);
+        AfterHit += SpellHitFn(spell_wcme_preservation_grant::HandleAfterHit);
+    }
+};
+
+class spell_wcme_preservation : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_preservation);
+
+    static constexpr uint32 EXTRA_HEAL = 276258;
+    static constexpr uint32 SHIELD = 276257;
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        HealInfo const* heal = eventInfo.GetHealInfo();
+        SpellInfo const* spell = eventInfo.GetSpellInfo();
+        Unit const* actor = eventInfo.GetActor();
+        return heal && heal->GetHeal() && spell && actor && actor->GetGUID() == GetCasterGUID() &&
+            spell->Id != EXTRA_HEAL && !WcmeIsPrayerOfPreservationHeal(spell->Id);
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        Unit* caster = GetCaster();
+        Unit* target = GetTarget();
+        SpellInfo const* extraHeal = sSpellMgr->GetSpellInfo(EXTRA_HEAL);
+        if (!caster || !extraHeal || !caster->IsInMap(target))
+            return;
+        SpellCastTargets targets;
+        targets.SetDst(*target);
+        WcmePreservationHolder = target->GetGUID();
+        caster->CastSpell(targets, extraHeal, nullptr, TRIGGERED_FULL_MASK, nullptr, aurEff);
+        WcmePreservationHolder.Clear();
+        caster->CastSpell(target, SHIELD, true, nullptr, aurEff);
+        if (Player* player = caster->ToPlayer())
+        {
+            static constexpr std::array<uint32, 21> prayer = { 276250, 276251, 276252, 276253, 276254, 276255, 276256,
+                888571, 888572, 888573, 888574, 888575, 888576, 888577,
+                1576669, 1576670, 1576671, 1576672, 1576673, 1576674, 1576675 };
+            for (uint32 spellId : prayer)
+                if (player->HasSpellCooldown(spellId))
+                    player->ModifySpellCooldown(spellId, -3000);
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_preservation::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_preservation::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
+    }
+};
+
+// Preservation's extra heal (276258) heals 3 allies other than the one whose Preservation was used.
+class spell_wcme_preservation_heal : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_preservation_heal);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        if (!WcmePreservationHolder)
+            return;
+        ObjectGuid const holder = WcmePreservationHolder;
+        targets.remove_if([holder](WorldObject const* target) { return target->GetGUID() == holder; });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_preservation_heal::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_preservation_heal::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_preservation_grant);`n    RegisterSpellScript(spell_wcme_preservation);`n    RegisterSpellScript(spell_wcme_preservation_heal);`n")
+Set-Content $file $text -NoNewline
+}
