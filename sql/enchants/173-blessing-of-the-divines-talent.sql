@@ -7,8 +7,11 @@
 -- "cast one of these at random". The heal list is every rank of each direct Holy or Nature heal on the talent list
 -- that has a mana cost (from our spell data), so free heals do not count, as the tooltip says. The 10% is the
 -- spell's own proc chance (the spell_proc row's Chance is 0); the rule says 100 so it is not rolled twice.
--- The blessings use their own spell data. Titan, Time and Creation match the tooltip; Mending and the Divines scale
--- with level more slowly than the tooltip's formula (about 55% and 80% of it at level 60).
+-- The blessings use their own spell data, as the core computes it (SpellEffectInfo::CalcValue counts per-level points
+-- from the higher of base level and spell level). Titan and Time match their tooltips. Creation's mana is 1 to 2 less
+-- than its tooltip. Mending heals 11-15 plus 2.5 per level above 1 (158-162 at level 60) plus 20.1% of bonus
+-- healing. The Divines heals 11 every 3 sec plus 18.8% of bonus healing at every level: its base level is 80, so the
+-- per-level part is always zero. Their tooltips are corrected in the client patch (client-patch/spell_texts.py).
 -- Data only: no build. Needs file 170's reset line (WCME: rows of coa_mystic_enchant_proc), so it ships after #290.
 -- Safe to run again: 000-reset removes the WCME: rule, the owned spell_proc row and the owned script binding.
 -- Not tested in game: unverified until a player report or an automated test.
