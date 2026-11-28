@@ -92,11 +92,11 @@ natural carrier yet and is proposed as that bot's rolled extra.
 | Pyroblast Fire Mage | Caster | Improved Scorch (5% spell crit taken), Arcane Intellect |
 | Elemental Lord | Caster | Winter's Chill; **assign** Totem of Wrath |
 | Arcane Paladin | Caster (melee range) | Judgement of Wisdom; **assign** Concentration Aura |
-| Cryomancer | Caster | **assign** Arcane Empowerment or Divine Spirit |
+| Cryomancer | Caster | **assign** Divine Spirit |
 | Moonkin Fire | Caster | Moonkin Form (spell crit), Wrath of Air Totem, Mana Spring Totem, Blessing of Kings, Improved Scorch; **assign** Improved Faerie Fire (spell hit) |
 | Holy Radiance | Healer | Personal only |
 | Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled |
 
-Caster side after the eight casters: every caster debuff is covered, and of the caster buffs only Divine Spirit or
-Arcane Empowerment is open (one assignment). Still open overall: the melee, hunter and tank buffs and debuffs, which
+Caster side after the eight casters: every caster debuff and caster buff on the checklist is covered, three of them by
+assignment. Still open overall: the melee, hunter and tank buffs and debuffs, which
 come with those slots.
