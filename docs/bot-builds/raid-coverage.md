@@ -107,10 +107,15 @@ natural carrier yet and is proposed as that bot's rolled extra.
 | Ninja | Ranged | **assign** Hunter's Mark |
 | Holy Radiance | Healer | Personal only |
 | Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled |
+| Holy Spell Tank | Tank | Blessing of Sanctuary, Devotion Aura, Vindication (attack power reduction), Thunder Clap, Blessing of Kings, Blood Pact (imp) |
+| Earthen Guardian | Tank | **assign** Stoneskin Totem |
 
 Caster side after the eight casters: every caster debuff and caster buff on the checklist is covered, six of them by
 assignment.
 
 Melee and ranged side after the six melee and two ranged: every melee and hunter buff and debuff on the checklist is
-covered. Thunder Clap also covers the tanks' attack speed slow. Still open: the tanks' attack power reduction and the
-tank buffs (Blessing of Sanctuary, Stoneskin Totem), which come with the tank slots.
+covered. Thunder Clap also covers the tanks' attack speed slow.
+
+Tank side after the three tanks: attack power reduction (Vindication), attack speed slow (Thunder Clap), Devotion Aura,
+Stoneskin Totem and Blessing of Sanctuary are covered. **Every line of the checklist now has a carrier** in one
+faction's roster of 19 drafted builds. The five remaining healer slots add no checklist duty.
