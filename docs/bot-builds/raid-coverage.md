@@ -81,8 +81,22 @@ to them.
 
 ## 6. Covered so far
 
-| Build | Role | Can cover |
+Drafted builds and what each carries in its core or as a natural rolled extra. "Assign" marks a buff that has no
+natural carrier yet and is proposed as that bot's rolled extra.
+
+| Build | Role | Carries |
 |---|---|---|
-| Plague Caster | Caster | Earth and Moon (spell damage taken), Mark of the Wild (its guide keeps it as an extra), Cleansing Totem |
-| Holy Radiance | Healer | Personal: Fel Armor or Mage Armor (Nimble Mind) |
-| Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled; Challenging Roar |
+| Plague Caster | Caster | Earth and Moon (spell damage taken), Mark of the Wild |
+| Soul Fire | Caster | Blood Pact (imp); Totem of Wrath in its guide's group |
+| Immolate and Conflagrate | Caster | Blood Pact (imp); Ignite |
+| Pyroblast Fire Mage | Caster | Improved Scorch (5% spell crit taken), Arcane Intellect |
+| Elemental Lord | Caster | Winter's Chill; **assign** Totem of Wrath |
+| Arcane Paladin | Caster (melee range) | Judgement of Wisdom; **assign** Concentration Aura |
+| Cryomancer | Caster | **assign** Arcane Empowerment or Divine Spirit |
+| Moonkin Fire | Caster | Moonkin Form (spell crit), Wrath of Air Totem, Mana Spring Totem, Blessing of Kings, Improved Scorch; **assign** Improved Faerie Fire (spell hit) |
+| Holy Radiance | Healer | Personal only |
+| Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled |
+
+Caster side after the eight casters: every caster debuff is covered, and of the caster buffs only Divine Spirit or
+Arcane Empowerment is open (one assignment). Still open overall: the melee, hunter and tank buffs and debuffs, which
+come with those slots.
