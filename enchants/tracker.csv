@@ -4384,7 +4384,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 852337,Hour of Judgement,Rare,404797,teaches-ok,,working (audit),,,,,
 284207,Howling Blood,Uncommon,201740,standard,,working (audit),,,,,
 956339,Hunter vs. Wild,Rare,1175909,standard,,working (audit),,,,,
-1180820,Hunting Frenzy,Epic,201555,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
+1180820,Hunting Frenzy,Epic,201555,standard,,live (after restart),core rule: other ability version added; buff 1180821 proc flags removed so its 2 charges are used,,170-core-rule-versions.sql 178-showcase-trace-data.sql,,the +10% pet damage against Hunter's Mark (effect 2) already works: the core reads it from the pet's owner
 982030,Hunting with Flames,Rare,1178801,standard,,working (audit),,,,,
 997238,Hydra's Sting,Epic,132700,standard,,working (audit),,,,,
 1590555,Hydra's Sting,Epic,201331,standard,,working (audit),,,,,
