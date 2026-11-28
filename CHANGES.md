@@ -183,6 +183,8 @@ Arcane Barrage hits one more enemy while its buff is up, and gaining Missile Bar
 `173-blessing-of-the-divines-talent.sql`: the talent Blessing of the Divines works: costed direct Holy and Nature heals
 have a 10% chance, at most once a second, to cast one of its five blessings. Data only.
 
+`182-showcase-divine-concord-kunai.sql`: Divine Concord: The Art of War also makes Arcane Blast instant and 40% stronger, and whichever spell uses it, it is gone for both; Master of Kunai: Glaive Toss also hits 2 more targets while its buff lasts. Data only.
+
 `016-dead-triggers.sql`: 33 Legendary enchants whose trigger never fired now work: 31 fire from the abilities their
 tooltip names (through the enchant action table; missing chances and sequences are best guesses, marked in each
 row's comment), and 2 grant their bonus while an aura is up (Frost Bomb's Fingers of Frost, Words of Healing).
