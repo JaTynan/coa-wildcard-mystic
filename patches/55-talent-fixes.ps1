@@ -2221,3 +2221,162 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    new wcme_heavyweight_casts();`n    RegisterSpellScript(spell_wcme_heavyweight_stacks);`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Showcase talents, batch 6 (docs/bot-builds/showcase-audit.md): Divine Concord's extra stack, Glaive Toss with
+# Kunai and Toss and Throw, and Toss and Throw against monsters. sql/enchants/183-talent-code-showcase-6.sql binds them.
+# James, 28 Nov 2026: restore the showcase builds' talents.
+Write-Host "Patch: Divine Concord stacks; Kunai and Toss and Throw on Glaive Toss; Toss and Throw vs monsters"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Divine Concord (talent 277860). When Arcane Blast uses the Arcane Blast Art of War buff (984293, given by
+// sql 182's aura link), the buff's cleanup (984295) runs; with Divine Concord that also grants one more Arcane Blast
+// stack, or, while Harnessed Energy (283732 or 1585523) is up, one more Harnessed Energy charge instead. The charge is
+// added past the buff's usual most, as the tooltip says "additional".
+class spell_wcme_divine_concord_bonus : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_divine_concord_bonus);
+
+    void HandleAfterCast()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (!player || !player->HasAura(277860))
+            return;
+        // The cleanup runs while Arcane Blast hits its target, before Arcane Blast puts its own stack on you, so the
+        // extra stack is added just after (as the core's own spell_mage scripts defer aura changes).
+        player->m_Events.AddEventAtOffset([player]()
+        {
+            for (uint32 harnessedEnergy : { 283732u, 1585523u })
+                if (Aura* aura = player->GetAura(harnessedEnergy))
+                {
+                    if (aura->IsUsingCharges())
+                        aura->SetCharges(aura->GetCharges() + 1);
+                    return;
+                }
+            for (uint32 arcaneBlast : { 36032u, 1136032u })
+                if (Aura* aura = player->GetAura(arcaneBlast))
+                {
+                    aura->ModStackAmount(1);
+                    return;
+                }
+        }, 1ms);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_wcme_divine_concord_bonus::HandleAfterCast);
+    }
+};
+
+// Wildcard: Glaive Toss with the rogue talents Master of Kunai (277475) and Toss and Throw (277455). Glaive Toss is a
+// hunter-family spell, so their rogue-family modifiers never reach it. Bound in sql 183 to each glaive's damage spell
+// (two per cast). With Toss and Throw's buff (277456) up when the glaives are thrown: they deal 100% more damage to
+// monsters (the buff's second value; its modifier type, 38, does not exist in this core), and the second glaive gives
+// a combo point and uses one of the buff's three charges. Kunai (277477, your stacks on the enemy) adds 70% damage per
+// stack against monsters and 5% against players (its own two values), and the second glaive to hit uses them up.
+class spell_wcme_glaive_toss_ninja : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_glaive_toss_ninja);
+
+    static constexpr uint32 TOSS_AND_THROW = 277456;
+    static constexpr uint32 KUNAI = 277477;
+    static constexpr uint32 COMBO_POINT = 34071;
+
+    bool _tossAndThrow = false;
+
+    static bool IsSecondGlaive(uint32 spellId)
+    {
+        return spellId == 954825 || (spellId >= 955279 && spellId <= 955284) || spellId == 2304825;
+    }
+
+    void HandleBeforeCast()
+    {
+        Unit* caster = GetCaster();
+        _tossAndThrow = caster && caster->HasAura(TOSS_AND_THROW);
+    }
+
+    void HandleAfterCast()
+    {
+        Unit* caster = GetCaster();
+        if (!_tossAndThrow || !caster || !IsSecondGlaive(GetSpellInfo()->Id))
+            return;
+        if (Unit* target = GetExplTargetUnit())
+            caster->CastSpell(target, COMBO_POINT, true);
+        if (Aura* aura = caster->GetAura(TOSS_AND_THROW))
+            aura->ModCharges(-1);
+    }
+
+    void HandleOnHit()
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        int32 const damage = GetHitDamage();
+        if (!caster || !target || damage <= 0)
+            return;
+        bool const monster = !target->IsControlledByPlayer();
+        float multiplier = 1.0f;
+        if (_tossAndThrow && monster)
+            multiplier *= 2.0f;
+        if (Aura const* kunai = target->GetAura(KUNAI, caster->GetGUID()))
+            multiplier *= 1.0f + (monster ? 0.70f : 0.05f) * float(kunai->GetStackAmount());
+        if (multiplier != 1.0f)
+            SetHitDamage(int32(float(damage) * multiplier));
+    }
+
+    void HandleAfterHit()
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (caster && target && IsSecondGlaive(GetSpellInfo()->Id))
+            target->RemoveAurasDueToSpell(KUNAI, caster->GetGUID());
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_wcme_glaive_toss_ninja::HandleBeforeCast);
+        AfterCast += SpellCastFn(spell_wcme_glaive_toss_ninja::HandleAfterCast);
+        OnHit += SpellHitFn(spell_wcme_glaive_toss_ninja::HandleOnHit);
+        AfterHit += SpellHitFn(spell_wcme_glaive_toss_ninja::HandleAfterHit);
+    }
+};
+
+// Wildcard: Toss and Throw (277455) on Shuriken Toss: with its buff (277456) up, Shuriken Toss deals 100% more damage
+// to monsters (modifier type 38 in its data does not exist in this core). The buff is read before the cast uses its
+// charge (BeforeCast runs before Player::RemoveSpellMods in Spell::_cast), so the third toss keeps the bonus.
+class spell_wcme_shuriken_toss_monsters : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_shuriken_toss_monsters);
+
+    bool _tossAndThrow = false;
+
+    void HandleBeforeCast()
+    {
+        Unit* caster = GetCaster();
+        _tossAndThrow = caster && caster->HasAura(277456);
+    }
+
+    void HandleOnHit()
+    {
+        Unit* target = GetHitUnit();
+        if (_tossAndThrow && target && !target->IsControlledByPlayer() && GetHitDamage() > 0)
+            SetHitDamage(GetHitDamage() * 2);
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_wcme_shuriken_toss_monsters::HandleBeforeCast);
+        OnHit += SpellHitFn(spell_wcme_shuriken_toss_monsters::HandleOnHit);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_divine_concord_bonus);`n    RegisterSpellScript(spell_wcme_glaive_toss_ninja);`n    RegisterSpellScript(spell_wcme_shuriken_toss_monsters);`n")
+Set-Content $file $text -NoNewline
+}
