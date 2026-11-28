@@ -1711,22 +1711,21 @@ $class = @'
 // while it lasts, Whirlwind hits 5 more targets and puts your Rend on each enemy it hits. The buff's own data asks for
 // both with a spell modifier our core lacks (34) and a placeholder, so this script does them. The target limit is
 // raised before the targets are chosen (BeforeCast runs before SelectSpellTargets in Spell::_cast); Rend is the
-// highest rank you know, stock or CoA, and is applied by the main-hand Whirlwind only. Bound in sql 177.
+// highest rank you know, stock or CoA, and is applied by the main-hand Whirlwind only. Whether the buff is up is read
+// once, before the cast, and kept for the hits. Bound in sql 177 to Whirlwind only, not Bladestorm's Whirlwind ticks.
 class spell_wcme_blades_of_blood_whirlwind : public SpellScript
 {
     PrepareSpellScript(spell_wcme_blades_of_blood_whirlwind);
 
     static constexpr uint32 BLADES_OF_BLOOD_BUFF = 285899;
 
-    bool HasBuff() const
-    {
-        Unit* caster = GetCaster();
-        return caster && caster->HasAura(BLADES_OF_BLOOD_BUFF);
-    }
+    bool _empowered = false;
 
     void HandleBeforeCast()
     {
-        if (!HasBuff())
+        Unit* caster = GetCaster();
+        _empowered = caster && caster->HasAura(BLADES_OF_BLOOD_BUFF);
+        if (!_empowered)
             return;
         if (uint32 const limit = GetSpellInfo()->MaxAffectedTargets)
             GetSpell()->SetSpellValue(SPELLVALUE_MAX_TARGETS, int32(limit + 5));
@@ -1734,15 +1733,15 @@ class spell_wcme_blades_of_blood_whirlwind : public SpellScript
 
     void HandleAfterHit()
     {
-        static std::unordered_set<uint32> const mainHand = { 1680, 1101680, 1150622, 1250622 };
-        if (!mainHand.contains(GetSpellInfo()->Id) || !HasBuff())
+        static std::unordered_set<uint32> const mainHand = { 1680, 1101680 };
+        if (!_empowered || !mainHand.contains(GetSpellInfo()->Id))
             return;
         Player* player = GetCaster()->ToPlayer();
         Unit* target = GetHitUnit();
         if (!player || !target || !target->IsAlive())
             return;
-        static constexpr std::array<uint32, 20> rend = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208, 46845, 47465,
-            1100772, 1106546, 1106547, 1106548, 1111572, 1111573, 1111574, 1125208, 1146845, 1147465 };
+        static constexpr std::array<uint32, 20> rend = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208, 46845,
+            47465, 1100772, 1106546, 1106547, 1106548, 1111572, 1111573, 1111574, 1125208, 1146845, 1147465 };
         uint32 best = 0;
         uint32 bestLevel = 0;
         for (uint32 spellId : rend)
@@ -1765,9 +1764,11 @@ class spell_wcme_blades_of_blood_whirlwind : public SpellScript
 };
 
 // Wildcard: Swirling Maelstrom (Mystic Enchant 984616). Spending five Maelstrom Weapon stacks always gives a Swirling
-// Maelstrom stack (984617). Its Lava Lash and Stormstrike part is data (sql 171). Maelstrom Weapon's buffs are used up
-// by the spell they speed up: their only charge goes and the buff is removed as expired before its time runs out,
-// which a buff that simply timed out cannot be (its duration is then 0).
+// Maelstrom stack (984617). Its Lava Lash and Stormstrike part is data (sql 171). A Maelstrom Weapon buff is used up by
+// the spell it speeds up in one of two ways: one with a spell_proc row (stock 53817) by the proc system, which uses its
+// only charge and removes it in the default mode (Aura::ConsumeProcCharges); one without, by Player::RemoveSpellMods,
+// which removes it as expired while time remains. A buff that simply timed out is removed as expired with no time
+// left, and keeps its charge, so neither test matches it.
 class wcme_swirling_maelstrom : public UnitScript
 {
 public:
@@ -1775,13 +1776,15 @@ public:
 
     void OnAuraRemove(Unit* unit, AuraApplication* application, AuraRemoveMode mode) override
     {
-        if (!unit || !application || mode != AURA_REMOVE_BY_EXPIRE || !unit->IsPlayer())
+        if (!unit || !application || !unit->IsPlayer())
             return;
         Aura const* aura = application->GetBase();
         uint32 const id = aura->GetId();
         if (id != 53817 && id != 853817 && id != 1253817)
             return;
-        if (aura->GetStackAmount() < 5 || aura->GetDuration() <= 0 || !unit->HasAura(984616))
+        bool const spentByProc = mode == AURA_REMOVE_BY_DEFAULT && aura->IsUsingCharges() && aura->GetCharges() == 0;
+        bool const spentBySpellMod = mode == AURA_REMOVE_BY_EXPIRE && aura->GetDuration() > 0;
+        if (!(spentByProc || spentBySpellMod) || aura->GetStackAmount() < 5 || !unit->HasAura(984616))
             return;
         unit->CastSpell(unit, 984617, true);
     }
