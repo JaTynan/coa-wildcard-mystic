@@ -4,7 +4,7 @@ requests and server builds changed it, when that build went live, what testing r
 and sources behind it.
 
 Writes enchants/<tier>-history.csv (one row per copy) and enchants/<tier>-notes.md (one section per enchant we
-changed), where <tier> is legendary or epic. Hand-kept inputs: enchants/<tier>-notes.csv (assumptions, sources,
+changed), where <tier> is legendary or epic, then the website's enchant table (scripts/enchant_status.py). Hand-kept inputs: enchants/<tier>-notes.csv (assumptions, sources,
 decisions, checked verdicts), enchants/<tier>-notes-header.md,
 enchants/test-checklist.csv and the tracker's tested column.
 
@@ -346,6 +346,10 @@ def main():
     header = header.rstrip().replace('\n## Enchants', '\n' + '\n'.join(review) + '\n\n## Enchants')
     (ROOT / f'enchants/{tier}-notes.md').write_text(header.rstrip() + '\n\n' + '\n'.join(sections), encoding='utf-8')
     print(f'{len(rows)} {tier} copies, {len(sections)} with notes')
+    # The website's Mystic Enchants page (launcher/site/enchants.html) reads both tiers' histories.
+    sys.path.insert(0, str(ROOT / 'scripts'))
+    import enchant_status
+    print(f'{len(enchant_status.build())} enchants on the website page (launcher/site/enchant-status.json)')
 
 
 if __name__ == '__main__':
