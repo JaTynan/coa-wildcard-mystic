@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Racials</title>
+<link rel="stylesheet" href="style.css">
+<script src="site.js"></script>
+<style>
+  /* Racials only */
+  main { max-width: 1100px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+  .tabs button { font: inherit; font-size: 15px; color: var(--text); background: var(--field); border: 1px solid #44444e;
+                 border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: #111; font-weight: 700; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin: 0 0 14px; }
+  .tools label { font-weight: 400; margin: 0; color: var(--muted); font-size: 15px; display: flex; gap: 6px; align-items: center; }
+  .tools input[type=checkbox] { width: auto; margin: 0; }
+  .races { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .race h2 { display: flex; align-items: center; gap: 12px; margin: 0 0 4px; }
+  .race .faction { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 12px; }
+  .race .faction.alliance { color: #7fb2ff; }
+  .race .faction.horde { color: #ff7a6b; }
+  .racial { display: flex; gap: 10px; align-items: flex-start; padding: 8px; margin: 0 -8px; border-radius: 10px; }
+  .racial:hover, .racial:focus-visible { background: var(--panel-2); }
+  .racial .name { font-weight: 700; }
+  .racial .what { color: var(--muted); font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+                  overflow: hidden; }
+  .tagword { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; border-radius: 4px;
+             padding: 0 5px; margin-left: 6px; vertical-align: 1px; white-space: nowrap; }
+  .tagword.new { color: var(--gold); border: 1px solid var(--gold); }
+  .tagword.changed { color: #8fd0ff; border: 1px solid #8fd0ff; }
+  .tagword.passive { color: var(--muted); border: 1px solid #55555f; }
+</style>
+</head>
+<body data-page="racials">
+<main>
+  <header class="page-head">
+    <p class="eyebrow">Racials</p>
+    <h1>Race abilities</h1>
+    <p class="lede">Every race on Wildcard has one signature passive of its own, and some stock racials work differently
+    here. Pick a race with them in mind. Hover over an ability, or tap it, for the full tooltip.</p>
+  </header>
+  <div class="stack">
+    <section class="panel">
+      <div class="tabs" id="tabs" role="group" aria-label="Faction"></div>
+      <div class="tools">
+        <label><input type="checkbox" id="all"> Also show the racials that work as in Wrath</label>
+      </div>
+      <div class="races" id="races"><p class="note">Loading...</p></div>
+      <p class="note" id="count" style="margin-top:14px"></p>
+    </section>
+    <section class="panel">
+      <h2>Reading the page</h2>
+      <ul class="note">
+        <li><span class="tagword new">New</span> is the race's signature passive, made for Wildcard. Its tooltip lists
+          the buffs you will see while it works.</li>
+        <li><span class="tagword changed">Changed</span> is a stock racial that works differently here; the tooltip says how.</li>
+        <li>In game, type <code>.racial</code> to see what your signature passive is doing right now.</li>
+        <li>Numbers are for a level 60 character. The tooltips are the game's own, read from the server each night.</li>
+      </ul>
+    </section>
+  </div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const el = Wildcard.el;
+const FACTIONS = ["All", "Alliance", "Horde"];
+let data = null;
+let faction = "All";
+
+function plain(tip) {
+  return (tip.lines || []).map((line) => line.map(([text]) => text).join("")).join(" ");
+}
+
+function showTabs() {
+  const box = $("tabs");
+  box.textContent = "";
+  for (const name of FACTIONS) {
+    const button = el("button", { type: "button", "aria-pressed": String(name === faction) }, name);
+    button.onclick = () => { faction = name; showTabs(); show(); };
+    box.append(button);
+  }
+}
+
+function show() {
+  const box = $("races");
+  box.textContent = "";
+  const all = $("all").checked;
+  let shown = 0;
+  for (const race of data.races) {
+    if (faction !== "All" && race.faction !== faction) continue;
+    const card = el("section", { class: "card race" },
+      el("h2", {}, Wildcard.icon(race.icon, 40), race.race),
+      el("p", { class: "faction " + race.faction.toLowerCase() }, race.faction));
+    for (const tip of race.racials) {
+      if (!all && !tip.kind) continue;
+      shown++;
+      const name = el("div", { class: "name" }, tip.name,
+        tip.kind === "new" ? el("span", { class: "tagword new" }, "New") : null,
+        tip.kind === "changed" ? el("span", { class: "tagword changed" }, "Changed") : null,
+        tip.passive ? el("span", { class: "tagword passive" }, "Passive") : null);
+      const what = el("div", { class: "what" }, tip.change || plain(tip));
+      const row = el("div", { class: "racial" }, Wildcard.icon(tip.icon, 36), el("div", {}, name, what));
+      const label = tip.kind === "new" ? "Signature passive, new on Wildcard" : (tip.passive ? "Passive" : "");
+      Wildcard.attachTip(row, () => Wildcard.tipCard(tip, { qualityLabel: label, subsLabel: "Buffs it shows" }));
+      card.append(row);
+    }
+    box.append(card);
+  }
+  $("count").textContent = shown + (shown === 1 ? " racial" : " racials") + " shown. Updated " +
+    new Date(data.updated).toLocaleString() + ".";
+}
+
+async function load() {
+  try {
+    data = await Wildcard.tooltips("racial-tooltips.json");
+  } catch (error) {
+    $("races").innerHTML = '<p class="note">The racials are unavailable right now. Try again in a minute.</p>';
+    return;
+  }
+  showTabs();
+  show();
+}
+
+$("all").addEventListener("change", show);
+load();
+</script>
+</body>
+</html>

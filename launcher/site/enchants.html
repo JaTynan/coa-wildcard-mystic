@@ -22,6 +22,8 @@
        font-weight: 600; padding: 0 10px 8px; border-bottom: 1px solid var(--line); }
   td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
   td.name { font-weight: 700; }
+  td.name .enchant { display: flex; gap: 10px; align-items: center; }
+  td.name .enchant:focus-visible { outline-offset: 4px; }
   td.name .quality { display: block; font-weight: 400; font-size: 13px; }
   .legendary { color: #ff9f40; }
   .epic { color: #c9a0ff; }
@@ -50,14 +52,15 @@
     <p class="eyebrow">Mystic Enchants</p>
     <h1>Enchant status</h1>
     <p class="lede">Many Legendary and Epic Mystic Enchants needed fixing on Wildcard. This table shows where each one
-    stands, so you can plan a build around enchants that work. Hover or open an enchant in game for what it does.</p>
+    stands, so you can plan a build around enchants that work. Hover over an enchant, or tap it, to see what it does.</p>
+    <p class="note" id="caps"></p>
   </header>
   <div class="stack">
     <section class="panel">
       <div class="tabs" id="quality" role="group" aria-label="Quality"></div>
       <div class="tabs" id="status" role="group" aria-label="Status"></div>
       <div class="tools">
-        <input type="search" id="search" placeholder="Search an enchant" aria-label="Search">
+        <input type="search" id="search" placeholder="Search an enchant or what it does" aria-label="Search">
       </div>
       <div class="scroll">
         <table>
@@ -90,6 +93,7 @@ const $ = (id) => document.getElementById(id);
 const LABELS = { confirmed: "Confirmed working", restored: "Restored", feedback: "Waiting on feedback", broken: "Not working yet" };
 const QUALITIES = ["All", "Legendary", "Epic"];
 let data = null;
+let tips = {};
 let quality = "All";
 let status = "all";
 
@@ -131,11 +135,18 @@ function showRows() {
   body.textContent = "";
   const words = $("search").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
   const list = data.enchants.filter((e) => inQuality(e) && (status === "all" || e.status === status) &&
-    words.every((w) => e.name.toLowerCase().includes(w)));
+    words.every((w) => e.name.toLowerCase().includes(w) || (tips[e.spell] && tips[e.spell].search.includes(w))));
   for (const e of list.slice(0, 600)) {
     const row = el("tr");
-    const name = el("td", { class: "name" }, e.name);
-    name.append(el("span", { class: "quality " + e.quality.toLowerCase() }, e.quality));
+    const name = el("td", { class: "name" });
+    const tip = tips[e.spell];
+    const label = el("div", {}, e.name);
+    label.append(el("span", { class: "quality " + e.quality.toLowerCase() }, e.quality));
+    const enchant = el("div", { class: "enchant" });
+    enchant.append(Wildcard.icon(tip ? tip.icon : "", 36), label);
+    if (tip) Wildcard.attachTip(enchant, () => Wildcard.tipCard(tip, {
+      quality: e.quality.toLowerCase(), qualityLabel: e.quality + " Mystic Enchant", limit: tip.limit }));
+    name.append(enchant);
     const badge = el("td");
     badge.append(el("span", { class: "badge " + e.status }, LABELS[e.status]));
     const notes = el("td", { class: "note" }, e.note);
@@ -168,6 +179,23 @@ async function load() {
   }
   showTabs();
   showRows();
+  // Tooltips and icons come from a second file made on the server each night; the table works without it.
+  try {
+    const t = await Wildcard.tooltips("enchant-tooltips.json");
+    tips = t.tooltips || {};
+    for (const tip of Object.values(tips)) tip.search = textOf(tip).toLowerCase();
+    if (t.caps) $("caps").textContent = "A Wildcard character can slot " + t.caps.Legendary + " Legendary and up to " +
+      t.caps.Epic + " Epic enchants. Numbers in the tooltips are for a level " + t.level + " character; " +
+      "where they grow with a stat, the tooltip says which.";
+    showRows();
+  } catch (error) { /* no tooltips: names and statuses only */ }
+}
+
+function textOf(tip) {
+  const parts = [tip.name, ...(tip.req || [])];
+  for (const line of tip.lines || []) for (const [text] of line) parts.push(text);
+  for (const sub of tip.subs || []) parts.push(textOf(sub));
+  return parts.join(" ");
 }
 
 $("search").addEventListener("input", showRows);
