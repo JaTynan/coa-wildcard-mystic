@@ -1591,3 +1591,102 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    WcmeSpellBlockChanceBonus = &WcmeFierceBlockBonus;`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Showcase talents, batch 2 (docs/bot-builds/showcase-audit.md): Blades of Blood, Swirling Maelstrom.
+# sql/enchants/177-talent-code-showcase-2.sql binds the Whirlwind script. James, 28 Nov 2026: restore the showcase
+# builds' talents.
+Write-Host "Patch: Blades of Blood widens Whirlwind and applies Rend; Swirling Maelstrom stacks from spending Maelstrom Weapon"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Blades of Blood (talent 285895). Charge or Colossus Smash gives its 3-sec buff 285899 (the core's rule);
+// while it lasts, Whirlwind hits 5 more targets and puts your Rend on each enemy it hits. The buff's own data asks for
+// both with a spell modifier our core lacks (34) and a placeholder, so this script does them. The target limit is
+// raised before the targets are chosen (BeforeCast runs before SelectSpellTargets in Spell::_cast); Rend is the
+// highest rank you know, stock or CoA, and is applied by the main-hand Whirlwind only. Bound in sql 177.
+class spell_wcme_blades_of_blood_whirlwind : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_blades_of_blood_whirlwind);
+
+    static constexpr uint32 BLADES_OF_BLOOD_BUFF = 285899;
+
+    bool HasBuff() const
+    {
+        Unit* caster = GetCaster();
+        return caster && caster->HasAura(BLADES_OF_BLOOD_BUFF);
+    }
+
+    void HandleBeforeCast()
+    {
+        if (!HasBuff())
+            return;
+        if (uint32 const limit = GetSpellInfo()->MaxAffectedTargets)
+            GetSpell()->SetSpellValue(SPELLVALUE_MAX_TARGETS, int32(limit + 5));
+    }
+
+    void HandleAfterHit()
+    {
+        static std::unordered_set<uint32> const mainHand = { 1680, 1101680, 1150622, 1250622 };
+        if (!mainHand.contains(GetSpellInfo()->Id) || !HasBuff())
+            return;
+        Player* player = GetCaster()->ToPlayer();
+        Unit* target = GetHitUnit();
+        if (!player || !target || !target->IsAlive())
+            return;
+        static constexpr std::array<uint32, 20> rend = { 772, 6546, 6547, 6548, 11572, 11573, 11574, 25208, 46845, 47465,
+            1100772, 1106546, 1106547, 1106548, 1111572, 1111573, 1111574, 1125208, 1146845, 1147465 };
+        uint32 best = 0;
+        uint32 bestLevel = 0;
+        for (uint32 spellId : rend)
+            if (player->HasSpell(spellId))
+                if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId))
+                    if (!best || info->SpellLevel >= bestLevel)
+                    {
+                        best = spellId;
+                        bestLevel = info->SpellLevel;
+                    }
+        if (best)
+            player->CastSpell(target, best, true);
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_wcme_blades_of_blood_whirlwind::HandleBeforeCast);
+        AfterHit += SpellHitFn(spell_wcme_blades_of_blood_whirlwind::HandleAfterHit);
+    }
+};
+
+// Wildcard: Swirling Maelstrom (Mystic Enchant 984616). Spending five Maelstrom Weapon stacks always gives a Swirling
+// Maelstrom stack (984617). Its Lava Lash and Stormstrike part is data (sql 171). Maelstrom Weapon's buffs are used up
+// by the spell they speed up: their only charge goes and the buff is removed as expired before its time runs out,
+// which a buff that simply timed out cannot be (its duration is then 0).
+class wcme_swirling_maelstrom : public UnitScript
+{
+public:
+    wcme_swirling_maelstrom() : UnitScript("wcme_swirling_maelstrom", true, { UNITHOOK_ON_AURA_REMOVE }) { }
+
+    void OnAuraRemove(Unit* unit, AuraApplication* application, AuraRemoveMode mode) override
+    {
+        if (!unit || !application || mode != AURA_REMOVE_BY_EXPIRE || !unit->IsPlayer())
+            return;
+        Aura const* aura = application->GetBase();
+        uint32 const id = aura->GetId();
+        if (id != 53817 && id != 853817 && id != 1253817)
+            return;
+        if (aura->GetStackAmount() < 5 || aura->GetDuration() <= 0 || !unit->HasAura(984616))
+            return;
+        unit->CastSpell(unit, 984617, true);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_blades_of_blood_whirlwind);`n    new wcme_swirling_maelstrom();`n")
+Set-Content $file $text -NoNewline
+}
