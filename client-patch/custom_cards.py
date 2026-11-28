@@ -35,6 +35,9 @@ CARDS = [
     (1235411, 1571194, 403833, EPIC, 0x1 | WILDCARD, 'Echoing Warcry', 'sql/enchants/185-custom-card-effects-1.sql'),
     (9990001, 275043, 9990001, EPIC, WILDCARD, 'Assault and Battery', 'sql/enchants/185-custom-card-effects-1.sql'),
     (9990002, 1576284, 9990002, EPIC, WILDCARD, 'Corrupted Maelstrom Weapon', 'sql/enchants/185-custom-card-effects-1.sql'),
+    (9990003, 277850, 9990003, EPIC, WILDCARD, 'Arcanesworn', 'patches/55-talent-fixes.ps1, sql/enchants/186-custom-card-effects-2.sql'),
+    (9990004, 275462, 9990004, EPIC, WILDCARD, 'Arcane Divinity', 'patches/55-talent-fixes.ps1, sql/enchants/186-custom-card-effects-2.sql'),
+    (9990005, 277880, 9990005, LEGENDARY, WILDCARD, 'Arcane Crusade', 'patches/55-talent-fixes.ps1, sql/enchants/186-custom-card-effects-2.sql'),
 ]
 WEIGHT = 100.0
 EXISTING_ITEMS = {403833}  # scrolls the client and the server already have; no copy is made
