@@ -231,7 +231,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 982743,Bone Arrow,Epic,132608,needs-code,other placeholder,verified,"teaches spell 284879, as its twin does (wcme_enchant_teach)",852392,006-teach-twins.sql,2026-11-03,pass: damage and debuff
 271778,Built up Thirst,Epic,200765,needs-code,other placeholder,live,action: finishing moves grant Built up Thirst,,007-enchant-actions.sql (part 1),,
 84377,Burst of Thorns,Epic,1176089,needs-code,other placeholder,broken,"teaches spell 1582316, as its twin does (wcme_enchant_teach)",1591036,006-teach-twins.sql,2026-11-03,"buff icon and tooltip only: no armour, mana regen or procs when hit (3 Nov)"
-977940,Demonic Mind,Epic,1178659,needs-code,other placeholder,partly working,"teaches spell 1586069, as its twin does (wcme_enchant_teach)",1591064,006-teach-twins.sql,2026-11-03,crit buff works; the proc on enemies did not fire
+977940,Demonic Mind,Epic,1178659,needs-code,other placeholder,live (after restart),"teaches spell 1586069, as its twin does (wcme_enchant_teach); Demonic Wounds proc via action table",1591064,006-teach-twins.sql; 171-dead-procs-showcase.sql,2026-11-03,crit buff works; the proc on enemies did not fire
 1181190,Electric Surge,Epic,201604,needs-code,other placeholder,live,action: Lightning Bolt or Chain Lightning triggers Flurry (the extra charges are not done),,007-enchant-actions.sql,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 271997,Forbidden Dance,Epic,200780,needs-code,other placeholder,live,action: Forbidden Technique grants Forbidden Dance,,007-enchant-actions.sql (part 1),,
 977939,Frozen Mind,Epic,1178658,needs-code,other placeholder,live,"teaches spell 1586047, as its twin does (wcme_enchant_teach)",1591063,006-teach-twins.sql,,
@@ -5892,7 +5892,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 285504,Swift Favor,Uncommon,201818,standard,,working (audit),,,,,
 81027,Swift Justice,Epic,1175920,standard,,working (audit),,,,,
 281300,Swift Justice,Uncommon,201651,standard,,working (audit),,,,,
-984616,Swirling Maelstrom,Epic,200490,standard,,working (audit),,,,,
+984616,Swirling Maelstrom,Epic,200490,standard,,partly working,"action table: Lava Lash and Stormstrike, 33%",,171-dead-procs-showcase.sql,,the guaranteed stack on spending 5 Maelstrom Weapon stacks is not done
 912281,Sword Specialization,Rare,1175672,standard,,working (audit),,,,,
 979777,Sword and Thunder,Epic,1178760,standard,,working (audit),,,,,
 1587301,Sword and Thunder,Epic,201395,standard,,working (audit),,,,,

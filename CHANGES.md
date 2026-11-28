@@ -170,6 +170,8 @@ version of their trigger ability (the CoA copy, or the stock spell), which the c
 Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw,
 Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light,
 Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis. Data only (no build).
+`171-dead-procs-showcase.sql`: Demonic Mind (talent and enchant) now puts Demonic Wounds on targets of direct spell
+damage (75%), and Swirling Maelstrom's stack comes from Lava Lash and Stormstrike (33%); both never fired. Data only.
 `175-talent-code-showcase-1.sql`: data half of patch 55's showcase batch 1 (needs that build), and Arcane Gunslinger:
 Arcane Barrage hits one more enemy while its buff is up, and gaining Missile Barrage ends the buff.
 
