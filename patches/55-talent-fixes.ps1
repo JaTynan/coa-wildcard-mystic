@@ -1795,3 +1795,588 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_blades_of_blood_whirlwind);`n    new wcme_swirling_maelstrom();`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Showcase talents, batch 3 (docs/bot-builds/showcase-audit.md): Blooming Growth, Gul'dan's Chosen, Shadow Shot,
+# Time Bomb. sql/enchants/179-talent-code-showcase-3.sql binds the scripts and gives Time Bomb its proc row.
+# James, 28 Nov 2026: restore the showcase builds' talents.
+Write-Host "Patch: Blooming Growth spreads Regrowth; Gul'dan's Chosen keeps Backdraft and Molten Core; Shadow Shot applies Corruption; Time Bomb stores and detonates"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Blooming Growth (talent and Mystic Enchant 272214). A critical direct heal from Regrowth puts that
+// Regrowth's heal over time, 10% weaker, on up to 3 other party or raid members within 20 yards of the healed ally.
+// The spell data fires on every helpful spell and casts a placeholder heal (272215, 6 per tick), so this script picks
+// the event and sets the amount. The amount is the Regrowth's own per-tick value, which already holds the caster's
+// healing bonus (taken when the heal over time was applied, AuraEffect::CalculateAmount); 272215 is applied and then
+// given 90% of it, so the bonus is not counted twice. Party members are taken in group order.
+class spell_wcme_blooming_growth : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_blooming_growth);
+
+    static constexpr uint32 SPREAD_HOT = 272215;
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        SpellInfo const* spell = eventInfo.GetSpellInfo();
+        HealInfo const* heal = eventInfo.GetHealInfo();
+        return spell && heal && heal->GetHeal() && heal->GetTarget() && spell->SpellFamilyName == SPELLFAMILY_DRUID &&
+            (spell->SpellFamilyFlags[0] & 0x40) && spell->HasEffect(SPELL_EFFECT_HEAL) &&
+            (eventInfo.GetHitMask() & PROC_HIT_CRITICAL);
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        Player* caster = GetTarget()->ToPlayer();
+        Unit* healed = eventInfo.GetHealInfo()->GetTarget();
+        uint32 const regrowth = eventInfo.GetSpellInfo()->Id;
+        if (!caster || !healed)
+            return;
+        int32 perTick = 0;
+        for (AuraEffect const* hot : healed->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL))
+            if (hot->GetId() == regrowth && hot->GetCasterGUID() == caster->GetGUID())
+                perTick = CalculatePct(hot->GetAmount(), 90);
+        Group* group = caster->GetGroup();
+        if (perTick <= 0 || !group)
+            return;
+        uint8 spread = 0;
+        for (GroupReference* ref = group->GetFirstMember(); ref && spread < 3; ref = ref->next())
+        {
+            Player* member = ref->GetSource();
+            if (!member || member == healed || !member->IsAlive() || !member->IsInMap(healed) ||
+                !member->IsWithinDistInMap(healed, 20.0f))
+                continue;
+            if (Aura* aura = caster->AddAura(SPREAD_HOT, member))
+                if (AuraEffect* effect = aura->GetEffect(EFFECT_0))
+                {
+                    effect->ChangeAmount(perTick);
+                    ++spread;
+                }
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_blooming_growth::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_blooming_growth::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Wildcard: Gul'dan's Chosen (talent 277150). While its buff 277151 lasts, Backdraft and Molten Core are not used up.
+// The core's own rule gives the buff; the buff is a placeholder. Every version of the Backdraft and Molten Core buffs
+// has a proc entry (a spell_proc row, or one the core makes from the spell's proc flags), so their charges go only
+// through the proc system (Player::RemoveSpellMods skips spells with a proc entry). Refusing the proc while the
+// buff is up keeps the charge; the cast-time, cost and crit modifiers still apply. Bound in sql 179 to those buffs.
+class spell_wcme_guldans_chosen_keep : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_guldans_chosen_keep);
+
+    bool CheckProc(ProcEventInfo& /*eventInfo*/)
+    {
+        return !GetTarget()->HasAura(277151);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_guldans_chosen_keep::CheckProc);
+    }
+};
+
+// Wildcard: Shadow Shot (talent 276811; ranks 2-8 are 276828-276834) also applies your Corruption, the highest rank you know, stock or CoA. Its
+// damage needs no script: it carries Steady Shot's class flag, so the core's Steady Shot code handles it.
+class spell_wcme_shadow_shot : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_shadow_shot);
+
+    void HandleAfterHit()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        Unit* target = GetHitUnit();
+        if (!player || !target || !target->IsAlive())
+            return;
+        static constexpr std::array<uint32, 20> corruption = { 172, 6222, 6223, 7648, 11671, 11672, 25311, 27216,
+            47812, 47813, 1100172, 1106222, 1106223, 1107648, 1111671, 1111672, 1125311, 1127216, 1147812, 1147813 };
+        uint32 best = 0;
+        uint32 bestLevel = 0;
+        for (uint32 spellId : corruption)
+            if (player->HasSpell(spellId))
+                if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId))
+                    if (!best || info->SpellLevel >= bestLevel)
+                    {
+                        best = spellId;
+                        bestLevel = info->SpellLevel;
+                    }
+        if (best)
+            player->CastSpell(target, best, true);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_wcme_shadow_shot::HandleAfterHit);
+    }
+};
+
+// Wildcard: Time Bomb (talent 284591). The bomb on the enemy stores 50% of the Arcane damage its caster deals to that
+// enemy, and when it runs out the caster's explosion (982483, area) deals the stored amount around the enemy. Both of
+// its effects are placeholders. Its spell_proc row (sql 179) lets the bomb's aura see Arcane damage it takes, including
+// damage from triggered spells; only damage from the bomb's own caster is stored. Dispelled or dying, it does not go
+// off: the tooltip names only the end of the duration.
+class spell_wcme_time_bomb : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_time_bomb);
+
+    static constexpr uint32 EXPLOSION = 982483;
+
+    uint32 _stored = 0;
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        DamageInfo const* damage = eventInfo.GetDamageInfo();
+        Unit const* actor = eventInfo.GetActor();
+        return damage && damage->GetDamage() && actor && actor->GetGUID() == GetCasterGUID() &&
+            (damage->GetSchoolMask() & SPELL_SCHOOL_MASK_ARCANE) &&
+            !(eventInfo.GetSpellInfo() && eventInfo.GetSpellInfo()->Id == EXPLOSION);
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        _stored = uint32(std::min<uint64>(uint64(_stored) + CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), 50), INT32_MAX));
+    }
+
+    void HandleRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE || !_stored)
+            return;
+        Unit* caster = GetCaster();
+        SpellInfo const* explosion = sSpellMgr->GetSpellInfo(EXPLOSION);
+        if (!caster || !explosion || !caster->IsInMap(GetTarget()))
+            return;
+        SpellCastTargets targets;
+        targets.SetDst(*GetTarget());
+        CustomSpellValues values;
+        values.AddSpellMod(SPELLVALUE_BASE_POINT0, int32(_stored));
+        caster->CastSpell(targets, explosion, &values, TRIGGERED_FULL_MASK, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_time_bomb::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_time_bomb::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_time_bomb::HandleRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Wildcard: Time Bomb's other part: Arcane Barrage that deals damage takes 8 sec off Time Bomb's cooldown (284592, an
+// effect the core already handles), once per cast. Bound in sql 179 to every version of Arcane Barrage.
+class spell_wcme_time_bomb_barrage : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_time_bomb_barrage);
+
+    bool _done = false;
+
+    void HandleAfterHit()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (_done || !player || GetHitDamage() <= 0 || !player->HasSpell(284591))
+            return;
+        _done = true;
+        player->CastSpell(player, 284592, true);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_wcme_time_bomb_barrage::HandleAfterHit);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_blooming_growth);`n    RegisterSpellScript(spell_wcme_guldans_chosen_keep);`n    RegisterSpellScript(spell_wcme_shadow_shot);`n    RegisterSpellScript(spell_wcme_time_bomb);`n    RegisterSpellScript(spell_wcme_time_bomb_barrage);`n")
+Set-Content $file $text -NoNewline
+}
+
+# ---- Showcase talents, batch 4 (docs/bot-builds/showcase-audit.md): Preservation (Prayer of Preservation build).
+# sql/enchants/180-talent-code-showcase-4.sql binds the scripts, gives Preservation its proc row and fixes its data.
+# James, 28 Nov 2026: restore the showcase builds' talents.
+Write-Host "Patch: Preservation from Prayer of Preservation, used up by your next direct heal on that ally"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Preservation (talent 276273). Each heal of your Prayer of Preservation on an injured ally gives that ally
+// Preservation (276259) for 10 sec: your heals crit it 20% more often (aura 308 in sql 180's copy of 276259), and your
+// next direct heal on it uses it up to heal 3 other allies near it (276258), give it Shield of Preservation (276257)
+// and take 3 sec off Prayer of Preservation's cooldown. All of it was placeholders. Prayer of Preservation's ranks are
+// not one rank chain in our data, so the cooldown is cut here on every version you have on cooldown. Each version of
+// the channel's heal grants it (stock S10 276261-276267 and the two other copies); none of them uses it up.
+static thread_local ObjectGuid WcmePreservationHolder;
+
+static bool WcmeIsPrayerOfPreservationHeal(uint32 spellId)
+{
+    return (spellId >= 276261 && spellId <= 276267) || (spellId >= 888581 && spellId <= 888587) ||
+        (spellId >= 1576676 && spellId <= 1576682);
+}
+
+class spell_wcme_preservation_grant : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_preservation_grant);
+
+    bool _injured = false;
+
+    // Set from the heal effect only: the channel's other effects pick other units (the caster, a second area pick),
+    // which must not get Preservation. Health here is still the value before this heal.
+    void HandleHeal(SpellEffIndex /*effIndex*/)
+    {
+        Unit* target = GetHitUnit();
+        _injured = target && !target->IsFullHealth();
+    }
+
+    void HandleAfterHit()
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (_injured && caster && target && target->IsAlive() && caster->HasAura(276273))
+            caster->AddAura(276259, target);
+        _injured = false;
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_preservation_grant::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
+        AfterHit += SpellHitFn(spell_wcme_preservation_grant::HandleAfterHit);
+    }
+};
+
+class spell_wcme_preservation : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_preservation);
+
+    static constexpr uint32 EXTRA_HEAL = 276258;
+    static constexpr uint32 SHIELD = 276257;
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        HealInfo const* heal = eventInfo.GetHealInfo();
+        SpellInfo const* spell = eventInfo.GetSpellInfo();
+        Unit const* actor = eventInfo.GetActor();
+        return heal && heal->GetHeal() && spell && actor && actor->GetGUID() == GetCasterGUID() &&
+            spell->Id != EXTRA_HEAL && !WcmeIsPrayerOfPreservationHeal(spell->Id);
+    }
+
+    void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)
+    {
+        PreventDefaultAction();
+        Unit* caster = GetCaster();
+        Unit* target = GetTarget();
+        SpellInfo const* extraHeal = sSpellMgr->GetSpellInfo(EXTRA_HEAL);
+        if (!caster || !extraHeal || !caster->IsInMap(target))
+            return;
+        SpellCastTargets targets;
+        targets.SetDst(*target);
+        WcmePreservationHolder = target->GetGUID();
+        caster->CastSpell(targets, extraHeal, nullptr, TRIGGERED_FULL_MASK, nullptr, aurEff);
+        WcmePreservationHolder.Clear();
+        caster->CastSpell(target, SHIELD, true, nullptr, aurEff);
+        if (Player* player = caster->ToPlayer())
+        {
+            static constexpr std::array<uint32, 21> prayer = { 276250, 276251, 276252, 276253, 276254, 276255, 276256,
+                888571, 888572, 888573, 888574, 888575, 888576, 888577,
+                1576669, 1576670, 1576671, 1576672, 1576673, 1576674, 1576675 };
+            for (uint32 spellId : prayer)
+                if (player->HasSpellCooldown(spellId))
+                    player->ModifySpellCooldown(spellId, -3000);
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_preservation::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_preservation::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
+    }
+};
+
+// Preservation's extra heal (276258) heals 3 allies other than the one whose Preservation was used.
+class spell_wcme_preservation_heal : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_preservation_heal);
+
+    void FilterTargets(std::list<WorldObject*>& targets)
+    {
+        if (!WcmePreservationHolder)
+            return;
+        ObjectGuid const holder = WcmePreservationHolder;
+        targets.remove_if([holder](WorldObject const* target) { return target->GetGUID() == holder; });
+    }
+
+    void Register() override
+    {
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_preservation_heal::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
+        OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_wcme_preservation_heal::FilterTargets, EFFECT_1, TARGET_UNIT_DEST_AREA_ALLY);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_preservation_grant);`n    RegisterSpellScript(spell_wcme_preservation);`n    RegisterSpellScript(spell_wcme_preservation_heal);`n")
+Set-Content $file $text -NoNewline
+}
+
+# ---- Showcase talents, batch 5 (docs/bot-builds/showcase-audit.md): Heavyweight (Titan's Grip Crush build).
+# sql/enchants/181-talent-code-showcase-5.sql gives the stack buff its effects, Ready to Strike its charge, and binds
+# the script. James, 28 Nov 2026: Heroic Strike resets the stacks; auto attacks do not.
+Write-Host "Patch: Heavyweight stacks (2 from Overpower and Execute), Ready to Strike at 6, Heroic Strike resets, Thunder Clap aftershock"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Heavyweight (talent 273378). The core's rule gives one stack of Heavyweight (273379; 3% slower swings and
+// 4% more Physical damage per stack, from sql 181's copy) for each Slam, Overpower or Execute. This adds:
+// - a second stack for Overpower and Execute (added before the core's rule runs, in the same cast);
+// - Heroic Strike removes the stacks (James, 28 Nov: Heroic Strike resets them, auto attacks do not; the tooltip's
+//   "auto attacks reset" line would make 6 stacks unreachable);
+// - Thunder Clap with Ready to Strike (273381) up casts its aftershock (273384, 275% weapon damage around you) and
+//   uses Ready to Strike up. Mortal Strike uses it up through its proc row (sql 181).
+class wcme_heavyweight_casts : public PlayerScript
+{
+public:
+    wcme_heavyweight_casts() : PlayerScript("wcme_heavyweight_casts", { PLAYERHOOK_ON_SPELL_CAST }) { }
+
+    void OnPlayerSpellCast(Player* player, Spell* spell, bool /*skipCheck*/) override
+    {
+        if (!player || !spell || !spell->GetSpellInfo())
+            return;
+        static std::unordered_set<uint32> const doubleStack = { 7384, 1107384, 5308, 5309, 20658, 20660, 20661, 20662,
+            25234, 25236, 47470, 47471, 1105308, 1120658, 1120660, 1120661, 1120662, 1125234, 1125236, 1147470, 1147471 };
+        static std::unordered_set<uint32> const heroicStrike = { 78, 284, 285, 1608, 11564, 11565, 11566, 11567, 25286,
+            29707, 30324, 47449, 47450, 1100078, 1100284, 1100285, 1101608, 1111564, 1111565, 1111566, 1111567, 1125286,
+            1129707, 1130324, 1147449, 1147450 };
+        static std::unordered_set<uint32> const thunderClap = { 6343, 8198, 8204, 8205, 11580, 11581, 25264, 47501, 47502,
+            1106343, 1108198, 1108204, 1108205, 1111580, 1111581, 1125264, 1147501, 1147502 };
+        uint32 const id = spell->GetSpellInfo()->Id;
+        if (doubleStack.contains(id))
+        {
+            if (player->HasAura(273378))
+                player->CastSpell(player, 273379, true);
+        }
+        else if (heroicStrike.contains(id))
+        {
+            if (player->HasAura(273378))
+                player->RemoveAurasDueToSpell(273379);
+        }
+        else if (thunderClap.contains(id) && player->HasAura(273381))
+        {
+            if (SpellInfo const* aftershock = sSpellMgr->GetSpellInfo(273384))
+            {
+                SpellCastTargets targets;
+                targets.SetDst(*player);
+                player->CastSpell(targets, aftershock, nullptr, TRIGGERED_FULL_MASK);
+            }
+            player->RemoveAurasDueToSpell(273381);
+        }
+    }
+};
+
+// Heavyweight's stack buff gives Ready to Strike when it reaches its most stacks (6), once per climb: staying at 6
+// does not give it again; losing the stacks and building them back does.
+class spell_wcme_heavyweight_stacks : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_heavyweight_stacks);
+
+    uint8 _lastStacks = 0;
+
+    void HandleApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
+    {
+        uint8 const stacks = GetStackAmount();
+        uint8 const max = uint8(GetSpellInfo()->StackAmount);
+        if (max && stacks >= max && _lastStacks < max)
+            GetTarget()->CastSpell(GetTarget(), 273381, true);
+        _lastStacks = stacks;
+    }
+
+    void Register() override
+    {
+        AfterEffectApply += AuraEffectApplyFn(spell_wcme_heavyweight_stacks::HandleApply, EFFECT_0, SPELL_AURA_MOD_MELEE_HASTE, AURA_EFFECT_HANDLE_REAL_OR_REAPPLY_MASK);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    new wcme_heavyweight_casts();`n    RegisterSpellScript(spell_wcme_heavyweight_stacks);`n")
+Set-Content $file $text -NoNewline
+}
+
+# ---- Showcase talents, batch 6 (docs/bot-builds/showcase-audit.md): Divine Concord's extra stack, Glaive Toss with
+# Kunai and Toss and Throw, and Toss and Throw against monsters. sql/enchants/183-talent-code-showcase-6.sql binds them.
+# James, 28 Nov 2026: restore the showcase builds' talents.
+Write-Host "Patch: Divine Concord stacks; Kunai and Toss and Throw on Glaive Toss; Toss and Throw vs monsters"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Divine Concord (talent 277860). When Arcane Blast uses the Arcane Blast Art of War buff (984293, given by
+// sql 182's aura link), the buff's cleanup (984295) runs; with Divine Concord that also grants one more Arcane Blast
+// stack, or, while Harnessed Energy (283732 or 1585523) is up, one more Harnessed Energy charge instead. The charge is
+// added past the buff's usual most, as the tooltip says "additional".
+class spell_wcme_divine_concord_bonus : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_divine_concord_bonus);
+
+    void HandleAfterCast()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (!player || !player->HasAura(277860))
+            return;
+        // The cleanup runs while Arcane Blast hits its target, before Arcane Blast puts its own stack on you, so the
+        // extra stack is added just after (as the core's own spell_mage scripts defer aura changes).
+        player->m_Events.AddEventAtOffset([player]()
+        {
+            for (uint32 harnessedEnergy : { 283732u, 1585523u })
+                if (Aura* aura = player->GetAura(harnessedEnergy))
+                {
+                    if (aura->IsUsingCharges())
+                        aura->SetCharges(aura->GetCharges() + 1);
+                    return;
+                }
+            for (uint32 arcaneBlast : { 36032u, 1136032u })
+                if (Aura* aura = player->GetAura(arcaneBlast))
+                {
+                    aura->ModStackAmount(1);
+                    return;
+                }
+        }, 1ms);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_wcme_divine_concord_bonus::HandleAfterCast);
+    }
+};
+
+// Wildcard: Glaive Toss with the rogue talents Master of Kunai (277475) and Toss and Throw (277455). Glaive Toss is a
+// hunter-family spell, so their rogue-family modifiers never reach it. Bound in sql 183 to each glaive's damage spell
+// (two per cast). With Toss and Throw's buff (277456) up when the glaives are thrown: they deal 100% more damage to
+// monsters (the buff's second value; its modifier type, 38, does not exist in this core), and the second glaive gives
+// a combo point and uses one of the buff's three charges. Kunai (277477, your stacks on the enemy) adds 70% damage per
+// stack against monsters and 5% against players (its own two values), and the second glaive to hit uses them up.
+class spell_wcme_glaive_toss_ninja : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_glaive_toss_ninja);
+
+    static constexpr uint32 TOSS_AND_THROW = 277456;
+    static constexpr uint32 KUNAI = 277477;
+    static constexpr uint32 COMBO_POINT = 34071;
+
+    bool _tossAndThrow = false;
+
+    static bool IsSecondGlaive(uint32 spellId)
+    {
+        return spellId == 954825 || (spellId >= 955279 && spellId <= 955284) || spellId == 2304825;
+    }
+
+    void HandleBeforeCast()
+    {
+        Unit* caster = GetCaster();
+        _tossAndThrow = caster && caster->HasAura(TOSS_AND_THROW);
+    }
+
+    void HandleAfterCast()
+    {
+        Unit* caster = GetCaster();
+        if (!_tossAndThrow || !caster || !IsSecondGlaive(GetSpellInfo()->Id))
+            return;
+        if (Unit* target = GetExplTargetUnit())
+            caster->CastSpell(target, COMBO_POINT, true);
+        if (Aura* aura = caster->GetAura(TOSS_AND_THROW))
+            aura->ModCharges(-1);
+    }
+
+    void HandleOnHit()
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        int32 const damage = GetHitDamage();
+        if (!caster || !target || damage <= 0)
+            return;
+        bool const monster = !target->IsControlledByPlayer();
+        float multiplier = 1.0f;
+        if (_tossAndThrow && monster)
+            multiplier *= 2.0f;
+        if (Aura const* kunai = target->GetAura(KUNAI, caster->GetGUID()))
+            multiplier *= 1.0f + (monster ? 0.70f : 0.05f) * float(kunai->GetStackAmount());
+        if (multiplier != 1.0f)
+            SetHitDamage(int32(float(damage) * multiplier));
+    }
+
+    void HandleAfterHit()
+    {
+        Unit* caster = GetCaster();
+        Unit* target = GetHitUnit();
+        if (caster && target && IsSecondGlaive(GetSpellInfo()->Id))
+            target->RemoveAurasDueToSpell(KUNAI, caster->GetGUID());
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_wcme_glaive_toss_ninja::HandleBeforeCast);
+        AfterCast += SpellCastFn(spell_wcme_glaive_toss_ninja::HandleAfterCast);
+        OnHit += SpellHitFn(spell_wcme_glaive_toss_ninja::HandleOnHit);
+        AfterHit += SpellHitFn(spell_wcme_glaive_toss_ninja::HandleAfterHit);
+    }
+};
+
+// Wildcard: Toss and Throw (277455) on Shuriken Toss: with its buff (277456) up, Shuriken Toss deals 100% more damage
+// to monsters (modifier type 38 in its data does not exist in this core). The buff is read before the cast uses its
+// charge (BeforeCast runs before Player::RemoveSpellMods in Spell::_cast), so the third toss keeps the bonus.
+class spell_wcme_shuriken_toss_monsters : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_shuriken_toss_monsters);
+
+    bool _tossAndThrow = false;
+
+    void HandleBeforeCast()
+    {
+        Unit* caster = GetCaster();
+        _tossAndThrow = caster && caster->HasAura(277456);
+    }
+
+    void HandleOnHit()
+    {
+        Unit* target = GetHitUnit();
+        if (_tossAndThrow && target && !target->IsControlledByPlayer() && GetHitDamage() > 0)
+            SetHitDamage(GetHitDamage() * 2);
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_wcme_shuriken_toss_monsters::HandleBeforeCast);
+        OnHit += SpellHitFn(spell_wcme_shuriken_toss_monsters::HandleOnHit);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_divine_concord_bonus);`n    RegisterSpellScript(spell_wcme_glaive_toss_ninja);`n    RegisterSpellScript(spell_wcme_shuriken_toss_monsters);`n")
+Set-Content $file $text -NoNewline
+}

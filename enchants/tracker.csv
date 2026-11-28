@@ -675,7 +675,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 273422,Overflowing Cultivation,Epic,200960,needs-code,other placeholder,broken,,,,,
 1412323,Piercing Howl,Rare,1013986,needs-code,other placeholder,broken,,,,,
 979050,Predatory Nature,Epic,132256,needs-code,other placeholder,broken,,,,,
-276273,Preservation,Epic,201281,needs-code,other placeholder,broken,,,,,
+276273,Preservation,Epic,201281,needs-code,other placeholder,live (after restart),script: Prayer of Preservation grants Preservation; next direct heal uses it (patch 55),,180-talent-code-showcase-4.sql,,needs the build with patch 55 batch 4
 81128,"Ready, Set, Go!",Epic,1175941,needs-code,other placeholder,broken,,,,,
 81466,Roots of The Forest,Epic,1176045,needs-code,other placeholder,broken,,,,,
 282024,Roots of The Forest,Uncommon,404416,needs-code,other placeholder,broken,,,,,
@@ -2360,7 +2360,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 1180400,Bloodshed,Epic,201441,standard,,working (audit),,,,,
 1585249,Bloodthirsty,Epic,201230,standard,,working (audit),,,,,
 284252,Bloody Maelstrom,Epic,202156,scripted,,working (audit),,,,,
-272214,Blooming Growth,Epic,200818,standard,,working (audit),,,,,
+272214,Blooming Growth,Epic,200818,standard,,live (after restart),script: critical Regrowth spreads its heal over time to 3 party members (patch 55),,179-talent-code-showcase-3.sql,,needs the build with patch 55 batch 3; before it the proc fired on every helpful spell with a 6-per-tick placeholder heal
 965280,Blooming Growth,Legendary,1178474,standard,,working (audit),,,,,
 1570130,Blooming Power,Epic,200529,standard,,working (audit),,,,,
 272216,Blooming Power,Uncommon,200814,standard,,working (audit),,,,,
@@ -4322,7 +4322,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 270428,Heating Up!,Epic,201420,standard,,working (audit),,,,,
 285377,Heavy Arms,Uncommon,201765,standard,,working (audit),,,,,
 1181080,Heavy Thunder,Epic,201590,scripted,,working (audit),,,,,
-273378,Heavyweight,Epic,200947,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
+273378,Heavyweight,Epic,200947,standard,,live (after restart),core rule: other ability version added; stack buff rebuilt (sql 181); 2 stacks from Overpower and Execute / Heroic Strike reset / Ready to Strike / aftershock (patch 55),,170-core-rule-versions.sql 181-talent-code-showcase-5.sql,,4% Physical damage per stack assumed from the older version 977701; Heroic Strike resets the stacks (James 28 Nov); the script parts need the build with patch 55 batch 5
 977700,Heavyweight,Legendary,1178606,standard,,working (audit),,,,,
 1571904,Heavyweight,Legendary,200611,standard,,working (audit),,,,,
 930894,Heightened Senses,Rare,1175828,standard,,working (audit),,,,,
@@ -6101,7 +6101,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 84451,Tooth and Nail,Epic,1176101,standard,,working (audit),,,,,
 955339,Torment the Weak,Rare,1175907,standard,,working (audit),,,,,
 285267,Torrential Riptide,Uncommon,201762,scripted,,working (audit),,,,,
-277455,Toss and Throw,Epic,202316,standard,,partly working,core rule: other ability version added; patch 55: combo point per Shuriken Toss,,170-core-rule-versions.sql; 175-talent-code-showcase-1.sql,,code part needs the build with patch 55 showcase batch 1
+277455,Toss and Throw,Epic,202316,standard,,partly working,core rule: other ability version added; patch 55: combo point per Shuriken Toss; batch 6: double damage to monsters and Glaive Toss parts,,170-core-rule-versions.sql; 175-talent-code-showcase-1.sql; 183-talent-code-showcase-6.sql,,code parts need the builds with patch 55 batches 1 and 6
 965282,Total Eclipse,Legendary,1178475,standard,,working (audit),,,,,
 281447,Totemic Avatar,Epic,201926,standard,,working (audit),,,,,
 916173,Totemic Focus,Rare,1175726,standard,,working (audit),,,,,
