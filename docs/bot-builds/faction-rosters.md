@@ -123,11 +123,14 @@ would cut the sharing further; casters are the most shared role.
 | Arcane Intellect, Divine Spirit, Arcane Empowerment | Pyroblast, Cryomancer, Arcane Paladin (assign) | Arcane Mage (new), Cryomancer |
 | Blood Pact | Soul Fire, Immolate (imps) | Soul Fire, Immolate (imps) |
 
-Every duty is covered on both sides.
+Every duty is covered on both sides. The ten new builds are drafted (dark-ranger, beast-master, enhancement, blooming-growth, discipline,
+protection-warrior, holy-paladin, restoration-shaman, retribution and arcane-mage, each a `.md` here); which
+builds a bot can play today is in `enablers.md`.
 
 ## 6. Open points
 
 | Point | How to settle it |
 |---|---|
-| Are custom races switched on for bots? | The bot setting for custom races; if yes, this table gains rows |
+| Are custom races switched on for bots? | Answered: no custom races (James, 28 Nov). Stock races 1 to 11 only, goblin excluded |
 | Shared builds: keep, or draft more new ones? | James |
+| Two drafted builds are blocked by broken talents (Arcane Paladin, Prayer of Preservation) | Stand-ins in `enablers.md`, section 3 |

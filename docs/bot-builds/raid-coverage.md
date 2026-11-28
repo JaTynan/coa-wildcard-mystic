@@ -125,4 +125,4 @@ covered. Thunder Clap also covers the tanks' attack speed slow.
 
 Tank side after the three tanks: attack power reduction (Vindication), attack speed slow (Thunder Clap), Devotion Aura,
 Stoneskin Totem and Blessing of Sanctuary are covered. **Every line of the checklist now has a carrier** in one
-faction's roster of the drafted builds (27 in all: 5 tanks, 6 healers, 8 casters, 6 melee, 2 ranged). The six healers add utility beyond the checklist (group dispels, Tree of Life, Power Infusion, mana totems).
+faction's roster of the drafted builds (27 in all: 5 tanks, 6 healers, 8 casters, 6 melee, 2 ranged). The six healers add utility beyond the checklist (group dispels, Tree of Life, Power Infusion, mana totems). Ten more builds for separate faction rosters are in `faction-rosters.md`; which builds bots can play today is in `enablers.md`.
