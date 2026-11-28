@@ -4322,7 +4322,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 270428,Heating Up!,Epic,201420,standard,,working (audit),,,,,
 285377,Heavy Arms,Uncommon,201765,standard,,working (audit),,,,,
 1181080,Heavy Thunder,Epic,201590,scripted,,working (audit),,,,,
-273378,Heavyweight,Epic,200947,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
+273378,Heavyweight,Epic,200947,standard,,live (after restart),core rule: other ability version added; stack buff rebuilt (sql 181); 2 stacks from Overpower and Execute / Heroic Strike reset / Ready to Strike / aftershock (patch 55),,170-core-rule-versions.sql 181-talent-code-showcase-5.sql,,4% Physical damage per stack assumed from the older version 977701; Heroic Strike resets the stacks (James 28 Nov); the script parts need the build with patch 55 batch 5
 977700,Heavyweight,Legendary,1178606,standard,,working (audit),,,,,
 1571904,Heavyweight,Legendary,200611,standard,,working (audit),,,,,
 930894,Heightened Senses,Rare,1175828,standard,,working (audit),,,,,
