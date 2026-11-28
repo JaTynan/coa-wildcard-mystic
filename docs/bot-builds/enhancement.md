@@ -35,7 +35,7 @@ Role: melee damage with strong bursts. Carries Windfury Totem and Strength of Ea
 | Part | Abilities and talents | Source |
 |---|---|---|
 | Core | Stormstrike, Lava Lash, Earth Shock, Flame Shock, Lightning Bolt, Chain Lightning, Feral Spirit, Shamanistic Rage, Fire Nova, Lightning Shield | S1 |
-| Totems | Windfury, Strength of Earth, Magma or Searing, Mana Spring | S1 |
+| Totems | Windfury Totem, Strength of Earth Totem, Magma Totem or Searing Totem, Mana Spring Totem | S1 |
 | Talents | Maelstrom Weapon, Stormstrike, Lava Lash, Feral Spirit, Stormborn, Pack Alpha | S1, S2 |
 | Enchants (if bots can slot them) | Swirling Maelstrom | S2 |
 

@@ -1,7 +1,7 @@
 # Bot build: Cryomancer, frost mage (caster)
 
 Status: draft, 28 Nov 2026. Caster 7 of 8 (`raid-coverage.md`). Format and rules as in `plague-caster.md`. Nothing here
-is live. Matches the bot module's named build **Cryomancer** (Frostbolt, Frost Bomb, Ice Lance, Water Elemental, Deep
+is live. Matches the bot module's named build **Cryomancer** (Frostbolt, Frost Bomb, Ice Lance, Summon Water Elemental, Deep
 Freeze).
 
 Role: ranged damage, with control (freezes) and good area damage.

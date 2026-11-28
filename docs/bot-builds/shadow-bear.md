@@ -49,7 +49,7 @@ Checked against S3 unless marked.
 
 | Part | Abilities and talents | Source |
 |---|---|---|
-| Core abilities | Bear Form, Swipe, Shadow Bolt, Feral Charge (bear) | S1 (level 1 picks) |
+| Core abilities | Bear Form, Swipe (Bear), Shadow Bolt, Feral Charge (bear) | S1 (level 1 picks) |
 | Core talents | Maledictive Assault, Backlash, Soul Leech, Savage Defense | S1 ("the go-to four") |
 | Corruption route | Corrupted Bear Form or Nightmare Mauling, Nightfall, Mangle or Maul | S1, S3 |
 | Defensive cooldowns | Carnage Incarnate, Survival Instincts | S1 (carded) |

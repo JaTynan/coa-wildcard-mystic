@@ -34,7 +34,7 @@ Role: caster damage with big bursts. Carries Arcane Intellect, Arcane Empowermen
 
 | Part | Abilities and talents | Source |
 |---|---|---|
-| Core | Arcane Blast, Arcane Missiles, Arcane Barrage, Arcane Power, Presence of Mind, Icy Veins, Mirror Image, Evocation, Mana Gem, Arcane Explosion, Blizzard | S1 |
+| Core | Arcane Blast, Arcane Missiles, Arcane Barrage, Arcane Power, Presence of Mind, Icy Veins, Mirror Image, Evocation, Conjure Mana Gem, Arcane Explosion, Blizzard | S1 |
 | Buffs | Arcane Intellect, Molten Armor or Mage Armor, Focus Magic | S1 |
 | Talents | Missile Barrage, Arcane Empowerment, Torment the Weak, Spell Power, Power Overwhelming, Arcane Motes, Spellstorm, Evoker | S1, S2 |
 

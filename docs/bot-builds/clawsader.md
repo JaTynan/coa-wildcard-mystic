@@ -28,7 +28,7 @@ Role: melee damage, very strong on groups (its Swipe is not target capped, S1), 
 
 | Part | Abilities and talents | Source |
 |---|---|---|
-| Core abilities | Serpent Form (or Cat Form), Light Swipe, Claw, Dawnripper, Dawn Rake, Dawnfang Bite, Consecrated Weapon, Seal of Command, Goldrinn's Fury | S1 |
+| Core abilities | Serpent Form (or Cat Form), Light Swipe (Cat), Claw, Dawnripper, Dawn Rake, Dawnfang Bite, Consecrated Weapon, Seal of Command, Goldrinn's Fury | S1 |
 | Core talents | Ferocity (cheaper Swipe), Answered Prayers, Vitality, Feral Instinct, Bloody Claws, Righteous Vengeance, Relentless Strikes, attack power and agility talents | S1 |
 | Cooldowns and utility | Sweeping Strikes, Adrenaline Rush, Carnage Incarnate (defensive with big area damage), Charge | S1 |
 | Carried buffs | Trueshot Aura, Devotion Aura; S1 would swap Blessing of Might for a shout | S1 |

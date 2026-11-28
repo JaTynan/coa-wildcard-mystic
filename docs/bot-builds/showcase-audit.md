@@ -50,7 +50,7 @@ extras.
 | Build | Parts | Stock or data only | Scripted | Fix untested | Never fires | Needs code | Broken | Unresolved | Verdict |
 |---|---|---|---|---|---|---|---|---|---|
 | Arcane Gunslinger (ranged) | 32 | 21 | 2 | 0 | 5 | 1 | 0 | 3 | 6 core part(s) to fix |
-| Arcane Mage | 23 | 19 | 1 | 1 | 1 | 0 | 0 | 1 | 1 core part(s) to fix |
+| Arcane Mage | 23 | 20 | 1 | 1 | 1 | 0 | 0 | 0 | 1 core part(s) to fix |
 | Arcane Paladin | 23 | 13 | 1 | 0 | 1 | 1 | 1 | 6 | 3 core part(s) to fix |
 | Beast Master | 16 | 13 | 0 | 1 | 2 | 0 | 0 | 0 | 2 core part(s) to fix |
 | Blooming Growth | 13 | 11 | 0 | 0 | 0 | 2 | 0 | 0 | 2 core part(s) to fix |
@@ -60,8 +60,8 @@ extras.
 | Dark Ranger | 19 | 14 | 0 | 0 | 1 | 3 | 0 | 1 | 3 core part(s) to fix |
 | Discipline | 21 | 19 | 0 | 0 | 1 | 1 | 0 | 0 | 2 core part(s) to fix |
 | Earthen Guardian | 17 | 12 | 1 | 0 | 2 | 0 | 0 | 2 | 2 core part(s) to fix |
-| Elemental Lord (caster) | 20 | 16 | 0 | 1 | 1 | 0 | 0 | 2 | Ready to test |
-| Enhancement | 19 | 11 | 1 | 0 | 2 | 0 | 0 | 5 | 2 core part(s) to fix |
+| Elemental Lord (caster) | 20 | 17 | 0 | 1 | 1 | 0 | 0 | 1 | Ready to test |
+| Enhancement | 19 | 16 | 1 | 0 | 2 | 0 | 0 | 0 | 2 core part(s) to fix |
 | Frost Death Knight (melee) | 15 | 14 | 0 | 0 | 0 | 0 | 0 | 1 | Ready to test |
 | Holy Paladin | 17 | 13 | 1 | 1 | 2 | 0 | 0 | 0 | 2 core part(s) to fix |
 | Holy Radiance (healer) | 17 | 14 | 0 | 0 | 3 | 0 | 0 | 0 | 2 core part(s) to fix |
@@ -75,7 +75,7 @@ extras.
 | Prayer of Preservation | 22 | 15 | 1 | 2 | 2 | 0 | 0 | 2 | 2 core part(s) to fix |
 | Protection Warrior | 20 | 17 | 0 | 0 | 3 | 0 | 0 | 0 | 3 core part(s) to fix |
 | Pyroblast Fire Mage (caster) | 16 | 13 | 0 | 1 | 1 | 0 | 0 | 1 | 1 core part(s) to fix |
-| Restoration Shaman | 21 | 17 | 0 | 0 | 0 | 0 | 0 | 4 | Ready to test |
+| Restoration Shaman | 21 | 21 | 0 | 0 | 0 | 0 | 0 | 0 | Ready to test |
 | Retribution | 18 | 17 | 1 | 0 | 0 | 0 | 0 | 0 | Ready to test |
 | Seed of Life | 12 | 11 | 0 | 0 | 0 | 1 | 0 | 0 | 1 core part(s) to fix |
 | Shadow Bear (tank) | 22 | 16 | 0 | 0 | 1 | 0 | 0 | 5 | 1 core part(s) to fix |
@@ -164,57 +164,51 @@ extras.
 
 ## 5. Names in the build docs to correct
 
-These names do not match a learnable talent or ability. Some are a combination written in one cell ("X with Y"), some
-are the name of an effect rather than the talent that gives it. Each build doc needs the exact talent name.
+Totem and shorthand names were corrected on 28 Nov. What is left falls in two groups. "Name not found": a
+combination written in one cell ("X with Y") or a description rather than a name; the doc needs the exact talent.
+"Not on our talent list": the spell exists but no talent entry teaches it. Some are granted by another part (a form
+such as Dark Apotheosis, or Earthen Guardian's Stone Shield) and are fine; others look like Season 9 talents that
+are not in our Season 10 data (most of Arcane Paladin's, two of Prayer of Preservation's). Those builds need a
+replacement chosen from what our talent list offers, or they cannot be copied as written.
 
 | Name in the doc | Problem | Used by |
 |---|---|---|
-| Arcane Crusade | not learnable | Arcane Paladin |
-| Arcane Divinity | not learnable | Arcane Paladin |
-| Arcanesworn | not learnable | Arcane Paladin |
-| Assault and Battery | not learnable | Lightning Warrior |
-| Blade of the Magisters | not learnable | Arcane Paladin |
+| Arcane Crusade | not on our talent list | Arcane Paladin |
+| Arcane Divinity | not on our talent list | Arcane Paladin |
+| Arcanesworn | not on our talent list | Arcane Paladin |
+| Assault and Battery | not on our talent list | Lightning Warrior |
+| Blade of the Magisters | not on our talent list | Arcane Paladin |
 | Blood Presence for damage | name not found | Frost Death Knight (melee) |
-| Challenging Howl | not learnable | Metamorphosis Tank |
+| Challenging Howl | not on our talent list | Metamorphosis Tank |
 | Combustion with Playing with Fire | name not found | Pyroblast Fire Mage (caster) |
-| Corrupted Maelstrom Weapon | not learnable | Shadow Melee (melee) |
+| Corrupted Maelstrom Weapon | not on our talent list | Shadow Melee (melee) |
 | Demonic Pact and Demonic Tactics | name not found | Arcane Gunslinger (ranged) |
 | Dual-wield talents | name not found | Metamorphosis Tank |
-| Echoing Warcry | not learnable | Titan's Grip Crush (melee) |
-| Etheric Vengeance | not learnable | Arcane Paladin |
-| Exposed Weakness | not learnable | Winds of Winter (melee) |
+| Echoing Warcry | not on our talent list | Titan's Grip Crush (melee) |
+| Etheric Vengeance | not on our talent list | Arcane Paladin |
+| Exposed Weakness | not on our talent list | Winds of Winter (melee) |
 | Felhunter and Master Demonologist | name not found | Shadow Bear (tank) |
-| Fire Elemental | name not found | Elemental Lord (caster) |
-| Flametongue | name not found | Restoration Shaman |
 | Glacial Burst with Frostflame Shock | name not found | Cryomancer |
 | Holy Fire with Divine Prophet | name not found | Arcane Paladin |
-| Hoplite Training | not learnable | Shadow Bear (tank) |
+| Hoplite Training | not on our talent list | Shadow Bear (tank) |
 | Imp | name not found | Holy Spell Tank |
 | Invocation  as a defensive channel | name not found | Mana-forged Barrier |
 | Iron Fur | name not found | Shadow Bear (tank) |
 | Light Swipe | name not found | Claw-sader |
-| Magma | not learnable | Enhancement |
-| Mana Gem | name not found | Arcane Mage |
-| Mana Spring | not learnable | Enhancement, Restoration Shaman |
-| Mana Tide | not learnable | Restoration Shaman |
 | Moonkin Form's talent | name not found | Total Eclipse |
 | Necromancer's Touch with Enslave Demon | name not found | Dark Ranger |
-| Prepared to Crush! | not learnable | Titan's Grip Crush (melee) |
-| Preserving Light | not learnable | Prayer of Preservation |
-| Primal Strike | not learnable | Earthen Guardian |
-| Recovering Prayer | not learnable | Prayer of Preservation |
-| Runed Bullets | not learnable | Arcane Gunslinger (ranged) |
-| Searing | name not found | Enhancement |
-| Shadow Cleave | not learnable | Metamorphosis Tank |
+| Prepared to Crush! | not on our talent list | Titan's Grip Crush (melee) |
+| Preserving Light | not on our talent list | Prayer of Preservation |
+| Primal Strike | not on our talent list | Earthen Guardian |
+| Recovering Prayer | not on our talent list | Prayer of Preservation |
+| Runed Bullets | not on our talent list | Arcane Gunslinger (ranged) |
+| Shadow Cleave | not on our talent list | Metamorphosis Tank |
 | Soul Link with a Voidwalker | name not found | Shadow Bear (tank) |
-| Spellslinger | not learnable | Arcane Gunslinger (ranged), Elemental Lord (caster) |
+| Spellslinger | not on our talent list | Arcane Gunslinger (ranged), Elemental Lord (caster) |
 | Stance Dance | name not found | Titan's Grip Crush (melee) |
-| Stone Shield | not learnable | Earthen Guardian |
-| Strength of Earth | not learnable | Enhancement |
-| Swipe | not learnable | Shadow Bear (tank) |
-| Water Elemental | not learnable | Cryomancer |
-| Windfury | not learnable | Enhancement |
-| Wrath of Air | name not found | Restoration Shaman |
+| Stone Shield | not on our talent list | Earthen Guardian |
+| Swipe | not on our talent list | Shadow Bear (tank) |
+| Water Elemental | not on our talent list | Cryomancer |
 
 ## 6. Proposed order of work
 

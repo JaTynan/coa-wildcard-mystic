@@ -38,7 +38,7 @@ Chain Healer (`tide-chain-healer.md`), on the classic base rather than Living Li
 | Part | Abilities and talents | Source |
 |---|---|---|
 | Core | Riptide, Chain Heal, Healing Wave, Lesser Healing Wave, Earth Shield, Water Shield, Earthliving Weapon, Cleanse Spirit, Nature's Swiftness | S1 |
-| Totems | Mana Spring, Stoneskin, Wrath of Air, Flametongue, Mana Tide | S1 |
+| Totems | Mana Spring Totem, Stoneskin Totem, Wrath of Air Totem, Flametongue Totem, Mana Tide Totem | S1 |
 | Talents | Tidal Waves, Ancestral Awakening, Improved Earth Shield, Mending Tide, Low Tide, Transcendental Embrace | S1, S2 |
 | Enchants (if bots can slot them) | Restoration Mastery | S2 |
 

@@ -34,7 +34,7 @@ Reactive and random by design.
 
 | Part | Abilities and talents | Source |
 |---|---|---|
-| Core abilities | Elemental Blast, Earth Shock, Lava Burst, Flame Shock, Frost Shock, Fire Elemental | S1 |
+| Core abilities | Elemental Blast, Earth Shock, Lava Burst, Flame Shock, Frost Shock, Fire Elemental Totem | S1 |
 | Core talents | Elemental Domination, Elemental Lord, Booming Thunder (or Primordial Aftershocks), Ignite, Reverberation | S1 |
 | Rolled extras | Legacy of the Arcanist, Tethered Power, Spellslinger, Elemental Focus, Lunar Guidance, Winter's Chill, Arcane Power or Elemental Mastery or Power Infusion | S1 |
 
