@@ -97,9 +97,19 @@ natural carrier yet and is proposed as that bot's rolled extra.
 | Arcane Paladin | Caster (melee range) | Judgement of Wisdom; **assign** Concentration Aura |
 | Cryomancer | Caster | **assign** Divine Spirit |
 | Total Eclipse | Caster | Moonkin Form (spell crit), Improved Faerie Fire (spell hit), Earth and Moon; **assign** Wrath of Air Totem, Mana Spring Totem, Blessing of Kings |
+| Winds of Winter | Melee | **assign** Master Poisoner (3% crit taken) |
+| Claw-sader | Melee | Trueshot Aura, Devotion Aura; **assign** Leader of the Pack, Mangle (bleed), Sanctified Retribution |
+| Shadow Melee | Melee | **assign** Curse of Weakness (minor armour; Faerie Fire from Total Eclipse also covers it) |
+| Titan's Grip Crush | Melee | Expose Armor or Sunder Armor (major armour); **assign** Battle Shout, Blood Frenzy |
+| Lightning Warrior | Melee | Thunder Clap (attack speed slow); **assign** Windfury Totem, Strength of Earth Totem, Unleashed Rage |
+| Frost Death Knight | Melee | Horn of Winter and Improved Icy Talons (backups for the two totems) |
 | Holy Radiance | Healer | Personal only |
 | Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled |
 
 Caster side after the eight casters: every caster debuff and caster buff on the checklist is covered, six of them by
-assignment. Still open overall: the melee, hunter and tank buffs and debuffs, which
-come with those slots.
+assignment.
+
+Melee side after the six melee: every melee buff and debuff on the checklist is covered except Hunter's Mark, which
+comes with the two hunter slots. Thunder Clap also covers the tanks' attack speed slow. Still open: Hunter's Mark, the
+tanks' attack power reduction, and the tank buffs (Blessing of Sanctuary, Stoneskin Totem), which come with the tank
+and hunter slots.
