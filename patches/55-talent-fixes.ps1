@@ -2380,3 +2380,242 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_divine_concord_bonus);`n    RegisterSpellScript(spell_wcme_glaive_toss_ninja);`n    RegisterSpellScript(spell_wcme_shuriken_toss_monsters);`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Custom Mystic Enchant cards, batch 2 (client-patch/custom_cards.py): the three Arcane talents James approved as
+# cards on 28 Nov, Arcane Crusade (Legendary), Arcanesworn and Arcane Divinity (Epic). Their spell data only names the
+# effects (placeholders and procs nothing fires), so these scripts do them. sql/enchants/186-custom-card-effects-2.sql
+# binds them and changes Arcane Crusade's own effects.
+Write-Host "Patch: Arcane Crusade, Arcanesworn and Arcane Divinity (custom Mystic Enchant cards)"
+& {
+# Arcane Divinity changes a cast's school; the Spell class keeps it protected, so it gets a setter.
+$spellHeader = 'core/src/server/game/Spells/Spell.h'
+$headerText = (Get-Content $spellHeader -Raw) -replace "`r`n", "`n"
+$getter = "    [[nodiscard]] SpellSchoolMask GetSpellSchoolMask() const { return m_spellSchoolMask; }`n"
+if (([regex]::Matches($headerText, [regex]::Escape($getter))).Count -ne 1) { throw "Core changed: Spell::GetSpellSchoolMask was not found exactly once in $spellHeader" }
+Set-Content $spellHeader $headerText.Replace($getter, $getter + "    void WcmeSetSpellSchoolMask(SpellSchoolMask mask) { m_spellSchoolMask = mask; }   // Wildcard: Arcane Divinity (patch 55)`n") -NoNewline
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: the Arcane cards (custom Mystic Enchants). Shared helpers.
+namespace WcmeArcaneCards
+{
+    constexpr uint32 ARCANE_CRUSADE = 277880;
+    constexpr uint32 ARCANESWORN = 277850;
+    constexpr uint32 ARCANE_DIVINITY = 275462;
+    constexpr uint32 MISSILE_BARRAGE = 44401;           // the buff: next Arcane Missiles faster
+    constexpr uint32 ARCANESWORN_STRIKE = 277851;       // 75% off-hand weapon damage as Arcane to up to 3 enemies
+    constexpr uint32 MISSILE_BARRAGE_BUFFS[] = { 44401, 1144401, 1244401 };
+    constexpr uint32 MISSILE_BARRAGE_TALENT[] = { 44404, 54486, 54488, 54489, 54490, 1144404, 1154486, 1154488, 1154489,
+        1154490, 1244404, 1254486, 1254488, 1254489, 1254490 };
+    constexpr uint32 DIVINE_ILLUMINATION[] = { 31842, 1131842, 1231842, 1575125 };
+    constexpr uint32 AVENGING_WRATH[] = { 31884, 66011, 984325, 1131884 };
+    // Every Arcane Missiles channel (stock and CoA ranks), so its cooldown covers each rank the player knows.
+    constexpr uint32 ARCANE_MISSILES[] = { 5143, 5144, 5145, 5146, 8416, 8417, 10211, 10212, 25345, 27075, 38699, 38704,
+        42843, 42846, 1105143, 1105144, 1105145, 1108416, 1108417, 1110211, 1110212, 1125345, 1127075, 1138699, 1138704,
+        1142843, 1142846 };
+
+    bool KnowsMissileBarrage(Unit const* unit)
+    {
+        for (uint32 talent : MISSILE_BARRAGE_TALENT)
+            if (unit->HasAura(talent))
+                return true;
+        return false;
+    }
+
+    // Against players and their pets the cards' damage bonuses are smaller, as the tooltips say.
+    bool AgainstPlayer(Unit const* target)
+    {
+        return target && target->IsControlledByPlayer();
+    }
+}
+
+// Arcane Crusade (277880), Arcane Missiles' damage: 150% more (30% against players). Bound to each rank's missile.
+// (The faster channel is the card's own two modifiers, sql 186.)
+class spell_wcme_arcane_crusade_missiles : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_arcane_crusade_missiles);
+
+    void HandleHit(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster || !caster->HasAura(WcmeArcaneCards::ARCANE_CRUSADE) || GetHitDamage() <= 0)
+            return;
+        SetHitDamage(int32(GetHitDamage() * (WcmeArcaneCards::AgainstPlayer(GetHitUnit()) ? 1.3f : 2.5f)));
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_arcane_crusade_missiles::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Arcane Crusade, Arcane Missiles itself: a 12 sec cooldown, on every rank the player knows (cooldowns are kept per
+// spell, so a lower rank would otherwise be free). Bound to each rank's channel.
+class spell_wcme_arcane_crusade_channel : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_arcane_crusade_channel);
+
+    void HandleAfterCast()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (!player || !player->HasAura(WcmeArcaneCards::ARCANE_CRUSADE) || GetSpell()->IsTriggered())
+            return;
+        for (uint32 missiles : WcmeArcaneCards::ARCANE_MISSILES)
+            if (missiles == GetSpellInfo()->Id || player->HasSpell(missiles))
+                player->AddSpellCooldown(missiles, 0, 12000, true);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_wcme_arcane_crusade_channel::HandleAfterCast);
+    }
+};
+
+// Arcane Crusade, Arcane Barrage: 100% more damage (30% against players), and a 35% chance on each cast to grant
+// Missile Barrage if you know the Missile Barrage talent.
+class spell_wcme_arcane_crusade_barrage : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_arcane_crusade_barrage);
+
+    void HandleHit(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        if (!caster || !caster->HasAura(WcmeArcaneCards::ARCANE_CRUSADE) || GetHitDamage() <= 0)
+            return;
+        SetHitDamage(int32(GetHitDamage() * (WcmeArcaneCards::AgainstPlayer(GetHitUnit()) ? 1.3f : 2.0f)));
+    }
+
+    void HandleAfterCast()
+    {
+        Unit* caster = GetCaster();
+        if (caster && !GetSpell()->IsTriggered() && caster->HasAura(WcmeArcaneCards::ARCANE_CRUSADE) &&
+            WcmeArcaneCards::KnowsMissileBarrage(caster) && roll_chance_i(35))
+            caster->CastSpell(caster, WcmeArcaneCards::MISSILE_BARRAGE, true);
+    }
+
+    void Register() override
+    {
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_arcane_crusade_barrage::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+        AfterCast += SpellCastFn(spell_wcme_arcane_crusade_barrage::HandleAfterCast);
+    }
+};
+
+// Arcane Crusade, Arcane Explosion: a second explosion, and a Missile Barrage charge if you know the talent. The second
+// explosion is a free copy of the same rank; being triggered, it does not explode again.
+class spell_wcme_arcane_crusade_explosion : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_arcane_crusade_explosion);
+
+    void HandleAfterCast()
+    {
+        Unit* caster = GetCaster();
+        if (!caster || GetSpell()->IsTriggered() || !caster->HasAura(WcmeArcaneCards::ARCANE_CRUSADE))
+            return;
+        caster->CastSpell(caster, GetSpellInfo()->Id, TRIGGERED_FULL_MASK);
+        if (WcmeArcaneCards::KnowsMissileBarrage(caster))
+            caster->CastSpell(caster, WcmeArcaneCards::MISSILE_BARRAGE, true);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_wcme_arcane_crusade_explosion::HandleAfterCast);
+    }
+};
+
+// Arcane Divinity (275462): while Divine Illumination is up, Arcane Blast, Arcane Missiles and Arcane Barrage deal
+// Divine damage (Holy and Arcane together). The hit becomes Holy and Arcane (resistances, absorbs and the combat log
+// see both), and it is raised to the Holy damage bonus when that is higher than the Arcane one (the "best of either
+// school" rule Ascension uses for mixed-school damage). Bound to Arcane Blast, each Arcane Missiles missile and Arcane
+// Barrage. Known limit: the crit chance becomes the Holy one (the core takes the first school of a mixed hit for a
+// player's spell crit), so an Arcane-only crit bonus does not count while it lasts.
+class spell_wcme_arcane_divinity : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_arcane_divinity);
+
+    bool _divine = false;
+
+    void HandleBeforeCast()
+    {
+        Unit* caster = GetCaster();
+        _divine = false;
+        if (!caster || !caster->HasAura(WcmeArcaneCards::ARCANE_DIVINITY))
+            return;
+        for (uint32 illumination : WcmeArcaneCards::DIVINE_ILLUMINATION)
+            if (caster->HasAura(illumination))
+            {
+                _divine = true;
+                GetSpell()->WcmeSetSpellSchoolMask(SpellSchoolMask(SPELL_SCHOOL_MASK_HOLY | SPELL_SCHOOL_MASK_ARCANE));
+                return;
+            }
+    }
+
+    void HandleHit(SpellEffIndex /*effIndex*/)
+    {
+        Unit* caster = GetCaster();
+        if (!_divine || !caster || GetHitDamage() <= 0)
+            return;
+        float const holy = caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, SPELL_SCHOOL_MASK_HOLY);
+        float const arcane = caster->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_DAMAGE_PERCENT_DONE, SPELL_SCHOOL_MASK_ARCANE);
+        if (arcane > 0.0f && holy > arcane)
+            SetHitDamage(int32(GetHitDamage() * holy / arcane));
+    }
+
+    void Register() override
+    {
+        BeforeCast += SpellCastFn(spell_wcme_arcane_divinity::HandleBeforeCast);
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_arcane_divinity::HandleHit, EFFECT_0, SPELL_EFFECT_SCHOOL_DAMAGE);
+    }
+};
+
+// Arcanesworn (277850): Crusader Strike and Divine Storm use up Missile Barrage to strike with Arcanesworn (277851:
+// 75% of your off-hand weapon damage as Arcane to up to 3 enemies at the target) and take 10 sec off Avenging Wrath and
+// 4 sec off Divine Illumination. Once per cast (Divine Storm hits several enemies). Bound to every Crusader Strike and
+// Divine Storm.
+class spell_wcme_arcanesworn : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_arcanesworn);
+
+    void HandleAfterCast()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (!player || !player->HasAura(WcmeArcaneCards::ARCANESWORN))
+            return;
+        bool used = false;
+        for (uint32 barrage : WcmeArcaneCards::MISSILE_BARRAGE_BUFFS)
+            if (player->HasAura(barrage))
+            {
+                player->RemoveAurasDueToSpell(barrage);
+                used = true;
+                break;
+            }
+        if (!used)
+            return;
+        Unit* target = GetExplTargetUnit();
+        if (!target || !target->IsAlive() || !player->IsValidAttackTarget(target))
+            target = player->GetVictim();
+        if (target && target->IsAlive())
+            player->CastSpell(target, WcmeArcaneCards::ARCANESWORN_STRIKE, true);
+        for (uint32 wrath : WcmeArcaneCards::AVENGING_WRATH)
+            if (player->HasSpellCooldown(wrath))
+                player->ModifySpellCooldown(wrath, -10000);
+        for (uint32 illumination : WcmeArcaneCards::DIVINE_ILLUMINATION)
+            if (player->HasSpellCooldown(illumination))
+                player->ModifySpellCooldown(illumination, -4000);
+    }
+
+    void Register() override
+    {
+        AfterCast += SpellCastFn(spell_wcme_arcanesworn::HandleAfterCast);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_arcane_crusade_missiles);`n    RegisterSpellScript(spell_wcme_arcane_crusade_channel);`n    RegisterSpellScript(spell_wcme_arcane_crusade_barrage);`n    RegisterSpellScript(spell_wcme_arcane_crusade_explosion);`n    RegisterSpellScript(spell_wcme_arcane_divinity);`n    RegisterSpellScript(spell_wcme_arcanesworn);`n")
+Set-Content $file $text -NoNewline
+}

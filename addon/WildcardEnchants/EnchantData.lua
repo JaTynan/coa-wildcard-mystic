@@ -6445,4 +6445,7 @@ WildcardEnchantsData = {
 	{1571194,4,0,513},  -- Echoing Warcry (custom_cards.py)
 	{275043,4,0,512},  -- Assault and Battery (custom_cards.py)
 	{1576284,4,0,512},  -- Corrupted Maelstrom Weapon (custom_cards.py)
+	{277850,4,0,512},  -- Arcanesworn (custom_cards.py)
+	{275462,4,0,512},  -- Arcane Divinity (custom_cards.py)
+	{277880,5,0,512},  -- Arcane Crusade (custom_cards.py)
 }
