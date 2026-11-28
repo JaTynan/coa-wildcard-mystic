@@ -3,7 +3,7 @@
 -- Blooming Growth 272214: critical Regrowth spreads its heal over time, 10% weaker, to 3 nearby party members.
 -- Gul'dan's Chosen 277151: while it lasts, Backdraft and Molten Core are not used up (bound to every version of their
 -- buffs: Backdraft 54274 54276 54277 and CoA copies; Molten Core 47383 71162 71165 and CoA copies).
--- Shadow Shot 276811: also applies your highest known Corruption.
+-- Shadow Shot (all 8 ranks, 276811 and 276828-276834): also applies your highest known Corruption.
 -- Time Bomb 284591: stores 50% of your Arcane damage to the target and deals it around the target when it runs out;
 -- its proc row lets the bomb see Arcane damage taken (melee, ranged, spells and periodic, triggered spells included).
 -- Arcane Barrage (every version): damage takes 8 sec off Time Bomb's cooldown, once per cast.
@@ -24,7 +24,9 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (47383, 'spell_wcme_guldans_chosen_keep'), (71162, 'spell_wcme_guldans_chosen_keep'), (71165, 'spell_wcme_guldans_chosen_keep'),
 (1147383, 'spell_wcme_guldans_chosen_keep'), (1171162, 'spell_wcme_guldans_chosen_keep'), (1171165, 'spell_wcme_guldans_chosen_keep'),
 (1247383, 'spell_wcme_guldans_chosen_keep'), (1271162, 'spell_wcme_guldans_chosen_keep'), (1271165, 'spell_wcme_guldans_chosen_keep'),
-(276811, 'spell_wcme_shadow_shot'),
+(276811, 'spell_wcme_shadow_shot'), (276828, 'spell_wcme_shadow_shot'), (276829, 'spell_wcme_shadow_shot'),
+(276830, 'spell_wcme_shadow_shot'), (276831, 'spell_wcme_shadow_shot'), (276832, 'spell_wcme_shadow_shot'),
+(276833, 'spell_wcme_shadow_shot'), (276834, 'spell_wcme_shadow_shot'),
 (284591, 'spell_wcme_time_bomb'),
 (44425, 'spell_wcme_time_bomb_barrage'), (44495, 'spell_wcme_time_bomb_barrage'), (44496, 'spell_wcme_time_bomb_barrage'),
 (44780, 'spell_wcme_time_bomb_barrage'), (44781, 'spell_wcme_time_bomb_barrage'), (965472, 'spell_wcme_time_bomb_barrage'),

@@ -1888,7 +1888,7 @@ class spell_wcme_guldans_chosen_keep : public AuraScript
     }
 };
 
-// Wildcard: Shadow Shot (talent 276811) also applies your Corruption, the highest rank you know, stock or CoA. Its
+// Wildcard: Shadow Shot (talent 276811; ranks 2-8 are 276828-276834) also applies your Corruption, the highest rank you know, stock or CoA. Its
 // damage needs no script: it carries Steady Shot's class flag, so the core's Steady Shot code handles it.
 class spell_wcme_shadow_shot : public SpellScript
 {
