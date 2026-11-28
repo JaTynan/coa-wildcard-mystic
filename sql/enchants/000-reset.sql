@@ -36,8 +36,10 @@ DELETE FROM `spell_script_names` WHERE `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE `l` FROM `coa_mystic_enchant_aura_link` `l` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'aura_link' AND `o`.`id` = `l`.`enchant_spell`;
 -- Extra rules we add to the core's own Mystic Enchant rule table (file 170): marked by a comment starting WCME:.
 DELETE FROM `coa_mystic_enchant_proc` WHERE `comment` LIKE 'WCME:%';
--- Bindings to the core's own scripts that we add (file 173), listed in wcme_owned as core_script.
-DELETE `s` FROM `spell_script_names` `s` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'core_script' AND `s`.`ScriptName` = 'spell_ascension_mystic_enchant_proc' AND `o`.`id` = `s`.`spell_id`;
+-- Bindings to the core's own scripts that we add (files 173 and 178), listed in wcme_owned as core_script.
+DELETE `s` FROM `spell_script_names` `s` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'core_script' AND `s`.`ScriptName` IN ('spell_ascension_mystic_enchant_proc', 'spell_mage_living_bomb') AND `o`.`id` = `s`.`spell_id`;
+-- Spell power and attack power coefficients we add (file 178), listed in wcme_owned as spell_bonus_data.
+DELETE `b` FROM `spell_bonus_data` `b` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'spell_bonus_data' AND `o`.`id` = `b`.`entry`;
 -- Extra SpellAffect rows (modifier -> named target spell), loaded into the server's SpellAffect data by the build
 -- with patch mystic-enchants-spellaffect-sql. A row here REPLACES the SpellAffect.dbc row with the same ID,
 -- and the client data already uses some IDs from 900000 up (901388-901397, scattered ones between 912000 and 938443, 975170-975176,
