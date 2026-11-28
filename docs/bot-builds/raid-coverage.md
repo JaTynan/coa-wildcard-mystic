@@ -77,7 +77,7 @@ stands near it.
 | Healers | 6 | Holy Radiance is one of them at most (its guide says it falls off past 10 players). |
 | Casters | 8 | Carry the caster debuffs and caster buffs. |
 | Melee | 6 | Carry the armour, bleed and physical debuffs. |
-| Ranged physical | 2 | Hunter's Mark, Trueshot Aura. |
+| Ranged physical | 2 | Hunter's Mark, Trueshot Aura. Drafted as Arcane Gunslinger and Ninja: Wildcard's ranged builds are hybrids rather than plain hunters. |
 
 The battleground team (10) and the world PvP crew (5) come from the same rosters later; raid coverage does not apply
 to them.
@@ -103,13 +103,14 @@ natural carrier yet and is proposed as that bot's rolled extra.
 | Titan's Grip Crush | Melee | Expose Armor or Sunder Armor (major armour); **assign** Battle Shout, Blood Frenzy |
 | Lightning Warrior | Melee | Thunder Clap (attack speed slow); **assign** Windfury Totem, Strength of Earth Totem, Unleashed Rage |
 | Frost Death Knight | Melee | Horn of Winter and Improved Icy Talons (backups for the two totems) |
+| Arcane Gunslinger | Ranged | Arcane Empowerment (damage %), Trueshot Aura (backup to the Claw-sader's), Demonic Pact |
+| Ninja | Ranged | **assign** Hunter's Mark |
 | Holy Radiance | Healer | Personal only |
 | Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled |
 
 Caster side after the eight casters: every caster debuff and caster buff on the checklist is covered, six of them by
 assignment.
 
-Melee side after the six melee: every melee buff and debuff on the checklist is covered except Hunter's Mark, which
-comes with the two hunter slots. Thunder Clap also covers the tanks' attack speed slow. Still open: Hunter's Mark, the
-tanks' attack power reduction, and the tank buffs (Blessing of Sanctuary, Stoneskin Totem), which come with the tank
-and hunter slots.
+Melee and ranged side after the six melee and two ranged: every melee and hunter buff and debuff on the checklist is
+covered. Thunder Clap also covers the tanks' attack speed slow. Still open: the tanks' attack power reduction and the
+tank buffs (Blessing of Sanctuary, Stoneskin Totem), which come with the tank slots.
