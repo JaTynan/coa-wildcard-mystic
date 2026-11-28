@@ -62,6 +62,11 @@ CANNIBALIZE_TEXT = ('Feed on a nearby Humanoid or Undead corpse for 2.5 sec, reg
 TEXTS.update({spell: {170: CANNIBALIZE_TEXT} for spell in (20577, 1120577)})
 TEXTS[20578] = {187: 'Restoring $s1% of total health and resources every $t1 sec.'}
 
+# Texts for other spells, so their tooltips say what the server does (client-patch/spell_texts.py).
+import spell_texts  # noqa: E402
+assert not set(spell_texts.TEXTS) & set(TEXTS), 'a spell has texts in both racials.py and spell_texts.py'
+TEXTS.update(spell_texts.TEXTS)
+
 # Racial cooldowns changed by the race kits (the server makes the same change at start-up, while the racial's setting
 # is on): spell -> cooldown in ms. Blood Elf Arcane Hunger (patches/75-racial-arcane-hunger.ps1): Arcane Torrent 1 min
 # instead of 2, every player copy CoA keeps.
