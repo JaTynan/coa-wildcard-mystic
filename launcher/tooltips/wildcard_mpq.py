@@ -192,16 +192,17 @@ class Archive:
 
 
 def client_archives(client):
-    """The client's archives, the one whose copy of a file wins first (the client loads patches over the base)."""
+    """The client's archives, the one whose copy of a file wins first. Our client patch (Data\\patch-ZZW.MPQ) must win
+    over every other copy of Spell.dbc, which it does in game, so Data's patches come before the locale's."""
     data = Path(client) / "Data"
     if not data.is_dir():
         return []
     found = []
+    patches = [p for p in data.glob("*.MPQ") if p.name.lower().startswith("patch-")]
+    found += sorted(patches, key=lambda p: p.stem.upper(), reverse=True)
     locale = [p for p in data.glob("*/*.MPQ") if p.parent.name.lower() == "enus"]
     found += sorted((p for p in locale if p.name.lower().startswith("patch-")), key=lambda p: p.stem.upper(),
                     reverse=True)
-    patches = [p for p in data.glob("*.MPQ") if p.name.lower().startswith("patch-")]
-    found += sorted(patches, key=lambda p: p.stem.upper(), reverse=True)
     found += [p for p in data.glob("patch.MPQ")]
     found += sorted((p for p in locale if not p.name.lower().startswith("patch-")), key=lambda p: p.name.upper())
     for name in ("lichking.MPQ", "expansion.MPQ", "common-2.MPQ", "common.MPQ"):
@@ -213,6 +214,24 @@ def client_archives(client):
             seen.add(p.resolve())
             ordered.append(p)
     return ordered
+
+
+def read_client_file(client, name):
+    """(bytes, archive name) of the copy of a file the client uses, or (None, "") if no archive has it."""
+    for path in client_archives(client):
+        try:
+            archive = Archive(path)
+        except (OSError, ValueError):
+            continue
+        try:
+            data = archive.read(name)
+        except Exception:
+            data = None
+        finally:
+            archive.close()
+        if data is not None:
+            return data, path.name
+    return None, ""
 
 
 # ---- BLP to PNG ---------------------------------------------------------------------------------------------------

@@ -21,9 +21,11 @@ password; the client itself stays on the VM and the seedbox.
   `index.html`. Patch night runs it after every start, once the site folder exists. Hashes are cached, so only
   changed files are read again.
 - **Tooltips and icons** (`tooltips/build_spell_data.py`, run by the publisher with the server's own Python) write
-  `enchant-tooltips.json`, `pet-tooltips.json` and `icons\*.png` into the site for the Mystic Enchants and Tameable
-  pets pages: what each enchant and pet ability does, worked out from the server's spell data as the game shows it,
-  and its icon read from the client's archives. Nothing from the client is in this repository; it is all made on
+  `enchant-tooltips.json`, `pet-tooltips.json`, `racial-tooltips.json` and `icons\*.png` into the site for the
+  Mystic Enchants, Tameable pets and Racials pages: what each enchant, pet ability and racial does, worked out from
+  the client's own spell data (our client patch's copy) as the game shows it, and its icon read from the client's
+  archives. `tooltips/racials.json` lists each race's signature passive, the buffs it shows and what we changed in
+  stock racials, in our own words: update it with `docs/race-kits.md`. Nothing from the client is in this repository; it is all made on
   the VM. Icons are only read again when a client archive changes. If it fails, the publisher's second log line
   says why and the site keeps its last files.
 - **Serving** (`Setup-WildcardSite.ps1`, once, as administrator) turns on Windows' web server (IIS) on port 8088:

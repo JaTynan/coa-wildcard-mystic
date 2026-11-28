@@ -10,6 +10,8 @@ There is no character, so:
   - a stat (spell power, attack power ...) is written out, e.g. "120 (+30% of spell power)";
   - a condition on a spell or aura the character might have takes the "does not have it" branch.
 A number this cannot work out is shown as "?" and counted, so the build can report how many there were.
+Spell.dbc and SpellIcon.dbc may instead be the client's own (Spells' spell_data and icon_data), so the text is
+what players see in game, our client patch included.
 
 Standard library only: it runs on the game server's own Python.
 """
@@ -55,8 +57,8 @@ class Unknown(Exception):
 
 
 class DBC:
-    def __init__(self, path):
-        self.data = Path(path).read_bytes()
+    def __init__(self, path=None, data=None):
+        self.data = data if data is not None else Path(path).read_bytes()
         self.count, self.fields, self.size, _ = struct.unpack_from("<4I", self.data, 4)
         self.strings = 20 + self.count * self.size
 
@@ -112,9 +114,11 @@ class Spell:
 
 
 class Spells:
-    def __init__(self, dbc_folder):
+    def __init__(self, dbc_folder, spell_data=None, icon_data=None):
+        """The server's DBC folder; spell_data and icon_data, when given, are the client's own Spell.dbc and
+        SpellIcon.dbc (what players see in game, with the client patch's texts and icons)."""
         folder = Path(dbc_folder)
-        self.dbc = DBC(folder / "Spell.dbc")
+        self.dbc = DBC(folder / "Spell.dbc", spell_data)
         self.index = {}
         data, size = self.dbc.data, self.dbc.size
         for i in range(self.dbc.count):
@@ -124,7 +128,7 @@ class Spells:
         ranges = DBC(folder / "SpellRange.dbc")
         self.ranges = {r[0]: struct.unpack("<f", struct.pack("<I", r[3]))[0] for r in ranges.rows()}
         self.radii = {r[0]: struct.unpack("<f", struct.pack("<I", r[1]))[0] for r in DBC(folder / "SpellRadius.dbc").rows()}
-        icons = DBC(folder / "SpellIcon.dbc")
+        icons = DBC(folder / "SpellIcon.dbc", icon_data)
         self.icons = {r[0]: icons.text(r[1]) for r in icons.rows()}
         variables = DBC(folder / "SpellDescriptionVariables.dbc")
         self.variables = {r[0]: _parse_variables(variables.text(r[1])) for r in variables.rows()}

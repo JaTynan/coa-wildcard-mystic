@@ -8,6 +8,7 @@ const Wildcard = (() => {
     ["how-to-play", "how-to-play.html", "How to play"],
     ["server", "server.html", "Server"],
     ["leaderboards", "leaderboards.html", "Leaderboards"],
+    ["racials", "racials.html", "Racials"],
     ["pets", "pets.html", "Tameable pets"],
     ["enchants", "enchants.html", "Mystic Enchants"],
     ["changes", "changes.html", "Changes"],
@@ -222,11 +223,14 @@ const Wildcard = (() => {
     for (const name of tip.req || []) card.append(el("div", { class: "tip-req" }, "Requires " + name));
     for (const name of tip.unlock || []) card.append(el("div", { class: "tip-req" }, "Unlocked by " + name));
     card.append(el("div", { class: "tip-body" }, tipLines(tip.lines || [])));
+    if (extra.subsLabel && (tip.subs || []).length) card.append(el("div", { class: "tip-sub tip-embed" }, extra.subsLabel));
     for (const sub of tip.subs || []) {
-      card.append(el("div", { class: "tip-embed" },
+      card.append(el("div", { class: extra.subsLabel ? "tip-embed flat" : "tip-embed" },
         el("div", { class: "tip-head small" }, icon(sub.icon, 22), el("div", { class: "tip-name" }, sub.name)),
         el("div", { class: "tip-body" }, tipLines(sub.lines || []))));
     }
+    if (tip.change) card.append(el("div", { class: "tip-change" }, el("b", {}, "Changed on Wildcard: "), tip.change));
+    if (tip.note) card.append(el("div", { class: "tip-change" }, tip.note));
     if (tip.where) card.append(el("div", { class: "tip-where" }, el("b", {}, "Where to find it: "), tip.where));
     if (extra.limit) card.append(el("div", { class: "tip-limit" },
       extra.limit === 1 ? "One per character" : "Up to " + extra.limit + " per character"));

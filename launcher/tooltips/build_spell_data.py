@@ -5,6 +5,9 @@ Run by Publish-WildcardSite.ps1 on the VM after it copies the site, with the gam
   python build_spell_data.py --server "C:\\Games\\CoA Server" --client F:\\CoAClient --site F:\\wildcard-site
 
 Writes, into the site folder:
+  racial-tooltips.json
+                every race's racials a Wildcard character has, marked new or changed (racials.json lists our
+                signature passives, their buffs and what we changed, in our own words)
   enchant-tooltips.json, pet-tooltips.json
                 every Legendary and Epic enchant on the Mystic Enchants page (by spell id) and every tameable pet
                 family's ability (by name): name, icon, requirements, the tooltip with its numbers filled in, any
@@ -12,6 +15,8 @@ Writes, into the site folder:
   icons\\*.png   the icons those use, read from the game client's archives and turned into PNG
 
 Everything is read on the VM from the server's DBC files and the client's archives; none of it is in the repository.
+Spell texts and icons come from the client's own Spell.dbc (our client patch's copy), so they read as in game; the
+server's copy is the fallback.
 Icons are only read again when an archive changed or an icon is new, so a normal night takes a few seconds.
 Prints one line for patch-night.log. Exit code 0 even when some icons or numbers could not be read; 1 only when
 nothing could be written (the site then keeps its last good files).
@@ -36,6 +41,7 @@ SPELL_ATTR0_PASSIVE, SPELL_ATTR0_HIDDEN = 0x40, 0x80
 # How many enchants of each quality a Wildcard character (the Hero class) may slot: QualityCap in the core, with
 # CoA.ClientIntegerConfigs empty (its default, and not set in server-settings.txt), so the core's defaults apply.
 CAPS = {"Legendary": 1, "Epic": 3}
+HERO_CLASS_BIT = 1 << (10 - 1)  # the Wildcard (Hero) class in SkillLineAbility's class mask
 FALLBACK_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 
 
@@ -72,6 +78,46 @@ def pet_abilities(spells, dbc):
         if spell.name not in best or strength > best[spell.name][0]:
             best[spell.name] = (strength, spell)
     return {name: spell for name, (_, spell) in best.items()}
+
+
+def racials(spells, renderer, dbc, listing):
+    """Every race's racials as a Wildcard character has them, with our signature passive first."""
+    by_skill = {}
+    for row in tips.DBC(dbc / "SkillLineAbility.dbc").rows():
+        if row[4] == 0 or row[4] & HERO_CLASS_BIT:
+            by_skill.setdefault(row[1], []).append(row[2])
+    races = []
+    for race in listing["races"]:
+        changed = {int(k): v for k, v in race.get("changed", {}).items()}
+        notes = {int(k): v for k, v in race.get("note", {}).items()}
+        entries = []
+        book = spells.get(race["signature"])
+        if book:
+            tip = renderer.tooltip(book)
+            buffs = [renderer.tooltip(spells.get(b), 1) for b in race.get("buffs", []) if spells.get(b)]
+            tip["subs"] = [b for b in buffs if b["lines"]]
+            tip.update(kind="new", passive=True)
+            entries.append(tip)
+        seen = set()
+        for spell_id in by_skill.get(race["skill"], []):
+            spell = spells.get(spell_id)
+            if not spell or spell.row[tips.C_ATTR] & SPELL_ATTR0_HIDDEN or spell_id in race.get("replaced", []) \
+                    or not spell.name or spell.name in seen:
+                continue
+            seen.add(spell.name)
+            tip = renderer.tooltip(spell)
+            tip.pop("subs", None)
+            tip["passive"] = bool(spell.row[tips.C_ATTR] & SPELL_ATTR0_PASSIVE)
+            if spell_id in changed:
+                tip.update(kind="changed", change=changed[spell_id])
+            if spell_id in notes:
+                tip["note"] = notes[spell_id]
+            entries.append(tip)
+        order = {"new": 0, "changed": 1}
+        entries.sort(key=lambda t: (order.get(t.get("kind"), 2), t["passive"], t["name"]))
+        races.append({"race": race["race"], "faction": race["faction"], "icon_path": race["icon"],
+                      "icon": race["icon"].rsplit("\\", 1)[-1].lower(), "racials": entries})
+    return races
 
 
 def icon_paths(tip, found):
@@ -161,7 +207,9 @@ def main():
     started = time.time()
     server, site = Path(args.server), Path(args.site)
     dbc = dbc_folder(server)
-    spells = tips.Spells(dbc)
+    spell_data, spell_source = wildcard_mpq.read_client_file(args.client, "DBFilesClient\\Spell.dbc")
+    icon_data, _ = wildcard_mpq.read_client_file(args.client, "DBFilesClient\\SpellIcon.dbc") if spell_data else (None, "")
+    spells = tips.Spells(dbc, spell_data, icon_data)
     renderer = tips.Renderer(spells)
 
     listed = json.loads(Path(args.enchants or site / "enchant-status.json").read_text("utf-8-sig"))["enchants"]
@@ -173,6 +221,8 @@ def main():
             tip["limit"] = max(1, spell.row[tips.C_STACK])
             enchants[str(spell.id)] = tip
     pets = {name: renderer.tooltip(spell) for name, spell in sorted(pet_abilities(spells, dbc).items())}
+    listing = json.loads((Path(__file__).resolve().parent / "racials.json").read_text("utf-8"))
+    races = racials(spells, renderer, dbc, listing)
     for tip in pets.values():
         tip.pop("subs", None)  # pet abilities have no embedded Ascension tooltips worth showing
 
@@ -186,8 +236,11 @@ def main():
         attach(tip, int(key))
     for tip in pets.values():
         attach(tip, tip["id"])
-    wanted = {FALLBACK_ICON}
-    for tip in list(enchants.values()) + list(pets.values()):
+    racial_tips = [t for race in races for t in race["racials"]]
+    for tip in racial_tips:
+        attach(tip, tip["id"])
+    wanted = {FALLBACK_ICON} | {race["icon_path"] for race in races}
+    for tip in list(enchants.values()) + list(pets.values()) + racial_tips:
         icon_paths(tip, wanted)
     written, present, unreadable = extract_icons(Path(args.client), wanted, site / "icons")
 
@@ -196,15 +249,21 @@ def main():
             tip["icon"] = ""
         for sub in tip.get("subs", []):
             clear(sub)
-    for tip in list(enchants.values()) + list(pets.values()):
+    for tip in list(enchants.values()) + list(pets.values()) + racial_tips:
         clear(finish(tip))
+    for race in races:
+        race.pop("icon_path")
+        if race["icon"] not in present:
+            race["icon"] = ""
 
     common = {"updated": datetime.now().astimezone().isoformat(timespec="seconds"), "level": tips.LEVEL,
               "fallbackIcon": FALLBACK_ICON.rsplit("\\", 1)[-1].lower()}
     write_json(site / "enchant-tooltips.json", dict(common, caps=CAPS, tooltips=enchants))
     write_json(site / "pet-tooltips.json", dict(common, tooltips=pets))
-    no_icon = sum(1 for t in list(enchants.values()) + list(pets.values()) if not t["icon"])
-    print(f"Spell tooltips: {len(enchants)} enchants, {len(pets)} pet abilities, {renderer.unknown} number(s) not "
+    write_json(site / "racial-tooltips.json", dict(common, races=races))
+    no_icon = sum(1 for t in list(enchants.values()) + list(pets.values()) + racial_tips if not t["icon"])
+    print(f"Spell tooltips: {len(enchants)} enchants, {len(pets)} pet abilities, {len(racial_tips)} racials, "
+          f"from {spell_source or 'the server'}'s Spell.dbc, {renderer.unknown} number(s) not "
           f"worked out, {len(present)} icons ({written} read now, {no_icon} tooltip(s) without one"
           f"{f', {unreadable} unreadable' if unreadable else ''}), {time.time() - started:.0f} s.")
 

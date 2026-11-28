@@ -185,6 +185,9 @@ nav.top a:hover, nav.top a[aria-current] { color: var(--gold); }
 .tip-req { color: #fff; }
 .tip-note { color: #9d9da8; }
 .tip-embed { margin-top: 8px; padding-top: 8px; border-top: 1px solid #2c2c40; }
+.tip-embed.flat { border-top: 0; padding-top: 0; margin-top: 6px; }
+.tip-change { margin-top: 8px; color: #8fd0ff; }
+.tip-change b { font-weight: 600; }
 .tip-where { margin-top: 8px; color: #7ad97a; font-style: italic; }
 .tip-where b { font-style: normal; font-weight: 600; }
 .tip-limit { margin-top: 8px; color: var(--muted); }
