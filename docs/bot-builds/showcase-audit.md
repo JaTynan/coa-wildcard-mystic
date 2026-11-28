@@ -35,8 +35,9 @@ fire", and Devour Mind's Devourer buff did not appear; both are proc auras with 
 audit of 15 Nov (`sql/enchants/016-dead-triggers.sql`) fixed 30 enchants for the same reason.
 
 The October enchant audit (`enchants/enchant_audit.py`) did not look at proc flags. Of the enchants the tracker
-lists as "working (audit)", **201 have this fault** with no rule anywhere (192 Epic, 7 Rare, 1 Uncommon, 1
-Legendary).
+lists as "working (audit)", **194 have this fault** with no rule anywhere (188 Epic, 4 Rare, 1 Uncommon, 1
+Legendary). (201 before 28 Nov evening: the first check also counted add-target-trigger auras, which the core runs
+without proc flags.)
 
 Correction (28 Nov): the first version of this page said 43 build parts and 679 enchants. That count missed the
 core's pending world SQL, where the core gives several hundred enchants their trigger rules. The numbers above
@@ -229,3 +230,14 @@ Each step is its own pull request, classified under change control; James merges
 | Blessing of the Divines | Fixed: random blessing from costed Holy and Nature heals; two blessings heal less than the tooltip | PR #293 (after #290) |
 | Raging Onslaught | Needs code. Its +40% Raging Blow damage already works. The refund cannot be done in data: casting Rage! again resets its charges to 0 and loses one. A script must add one charge to Rage! on a Raging Blow hit (20%); the hit comes before the core spends the charge, so that is a true refund | Not started |
 | Preservation | Needs code: Prayer of Preservation must give Preservation only to injured allies; the buff's +20% chance to be crit-healed is a placeholder; the next direct heal on that ally consumes it, heals 3 nearby allies, shields the ally and cuts Prayer of Preservation's cooldown by 3 s | Not started |
+
+## 9. Progress on the needs-code parts, group A (28 Nov)
+
+| Part | Result | Where |
+|---|---|---|
+| Arcane Gunslinger | False alarm for its Missile Barrage chance (add-target-trigger auras need no proc flags). Still missing: the extra Arcane Barrage target (300028 is applied by nothing) and the early removal | Code |
+| Good Fortune | Fixed: the Holy crit buff now comes | PR #295 |
+| Shot Weaving | Fixed: a ranged shot with each Arcane Missile | PR #295 |
+| Blades of Blood | Needs code: Whirlwind's +5 targets uses spell modifier 34, which our core lacks; the Rend part is a placeholder | Code |
+| Master of Kunai | Needs code: the Kunai stacks are never used up in data; the cooldown cut reaches only the stock Adrenaline Rush | Code |
+| Toss and Throw | Needs code: in data the combo-point proc would use up the buff's charges; "more damage against monsters" uses spell modifier 38, which does not exist | Code |
