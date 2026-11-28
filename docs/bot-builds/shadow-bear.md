@@ -15,8 +15,17 @@ data (S3), but numbers and some interactions may have changed since.
 | # | Source | What it gave | Weight |
 |---|---|---|---|
 | S1 | Video "Bear the Dark Force: Shadow Bear Tank Build Guide - Project Ascension Season 9", Nordic Boomerchef Gaming, 29 Feb 2024, https://www.youtube.com/watch?v=Jc2yNGX5TGY (transcript read 28 Nov) | Abilities, talents, the core loop, what to roll for, stats | Primary, but one season old |
-| S2 | Discord guide "Bear Tank" (2021), to be pasted by James | - | Cross-check wanted |
+| S2 | Old Discord guide "Bear Tank" (2021), passed on by James 28 Nov | A plain physical bear: starting abilities, what to card, the area version | Cross-check: three seasons older, no rotation given |
 | S3 | Our client spell data (`Spell.dbc`, read 28 Nov) | Exact behaviour; all the abilities named below exist | Settles what an ability does |
+
+### What S2 confirms and adds
+
+- **Agrees with S1:** Bear Form and Swipe as the core; Savage Defense carded; a Voidwalker (S2 also lists Soul Link)
+  for damage reduction; Challenging Roar; Carnage Incarnate as the version for groups of enemies and dungeons.
+- **Differs:** S2's bear has no Shadow Bolt at all. It is a physical bear that adds Evasion, Charge and Poisons, and
+  suggests threat talents if needed. Barkskin is its alternative defensive.
+- **Used here:** Evasion and Barkskin join the defensive cooldowns (T5b). The physical version is a good **second bear
+  build** for the roster, so not every bear tank plays the same way.
 
 ## 2. How the build works
 
@@ -67,7 +76,8 @@ Top to bottom; the first line that is true wins. Interrupts stay with the genera
 | T2 | An enemy in the group is not attacking me | Growl on it | Basic tank behaviour (not in S1) |
 | T3 | My target is out of melee range | Feral Charge | S1 ("almost mandatory") |
 | T4 | My health is critical **and** Survival Instincts is ready | Survival Instincts | S1 carded it; threshold **guess** |
-| T5 | My health is low **and** Carnage Incarnate is ready | Carnage Incarnate | S1; threshold **guess** |
+| T5 | My health is low **and** Carnage Incarnate is ready | Carnage Incarnate | S1, S2; threshold **guess** |
+| T5b | My health is low **and** Carnage Incarnate is on cooldown | Evasion or Barkskin, if rolled | S2 lists them; using them as the fallback: **guess** |
 | T6 | Backlash **or** Nightfall's Shadow Trance is on me | Shadow Bolt | S1, S3 (the core of the build) |
 | T7 | My Corruption is not on the target | Mangle (or Maul) | S1, S3 |
 | T8 | Two or more enemies near me | Swipe | S1 |
@@ -82,6 +92,6 @@ adds it.
 | Point | How to settle it |
 |---|---|
 | Season 9 to 10 changes | A Season 10 source, or James's knowledge of what changed |
-| Rage use: Maul as a rage dump? | S2, or James |
+| Rage use: Maul as a rage dump? | James (neither source says) |
 | Does Shadow Bolt from Bear Form still hit three targets? | In game |
-| A Discord cross-check | James to paste the "Bear Tank" post |
+| Physical bear (S2) as its own build | Write it once the roster's tank slots are set |
