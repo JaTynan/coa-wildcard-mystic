@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build planner</title>
+<link rel="stylesheet" href="style.css">
+<script src="site.js"></script>
+<style>
+  /* Build planner only */
+  main { max-width: 1200px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 400px); gap: 18px; align-items: start; }
+  .overview { position: sticky; top: 12px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .overview { position: static; } }
+  h2 { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  h2 small { font-size: 14px; font-weight: 400; color: var(--muted); }
+  h2 small.over { color: var(--bad); font-weight: 700; }
+  select, .field { font: inherit; color: var(--text); background: var(--field); border: 1px solid #42424c; border-radius: 8px;
+                   padding: 7px 10px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+  .row label { margin: 0; font-weight: 400; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+  input[type=number] { width: 80px; margin: 0; }
+  .picker { position: relative; margin: 10px 0 4px; }
+  .picker input { margin: 0; }
+  .picker .tools { display: flex; gap: 8px; flex-wrap: wrap; }
+  .picker .tools input { flex: 1 1 220px; }
+  .results { position: absolute; left: 0; right: 0; z-index: 20; background: var(--panel); border: 1px solid #44444e;
+             border-radius: 10px; margin-top: 4px; max-height: 360px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+  .results button { display: flex; width: 100%; gap: 10px; align-items: center; text-align: left; font: inherit; color: var(--text);
+                    background: none; border: 0; border-bottom: 1px solid var(--line); padding: 7px 10px; cursor: pointer; }
+  .results button:hover, .results button:focus-visible { background: var(--panel-2); }
+  .results .what { color: var(--muted); font-size: 13px; }
+  .results .none { padding: 10px; }
+  .chosen { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
+  .chosen li { display: flex; gap: 10px; align-items: center; padding: 5px 6px; border-radius: 8px; }
+  .chosen li:hover { background: var(--panel-2); }
+  .chosen .info { flex: 1; min-width: 0; }
+  .chosen .info b { display: block; }
+  .chosen .what { color: var(--muted); font-size: 13px; }
+  .chosen .warn { color: var(--bad); font-size: 13px; display: block; }
+  .chosen .hint { color: #8fb8ff; font-size: 13px; display: block; }
+  .chosen select { padding: 3px 6px; font-size: 14px; }
+  .x { font: inherit; background: none; border: 1px solid #44444e; color: var(--muted); border-radius: 6px; padding: 1px 8px;
+       cursor: pointer; }
+  .x:hover { color: var(--text); border-color: var(--muted); }
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; margin-top: 8px; }
+  .slot { border: 1px dashed #44444e; border-radius: 10px; padding: 8px; min-height: 52px; display: flex; gap: 8px; align-items: center; }
+  .slot.filled { border-style: solid; }
+  .slot .info { flex: 1; min-width: 0; }
+  .slot .what { color: var(--muted); font-size: 13px; display: block; }
+  .bar { height: 8px; border-radius: 99px; background: var(--field); overflow: hidden; margin: 4px 0 10px; }
+  .bar div { height: 100%; background: var(--gold); }
+  .bar.over div { background: var(--bad); }
+  .sum { display: grid; gap: 4px; }
+  .sum h3 { margin: 12px 0 4px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .icons { display: flex; flex-wrap: wrap; gap: 4px; }
+  .icons .has-tip { border-radius: 6px; }
+  .problems { margin: 10px 0 0; padding-left: 18px; color: var(--bad); font-size: 14px; }
+  .problems.ok { color: var(--good); list-style: none; padding: 0; }
+  .badge { display: inline-block; white-space: nowrap; font-size: 12px; font-weight: 700; border-radius: 6px; padding: 0 6px;
+           border: 1px solid currentColor; margin-left: 6px; }
+  .badge.confirmed { color: var(--good); } .badge.restored { color: var(--gold); } .badge.feedback { color: #8fb8ff; }
+  .badge.broken { color: var(--bad); }
+  .common { color: #e6e6ea; } .uncommon { color: #5fd35f; } .rare { color: #4da3ff; } .epic { color: #c9a0ff; }
+  .legendary { color: #ff9f40; }
+  .examples { display: grid; gap: 8px; }
+  details summary { cursor: pointer; font-size: 17px; }
+  .examples button { font: inherit; text-align: left; color: var(--text); background: var(--field); border: 1px solid #44444e;
+                     border-radius: 10px; padding: 8px 12px; cursor: pointer; }
+  .examples button:hover { border-color: var(--gold); }
+  .examples .what { color: var(--muted); font-size: 13px; display: block; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .actions .button { padding: 7px 14px; font-size: 15px; }
+</style>
+</head>
+<body data-page="planner">
+<main>
+  <header class="page-head">
+    <p class="eyebrow">Build planner</p>
+    <h1>Plan a Wildcard character</h1>
+    <p class="lede">Pick a race, a pet if you want one, your four starting abilities, then the abilities, talents and
+    Mystic Enchants you are aiming for. The planner keeps to the server's limits and the overview sums it up. Copy the
+    link to share a build.</p>
+  </header>
+  <div class="layout">
+    <div class="stack">
+      <section class="panel" id="examples-panel" hidden>
+        <details>
+          <summary><b>Example builds</b> <span class="note">the builds our bots aim for; open to choose one</span></summary>
+          <p class="note" style="margin:10px 0">Each is the heart of a build: the abilities and talents it is made of
+          and the ones that feed it. Loading one keeps your race and enchants; fill in the rest.</p>
+          <div class="examples" id="examples"></div>
+        </details>
+      </section>
+      <section class="panel">
+        <h2>Character</h2>
+        <div class="row">
+          <label>Name <input class="field" id="name" maxlength="40" placeholder="My build" style="width:200px;margin:0"></label>
+          <label>Level <input type="number" class="field" id="level" min="1" max="60" value="60"></label>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Race <small>one</small></h2>
+        <div class="row"><select id="race" aria-label="Race"></select></div>
+        <div class="icons" id="race-racials" style="margin-top:10px"></div>
+      </section>
+      <section class="panel">
+        <h2>Pet <small>optional, one kind</small></h2>
+        <div class="row">
+          <select id="tame" aria-label="Way to tame a pet"></select>
+          <select id="family" aria-label="Pet family" hidden></select>
+        </div>
+        <p class="note" id="pet-note" style="margin:8px 0 0"></p>
+        <div class="icons" id="pet-abilities" style="margin-top:8px"></div>
+      </section>
+      <section class="panel">
+        <h2>Starting abilities <small id="starter-count"></small></h2>
+        <p class="note" style="margin:0">Every character starts with four, chosen with starter cards. They cost ability
+        essence like any other.</p>
+        <div class="slots" id="starters"></div>
+        <div class="picker" id="starter-picker"></div>
+      </section>
+      <section class="panel">
+        <h2>Abilities <small id="ability-count"></small></h2>
+        <div class="bar" id="ability-bar"><div></div></div>
+        <div class="picker" id="ability-picker"></div>
+        <ul class="chosen" id="abilities"></ul>
+      </section>
+      <section class="panel">
+        <h2>Talents <small id="talent-count"></small></h2>
+        <div class="bar" id="talent-bar"><div></div></div>
+        <div class="picker" id="talent-picker"></div>
+        <ul class="chosen" id="talents"></ul>
+      </section>
+      <section class="panel">
+        <h2>Mystic Enchants <small id="enchant-count"></small></h2>
+        <p class="note" style="margin:0" id="enchant-rules"></p>
+        <div class="picker" id="enchant-picker"></div>
+        <ul class="chosen" id="enchants"></ul>
+      </section>
+    </div>
+    <aside class="overview">
+      <section class="panel">
+        <h2 id="o-title">Overview</h2>
+        <div class="sum" id="summary"><p class="note">Loading...</p></div>
+        <ul class="problems" id="problems"></ul>
+        <div class="actions">
+          <button type="button" class="button" id="copy">Copy link</button>
+          <button type="button" class="button quiet" id="clear">Start again</button>
+        </div>
+        <p class="note" id="copied" style="margin:8px 0 0"></p>
+      </section>
+    </aside>
+  </div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const el = Wildcard.el;
+const QUALITY_ORDER = ["Legendary", "Epic", "Rare", "Uncommon"];
+const STATUS = { confirmed: "Confirmed", restored: "Restored", feedback: "Waiting on feedback", broken: "Not working yet" };
+const CLASS_NAMES = { DeathKnight: "Death Knight" };
+// Which pet families each way to tame a pet gives (the pets page's categories).
+const TAME_CATEGORY = { "Tame Beast": "Beast", "Dominate Undead": "Undead", "Enslave Demon": "Demon",
+                        "Tether Elemental": "Elemental", "Tame Dragonkin": "Dragonkin" };
+
+const D = { pool: null, byId: new Map(), races: [], enchants: [], enchantBySpell: new Map(), tips: {}, sources: {},
+            caps: { Legendary: 1, Epic: 3, RareWorldforged: 3, Slots: 17 }, pets: null, petTips: {}, examples: [] };
+let B = blank();
+
+function blank() {
+  return { name: "", level: 60, race: "", family: 0, starters: [0, 0, 0, 0], abilities: [], talents: [], enchants: [] };
+}
+
+// ---- the rules ---------------------------------------------------------------------------------------------------
+
+function essenceAt(level) {
+  let row = [0, 0, 0];
+  for (const b of D.pool.budget) if (b[0] <= level) row = b;
+  return { ability: row[1], talent: row[2] };
+}
+
+// The level by which the essence a pick needs has been earned (PoolLevel in AscensionWildcard.cpp): an entry can be
+// rolled once its Wildcard level is no higher.
+function poolLevel(need, talent) {
+  const budget = D.pool.budget;
+  const value = (b) => talent ? b[2] : b[1];
+  let i = budget.findIndex((b) => value(b) >= need);
+  if (i < 0) return null;
+  while (i + 1 < budget.length && value(budget[i + 1]) === value(budget[i])) i++;
+  const level = talent ? Math.max(budget[i][0], D.pool.talentStart) : budget[i][0];
+  return Math.min(level, B.level);
+}
+
+function tameOf(ids) { return ids.map((id) => D.byId.get(id)).find((e) => e && e.tame) || null; }
+function chosenAbilityIds() { return [...B.starters.filter(Boolean), ...B.abilities]; }
+function entryName(e) { return e.name; }
+function className(name) { return CLASS_NAMES[name] || name; }
+
+// Problems with the build, and the level warning for each pick.
+function check() {
+  const problems = [];
+  const warn = new Map();
+  const have = essenceAt(B.level);
+  const starters = B.starters.map((id) => D.byId.get(id)).filter(Boolean);
+  const abilities = B.abilities.map((id) => D.byId.get(id)).filter(Boolean);
+  const talents = B.talents.map(([id]) => D.byId.get(id)).filter(Boolean);
+  const abilitySpent = [...starters, ...abilities].reduce((sum, e) => sum + e.cost, 0);
+  if (!B.race) problems.push("Pick a race.");
+  if (starters.length < 4) problems.push(`Pick ${4 - starters.length} more starting abilit${4 - starters.length === 1 ? "y" : "ies"}.`);
+  if (abilitySpent > have.ability)
+    problems.push(`Abilities need ${abilitySpent} ability essence; level ${B.level} gives ${have.ability}.`);
+  if (talents.length > have.talent)
+    problems.push(`Talents need ${talents.length} talent essence; level ${B.level} gives ${have.talent}.`);
+  // Each roll draws from the pool of the level by which its essence was earned (PoolLevel), so a high-level pick
+  // can only be a later roll. Lowest level first, with other rolls (2 essence each, not chosen here) in between where
+  // a pick needs more essence spent before it, and count what that leaves.
+  let spent = starters.reduce((sum, e) => sum + e.cost, 0);
+  let fillers = 0;
+  for (const e of [...abilities].sort((a, b) => a.level - b.level)) {
+    if (e.level > B.level) { warn.set(e.id, `Not in the rolls before level ${e.level}`); spent += e.cost; continue; }
+    while (spent + e.cost <= have.ability && (poolLevel(spent + e.cost, false) || 0) < e.level) { spent += 2; fillers++; }
+    spent += e.cost;
+    if ((poolLevel(spent, false) || 0) < e.level) warn.set(e.id, `Needs more abilities rolled before it than level ${B.level} allows`);
+  }
+  let talentSpent = 0, talentFillers = 0;
+  for (const e of [...talents].sort((a, b) => a.level - b.level)) {
+    const need = Math.max(e.level, D.pool.talentStart);
+    if (need > B.level) { warn.set(e.id, `Not in the rolls before level ${need}`); talentSpent++; continue; }
+    while (talentSpent + 1 <= have.talent && (poolLevel(talentSpent + 1, true) || 0) < need) { talentSpent++; talentFillers++; }
+    talentSpent++;
+    if ((poolLevel(talentSpent, true) || 0) < need) warn.set(e.id, `Needs more talents rolled before it than level ${B.level} allows`);
+  }
+  if (warn.size) problems.push(`${warn.size} pick${warn.size === 1 ? "" : "s"} cannot be had at level ${B.level} (marked).`);
+  // Enchants
+  const counts = {};
+  let forged = 0;
+  const perSpell = new Map();
+  for (const spell of B.enchants) {
+    const e = D.enchantBySpell.get(spell);
+    if (!e) continue;
+    counts[e.quality] = (counts[e.quality] || 0) + 1;
+    const tip = D.tips[spell];
+    if (tip && tip.source && e.quality === "Rare" && tip.source !== "hidden") forged++;
+    perSpell.set(spell, (perSpell.get(spell) || 0) + 1);
+  }
+  if (B.enchants.length > D.caps.Slots) problems.push(`${B.enchants.length} enchants; there are ${D.caps.Slots} slots.`);
+  for (const q of ["Legendary", "Epic"]) if ((counts[q] || 0) > D.caps[q])
+    problems.push(`${counts[q]} ${q} enchants; the limit is ${D.caps[q]}.`);
+  if (forged > D.caps.RareWorldforged) problems.push(`${forged} rare worldforged enchants; the limit is ${D.caps.RareWorldforged}.`);
+  for (const [spell, n] of perSpell) {
+    const tip = D.tips[spell];
+    const limit = tip ? tip.limit : 1;
+    if (n > limit) problems.push(`${D.enchantBySpell.get(spell).name} ${n} times; ${limit === 1 ? "one" : "up to " + limit} per character.`);
+  }
+  return { problems, warn, have, abilitySpent, talentSpent: talents.length, counts, forged, fillers, talentFillers };
+}
+
+// ---- pieces ------------------------------------------------------------------------------------------------------
+
+function facts(e) {
+  const list = [(e.talent ? "Talent" : "Ability") + " · " + className(e.class) + (e.tab && e.tab !== e.class ? " · " + e.tab : ""),
+    "From level " + Math.max(e.level, e.talent ? D.pool.talentStart : 1) + " · " + e.cost +
+    (e.talent ? " talent essence" : " ability essence")];
+  if (e.card) list.push(e.card + " skill card");
+  return list;
+}
+
+function entryTip(node, e, rank) {
+  Wildcard.attachTip(node, () => Wildcard.tipCard(e.tip, { name: e.name, facts: facts(e), rank }));
+  return node;
+}
+
+function enchantTip(node, e) {
+  const tip = D.tips[e.spell];
+  if (tip) Wildcard.attachTip(node, () => Wildcard.tipCard(tip, { quality: e.quality.toLowerCase(),
+    qualityLabel: e.quality + " Mystic Enchant", limit: tip.limit, source: D.sources[tip.source] }));
+  return node;
+}
+
+function iconOnly(icon, make) {
+  const node = el("span", {}, Wildcard.icon(icon, 30));
+  make(node);
+  return node;
+}
+
+// A search box with a list of matches; choose(item) adds one.
+function picker(box, { placeholder, items, label, filters = [], choose }) {
+  box.textContent = "";
+  const input = el("input", { type: "search", placeholder, "aria-label": placeholder, autocomplete: "off" });
+  const selects = filters.map((f) => {
+    const s = el("select", { "aria-label": f.label }, f.options.map(([value, text]) => el("option", { value }, text)));
+    s.addEventListener("change", () => { list(); input.focus(); });
+    return s;
+  });
+  const results = el("div", { class: "results", hidden: true });
+  box.append(el("div", { class: "tools" }, input, ...selects), results);
+  function list() {
+    const words = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const values = selects.map((s) => s.value);
+    // Names first: exact, then starting with what was typed, then containing it; then matches in the tooltip text.
+    const typed = words.join(" ");
+    const score = (item) => {
+      const name = item.name.toLowerCase();
+      return name === typed ? 0 : name.startsWith(typed) ? 1 : words.every((w) => name.includes(w)) ? 2 : 3;
+    };
+    const found = items().filter((item) => filters.every((f, i) => !values[i] || f.test(item, values[i])) &&
+      words.every((w) => item.search.includes(w))).map((item) => [score(item), item])
+      .sort((a, b) => a[0] - b[0] || a[1].name.localeCompare(b[1].name)).slice(0, 40).map(([, item]) => item);
+    results.textContent = "";
+    for (const item of found) {
+      const [icon, name, what] = label(item);
+      const b = el("button", { type: "button" }, Wildcard.icon(icon, 28), el("span", {}, name, el("div", { class: "what" }, what)));
+      b.addEventListener("mousedown", (event) => event.preventDefault());
+      b.onclick = () => { choose(item); input.value = ""; results.hidden = true; render(); };
+      results.append(b);
+    }
+    if (!found.length) results.append(el("div", { class: "note none" }, words.length ? "Nothing matches." : "Type to search."));
+    results.hidden = false;
+  }
+  input.addEventListener("input", list);
+  input.addEventListener("focus", list);
+  input.addEventListener("blur", () => setTimeout(() => { results.hidden = true; }, 150));
+  input.addEventListener("keydown", (event) => { if (event.key === "Escape") { results.hidden = true; input.blur(); } });
+}
+
+function classFilter() {
+  const classes = [...new Set(D.pool.entries.map((e) => e.class))].sort();
+  return { label: "Class", options: [["", "Every class"], ...classes.map((c) => [c, className(c)])],
+           test: (e, value) => e.class === value };
+}
+
+// ---- rendering ---------------------------------------------------------------------------------------------------
+
+function render() {
+  const result = check();
+  $("level").value = B.level;
+  $("name").value = B.name;
+  renderRace();
+  renderPet();
+  renderStarters();
+  renderAbilities(result);
+  renderTalents(result);
+  renderEnchants(result);
+  renderSummary(result);
+  save();
+}
+
+function renderRace() {
+  $("race").value = B.race;
+  const race = D.races.find((r) => r.race === B.race);
+  const box = $("race-racials");
+  box.textContent = "";
+  if (!race) return;
+  for (const tip of race.racials) box.append(iconOnly(tip.icon, (n) => Wildcard.attachTip(n, () => Wildcard.tipCard(tip))));
+}
+
+function renderPet() {
+  const tame = tameOf(chosenAbilityIds());
+  $("tame").value = tame ? String(tame.id) : "";
+  const family = $("family");
+  const category = tame ? TAME_CATEGORY[Object.keys(TAME_CATEGORY).find((k) => tame.name.startsWith(k))] : "";
+  family.hidden = !tame || !D.pets;
+  family.textContent = "";
+  family.append(el("option", { value: "0" }, "Any family"));
+  if (D.pets && category)
+    for (const f of D.pets.families.filter((f) => f.category === category && f.tameable))
+      family.append(el("option", { value: String(f.id) }, f.name));
+  if (!tame || ![...family.options].some((o) => o.value === String(B.family))) B.family = 0;
+  family.value = String(B.family);
+  $("pet-note").textContent = tame ? `${tame.name} costs ${tame.cost} ability essence; it is in your ` +
+    (B.starters.includes(tame.id) ? "starting abilities." : "abilities.") +
+    (category ? ` See the ${category.toLowerCase()} families on the Tameable pets page.` : "") :
+    "No pet. A pet needs one of these abilities, and a character can only have one of them.";
+  const box = $("pet-abilities");
+  box.textContent = "";
+  const chosen = D.pets && D.pets.families.find((f) => f.id === B.family);
+  if (chosen) for (const a of chosen.abilities) {
+    const tip = D.petTips[a.name];
+    if (tip) box.append(iconOnly(tip.icon, (n) => Wildcard.attachTip(n, () => Wildcard.tipCard(tip))));
+  }
+}
+
+function renderStarters() {
+  const box = $("starters");
+  box.textContent = "";
+  B.starters.forEach((id, i) => {
+    const e = D.byId.get(id);
+    const slot = el("div", { class: "slot" + (e ? " filled" : "") });
+    if (e) {
+      const x = el("button", { type: "button", class: "x", "aria-label": "Remove " + e.name }, "×");
+      x.onclick = () => { B.starters[i] = 0; render(); };
+      slot.append(entryTip(el("span", {}, Wildcard.icon(e.tip.icon, 32)), e),
+        el("div", { class: "info" }, el("b", {}, e.name), el("span", { class: "what" }, className(e.class) +
+          " · " + (i < 2 ? "starter card" : "golden starter card"))), x);
+    } else {
+      slot.append(el("span", { class: "note" }, `Slot ${i + 1}: ` + (i < 2 ? "starter card" : "golden starter card")));
+    }
+    box.append(slot);
+  });
+  $("starter-count").textContent = B.starters.filter(Boolean).length + " of 4";
+}
+
+function renderAbilities(result) {
+  const box = $("abilities");
+  box.textContent = "";
+  for (const id of B.abilities) {
+    const e = D.byId.get(id);
+    if (!e) continue;
+    const x = el("button", { type: "button", class: "x", "aria-label": "Remove " + e.name }, "×");
+    x.onclick = () => { B.abilities = B.abilities.filter((a) => a !== id); render(); };
+    const label = el("div", { class: "info" }, el("b", {}, e.name),
+      el("span", { class: "what" }, className(e.class) + " · level " + e.level + " · " + e.cost + " essence"));
+    if (result.warn.has(id)) label.append(el("span", { class: "warn" }, result.warn.get(id)));
+    box.append(el("li", {}, entryTip(el("span", {}, Wildcard.icon(e.tip.icon, 32)), e), label, x));
+  }
+  const spent = result.abilitySpent, have = result.have.ability;
+  $("ability-count").textContent = `${spent} of ${have} ability essence` +
+    (result.fillers ? ` · at least ${result.fillers} other roll${result.fillers === 1 ? "" : "s"} needed first` : "");
+  $("ability-count").className = spent > have ? "over" : "";
+  bar("ability-bar", spent, have);
+}
+
+function renderTalents(result) {
+  const box = $("talents");
+  box.textContent = "";
+  for (const pair of B.talents) {
+    const [id, rank] = pair;
+    const e = D.byId.get(id);
+    if (!e) continue;
+    const ranks = (e.tip.ranks || []).length || 1;
+    const x = el("button", { type: "button", class: "x", "aria-label": "Remove " + e.name }, "×");
+    x.onclick = () => { B.talents = B.talents.filter((t) => t[0] !== id); render(); };
+    const label = el("div", { class: "info" }, el("b", {}, e.name),
+      el("span", { class: "what" }, className(e.class) + " · level " + Math.max(e.level, D.pool.talentStart)));
+    if (result.warn.has(id)) label.append(el("span", { class: "warn" }, result.warn.get(id)));
+    const parts = [entryTip(el("span", {}, Wildcard.icon(e.tip.icon, 32)), e, rank), label];
+    if (ranks > 1) {
+      const select = el("select", { "aria-label": "Rank of " + e.name },
+        Array.from({ length: ranks }, (_, i) => el("option", { value: String(i + 1) }, "Rank " + (i + 1))));
+      select.value = String(Math.min(rank || ranks, ranks));
+      select.onchange = () => { pair[1] = Number(select.value); render(); };
+      parts.push(select);
+    }
+    box.append(el("li", {}, ...parts, x));
+  }
+  const spent = result.talentSpent, have = result.have.talent;
+  $("talent-count").textContent = `${spent} of ${have} talent essence` +
+    (result.talentFillers ? ` · at least ${result.talentFillers} other roll${result.talentFillers === 1 ? "" : "s"} needed first` : "");
+  $("talent-count").className = spent > have ? "over" : "";
+  bar("talent-bar", spent, have);
+}
+
+function renderEnchants(result) {
+  const box = $("enchants");
+  box.textContent = "";
+  B.enchants.forEach((spell, index) => {
+    const e = D.enchantBySpell.get(spell);
+    if (!e) return;
+    const tip = D.tips[spell];
+    const x = el("button", { type: "button", class: "x", "aria-label": "Remove " + e.name }, "×");
+    x.onclick = () => { B.enchants.splice(index, 1); render(); };
+    const label = el("div", { class: "info" }, el("b", { class: e.quality.toLowerCase() }, e.name,
+      el("span", { class: "badge " + e.status }, STATUS[e.status])), el("span", { class: "what" }, e.quality +
+      (tip && tip.source && tip.source !== "hidden" ? " · worldforged" : "")));
+    if (e.status === "broken") label.append(el("span", { class: "warn" }, e.note || "Known not to work yet."));
+    box.append(el("li", {}, enchantTip(el("span", {}, Wildcard.icon(tip ? tip.icon : "", 32)), e), label, x));
+  });
+  const c = result.counts;
+  $("enchant-count").textContent = `${B.enchants.length} of ${D.caps.Slots} slots`;
+  $("enchant-count").className = B.enchants.length > D.caps.Slots ? "over" : "";
+  $("enchant-rules").textContent = `Legendary ${c.Legendary || 0} of ${D.caps.Legendary} · Epic ${c.Epic || 0} of ` +
+    `${D.caps.Epic} · rare worldforged ${result.forged} of ${D.caps.RareWorldforged} · Rare and Uncommon fill the rest.`;
+}
+
+function bar(id, spent, have) {
+  const node = $(id);
+  node.classList.toggle("over", spent > have);
+  node.firstChild.style.width = (have ? Math.min(100, spent * 100 / have) : 0) + "%";
+}
+
+function renderSummary(result) {
+  const box = $("summary");
+  box.textContent = "";
+  $("o-title").textContent = B.name || "Overview";
+  const race = D.races.find((r) => r.race === B.race);
+  const tame = tameOf(chosenAbilityIds());
+  const family = D.pets && D.pets.families.find((f) => f.id === B.family);
+  box.append(el("div", {}, el("b", {}, "Level " + B.level + (race ? " " + race.race : "")),
+    tame ? el("div", { class: "note" }, "Pet: " + (family ? family.name + " (" + tame.name + ")" : tame.name)) : null));
+  const group = (title, nodes) => { if (nodes.length) box.append(el("h3", {}, title), el("div", { class: "icons" }, nodes)); };
+  group("Starting abilities", B.starters.map((id) => D.byId.get(id)).filter(Boolean)
+    .map((e) => iconOnly(e.tip.icon, (n) => entryTip(n, e))));
+  group(`Abilities · ${result.abilitySpent} of ${result.have.ability} essence`, B.abilities.map((id) => D.byId.get(id))
+    .filter(Boolean).map((e) => iconOnly(e.tip.icon, (n) => entryTip(n, e))));
+  group(`Talents · ${result.talentSpent} of ${result.have.talent} essence`, B.talents.map(([id, rank]) => [D.byId.get(id), rank])
+    .filter(([e]) => e).map(([e, rank]) => iconOnly(e.tip.icon, (n) => entryTip(n, e, rank))));
+  for (const q of QUALITY_ORDER) {
+    const list = B.enchants.map((s) => D.enchantBySpell.get(s)).filter((e) => e && e.quality === q);
+    group(q + " enchants", list.map((e) => iconOnly(D.tips[e.spell] ? D.tips[e.spell].icon : "", (n) => enchantTip(n, e))));
+  }
+  if (race) group("Racials", race.racials.map((tip) => iconOnly(tip.icon, (n) => Wildcard.attachTip(n, () => Wildcard.tipCard(tip)))));
+  // Hints: what the chosen tooltips ask for that the build does not have.
+  const names = new Set([...chosenAbilityIds(), ...B.talents.map(([id]) => id)].map((id) => D.byId.get(id)).filter(Boolean).map(entryName));
+  const wants = new Set();
+  for (const id of [...chosenAbilityIds(), ...B.talents.map(([i]) => i)]) {
+    const e = D.byId.get(id);
+    for (const name of (e && e.tip.req) || []) if (!names.has(name)) wants.add(`${e.name} asks for ${name}`);
+  }
+  const problems = $("problems");
+  problems.textContent = "";
+  problems.className = "problems" + (result.problems.length ? "" : " ok");
+  for (const p of result.problems) problems.append(el("li", {}, p));
+  if (!result.problems.length) problems.append(el("li", {}, "Within every limit."));
+  for (const w of wants) problems.append(el("li", { class: "note", style: "color:#8fb8ff" }, w + " (its tooltip says so)."));
+}
+
+// ---- saving and sharing: the build lives in the address (#b=...) and this browser --------------------------------
+
+function encode() {
+  const compact = { n: B.name, l: B.level, r: B.race, f: B.family, s: B.starters, a: B.abilities, t: B.talents, e: B.enchants };
+  const bytes = new TextEncoder().encode(JSON.stringify(compact));
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function decode(text) {
+  try {
+    const raw = atob(text.replace(/-/g, "+").replace(/_/g, "/"));
+    const c = JSON.parse(new TextDecoder().decode(Uint8Array.from(raw, (ch) => ch.charCodeAt(0))));
+    const ids = (list) => (Array.isArray(list) ? list : []).map(Number).filter((id) => D.byId.has(id));
+    const starters = (Array.isArray(c.s) ? c.s : []).slice(0, 4).map((id) => D.byId.has(Number(id)) ? Number(id) : 0);
+    while (starters.length < 4) starters.push(0);
+    return { name: String(c.n || "").slice(0, 40), level: Math.min(60, Math.max(1, Number(c.l) || 60)), race: String(c.r || ""),
+             family: Number(c.f) || 0, starters, abilities: ids(c.a),
+             talents: (Array.isArray(c.t) ? c.t : []).filter((t) => Array.isArray(t) && D.byId.has(Number(t[0])))
+               .map((t) => [Number(t[0]), Number(t[1]) || 1]),
+             enchants: (Array.isArray(c.e) ? c.e : []).map(Number).filter((s) => D.enchantBySpell.has(s)) };
+  } catch (error) {
+    return null;
+  }
+}
+
+function save() {
+  const code = encode();
+  history.replaceState(null, "", "#b=" + code);
+  try { localStorage.setItem("wildcard-build", code); } catch (error) { /* private browsing */ }
+}
+
+function restore() {
+  const fromLink = location.hash.startsWith("#b=") ? decode(location.hash.slice(3)) : null;
+  let stored = null;
+  try { stored = localStorage.getItem("wildcard-build"); } catch (error) { /* private browsing */ }
+  return fromLink || (stored && decode(stored)) || blank();
+}
+
+// ---- loading -----------------------------------------------------------------------------------------------------
+
+function textOf(tip) {
+  const parts = [tip.name, ...(tip.req || [])];
+  for (const line of tip.lines || []) for (const [text] of line) parts.push(text);
+  return parts.join(" ");
+}
+
+async function load() {
+  try {
+    D.pool = await Wildcard.tooltips("wildcard-tooltips.json");
+  } catch (error) {
+    $("summary").textContent = "The planner's data is unavailable right now. Try again in a minute.";
+    return;
+  }
+  for (const e of D.pool.entries) {
+    e.search = (e.name + " " + textOf(e.tip) + " " + e.class + " " + e.tab).toLowerCase();
+    D.byId.set(e.id, e);
+  }
+  D.pool.entries.sort((a, b) => a.name.localeCompare(b.name));
+  const [races, status, pets, petTips, examples] = await Promise.allSettled([
+    Wildcard.tooltips("racial-tooltips.json"), fetch("enchant-status.json", { cache: "no-store" }).then((r) => r.json()),
+    fetch("https://join.jtlab.cc/api/pets", { cache: "no-store" }).then((r) => r.json()),
+    Wildcard.tooltips("pet-tooltips.json"), fetch("builds.json", { cache: "no-store" }).then((r) => r.json())]);
+  if (races.status === "fulfilled") D.races = races.value.races || [];
+  if (status.status === "fulfilled") D.enchants = status.value.enchants || [];
+  if (pets.status === "fulfilled") D.pets = pets.value;
+  if (petTips.status === "fulfilled") D.petTips = petTips.value.tooltips || {};
+  if (examples.status === "fulfilled") D.examples = examples.value.builds || [];
+  for (const e of D.enchants) { e.search = e.name.toLowerCase(); D.enchantBySpell.set(e.spell, e); }
+  setUp();
+  B = restore();
+  render();
+  for (const file of ["enchant-tooltips.json", "enchant-tooltips-rare.json", "enchant-tooltips-uncommon.json"]) {
+    try {
+      const t = await Wildcard.tooltips(file);
+      Object.assign(D.sources, t.sources || {});
+      if (t.caps) Object.assign(D.caps, t.caps);
+      for (const [spell, tip] of Object.entries(t.tooltips || {})) {
+        D.tips[spell] = tip;
+        const e = D.enchantBySpell.get(Number(spell));
+        if (e) e.search = (e.name + " " + textOf(tip) + " " + (D.sources[tip.source] || "")).toLowerCase();
+      }
+      render();
+    } catch (error) { /* names and statuses only */ }
+  }
+}
+
+// An example build in the planner: starter-card abilities first into the four starting slots, the other abilities
+// after, talents at their top rank. The race and enchants are kept from what was there.
+function fromExample(ex) {
+  const build = blank();
+  build.name = ex.name;
+  build.race = B.race;
+  build.enchants = B.enchants.slice();
+  const entries = [...ex.core, ...ex.support].map((id) => D.byId.get(id)).filter(Boolean);
+  let tame = false;
+  for (const e of entries) {
+    if (e.talent) {
+      if (!build.talents.some(([id]) => id === e.id)) build.talents.push([e.id, (e.tip.ranks || []).length || 1]);
+      continue;
+    }
+    if (build.starters.includes(e.id) || build.abilities.includes(e.id) || (e.tame && tame)) continue;
+    tame = tame || !!e.tame;
+    const free = build.starters.indexOf(0);
+    if (e.starter && free >= 0) build.starters[free] = e.id; else build.abilities.push(e.id);
+  }
+  return build;
+}
+
+function setUp() {
+  $("race").append(el("option", { value: "" }, "Choose a race"),
+    ...["Alliance", "Horde"].map((faction) => el("optgroup", { label: faction },
+      D.races.filter((r) => r.faction === faction).map((r) => el("option", { value: r.race }, r.race)))));
+  $("race").onchange = () => { B.race = $("race").value; render(); };
+  const tames = D.pool.entries.filter((e) => e.tame);
+  $("tame").append(el("option", { value: "" }, "No pet"), ...tames.map((e) => el("option", { value: String(e.id) }, e.name)));
+  $("tame").onchange = () => {
+    const old = tameOf(chosenAbilityIds());
+    const id = Number($("tame").value) || 0;
+    if (old) {
+      const i = B.starters.indexOf(old.id);
+      if (i >= 0) B.starters[i] = id; else B.abilities = B.abilities.filter((a) => a !== old.id);
+    }
+    if (id && !chosenAbilityIds().includes(id)) B.abilities.push(id);
+    B.family = 0;
+    render();
+  };
+  $("family").onchange = () => { B.family = Number($("family").value) || 0; render(); };
+  $("level").onchange = () => { B.level = Math.min(60, Math.max(1, Number($("level").value) || 60)); render(); };
+  $("name").oninput = () => { B.name = $("name").value; $("o-title").textContent = B.name || "Overview"; save(); };
+  const label = (e) => [e.tip.icon, e.name, (e.talent ? "Talent" : "Ability") + " · " + className(e.class) +
+    " · level " + Math.max(e.level, e.talent ? D.pool.talentStart : 1) + (e.talent ? "" : " · " + e.cost + " essence")];
+  const tameTaken = () => !!tameOf(chosenAbilityIds());
+  const free = (e) => !chosenAbilityIds().includes(e.id) && !(e.tame && tameTaken());
+  picker($("starter-picker"), {
+    placeholder: "Add a starting ability", label, filters: [classFilter()],
+    items: () => D.pool.entries.filter((e) => e.starter && free(e)),
+    choose: (e) => { const i = B.starters.indexOf(0); if (i >= 0) B.starters[i] = e.id; } });
+  picker($("ability-picker"), {
+    placeholder: "Add an ability", label, filters: [classFilter()],
+    items: () => D.pool.entries.filter((e) => !e.talent && free(e)), choose: (e) => B.abilities.push(e.id) });
+  picker($("talent-picker"), {
+    placeholder: "Add a talent", label, filters: [classFilter()],
+    items: () => D.pool.entries.filter((e) => e.talent && !B.talents.some(([id]) => id === e.id)),
+    choose: (e) => B.talents.push([e.id, (e.tip.ranks || []).length || 1]) });
+  picker($("enchant-picker"), {
+    placeholder: "Add a Mystic Enchant",
+    label: (e) => [D.tips[e.spell] ? D.tips[e.spell].icon : "", e.name, e.quality + " · " + STATUS[e.status]],
+    filters: [{ label: "Quality", options: [["", "Every quality"], ...QUALITY_ORDER.map((q) => [q, q])],
+                test: (e, value) => e.quality === value },
+              { label: "Status", options: [["", "Any status"], ["works", "Not known broken"]],
+                test: (e, value) => value !== "works" || e.status !== "broken" }],
+    items: () => D.enchants, choose: (e) => B.enchants.push(e.spell) });
+  // The builds our bots aim for (builds.json): what each is made of, and what feeds it. Only abilities and talents:
+  // pick the race, the rest of the abilities and the enchants yourself.
+  const examples = D.examples.filter((ex) => [...ex.core, ...ex.support].some((id) => D.byId.has(id)));
+  if (examples.length) {
+    $("examples-panel").hidden = false;
+    const roles = [...new Set(examples.map((ex) => ex.role))];
+    const role = el("select", { "aria-label": "Role" }, roles.map((r) => el("option", { value: r }, r)));
+    const list = el("div", { class: "examples" });
+    const show = () => {
+      list.textContent = "";
+      for (const ex of examples.filter((x) => x.role === role.value)) {
+        const core = ex.core.map((id) => D.byId.get(id)).filter(Boolean);
+        const b = el("button", { type: "button" }, el("b", {}, ex.name),
+          el("span", { class: "what" }, core.map((e) => e.name).join(", ")));
+        b.onclick = () => { B = fromExample(ex); render(); window.scrollTo(0, 0); };
+        list.append(b);
+      }
+    };
+    role.onchange = show;
+    $("examples").append(el("div", { class: "row" }, role), list);
+    show();
+  }
+  $("copy").onclick = async () => {
+    save();
+    try { await navigator.clipboard.writeText(location.href); $("copied").textContent = "Link copied."; }
+    catch (error) { $("copied").textContent = "Copy this page's address to share the build."; }
+  };
+  $("clear").onclick = () => { B = blank(); render(); };
+}
+
+load();
+</script>
+</body>
+</html>

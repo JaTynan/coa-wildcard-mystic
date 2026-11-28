@@ -1,0 +1,716 @@
+{
+ "source": "SQUID mod-playerbots, CoaWildcardPicks.cpp",
+ "builds": [
+  {
+   "name": "Blade Warden",
+   "role": "Tank",
+   "core": [
+    40715,
+    40989,
+    40426,
+    40425
+   ],
+   "support": []
+  },
+  {
+   "name": "Bulwark",
+   "role": "Tank",
+   "core": [
+    36772,
+    40187,
+    40245,
+    40881
+   ],
+   "support": []
+  },
+  {
+   "name": "Swashbuckler",
+   "role": "Tank",
+   "core": [
+    36931,
+    40187,
+    36929
+   ],
+   "support": [
+    37152,
+    37153,
+    37200,
+    37573
+   ]
+  },
+  {
+   "name": "Relentless",
+   "role": "Tank",
+   "core": [
+    40132,
+    42095,
+    40503,
+    40245
+   ],
+   "support": []
+  },
+  {
+   "name": "Vanguard Sentinel",
+   "role": "Tank",
+   "core": [
+    36429,
+    40187,
+    40270,
+    40426
+   ],
+   "support": []
+  },
+  {
+   "name": "Carnage Incarnate",
+   "role": "Tank",
+   "core": [
+    36853,
+    40196,
+    40265
+   ],
+   "support": [
+    42083
+   ]
+  },
+  {
+   "name": "Templar of Flame",
+   "role": "Tank",
+   "core": [
+    41990,
+    36528,
+    41991,
+    40133,
+    36532
+   ],
+   "support": [
+    42067
+   ]
+  },
+  {
+   "name": "Demoniac",
+   "role": "Tank",
+   "core": [
+    38634,
+    40251
+   ],
+   "support": []
+  },
+  {
+   "name": "Mystic Knight",
+   "role": "Tank",
+   "core": [
+    41990,
+    36384,
+    37343
+   ],
+   "support": [
+    36383
+   ]
+  },
+  {
+   "name": "Crimson Champion",
+   "role": "Tank",
+   "core": [
+    40288,
+    42024,
+    40002,
+    40999
+   ],
+   "support": []
+  },
+  {
+   "name": "Stormguard",
+   "role": "Tank",
+   "core": [
+    40187,
+    40025,
+    36667,
+    40027
+   ],
+   "support": []
+  },
+  {
+   "name": "Icebound",
+   "role": "Tank",
+   "core": [
+    41990,
+    41991,
+    40336
+   ],
+   "support": []
+  },
+  {
+   "name": "Plague Bearer",
+   "role": "Tank",
+   "core": [
+    40822,
+    40243,
+    41291,
+    36403
+   ],
+   "support": [
+    42083
+   ]
+  },
+  {
+   "name": "Beast of Nightmare",
+   "role": "Tank",
+   "core": [
+    36472,
+    40019,
+    40050,
+    40822
+   ],
+   "support": [
+    42083
+   ]
+  },
+  {
+   "name": "Thunderpaw",
+   "role": "Tank",
+   "core": [
+    36935,
+    36934,
+    36936,
+    40027
+   ],
+   "support": []
+  },
+  {
+   "name": "Naturalist",
+   "role": "Healer",
+   "core": [
+    40064,
+    40212,
+    40200,
+    40919
+   ],
+   "support": []
+  },
+  {
+   "name": "Dawnkeeper",
+   "role": "Healer",
+   "core": [
+    40047,
+    40995,
+    40043
+   ],
+   "support": []
+  },
+  {
+   "name": "Eternal Caretaker",
+   "role": "Healer",
+   "core": [
+    40127,
+    40128,
+    40840
+   ],
+   "support": [
+    42019
+   ]
+  },
+  {
+   "name": "Sacred Sentinel",
+   "role": "Healer",
+   "core": [
+    40047,
+    36857,
+    36858,
+    40669
+   ],
+   "support": []
+  },
+  {
+   "name": "Tide Mender",
+   "role": "Healer",
+   "core": [
+    40021,
+    40950,
+    40080,
+    40738
+   ],
+   "support": []
+  },
+  {
+   "name": "Grove Keeper",
+   "role": "Healer",
+   "core": [
+    40166,
+    40059,
+    40080,
+    40738
+   ],
+   "support": []
+  },
+  {
+   "name": "Hierophant",
+   "role": "Healer",
+   "core": [
+    40127,
+    40018,
+    40128,
+    40901
+   ],
+   "support": []
+  },
+  {
+   "name": "Steward of Eternity",
+   "role": "Healer",
+   "core": [
+    36865,
+    36866,
+    36867,
+    36868
+   ],
+   "support": []
+  },
+  {
+   "name": "Cryotherapist",
+   "role": "Healer",
+   "core": [
+    40008,
+    40127,
+    36468,
+    40043,
+    36463
+   ],
+   "support": [
+    40256,
+    40276
+   ]
+  },
+  {
+   "name": "Tree of Wrath",
+   "role": "Healer",
+   "core": [
+    40025,
+    40021,
+    36454,
+    36455
+   ],
+   "support": []
+  },
+  {
+   "name": "Grove Ranger",
+   "role": "Healer",
+   "core": [
+    36919,
+    40166,
+    36920,
+    40919,
+    36922
+   ],
+   "support": [
+    36923
+   ]
+  },
+  {
+   "name": "Fire Sage",
+   "role": "Healer",
+   "core": [
+    36459,
+    40133,
+    40222,
+    40840
+   ],
+   "support": []
+  },
+  {
+   "name": "Vampire Lord",
+   "role": "Healer",
+   "core": [
+    36926,
+    37506,
+    36928
+   ],
+   "support": [
+    220,
+    40462,
+    40042
+   ]
+  },
+  {
+   "name": "Hoplite",
+   "role": "Melee",
+   "core": [
+    36695,
+    36696,
+    41948,
+    36692
+   ],
+   "support": []
+  },
+  {
+   "name": "Warden",
+   "role": "Melee",
+   "core": [
+    40098,
+    40153,
+    42035,
+    36557
+   ],
+   "support": []
+  },
+  {
+   "name": "Heavyweight",
+   "role": "Melee",
+   "core": [
+    40063,
+    40006,
+    40199,
+    40362,
+    36624
+   ],
+   "support": [
+    40096,
+    40175
+   ]
+  },
+  {
+   "name": "Dragon Warrior",
+   "role": "Melee",
+   "core": [
+    40096,
+    36511,
+    36512,
+    40362,
+    36513
+   ],
+   "support": []
+  },
+  {
+   "name": "Son of Gruul",
+   "role": "Melee",
+   "core": [
+    40096,
+    36850,
+    36849
+   ],
+   "support": []
+  },
+  {
+   "name": "Defias Gunslinger",
+   "role": "Melee",
+   "core": [
+    36899,
+    40153,
+    40098,
+    36904
+   ],
+   "support": [
+    40109
+   ]
+  },
+  {
+   "name": "Gutripper",
+   "role": "Melee",
+   "core": [
+    36660,
+    40754,
+    40175
+   ],
+   "support": []
+  },
+  {
+   "name": "Wind Rager",
+   "role": "Melee",
+   "core": [
+    40103,
+    42050,
+    36739,
+    40549
+   ],
+   "support": []
+  },
+  {
+   "name": "Master of Shadows",
+   "role": "Melee",
+   "core": [
+    36796,
+    40109,
+    40132,
+    41292
+   ],
+   "support": [
+    40210
+   ]
+  },
+  {
+   "name": "Druid of the Fang",
+   "role": "Melee",
+   "core": [
+    36805,
+    36804,
+    42435,
+    36806
+   ],
+   "support": []
+  },
+  {
+   "name": "Crusader",
+   "role": "Melee",
+   "core": [
+    42067,
+    40848,
+    40989,
+    42110,
+    42025
+   ],
+   "support": []
+  },
+  {
+   "name": "Divine Sentinel",
+   "role": "Melee",
+   "core": [
+    36786,
+    40848,
+    40989,
+    40222
+   ],
+   "support": []
+  },
+  {
+   "name": "Hellcat",
+   "role": "Melee",
+   "core": [
+    42073,
+    36702,
+    40179
+   ],
+   "support": []
+  },
+  {
+   "name": "Storm Giant",
+   "role": "Melee",
+   "core": [
+    40187,
+    40025,
+    36761,
+    36762,
+    40027
+   ],
+   "support": []
+  },
+  {
+   "name": "Firelord",
+   "role": "Melee",
+   "core": [
+    36483,
+    40134,
+    42048,
+    41295,
+    40316
+   ],
+   "support": []
+  },
+  {
+   "name": "Fel Infused Blade",
+   "role": "Melee",
+   "core": [
+    36845,
+    36798
+   ],
+   "support": [
+    40109,
+    40132
+   ]
+  },
+  {
+   "name": "Marksman",
+   "role": "Ranged",
+   "core": [
+    36782,
+    40293,
+    42081,
+    40158,
+    36784
+   ],
+   "support": []
+  },
+  {
+   "name": "Paratrooper",
+   "role": "Ranged",
+   "core": [
+    40158,
+    37450,
+    40619
+   ],
+   "support": []
+  },
+  {
+   "name": "Locust Ranger",
+   "role": "Ranged",
+   "core": [
+    43009,
+    40124,
+    40165,
+    40975,
+    36501
+   ],
+   "support": [
+    40293,
+    40972
+   ]
+  },
+  {
+   "name": "Dark Ranger",
+   "role": "Ranged",
+   "core": [
+    36916,
+    40050,
+    36918,
+    36917,
+    36915
+   ],
+   "support": [
+    40613,
+    41932,
+    40019,
+    40093,
+    37317,
+    37428,
+    41053,
+    41919,
+    41847,
+    41017,
+    40696,
+    40463,
+    36834,
+    37684,
+    40566,
+    36831,
+    40934
+   ]
+  },
+  {
+   "name": "Arcane Gunslinger",
+   "role": "Ranged",
+   "core": [
+    36722,
+    40158
+   ],
+   "support": []
+  },
+  {
+   "name": "Evoker",
+   "role": "Caster",
+   "core": [
+    40008,
+    40016,
+    40164,
+    40864,
+    41006,
+    36495
+   ],
+   "support": [
+    36497,
+    40276
+   ]
+  },
+  {
+   "name": "Druid of the Eclipse",
+   "role": "Caster",
+   "core": [
+    40165,
+    37416,
+    40150,
+    40926,
+    42031
+   ],
+   "support": []
+  },
+  {
+   "name": "Shadowseer",
+   "role": "Caster",
+   "core": [
+    40050,
+    40019,
+    40554,
+    36632
+   ],
+   "support": []
+  },
+  {
+   "name": "Cryomancer",
+   "role": "Caster",
+   "core": [
+    40008,
+    36516,
+    40256,
+    40774,
+    40867
+   ],
+   "support": []
+  },
+  {
+   "name": "Ascendant",
+   "role": "Caster",
+   "core": [
+    40038,
+    40222,
+    36613,
+    40071,
+    40669
+   ],
+   "support": []
+  },
+  {
+   "name": "Stormcaller",
+   "role": "Caster",
+   "core": [
+    40025,
+    40201,
+    36572,
+    40027,
+    40472
+   ],
+   "support": []
+  },
+  {
+   "name": "Fel Apostate",
+   "role": "Caster",
+   "core": [
+    40181,
+    40251,
+    37029,
+    40189,
+    40896
+   ],
+   "support": []
+  },
+  {
+   "name": "White Walker",
+   "role": "Caster",
+   "core": [
+    40109,
+    36679,
+    36680,
+    40867
+   ],
+   "support": []
+  },
+  {
+   "name": "Plague Caster",
+   "role": "Caster",
+   "core": [
+    37576,
+    36877,
+    40934,
+    40165,
+    37531,
+    36876
+   ],
+   "support": [
+    40463,
+    138260,
+    41102,
+    37048,
+    40259,
+    41053,
+    40456,
+    40933,
+    41838
+   ]
+  }
+ ]
+}

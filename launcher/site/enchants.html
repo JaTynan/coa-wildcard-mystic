@@ -27,6 +27,8 @@
   td.name .quality { display: block; font-weight: 400; font-size: 13px; }
   .legendary { color: #ff9f40; }
   .epic { color: #c9a0ff; }
+  .rare { color: #4da3ff; }
+  .uncommon { color: #5fd35f; }
   .badge { display: inline-block; white-space: nowrap; font-size: 13px; font-weight: 700; border-radius: 6px; padding: 1px 8px;
            border: 1px solid currentColor; }
   .badge.confirmed { color: var(--good); }
@@ -51,8 +53,9 @@
   <header class="page-head">
     <p class="eyebrow">Mystic Enchants</p>
     <h1>Enchant status</h1>
-    <p class="lede">Many Legendary and Epic Mystic Enchants needed fixing on Wildcard. This table shows where each one
-    stands, so you can plan a build around enchants that work. Hover over an enchant, or tap it, to see what it does.</p>
+    <p class="lede">Many Mystic Enchants needed fixing on Wildcard. This table shows where each one stands, from
+    Legendary to Uncommon, so you can plan a build around enchants that work. Hover over an enchant, or tap it, to see
+    what it does. Put a build together on the <a href="planner.html">Build planner</a>.</p>
     <p class="note" id="caps"></p>
   </header>
   <div class="stack">
@@ -91,9 +94,11 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const LABELS = { confirmed: "Confirmed working", restored: "Restored", feedback: "Waiting on feedback", broken: "Not working yet" };
-const QUALITIES = ["All", "Legendary", "Epic"];
+const QUALITIES = ["All", "Legendary", "Epic", "Rare", "Uncommon"];
+const TIP_FILES = ["enchant-tooltips.json", "enchant-tooltips-rare.json", "enchant-tooltips-uncommon.json"];
 let data = null;
 let tips = {};
+let sources = {};
 let quality = "All";
 let status = "all";
 
@@ -145,7 +150,8 @@ function showRows() {
     const enchant = el("div", { class: "enchant" });
     enchant.append(Wildcard.icon(tip ? tip.icon : "", 36), label);
     if (tip) Wildcard.attachTip(enchant, () => Wildcard.tipCard(tip, {
-      quality: e.quality.toLowerCase(), qualityLabel: e.quality + " Mystic Enchant", limit: tip.limit }));
+      quality: e.quality.toLowerCase(), qualityLabel: e.quality + " Mystic Enchant", limit: tip.limit,
+      source: sources[tip.source] }));
     name.append(enchant);
     const badge = el("td");
     badge.append(el("span", { class: "badge " + e.status }, LABELS[e.status]));
@@ -179,16 +185,23 @@ async function load() {
   }
   showTabs();
   showRows();
-  // Tooltips and icons come from a second file made on the server each night; the table works without it.
-  try {
-    const t = await Wildcard.tooltips("enchant-tooltips.json");
-    tips = t.tooltips || {};
-    for (const tip of Object.values(tips)) tip.search = textOf(tip).toLowerCase();
-    if (t.caps) $("caps").textContent = "A Wildcard character can slot " + t.caps.Legendary + " Legendary and up to " +
-      t.caps.Epic + " Epic enchants. Numbers in the tooltips are for a level " + t.level + " character; " +
-      "where they grow with a stat, the tooltip says which.";
-    showRows();
-  } catch (error) { /* no tooltips: names and statuses only */ }
+  // Tooltips and icons come from files made on the server each night (Legendary and Epic first, then Rare and
+  // Uncommon); the table works without them.
+  for (const file of TIP_FILES) {
+    try {
+      const t = await Wildcard.tooltips(file);
+      Object.assign(sources, t.sources || {});
+      for (const [spell, tip] of Object.entries(t.tooltips || {})) {
+        tip.search = (textOf(tip) + " " + (sources[tip.source] || "")).toLowerCase();
+        tips[spell] = tip;
+      }
+      if (t.caps) $("caps").textContent = "A Wildcard character has " + (t.caps.Slots || 17) + " enchant slots: " +
+        t.caps.Legendary + " Legendary, up to " + t.caps.Epic + " Epic, and Rare and Uncommon in the rest (at most " +
+        (t.caps.RareWorldforged || 3) + " rare worldforged). Numbers in the tooltips are for a level " + t.level +
+        " character; where they grow with a stat, the tooltip says which.";
+      showRows();
+    } catch (error) { /* no tooltips for this file: names and statuses only */ }
+  }
 }
 
 function textOf(tip) {

@@ -21,10 +21,15 @@ password; the client itself stays on the VM and the seedbox.
   `index.html`. Patch night runs it after every start, once the site folder exists. Hashes are cached, so only
   changed files are read again.
 - **Tooltips and icons** (`tooltips/build_spell_data.py`, run by the publisher with the server's own Python) write
-  `enchant-tooltips.json`, `pet-tooltips.json`, `racial-tooltips.json` and `icons\*.png` into the site for the
-  Mystic Enchants, Tameable pets and Racials pages: what each enchant, pet ability and racial does, worked out from
-  the client's own spell data (our client patch's copy) as the game shows it, and its icon read from the client's
-  archives. `tooltips/racials.json` lists each race's signature passive, the buffs it shows and what we changed in
+  `enchant-tooltips.json` (Legendary and Epic), `enchant-tooltips-rare.json`, `enchant-tooltips-uncommon.json`,
+  `pet-tooltips.json`, `racial-tooltips.json`, `wildcard-tooltips.json` and `icons\*.png` into the site for the
+  Mystic Enchants, Tameable pets, Racials, Abilities and talents, and Build planner pages: what each enchant, pet
+  ability, racial, Wildcard ability and talent does, worked out from the client's own spell data (our client patch's
+  copy) as the game shows it, and its icon read from the client's archives. `tooltips/wildcard_planner.py` reads the
+  Wildcard pool, the essence each level gives and the starting choices from the server's DBC files exactly as the
+  world server does, so the planner's limits are the game's. The planner's example builds (`site/builds.json`) are
+  the builds our bots aim for, copied by hand from SQUID's source with `scripts/bot_builds.py` when the pinned
+  release changes. `tooltips/racials.json` lists each race's signature passive, the buffs it shows and what we changed in
   stock racials, in our own words: update it with `docs/race-kits.md`. Nothing from the client is in this repository; it is all made on
   the VM. Icons are only read again when a client archive changes. If it fails, the publisher's second log line
   says why and the site keeps its last files.

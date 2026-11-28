@@ -181,6 +181,8 @@ nav.top a:hover, nav.top a[aria-current] { color: var(--gold); }
 .tip-name { color: #fff; font-weight: 700; font-size: 15px; line-height: 1.25; }
 .tip-name.legendary { color: #ff9f40; }
 .tip-name.epic { color: #c9a0ff; }
+.tip-name.rare { color: #4da3ff; }
+.tip-name.uncommon { color: #5fd35f; }
 .tip-sub { color: var(--muted); font-size: 13px; }
 .tip-req { color: #fff; }
 .tip-note { color: #9d9da8; }

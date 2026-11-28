@@ -10,7 +10,9 @@ const Wildcard = (() => {
     ["leaderboards", "leaderboards.html", "Leaderboards"],
     ["racials", "racials.html", "Racials"],
     ["pets", "pets.html", "Tameable pets"],
+    ["wildcard", "wildcard.html", "Abilities and talents"],
     ["enchants", "enchants.html", "Mystic Enchants"],
+    ["planner", "planner.html", "Build planner"],
     ["changes", "changes.html", "Changes"],
   ];
 
@@ -214,15 +216,20 @@ const Wildcard = (() => {
     });
   }
 
-  // A tooltip card. extra: { quality: "legendary", limit: 1 }
+  // A tooltip card. extra: { quality: "legendary", qualityLabel, limit: 1, rank: 2 (a talent's rank), facts: [..],
+  // source: "where it comes from" }
   function tipCard(tip, extra = {}) {
+    const ranks = tip.ranks || [];
+    const rank = ranks.length ? Math.min(Math.max(extra.rank || ranks.length, 1), ranks.length) : 0;
     const card = el("div", { class: "tip-card" },
       el("div", { class: "tip-head" }, icon(tip.icon, 40),
-        el("div", {}, el("div", { class: "tip-name " + (extra.quality || "") }, tip.name),
-          extra.qualityLabel ? el("div", { class: "tip-sub" }, extra.qualityLabel) : null)));
+        el("div", {}, el("div", { class: "tip-name " + (extra.quality || "") }, extra.name || tip.name),
+          extra.qualityLabel ? el("div", { class: "tip-sub" }, extra.qualityLabel) : null,
+          rank ? el("div", { class: "tip-sub" }, `Rank ${rank} of ${ranks.length}`) : null)));
+    for (const fact of extra.facts || []) card.append(el("div", { class: "tip-sub" }, fact));
     for (const name of tip.req || []) card.append(el("div", { class: "tip-req" }, "Requires " + name));
     for (const name of tip.unlock || []) card.append(el("div", { class: "tip-req" }, "Unlocked by " + name));
-    card.append(el("div", { class: "tip-body" }, tipLines(tip.lines || [])));
+    card.append(el("div", { class: "tip-body" }, tipLines(rank ? ranks[rank - 1] : tip.lines || [])));
     if (extra.subsLabel && (tip.subs || []).length) card.append(el("div", { class: "tip-sub tip-embed" }, extra.subsLabel));
     for (const sub of tip.subs || []) {
       card.append(el("div", { class: extra.subsLabel ? "tip-embed flat" : "tip-embed" },
@@ -231,7 +238,8 @@ const Wildcard = (() => {
     }
     if (tip.change) card.append(el("div", { class: "tip-change" }, el("b", {}, "Changed on Wildcard: "), tip.change));
     if (tip.note) card.append(el("div", { class: "tip-change" }, tip.note));
-    if (tip.where) card.append(el("div", { class: "tip-where" }, el("b", {}, "Where to find it: "), tip.where));
+    if (tip.where) card.append(el("div", { class: "tip-where" }, el("b", {}, "Ascension's hint: "), tip.where));
+    if (extra.source) card.append(el("div", { class: "tip-change" }, extra.source));
     if (extra.limit) card.append(el("div", { class: "tip-limit" },
       extra.limit === 1 ? "One per character" : "Up to " + extra.limit + " per character"));
     return card;
