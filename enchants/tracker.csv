@@ -675,7 +675,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 273422,Overflowing Cultivation,Epic,200960,needs-code,other placeholder,broken,,,,,
 1412323,Piercing Howl,Rare,1013986,needs-code,other placeholder,broken,,,,,
 979050,Predatory Nature,Epic,132256,needs-code,other placeholder,broken,,,,,
-276273,Preservation,Epic,201281,needs-code,other placeholder,broken,,,,,
+276273,Preservation,Epic,201281,needs-code,other placeholder,live (after restart),script: Prayer of Preservation grants Preservation; next direct heal uses it (patch 55),,180-talent-code-showcase-4.sql,,needs the build with patch 55 batch 4
 81128,"Ready, Set, Go!",Epic,1175941,needs-code,other placeholder,broken,,,,,
 81466,Roots of The Forest,Epic,1176045,needs-code,other placeholder,broken,,,,,
 282024,Roots of The Forest,Uncommon,404416,needs-code,other placeholder,broken,,,,,
