@@ -2223,10 +2223,9 @@ Set-Content $file $text -NoNewline
 }
 
 # ---- Showcase talents, batch 6 (docs/bot-builds/showcase-audit.md): Divine Concord's extra stack, Glaive Toss with
-# Kunai and Toss and Throw, Toss and Throw against monsters, and the hunter's Hunter's Mark bonuses on pet abilities
-# (Hunting Frenzy, Marked for Death). sql/enchants/183-talent-code-showcase-6.sql binds the spell scripts.
+# Kunai and Toss and Throw, and Toss and Throw against monsters. sql/enchants/183-talent-code-showcase-6.sql binds them.
 # James, 28 Nov 2026: restore the showcase builds' talents.
-Write-Host "Patch: Divine Concord stacks; Kunai and Toss and Throw on Glaive Toss; Toss and Throw vs monsters; Hunter's Mark bonuses for pets"
+Write-Host "Patch: Divine Concord stacks; Kunai and Toss and Throw on Glaive Toss; Toss and Throw vs monsters"
 & {
 $file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
 $text = (Get-Content $file -Raw) -replace "`r`n", "`n"
@@ -2249,19 +2248,24 @@ class spell_wcme_divine_concord_bonus : public SpellScript
         Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
         if (!player || !player->HasAura(277860))
             return;
-        for (uint32 harnessedEnergy : { 283732u, 1585523u })
-            if (Aura* aura = player->GetAura(harnessedEnergy))
-            {
-                if (aura->IsUsingCharges())
-                    aura->SetCharges(aura->GetCharges() + 1);
-                return;
-            }
-        for (uint32 arcaneBlast : { 36032u, 1136032u })
-            if (Aura* aura = player->GetAura(arcaneBlast))
-            {
-                aura->ModStackAmount(1);
-                return;
-            }
+        // The cleanup runs while Arcane Blast hits its target, before Arcane Blast puts its own stack on you, so the
+        // extra stack is added just after (as the core's own spell_mage scripts defer aura changes).
+        player->m_Events.AddEventAtOffset([player]()
+        {
+            for (uint32 harnessedEnergy : { 283732u, 1585523u })
+                if (Aura* aura = player->GetAura(harnessedEnergy))
+                {
+                    if (aura->IsUsingCharges())
+                        aura->SetCharges(aura->GetCharges() + 1);
+                    return;
+                }
+            for (uint32 arcaneBlast : { 36032u, 1136032u })
+                if (Aura* aura = player->GetAura(arcaneBlast))
+                {
+                    aura->ModStackAmount(1);
+                    return;
+                }
+        }, 1ms);
     }
 
     void Register() override
@@ -2371,35 +2375,8 @@ class spell_wcme_shuriken_toss_monsters : public SpellScript
     }
 };
 
-// Wildcard: the hunter's Hunter's Mark bonuses on pet abilities. Hunting Frenzy (1180820: +10%) and Marked for Death
-// (+1% to +5%) are the core's class-script auras 7598-7602 with the pet-ability class flag, and their tooltips name pet
-// abilities; but the core reads them from the unit dealing the damage (Unit::SpellPctDamageModsDone), and a pet does
-// not carry its owner's auras, so pets never got them. When a pet's ability hits a target with Hunter's Mark on it,
-// this adds the owner's matching bonuses.
-class wcme_pet_hunters_mark_bonus : public UnitScript
-{
-public:
-    wcme_pet_hunters_mark_bonus() : UnitScript("wcme_pet_hunters_mark_bonus", true, { UNITHOOK_MODIFY_SPELL_DAMAGE_TAKEN }) { }
-
-    void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override
-    {
-        if (!target || !attacker || !spellInfo || damage <= 0 || spellInfo->SpellFamilyName != SPELLFAMILY_HUNTER ||
-            !(spellInfo->SpellFamilyFlags[1] & 0x10000000) || attacker->IsPlayer())
-            return;
-        Player* owner = attacker->GetCharmerOrOwnerPlayerOrPlayerItself();
-        if (!owner || owner == attacker || !target->GetAuraEffect(SPELL_AURA_MOD_STALKED, SPELLFAMILY_HUNTER, 0x400, 0, 0))
-            return;
-        int32 bonus = 0;
-        for (AuraEffect const* effect : owner->GetAuraEffectsByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS))
-            if (effect->GetMiscValue() >= 7598 && effect->GetMiscValue() <= 7602 && effect->IsAffectedOnSpell(spellInfo))
-                bonus += effect->GetAmount();
-        if (bonus > 0)
-            AddPct(damage, bonus);
-    }
-};
-
 '@
 $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
-$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_divine_concord_bonus);`n    RegisterSpellScript(spell_wcme_glaive_toss_ninja);`n    RegisterSpellScript(spell_wcme_shuriken_toss_monsters);`n    new wcme_pet_hunters_mark_bonus();`n")
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_divine_concord_bonus);`n    RegisterSpellScript(spell_wcme_glaive_toss_ninja);`n    RegisterSpellScript(spell_wcme_shuriken_toss_monsters);`n")
 Set-Content $file $text -NoNewline
 }
