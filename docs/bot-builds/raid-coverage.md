@@ -13,6 +13,9 @@ on top of its core build (`plague-caster.md`, section 3). Those extras are where
 roster assigns each one to a bot, so nothing is missing and nothing is doubled. The Plague Caster guide gives the same
 advice to players: split the buffs across the raid to free ability space.
 
+Source rule (James, 28 Nov): a build is written from a Season 10 guide where one exists, then a Season 9 guide; where
+the guides say nothing more than "spam your main ability", the original 3.3.5 rotation for that playstyle is the source.
+
 ## 2. Raid buffs (one source each per raid)
 
 | For | Category | Options (any one) |
@@ -93,10 +96,10 @@ natural carrier yet and is proposed as that bot's rolled extra.
 | Elemental Lord | Caster | Winter's Chill; **assign** Totem of Wrath |
 | Arcane Paladin | Caster (melee range) | Judgement of Wisdom; **assign** Concentration Aura |
 | Cryomancer | Caster | **assign** Divine Spirit |
-| Moonkin Fire | Caster | Moonkin Form (spell crit), Wrath of Air Totem, Mana Spring Totem, Blessing of Kings, Improved Scorch; **assign** Improved Faerie Fire (spell hit) |
+| Total Eclipse | Caster | Moonkin Form (spell crit), Improved Faerie Fire (spell hit), Earth and Moon; **assign** Wrath of Air Totem, Mana Spring Totem, Blessing of Kings |
 | Holy Radiance | Healer | Personal only |
 | Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled |
 
-Caster side after the eight casters: every caster debuff and caster buff on the checklist is covered, four of them by
+Caster side after the eight casters: every caster debuff and caster buff on the checklist is covered, six of them by
 assignment. Still open overall: the melee, hunter and tank buffs and debuffs, which
 come with those slots.
