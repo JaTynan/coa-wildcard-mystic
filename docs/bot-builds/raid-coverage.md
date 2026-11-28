@@ -35,9 +35,10 @@ advice to players: split the buffs across the raid to free ability space.
 | Tanks | Armour | Devotion Aura; Stoneskin Totem |
 | Tanks | Damage taken | Blessing of Sanctuary |
 
-Totems: in 3.3.5 a totem reaches only its caster's party (**check on our core**). A 25-player raid has five parties,
-so either one totem carrier per party for the key totems, or the bots are grouped so the totems sit with the players
-who need them.
+Totems and auras reach the **whole raid** on our server, within range of the totem or caster: checked 28 Nov in our
+spell data (the totem buffs, Devotion Aura, Trueshot Aura and Leader of the Pack all use the raid-wide area aura) and in
+the core, which applies that effect to everyone in the raid. So one carrier per totem is enough, as long as the raid
+stands near it.
 
 ## 3. Debuffs on the boss (one source each)
 
