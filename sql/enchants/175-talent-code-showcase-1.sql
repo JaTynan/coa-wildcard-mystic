@@ -2,7 +2,8 @@
 -- fixes.ps1 ("Showcase talents, batch 1"), plus Arcane Gunslinger, which needs no code. The script bindings below
 -- do nothing until a build with that part of patch 55 is installed (the server logs one error per missing script
 -- and carries on); nothing here changes play before then except Arcane Gunslinger. Safe to run again: 000-reset
--- removes spell_wcme_ bindings, WCME: links and owned aura links. Not tested in game: unverified until a player report or an automated test.
+-- removes spell_wcme_ bindings, WCME: links and owned aura links. Not tested in game: unverified until a player
+-- report or an automated test.
 --
 -- 1. Raging Onslaught 275920 and 2. Master of Kunai: only the script bindings here. Their proc rows wait for the
 --    build: without the script, Raging Onslaught's proc would cast Rage! again, which resets its charges and costs the
