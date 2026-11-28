@@ -217,3 +217,15 @@ Each step is its own pull request, classified under change control; James merges
 - Talent-list versions are checked; where a build names the enchant version instead, the enchant was checked.
 - Script lookup is by spell id in the core and our files; a script that finds a spell another way would be missed,
   making a part look worse than it is, never better.
+
+## 8. Progress on the parts that never fire (28 Nov)
+
+| Part | Result | Where |
+|---|---|---|
+| Demonic Mind | Fixed: Demonic Wounds on direct spell damage, 75% | PR #291 |
+| Swirling Maelstrom | Partly fixed: stack from Lava Lash and Stormstrike (33%); the stack for spending 5 Maelstrom Weapon stacks needs code | PR #291 |
+| Cataclysmic Sundering | Fixed: three burning patches per Sundering | PR #292 |
+| Maledictive Assault | Fixed: Shadow Bolt hits two more targets while Nightfall or Backlash is up | PR #292 |
+| Blessing of the Divines | Fixed: random blessing from costed Holy and Nature heals; two blessings heal less than the tooltip | PR #293 (after #290) |
+| Raging Onslaught | Needs code. Its +40% Raging Blow damage already works. The refund cannot be done in data: casting Rage! again resets its charges to 0 and loses one. A script must add one charge to Rage! on a Raging Blow hit (20%); the hit comes before the core spends the charge, so that is a true refund | Not started |
+| Preservation | Needs code: Prayer of Preservation must give Preservation only to injured allies; the buff's +20% chance to be crit-healed is a placeholder; the next direct heal on that ally consumes it, heals 3 nearby allies, shields the ally and cuts Prayer of Preservation's cooldown by 3 s | Not started |
