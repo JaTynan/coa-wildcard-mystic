@@ -1795,3 +1795,209 @@ $text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
 $text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_blades_of_blood_whirlwind);`n    new wcme_swirling_maelstrom();`n")
 Set-Content $file $text -NoNewline
 }
+
+# ---- Showcase talents, batch 3 (docs/bot-builds/showcase-audit.md): Blooming Growth, Gul'dan's Chosen, Shadow Shot,
+# Time Bomb. sql/enchants/179-talent-code-showcase-3.sql binds the scripts and gives Time Bomb its proc row.
+# James, 28 Nov 2026: restore the showcase builds' talents.
+Write-Host "Patch: Blooming Growth spreads Regrowth; Gul'dan's Chosen keeps Backdraft and Molten Core; Shadow Shot applies Corruption; Time Bomb stores and detonates"
+& {
+$file = 'core/src/server/coa/AscensionAdventurerCache.cpp'
+$text = (Get-Content $file -Raw) -replace "`r`n", "`n"
+$register = "    new world_pvp_kill_xp();`n"
+$loader = "void AddSC_AscensionAdventurerCache()`n{`n"
+foreach ($anchor in @($register, $loader)) {
+    if (([regex]::Matches($text, [regex]::Escape($anchor))).Count -ne 1) { throw "Core changed (or 40-battlegrounds.ps1 did not run): AscensionAdventurerCache.cpp has no single: $($anchor.Split("`n")[0])" }
+}
+$class = @'
+// Wildcard: Blooming Growth (talent and Mystic Enchant 272214). A critical direct heal from Regrowth puts that
+// Regrowth's heal over time, 10% weaker, on up to 3 other party or raid members within 20 yards of the healed ally.
+// The spell data fires on every helpful spell and casts a placeholder heal (272215, 6 per tick), so this script picks
+// the event and sets the amount. The amount is the Regrowth's own per-tick value, which already holds the caster's
+// healing bonus (taken when the heal over time was applied, AuraEffect::CalculateAmount); 272215 is applied and then
+// given 90% of it, so the bonus is not counted twice. Party members are taken in group order.
+class spell_wcme_blooming_growth : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_blooming_growth);
+
+    static constexpr uint32 SPREAD_HOT = 272215;
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        SpellInfo const* spell = eventInfo.GetSpellInfo();
+        HealInfo const* heal = eventInfo.GetHealInfo();
+        return spell && heal && heal->GetHeal() && heal->GetTarget() && spell->SpellFamilyName == SPELLFAMILY_DRUID &&
+            (spell->SpellFamilyFlags[0] & 0x40) && spell->HasEffect(SPELL_EFFECT_HEAL) &&
+            (eventInfo.GetHitMask() & PROC_HIT_CRITICAL);
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        Player* caster = GetTarget()->ToPlayer();
+        Unit* healed = eventInfo.GetHealInfo()->GetTarget();
+        uint32 const regrowth = eventInfo.GetSpellInfo()->Id;
+        if (!caster || !healed)
+            return;
+        int32 perTick = 0;
+        for (AuraEffect const* hot : healed->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL))
+            if (hot->GetId() == regrowth && hot->GetCasterGUID() == caster->GetGUID())
+                perTick = CalculatePct(hot->GetAmount(), 90);
+        Group* group = caster->GetGroup();
+        if (perTick <= 0 || !group)
+            return;
+        uint8 spread = 0;
+        for (GroupReference* ref = group->GetFirstMember(); ref && spread < 3; ref = ref->next())
+        {
+            Player* member = ref->GetSource();
+            if (!member || member == healed || !member->IsAlive() || !member->IsInMap(healed) ||
+                !member->IsWithinDistInMap(healed, 20.0f))
+                continue;
+            if (Aura* aura = caster->AddAura(SPREAD_HOT, member))
+                if (AuraEffect* effect = aura->GetEffect(EFFECT_0))
+                {
+                    effect->ChangeAmount(perTick);
+                    ++spread;
+                }
+        }
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_blooming_growth::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_blooming_growth::HandleProc, EFFECT_0, SPELL_AURA_PROC_TRIGGER_SPELL);
+    }
+};
+
+// Wildcard: Gul'dan's Chosen (talent 277150). While its buff 277151 lasts, Backdraft and Molten Core are not used up.
+// The core's own rule gives the buff; the buff is a placeholder. Every version of the Backdraft and Molten Core buffs
+// has a proc entry (a spell_proc row, or one the core makes from the spell's proc flags), so their charges go only
+// through the proc system (Player::RemoveSpellMods skips spells with a proc entry). Refusing the proc while the
+// buff is up keeps the charge; the cast-time, cost and crit modifiers still apply. Bound in sql 179 to those buffs.
+class spell_wcme_guldans_chosen_keep : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_guldans_chosen_keep);
+
+    bool CheckProc(ProcEventInfo& /*eventInfo*/)
+    {
+        return !GetTarget()->HasAura(277151);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_guldans_chosen_keep::CheckProc);
+    }
+};
+
+// Wildcard: Shadow Shot (talent 276811; ranks 2-8 are 276828-276834) also applies your Corruption, the highest rank you know, stock or CoA. Its
+// damage needs no script: it carries Steady Shot's class flag, so the core's Steady Shot code handles it.
+class spell_wcme_shadow_shot : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_shadow_shot);
+
+    void HandleAfterHit()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        Unit* target = GetHitUnit();
+        if (!player || !target || !target->IsAlive())
+            return;
+        static constexpr std::array<uint32, 20> corruption = { 172, 6222, 6223, 7648, 11671, 11672, 25311, 27216,
+            47812, 47813, 1100172, 1106222, 1106223, 1107648, 1111671, 1111672, 1125311, 1127216, 1147812, 1147813 };
+        uint32 best = 0;
+        uint32 bestLevel = 0;
+        for (uint32 spellId : corruption)
+            if (player->HasSpell(spellId))
+                if (SpellInfo const* info = sSpellMgr->GetSpellInfo(spellId))
+                    if (!best || info->SpellLevel >= bestLevel)
+                    {
+                        best = spellId;
+                        bestLevel = info->SpellLevel;
+                    }
+        if (best)
+            player->CastSpell(target, best, true);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_wcme_shadow_shot::HandleAfterHit);
+    }
+};
+
+// Wildcard: Time Bomb (talent 284591). The bomb on the enemy stores 50% of the Arcane damage its caster deals to that
+// enemy, and when it runs out the caster's explosion (982483, area) deals the stored amount around the enemy. Both of
+// its effects are placeholders. Its spell_proc row (sql 179) lets the bomb's aura see Arcane damage it takes, including
+// damage from triggered spells; only damage from the bomb's own caster is stored. Dispelled or dying, it does not go
+// off: the tooltip names only the end of the duration.
+class spell_wcme_time_bomb : public AuraScript
+{
+    PrepareAuraScript(spell_wcme_time_bomb);
+
+    static constexpr uint32 EXPLOSION = 982483;
+
+    uint32 _stored = 0;
+
+    bool CheckProc(ProcEventInfo& eventInfo)
+    {
+        DamageInfo const* damage = eventInfo.GetDamageInfo();
+        Unit const* actor = eventInfo.GetActor();
+        return damage && damage->GetDamage() && actor && actor->GetGUID() == GetCasterGUID() &&
+            (damage->GetSchoolMask() & SPELL_SCHOOL_MASK_ARCANE) &&
+            !(eventInfo.GetSpellInfo() && eventInfo.GetSpellInfo()->Id == EXPLOSION);
+    }
+
+    void HandleProc(AuraEffect const* /*aurEff*/, ProcEventInfo& eventInfo)
+    {
+        PreventDefaultAction();
+        _stored = uint32(std::min<uint64>(uint64(_stored) + CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), 50), INT32_MAX));
+    }
+
+    void HandleRemove(AuraEffect const* aurEff, AuraEffectHandleModes /*mode*/)
+    {
+        if (GetTargetApplication()->GetRemoveMode() != AURA_REMOVE_BY_EXPIRE || !_stored)
+            return;
+        Unit* caster = GetCaster();
+        SpellInfo const* explosion = sSpellMgr->GetSpellInfo(EXPLOSION);
+        if (!caster || !explosion || !caster->IsInMap(GetTarget()))
+            return;
+        SpellCastTargets targets;
+        targets.SetDst(*GetTarget());
+        CustomSpellValues values;
+        values.AddSpellMod(SPELLVALUE_BASE_POINT0, int32(_stored));
+        caster->CastSpell(targets, explosion, &values, TRIGGERED_FULL_MASK, nullptr, aurEff);
+    }
+
+    void Register() override
+    {
+        DoCheckProc += AuraCheckProcFn(spell_wcme_time_bomb::CheckProc);
+        OnEffectProc += AuraEffectProcFn(spell_wcme_time_bomb::HandleProc, EFFECT_1, SPELL_AURA_DUMMY);
+        AfterEffectRemove += AuraEffectRemoveFn(spell_wcme_time_bomb::HandleRemove, EFFECT_1, SPELL_AURA_DUMMY, AURA_EFFECT_HANDLE_REAL);
+    }
+};
+
+// Wildcard: Time Bomb's other part: Arcane Barrage that deals damage takes 8 sec off Time Bomb's cooldown (284592, an
+// effect the core already handles), once per cast. Bound in sql 179 to every version of Arcane Barrage.
+class spell_wcme_time_bomb_barrage : public SpellScript
+{
+    PrepareSpellScript(spell_wcme_time_bomb_barrage);
+
+    bool _done = false;
+
+    void HandleAfterHit()
+    {
+        Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
+        if (_done || !player || GetHitDamage() <= 0 || !player->HasSpell(284591))
+            return;
+        _done = true;
+        player->CastSpell(player, 284592, true);
+    }
+
+    void Register() override
+    {
+        AfterHit += SpellHitFn(spell_wcme_time_bomb_barrage::HandleAfterHit);
+    }
+};
+
+'@
+$text = $text.Replace($loader, $class.Replace("`r`n", "`n") + $loader)
+$text = $text.Replace($register, $register + "    RegisterSpellScript(spell_wcme_blooming_growth);`n    RegisterSpellScript(spell_wcme_guldans_chosen_keep);`n    RegisterSpellScript(spell_wcme_shadow_shot);`n    RegisterSpellScript(spell_wcme_time_bomb);`n    RegisterSpellScript(spell_wcme_time_bomb_barrage);`n")
+Set-Content $file $text -NoNewline
+}
