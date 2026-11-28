@@ -30,11 +30,8 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-# The MPQ reader the website's tooltip builder uses (launcher/tooltips, from PR #307): launcher\tooltips in the
-# repo and beside client-patch in patch-night on the VM, since patch night copies both folders there.
-sys.path.insert(0, str(HERE.parent / 'launcher' / 'tooltips'))
 sys.path.insert(0, str(HERE))
-import wildcard_mpq  # noqa: E402
+import mpqread as wildcard_mpq  # noqa: E402
 import custom_cards  # noqa: E402
 
 PATCH = 'patch-ZZW.MPQ'

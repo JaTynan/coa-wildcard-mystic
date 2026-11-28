@@ -395,6 +395,7 @@ function Sql([string] $query) {
 
 function ApplyEnchantFixes {
     # Runs each file in patch-night\enchants, in name order, against the active realm's world database.
+    KeepCardsWithClientPatch
     $files = @(Get-ChildItem (Join-Path $here 'enchants') -Filter *.sql -ErrorAction SilentlyContinue | Sort-Object Name)
     if (-not $files.Count) { return }
     $db = 'acore_world'
@@ -727,47 +728,97 @@ function ReportConfigWarnings([string] $text) {
     Log "Settings: the server runs $($missing.Count) setting(s) on defaults (none set in a config file) and could not use $($bad.Count)$(if ($bad.Count) { ': ' + (($bad | ForEach-Object { $_.Trim() }) -join '; ') }). Full list in server-settings\settings-report.txt." $level
 }
 
-function RebuildClientPatch {
-    # The client patch (Data\patch-ZZW.MPQ in the client folder friends sync from) is rebuilt from client-patch\ whenever
-    # one of its files has changed since the last build (James, 28 Nov: no commands by hand), with the server still up;
-    # friends get it from the site after the restart. client-patch\rebuild_client_patch.py reads the client's own
-    # files, builds, and checks the result reads back before anything changes. The old patch is kept in backup\ (the
-    # newest 5). Reverting the change in GitHub rebuilds the old patch the next night. Until the client patch has this
-    # repo's enchant cards, their SQL (184) is left out, so nobody rolls a scroll their client can't show.
-    $source = Join-Path $here 'client-patch'
-    $builder = Join-Path $source 'rebuild_client_patch.py'
-    $stampFile = Join-Path $here 'client-patch-built.txt'
-    $cards = Join-Path $here 'enchants\184-custom-cards.sql'
-    if (-not (Test-Path $builder)) { return }
+function ClientPatchStamp {
+    # What the client patch (the client folder's Data\patch-ZZW.MPQ) is built from: our builders in client-patch\, and
+    # the client's other archives, since the patch carries whole copies of tables those hold (a CoA client update has
+    # to rebuild it too). One line, kept in client-patch-built.txt after each good build.
+    $parts = @(Get-ChildItem (Join-Path $here 'client-patch') -Filter *.py -ErrorAction SilentlyContinue | Sort-Object Name |
+        ForEach-Object { $_.Name + '=' + (Get-FileHash $_.FullName -Algorithm SHA256).Hash })
+    $parts += @(Get-ChildItem (Join-Path $Client 'Data') -Filter *.MPQ -Recurse -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -notlike 'patch-ZZW*' } | Sort-Object FullName |
+        ForEach-Object { '{0}|{1}|{2}' -f $_.FullName, $_.Length, $_.LastWriteTimeUtc.Ticks })
     $sha = [Security.Cryptography.SHA256]::Create()
-    $hashes = @(Get-ChildItem $source -Filter *.py | Sort-Object Name | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash }) -join ''
-    $hash = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($hashes)))).Replace('-', '')
+    return ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes(($parts -join "`n"))))).Replace('-', '')
+}
+
+function ClientPatchCurrent {
+    $stampFile = Join-Path $here 'client-patch-built.txt'
     $built = if (Test-Path $stampFile) { (Get-Content $stampFile -Raw).Trim() } else { '' }
-    if ($built -ne $hash) {
-        $livePatch = Join-Path $Client 'Data\patch-ZZW.MPQ'
-        $newPatch = Join-Path $work 'patch-ZZW.new.MPQ'
-        Remove-Item $newPatch -ErrorAction SilentlyContinue
-        Log 'The client patch files changed in GitHub; rebuilding the client patch...'
-        $result = Invoke-Quiet $python @('-I', "`"$builder`"", '--client', "`"$Client`"", '--out', "`"$newPatch`"",
-            '--work', "`"$(Join-Path $work 'client-patch-build')`"") '' 30
-        $last = @($result.Text -split "`n" | Where-Object { $_.Trim() }) | Select-Object -Last 1
-        if ($result.Code -eq 0 -and (Test-Path $newPatch)) {
-            $backups = Join-Path $here 'backup'
-            New-Item -ItemType Directory -Force -Path $backups | Out-Null
-            if (Test-Path $livePatch) { Copy-Item $livePatch (Join-Path $backups ('patch-ZZW.{0}.MPQ' -f (Get-Date -Format 'yyyyMMdd-HHmm'))) -Force }
-            Get-ChildItem $backups -Filter 'patch-ZZW.*.MPQ' | Sort-Object Name -Descending | Select-Object -Skip 5 | Remove-Item -Force
-            Move-Item $newPatch $livePatch -Force
-            Set-Content -Path $stampFile -Value $hash -Encoding ascii
-            $built = $hash
-            Log "$last The new client patch is in place (old one in backup\); friends get it from the site after the restart. Open the game once to check it."
+    return $built -eq (ClientPatchStamp)
+}
+
+function RebuildClientPatch {
+    # Rebuilds the client patch when what it is built from has changed (James, 28 Nov: no commands by hand), while the
+    # countdown runs with the server up; friends get it from the site after the restart.
+    # client-patch\rebuild_client_patch.py reads the client's own files, builds, and checks the result reads back before
+    # anything changes. The old patch is kept in backup\ (the newest 5); reverting the change in GitHub rebuilds the old
+    # one the next night. Any failure here is logged and the old patch stays: it never stops the night.
+    $builder = Join-Path $here 'client-patch\rebuild_client_patch.py'
+    $livePatch = Join-Path $Client 'Data\patch-ZZW.MPQ'
+    $staged = "$livePatch.new"
+    if (-not (Test-Path $builder)) { return }
+    try {
+        if (ClientPatchCurrent) { return }
+        Log 'The client patch is out of date (our builders or the client changed); rebuilding it...'
+        $built = Join-Path $work 'patch-ZZW.built.MPQ'
+        $out = Join-Path $work 'client-patch.out'
+        $err = Join-Path $work 'client-patch.err'
+        Remove-Item $built, $out, $err -ErrorAction SilentlyContinue
+        $arguments = '-I "{0}" --client "{1}" --out "{2}" --work "{3}"' -f $builder, $Client, $built, (Join-Path $work 'client-patch-build')
+        $run = Start-Process -FilePath $python -ArgumentList $arguments -WorkingDirectory $here -WindowStyle Hidden -PassThru `
+            -RedirectStandardOutput $out -RedirectStandardError $err
+        $null = $run.Handle   # keeps the exit code readable after it ends
+        if (-not $run.WaitForExit(10 * 60000)) {
+            try { $run.Kill() } catch { }
+            throw 'it ran for 10 minutes and was stopped'
+        }
+        $said = @((Get-Content $out, $err -ErrorAction SilentlyContinue) | Where-Object { $_.Trim() })
+        if ($run.ExitCode -ne 0 -or -not (Test-Path $built)) {
+            $why = [string] ($said | Select-Object -Last 1)
+            throw $(if ($why) { $why } else { "the builder stopped with exit code $($run.ExitCode) and said nothing" })
+        }
+        $backups = Join-Path $here 'backup'
+        New-Item -ItemType Directory -Force -Path $backups | Out-Null
+        if (Test-Path $livePatch) { Copy-Item $livePatch (Join-Path $backups ('patch-ZZW.{0}.MPQ' -f (Get-Date -Format 'yyyyMMdd-HHmm'))) -Force }
+        Get-ChildItem $backups -Filter 'patch-ZZW.*.MPQ' | Sort-Object Name -Descending | Select-Object -Skip 5 | Remove-Item -Force
+        # Copied beside the live patch first, then renamed over it, so a crash never leaves half a patch in place.
+        Copy-Item $built $staged -Force
+        Move-Item $staged $livePatch -Force
+        Set-Content -Path (Join-Path $here 'client-patch-built.txt') -Value (ClientPatchStamp) -Encoding ascii
+        # The cards' SQL this client patch carries, for nights when a later rebuild fails (KeepCardsWithClientPatch).
+        $cards = Join-Path $here 'enchants\184-custom-cards.sql'
+        if (Test-Path $cards) {
+            New-Item -ItemType Directory -Force -Path (Join-Path $here 'cards-live') | Out-Null
+            Copy-Item $cards (Join-Path $here 'cards-live') -Force
+        }
+        Log "$($said | Select-Object -Last 1) The new client patch is in place (old one in backup\); friends get it from the site after the restart. Open the game once to check it."
+    }
+    catch {
+        Remove-Item $staged -ErrorAction SilentlyContinue
+        Log "Rebuilding the client patch failed, so the old one stays: $($_.Exception.Message)" 'WARN'
+    }
+}
+
+function KeepCardsWithClientPatch {
+    # 184-custom-cards.sql offers our enchant cards, whose scrolls only a client patch built with them can show. When the
+    # client patch is not built from the current files, use the cards' SQL from the last good build (cards-live\), or
+    # leave it out if there never was one. Never just drop it once cards were live: 000-reset removes the scroll items
+    # and only 184 puts them back, and the server deletes items whose template is gone from bags at login.
+    # Runs before every start (every mode), from ApplyEnchantFixes.
+    $cards = Join-Path $here 'enchants\184-custom-cards.sql'
+    $lastGood = Join-Path $here 'cards-live\184-custom-cards.sql'
+    try {
+        if (-not (Test-Path $cards) -or -not (Test-Path (Join-Path $here 'client-patch\rebuild_client_patch.py'))) { return }
+        if (ClientPatchCurrent) { return }
+        if (Test-Path $lastGood) {
+            Copy-Item $lastGood $cards -Force
+            Log 'The client patch is not built from the current files, so the enchant cards are the ones it last had (cards-live).' 'WARN'
         } else {
-            Log "Rebuilding the client patch failed, so the old one stays: $last" 'WARN'
+            Remove-Item $cards -Force
+            Log 'New Mystic Enchant cards are left out (184-custom-cards.sql): the client patch does not have them yet.' 'WARN'
         }
     }
-    if ($built -ne $hash -and (Test-Path $cards)) {
-        Remove-Item $cards -Force
-        Log 'New Mystic Enchant cards are left out tonight (184-custom-cards.sql): the client patch does not have them yet.' 'WARN'
-    }
+    catch { Log "Checking the enchant cards against the client patch failed: $($_.Exception.Message)" 'WARN' }
 }
 
 function PublishFriendsSite {
