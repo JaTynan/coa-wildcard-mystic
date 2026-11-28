@@ -40,6 +40,16 @@ DELETE FROM `coa_mystic_enchant_proc` WHERE `comment` LIKE 'WCME:%';
 DELETE `s` FROM `spell_script_names` `s` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'core_script' AND `s`.`ScriptName` IN ('spell_ascension_mystic_enchant_proc', 'spell_mage_living_bomb') AND `o`.`id` = `s`.`spell_id`;
 -- Spell power and attack power coefficients we add (file 178), listed in wcme_owned as spell_bonus_data.
 DELETE `b` FROM `spell_bonus_data` `b` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'spell_bonus_data' AND `o`.`id` = `b`.`entry`;
+-- Mystic Enchant cards we add or switch on (file 184, written by client-patch/custom_cards.py), read by the patched
+-- world server at start-up (LoadExtraCards in patches/mystic-enchants-wildcard.patch); and their scroll items, listed
+-- in wcme_owned as item_template (and their item_dbc rows, as item_dbc).
+CREATE TABLE IF NOT EXISTS `wcme_mystic_enchant` (`id` INT UNSIGNED NOT NULL, `spell` INT UNSIGNED NOT NULL,
+    `item` INT UNSIGNED NOT NULL, `weight` FLOAT NOT NULL DEFAULT 100, `quality` INT UNSIGNED NOT NULL,
+    `required_level` INT UNSIGNED NOT NULL DEFAULT 0, `realms` INT UNSIGNED NOT NULL DEFAULT 1,
+    `class_mask` BIGINT UNSIGNED NOT NULL DEFAULT 512, `comment` VARCHAR(255) NOT NULL DEFAULT '', PRIMARY KEY (`spell`));
+DELETE FROM `wcme_mystic_enchant`;
+DELETE `i` FROM `item_template` `i` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'item_template' AND `o`.`id` = `i`.`entry`;
+DELETE `i` FROM `item_dbc` `i` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'item_dbc' AND `o`.`id` = `i`.`ID`;
 -- Extra SpellAffect rows (modifier -> named target spell), loaded into the server's SpellAffect data by the build
 -- with patch mystic-enchants-spellaffect-sql. A row here REPLACES the SpellAffect.dbc row with the same ID,
 -- and the client data already uses some IDs from 900000 up (901388-901397, scattered ones between 912000 and 938443, 975170-975176,
