@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS `wcme_spell_companion` (`ability_spell` INT UNSIGNED 
 DELETE FROM `wcme_spell_companion`;
 DELETE FROM `spell_script_names` WHERE `ScriptName` LIKE 'spell\_wcme\_%';
 DELETE `l` FROM `coa_mystic_enchant_aura_link` `l` JOIN `wcme_owned` `o` ON `o`.`tbl` = 'aura_link' AND `o`.`id` = `l`.`enchant_spell`;
+-- Extra rules we add to the core's own Mystic Enchant rule table (file 170): marked by a comment starting WCME:.
+DELETE FROM `coa_mystic_enchant_proc` WHERE `comment` LIKE 'WCME:%';
 -- Extra SpellAffect rows (modifier -> named target spell), loaded into the server's SpellAffect data by the build
 -- with patch mystic-enchants-spellaffect-sql. A row here REPLACES the SpellAffect.dbc row with the same ID,
 -- and the client data already uses some IDs from 900000 up (901388-901397, scattered ones between 912000 and 938443, 975170-975176,
