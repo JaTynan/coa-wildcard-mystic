@@ -182,7 +182,7 @@ Arcane Barrage hits one more enemy while its buff is up, and gaining Missile Bar
 
 `177-talent-code-showcase-2.sql`: binds patch 55's Blades of Blood script to every Whirlwind (needs that build).
 `179-talent-code-showcase-3.sql`: binds patch 55's batch 3 scripts (Blooming Growth, Gul'dan's Chosen on every Backdraft and Molten Core buff, Shadow Shot, Time Bomb, Arcane Barrage) and gives Time Bomb its proc row (needs that build).
-`180-talent-code-showcase-4.sql`: data half of patch 55's batch 4, Preservation: its script bindings, its proc row, and owned copies of 276259 (crit chance for its caster) and 276258 (heal sized as its tooltip says) (needs that build).
+`180-talent-code-showcase-4.sql`: data half of patch 55's batch 4, Preservation: its script bindings, its proc row, and an owned copy of 276259 (crit chance for its caster; the extra heal 276258 keeps its spell data) (needs that build).
 `173-blessing-of-the-divines-talent.sql`: the talent Blessing of the Divines works: costed direct Holy and Nature heals
 have a 10% chance, at most once a second, to cast one of its five blessings. Data only.
 
