@@ -255,10 +255,19 @@ Each was traced through its spell data, the core's rule table and the core's cod
 | Master of Shadows | Shadow Melee | At 3 stacks the rule cast an internal helper, not the buff; the stack buff gave the buff at any count; the crit part never came | Data | PR #299 |
 | Stormborn | Enhancement | Only the stock Elemental Mastery and Shamanistic Rage counted; no scaling | Data | PR #299 |
 | Frost Bomb | Cryomancer | Never exploded | Data: the core's Living Bomb script on all 8 ranks | PR #299 |
-| Hunting Frenzy | Beast Master | The 2 free pet abilities were never used up (15 sec of free crits); +10% pet damage never reaches the pet | Data for the charges; the pet damage needs a pet aura (to do) | PR #299 |
-| Heavyweight | Titan's Grip Crush | The stack buff is empty; Ready to Strike is never given; Thunder Clap's aftershock is not wired | Data, waiting for James on the auto-attack reset line | - |
+| Hunting Frenzy | Beast Master | The 2 free pet abilities were never used up (15 sec of free crits). (Its +10% pet damage already works: the core reads it from the pet's owner.) | Data | PR #299 |
+| Heavyweight | Titan's Grip Crush | The stack buff is empty; Ready to Strike is never given; Thunder Clap's aftershock is not wired | Data and code; Heroic Strike resets the stacks, auto attacks do not (James) | PR #302 |
 | Blooming Growth | Blooming Growth, Seed of Life | Fired on every helpful spell with a 6-per-tick placeholder | Code | PR #300 |
 | Gul'dan's Chosen | Soul Fire | The buff came but did nothing | Code | PR #300 |
 | Shadow Shot | Dark Ranger | Damage works (Steady Shot's code); the Corruption part did nothing | Code | PR #300 |
 | Time Bomb | Arcane Gunslinger | Nothing stored or exploded | Code | PR #300 |
-| Preservation | Prayer of Preservation | Four placeholder parts | Code (to do) | - |
+| Preservation | Prayer of Preservation | Four placeholder parts | Code; the extra heal keeps its spell data (James) | PR #301, tooltip #303 |
+
+## 11. Next stage (28 Nov)
+
+| Talent | Build | What was wrong | Fix | Where |
+|---|---|---|---|---|
+| Divine Concord | Arcane Paladin | Ascension's Arcane Blast Art of War buff (984293) was given by nothing; its cleanup removed only one version of the paladin's buff; the extra stack or charge did nothing | Data (aura link, links) and code | PR #304, #305 |
+| Master of Kunai | Ninja | Glaive Toss is hunter-family, so the rogue-family modifiers missed it | Data: Ascension's companion 277480 for the targets; code for Kunai on Glaive Toss | PR #304, #305 |
+| Toss and Throw | Ninja | Same for Glaive Toss; "more damage to monsters" uses modifier type 38, which this core lacks | Code (both tosses) | PR #305 |
+| Frost Bomb tooltip | Cryomancer | Quoted the wave's damage, not the explosion's | Client patch | PR #303 |
