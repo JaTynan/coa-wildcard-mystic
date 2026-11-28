@@ -27,7 +27,8 @@
 -- pet's next 2 special abilities +100% crit and no Focus cost. Its spell data has proc flags, so the core made a
 -- proc entry for it, and an aura with a proc entry never loses spell-modifier charges on use. The 2 charges were
 -- never used: 15 sec of free, critting pet abilities. Without the proc flags each pet ability uses one charge.
--- (The +10% pet damage against Hunter's Mark, 1180820's second effect, needs a new pet aura; not in this file.)
+-- (The +10% pet damage against Hunter's Mark, 1180820's second effect, already works: the core reads that kind of aura
+-- from a pet's owner.)
 --
 -- Plague Swarm 276431 and ranks 2-8 (Plague Caster). The disease had no spell power or attack power scaling; the
 -- tooltip gives 7.5% and 4.88% per tick.
