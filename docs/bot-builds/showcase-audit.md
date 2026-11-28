@@ -22,25 +22,38 @@ our own `sql/` and `patches/` on `main`.
 | **broken** | Broken in the tracker, no fix written |
 | unresolved | The name in the build doc does not match a learnable talent or ability; the doc needs the right name |
 
-## 2. The main finding: proc talents that can never fire
+## 2. Proc talents that can never fire
 
-43 parts used by these builds are talents of the "when you do X, gain Y" kind whose spell data gives **no trigger
-conditions** (proc flags 0), with no `spell_proc` row, action-table rule or script anywhere. Ascension kept those
-conditions in its own database, which we do not have. The core makes a proc rule from the spell data only when the
-proc flags are set (`SpellMgr.cpp`, "Skip if no proc flags in DBC"), so these talents sit on the character and do
-nothing.
+Seven parts used by these builds are talents of the "when you do X, gain Y" kind whose spell data gives **no trigger
+conditions** (proc flags 0), with no `spell_proc` row, enchant rule or script anywhere: not in the core's own
+enchant rules (`coa_mystic_enchant_proc`, in the core's pending world SQL), not in ours. Ascension kept those
+conditions in its own database. The core makes a proc rule from the spell data only when the proc flags are set
+(`SpellMgr.cpp`, "Skip if no proc flags in DBC"), so these talents sit on the character and do nothing.
 
-Evidence that this is real, not theory: two GM tests on 2 and 3 Nov hit exactly this case. Demonic Mind ("the proc on
-enemies did not fire") and Devour Mind ("The Devourer buff does not") both fail on a proc aura with proc flags 0.
-The Legendary deep audit of 15 Nov (`sql/enchants/016-dead-triggers.sql`) fixed 30 enchants for the same reason.
+Evidence: GM tests on 2 and 3 Nov hit exactly this case. Demonic Mind (one of the seven) "the proc on enemies did not
+fire", and Devour Mind's Devourer buff did not appear; both are proc auras with proc flags 0. The Legendary deep
+audit of 15 Nov (`sql/enchants/016-dead-triggers.sql`) fixed 30 enchants for the same reason.
 
-The October enchant audit (`enchants/enchant_audit.py`) never looked at proc flags, so it marked these "standard"
-(working). Beyond the builds, **679 enchants the tracker lists as "working (audit)" have the same fault** (587 Epic,
-53 Uncommon, 23 Rare, 16 Legendary). This is the biggest gap between "working" in the tracker and working in game.
+The October enchant audit (`enchants/enchant_audit.py`) did not look at proc flags. Of the enchants the tracker
+lists as "working (audit)", **201 have this fault** with no rule anywhere (192 Epic, 7 Rare, 1 Uncommon, 1
+Legendary).
 
-The fix is known and needs no build: a `spell_proc` row with the conditions from the tooltip (recipe R9), or an
-action-table rule where the trigger must be exact spells (R6, in every build since build6). Both are SQL, live at
-the next restart.
+Correction (28 Nov): the first version of this page said 43 build parts and 679 enchants. That count missed the
+core's pending world SQL, where the core gives several hundred enchants their trigger rules. The numbers above
+include it.
+
+The fix is known: a `spell_proc` row with the conditions from the tooltip (recipe R9), or an action-table rule
+where the trigger must be exact spells (R6, in every build since build6). Both are SQL, live at the next restart.
+
+## 2b. Core rules that miss the other version of an ability
+
+On this realm most abilities exist twice (the stock one and the CoA copy, for example Shadow Bolt 686 and 1100686),
+and a character can learn either. Twenty build parts get their trigger rule from the core, but the core's rule lists
+only one version of the trigger ability, so the talent does nothing for a player who learnt the other one
+(`enchants/core-rule-version-gaps.csv`): Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows,
+Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune,
+Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring
+Aegis. The fix is SQL: an extra rule row in the core's table listing the missing versions.
 
 ## 3. Every build
 
@@ -49,40 +62,40 @@ extras.
 
 | Build | Parts | Stock or data only | Scripted | Fix untested | Never fires | Needs code | Broken | Unresolved | Verdict |
 |---|---|---|---|---|---|---|---|---|---|
-| Arcane Gunslinger (ranged) | 32 | 21 | 2 | 0 | 5 | 1 | 0 | 3 | 6 core part(s) to fix |
-| Arcane Mage | 23 | 20 | 1 | 1 | 1 | 0 | 0 | 0 | 1 core part(s) to fix |
-| Arcane Paladin | 23 | 13 | 1 | 0 | 1 | 1 | 1 | 6 | 3 core part(s) to fix |
-| Beast Master | 16 | 13 | 0 | 1 | 2 | 0 | 0 | 0 | 2 core part(s) to fix |
-| Blooming Growth | 13 | 11 | 0 | 0 | 0 | 2 | 0 | 0 | 2 core part(s) to fix |
+| Arcane Gunslinger (ranged) | 32 | 22 | 4 | 0 | 0 | 3 | 0 | 3 | 3 core part(s) to fix |
+| Arcane Mage | 23 | 20 | 2 | 1 | 0 | 0 | 0 | 0 | Ready to test |
+| Arcane Paladin | 23 | 13 | 3 | 0 | 0 | 0 | 1 | 6 | 1 core part(s) to fix |
+| Beast Master | 16 | 14 | 0 | 1 | 0 | 1 | 0 | 0 | 1 core part(s) to fix |
+| Blooming Growth | 13 | 11 | 1 | 0 | 0 | 1 | 0 | 0 | 1 core part(s) to fix |
 | Claw-sader | 26 | 25 | 0 | 0 | 0 | 0 | 0 | 1 | Ready to test |
 | Cryomancer | 16 | 13 | 0 | 0 | 0 | 1 | 0 | 2 | 1 core part(s) to fix |
 | Cryotherapist | 7 | 6 | 0 | 0 | 0 | 1 | 0 | 0 | 1 core part(s) to fix |
-| Dark Ranger | 19 | 14 | 0 | 0 | 1 | 3 | 0 | 1 | 3 core part(s) to fix |
-| Discipline | 21 | 19 | 0 | 0 | 1 | 1 | 0 | 0 | 2 core part(s) to fix |
-| Earthen Guardian | 17 | 12 | 1 | 0 | 2 | 0 | 0 | 2 | 2 core part(s) to fix |
-| Elemental Lord (caster) | 20 | 17 | 0 | 1 | 1 | 0 | 0 | 1 | Ready to test |
-| Enhancement | 19 | 16 | 1 | 0 | 2 | 0 | 0 | 0 | 2 core part(s) to fix |
+| Dark Ranger | 19 | 16 | 0 | 0 | 0 | 2 | 0 | 1 | 2 core part(s) to fix |
+| Discipline | 21 | 20 | 1 | 0 | 0 | 0 | 0 | 0 | Ready to test |
+| Earthen Guardian | 17 | 13 | 1 | 0 | 1 | 0 | 0 | 2 | 1 core part(s) to fix |
+| Elemental Lord (caster) | 20 | 17 | 0 | 1 | 0 | 1 | 0 | 1 | Ready to test |
+| Enhancement | 19 | 16 | 1 | 0 | 1 | 1 | 0 | 0 | 2 core part(s) to fix |
 | Frost Death Knight (melee) | 15 | 14 | 0 | 0 | 0 | 0 | 0 | 1 | Ready to test |
-| Holy Paladin | 17 | 13 | 1 | 1 | 2 | 0 | 0 | 0 | 2 core part(s) to fix |
-| Holy Radiance (healer) | 17 | 14 | 0 | 0 | 3 | 0 | 0 | 0 | 2 core part(s) to fix |
+| Holy Paladin | 17 | 15 | 1 | 1 | 0 | 0 | 0 | 0 | Ready to test |
+| Holy Radiance (healer) | 17 | 16 | 0 | 0 | 0 | 1 | 0 | 0 | 1 core part(s) to fix |
 | Holy Spell Tank | 28 | 26 | 0 | 0 | 0 | 1 | 0 | 1 | 1 core part(s) to fix |
-| Immolate and Conflagrate (caster) | 24 | 22 | 0 | 0 | 1 | 1 | 0 | 0 | 1 core part(s) to fix |
-| Lightning Warrior | 18 | 16 | 0 | 0 | 1 | 0 | 0 | 1 | Ready to test |
+| Immolate and Conflagrate (caster) | 24 | 23 | 0 | 0 | 0 | 1 | 0 | 0 | Ready to test |
+| Lightning Warrior | 18 | 16 | 0 | 0 | 0 | 1 | 0 | 1 | Ready to test |
 | Mana-forged Barrier | 9 | 7 | 0 | 1 | 0 | 0 | 0 | 1 | Ready to test |
 | Metamorphosis Tank | 16 | 11 | 2 | 0 | 0 | 0 | 0 | 3 | Ready to test |
-| Ninja | 33 | 27 | 0 | 1 | 4 | 0 | 1 | 0 | 4 core part(s) to fix |
-| Plague Caster (Spirit Stacker) | 20 | 18 | 0 | 0 | 1 | 1 | 0 | 0 | 2 core part(s) to fix |
+| Ninja | 33 | 29 | 0 | 1 | 0 | 2 | 1 | 0 | 2 core part(s) to fix |
+| Plague Caster (Spirit Stacker) | 20 | 19 | 0 | 0 | 0 | 1 | 0 | 0 | 1 core part(s) to fix |
 | Prayer of Preservation | 22 | 15 | 1 | 2 | 2 | 0 | 0 | 2 | 2 core part(s) to fix |
-| Protection Warrior | 20 | 17 | 0 | 0 | 3 | 0 | 0 | 0 | 3 core part(s) to fix |
+| Protection Warrior | 20 | 20 | 0 | 0 | 0 | 0 | 0 | 0 | Ready to test |
 | Pyroblast Fire Mage (caster) | 16 | 13 | 0 | 1 | 1 | 0 | 0 | 1 | 1 core part(s) to fix |
 | Restoration Shaman | 21 | 21 | 0 | 0 | 0 | 0 | 0 | 0 | Ready to test |
 | Retribution | 18 | 17 | 1 | 0 | 0 | 0 | 0 | 0 | Ready to test |
 | Seed of Life | 12 | 11 | 0 | 0 | 0 | 1 | 0 | 0 | 1 core part(s) to fix |
 | Shadow Bear (tank) | 22 | 16 | 0 | 0 | 1 | 0 | 0 | 5 | 1 core part(s) to fix |
-| Shadow Melee (melee) | 19 | 15 | 0 | 0 | 3 | 0 | 0 | 1 | 3 core part(s) to fix |
-| Soul Fire (caster) | 25 | 24 | 0 | 0 | 1 | 0 | 0 | 0 | 1 core part(s) to fix |
+| Shadow Melee (melee) | 19 | 17 | 0 | 0 | 0 | 1 | 0 | 1 | 1 core part(s) to fix |
+| Soul Fire (caster) | 25 | 24 | 0 | 0 | 0 | 1 | 0 | 0 | 1 core part(s) to fix |
 | Tide Chain Healer | 23 | 20 | 2 | 1 | 0 | 0 | 0 | 0 | Ready to test |
-| Titan's Grip Crush (melee) | 29 | 21 | 0 | 0 | 5 | 0 | 0 | 3 | 5 core part(s) to fix |
+| Titan's Grip Crush (melee) | 29 | 23 | 0 | 0 | 1 | 2 | 0 | 3 | 3 core part(s) to fix |
 | Total Eclipse | 15 | 14 | 0 | 0 | 0 | 0 | 0 | 1 | Ready to test |
 | Vampire Lord | 14 | 11 | 2 | 1 | 0 | 0 | 0 | 0 | Ready to test |
 | Winds of Winter (melee) | 10 | 8 | 1 | 0 | 0 | 0 | 0 | 1 | Ready to test |
@@ -95,62 +108,34 @@ extras.
 |---|---|---|---|---|
 | Divine Concord | 277860 | broken | core | Arcane Paladin |
 | Adrenaline Junkie | 285279 | broken | extra | Ninja |
-| Arcane Arrows | 284901 | never fires | core | Arcane Gunslinger (ranged) |
-| Arcane Gunslinger | 274586 | never fires | core | Arcane Gunslinger (ranged) |
-| Arcane Motes | 281905 | never fires | core | Arcane Mage |
-| Arcane Shelling | 274593 | never fires | core | Arcane Gunslinger (ranged) |
-| Blades of Blood | 285895 | never fires | core | Titan's Grip Crush (melee) |
 | Blessing of the Divines | 273020 | never fires | core | Prayer of Preservation |
 | Cataclysmic Sundering | 277180 | never fires | core | Earthen Guardian |
-| Clean Pass | 277485 | never fires | core | Ninja |
-| Critical Serration | 277609 | never fires | core | Ninja |
 | Demonic Mind | 283942, 978704, 1586069 | never fires | core | Pyroblast Fire Mage (caster) |
-| Double Down | 275235 | never fires | core | Shadow Melee (melee) |
-| Elemental Destruction | 274730 | never fires | core | Immolate and Conflagrate (caster) |
-| Enduring Aegis | 1584825 | never fires | core | Protection Warrior |
-| Faithful Light | 270662 | never fires | core | Holy Radiance (healer) |
-| Felstorm | 276053 | never fires | core | Shadow Melee (melee) |
-| Fetch Me Their Bones! | 284454 | never fires | core | Beast Master |
-| Glimmer of Light | 277692 | never fires | core | Holy Paladin |
-| Good Fortune | 284012 | never fires | core | Holy Radiance (healer) |
-| Gul'dan's Chosen | 277150 | never fires | core | Soul Fire (caster) |
-| Heavyweight | 273378 | never fires | core | Titan's Grip Crush (melee) |
-| Holy Spirit | 273920 | never fires | core | Discipline |
-| Hunting Frenzy | 1180820 | never fires | core | Beast Master |
-| In for the Kill | 283597 | never fires | core | Titan's Grip Crush (melee) |
-| Lunar Synergy | 282083 | never fires | core | Arcane Gunslinger (ranged) |
 | Maledictive Assault | 271400 | never fires | core | Shadow Bear (tank) |
-| Master of Kunai | 277475 | never fires | core | Ninja |
-| Master of Shadows | 275491 | never fires | core | Shadow Melee (melee) |
 | Preservation | 276273 | never fires | core | Prayer of Preservation |
-| Prophet of Wrath | 275427 | never fires | core | Arcane Paladin |
 | Raging Onslaught | 275920 | never fires | core | Titan's Grip Crush (melee) |
-| Shield Finesse | 285548 | never fires | core | Protection Warrior |
-| Shot Weaving | 274591 | never fires | core | Arcane Gunslinger (ranged) |
-| Stormborn | 274078 | never fires | core | Enhancement |
 | Swirling Maelstrom | 984616 | never fires | core | Enhancement |
-| Sword and Thunder | 284435 | never fires | core | Protection Warrior |
-| Synergetic Light | 285818 | never fires | core | Holy Paladin |
-| Titan's Fury | 273662 | never fires | core | Titan's Grip Crush (melee) |
-| Toss and Throw | 277455 | never fires | core | Ninja |
-| Wrath of the Plague | 284744 | never fires | core | Plague Caster (Spirit Stacker) |
-| Zephyr | 284414 | never fires | core | Earthen Guardian |
-| Legacy of the Arcanist | 271284 | never fires | extra | Elemental Lord (caster), Lightning Warrior |
-| Light of Life | 271489 | never fires | extra | Holy Radiance (healer) |
-| Shadow Infusion | 285942 | never fires | extra | Dark Ranger |
-| Atonement | 270631 | needs code | core | Discipline |
+| Arcane Gunslinger | 274586 | needs code | core | Arcane Gunslinger (ranged) |
+| Blades of Blood | 285895 | needs code | core | Titan's Grip Crush (melee) |
 | Blooming Growth | 272214 | needs code | core | Blooming Growth, Seed of Life |
-| Dark Arrows | 276808 | needs code | core | Dark Ranger |
 | Emanating Light | 1584044 | needs code | core | Holy Spell Tank |
 | Frost Bomb | 271936, 954263, 1569556 | needs code | core | Cryomancer |
+| Good Fortune | 284012 | needs code | core | Holy Radiance (healer) |
+| Gul'dan's Chosen | 277150 | needs code | core | Soul Fire (caster) |
+| Heavyweight | 273378 | needs code | core | Titan's Grip Crush (melee) |
+| Hunting Frenzy | 1180820 | needs code | core | Beast Master |
 | Icy Penance | 92754, 271341, 1568670 | needs code | core | Cryotherapist |
+| Master of Kunai | 277475 | needs code | core | Ninja |
+| Master of Shadows | 275491 | needs code | core | Shadow Melee (melee) |
 | Plague Swarm | 276431, 1577100 | needs code | core | Plague Caster (Spirit Stacker) |
-| Seal of Arcane Wrath | 277854, 984284 | needs code | core | Arcane Paladin |
-| Seed of Life | 273346 | needs code | core | Blooming Growth |
 | Shadow Shot | 276811 | needs code | core | Dark Ranger |
+| Shot Weaving | 274591 | needs code | core | Arcane Gunslinger (ranged) |
+| Stormborn | 274078 | needs code | core | Enhancement |
 | Time Bomb | 284591, 982484 | needs code | core | Arcane Gunslinger (ranged) |
+| Toss and Throw | 277455 | needs code | core | Ninja |
 | Wave of Despair | 283182, 901054, 1583807 | needs code | core | Dark Ranger |
 | Elemental Immolate | 274734 | needs code | extra | Immolate and Conflagrate (caster) |
+| Legacy of the Arcanist | 271284 | needs code | extra | Elemental Lord (caster), Lightning Warrior |
 | Bestial Assault | 272317 | fix live, untested | core | Beast Master |
 | Eldritch Knight | 81116 | fix live, untested | core | Mana-forged Barrier |
 | Elemental Lord | 276578 | fix live, untested | core | Elemental Lord (caster) |
@@ -217,11 +202,12 @@ Each step is its own pull request, classified under change control; James merges
 | Step | What | Kind | Build needed |
 |---|---|---|---|
 | 1 | Correct the names in section 5, so the audit covers every real part | Docs | No |
-| 2 | Give the build parts that **never fire** their trigger conditions from the tooltip, in batches of about ten | SQL (R9, R6) | No |
+| 2a | Add the missing ability versions to the core's rules for the twenty parts in section 2b | SQL | No |
+| 2 | Give the seven build parts that **never fire** their trigger conditions from the tooltip | SQL (R9, R6) | No |
 | 3 | GM tests of everything "fix live, untested", plus each step 2 batch | James's GM character | No |
 | 4 | Write code for the **needs code** and **broken** parts (Divine Concord, Adrenaline Junkie, Blooming Growth, Seed of Life, Atonement, Shadow Shot and the rest) | C++ patches | Yes, 2 to 3 hours |
 | 5 | GM test of each build's full rotation, build by build | James's GM character | No |
-| Later | The other 600-odd enchants with the same never-fires fault | SQL | No |
+| Later | The other 190-odd enchants with the same never-fires fault | SQL | No |
 
 ## 7. Limits of this check
 
