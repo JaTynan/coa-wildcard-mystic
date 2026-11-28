@@ -1636,7 +1636,7 @@ class spell_wcme_raging_onslaught : public AuraScript
 // Wildcard: Master of Kunai's Kunai (277477) raises the damage of your next Deadly Throw by its stacks; that Deadly
 // Throw uses them up. Ascension's server removed the stacks; here, after a Deadly Throw hits, the thrower's Kunai on
 // that target goes. Bound in sql 175 to every rogue Deadly Throw (stock and CoA ranks). The stacks themselves are
-// data (sql 175 gives the Master of Kunai buff its trigger).
+// data (sql 176 gives the Master of Kunai buff its trigger, once this build is installed).
 class spell_wcme_kunai_consume : public SpellScript
 {
     PrepareSpellScript(spell_wcme_kunai_consume);
@@ -1657,6 +1657,9 @@ class spell_wcme_kunai_consume : public SpellScript
 
 // Wildcard: two Shuriken Toss talents, checked when a player casts Shuriken Toss (before its spell modifiers and their
 // charges are used up, so the third cast of Toss and Throw still counts).
+// Shuriken Toss here means the ids carrying the class flag Toss and Throw's cost reduction uses (so each counted
+// cast also uses one of its three charges); 1569626, which has no class flags and is not on the talent list, is
+// left out.
 // - Master of Kunai (talent 277475): Shuriken Toss cuts Adrenaline Rush's cooldown by 4 sec (its helper 277479),
 //   for the stock spell (13750) and the CoA copy (1113750) alike.
 // - Toss and Throw (buff 277456): each of its three Shuriken Tosses gives one more combo point (34071) to the target.
@@ -1672,7 +1675,7 @@ public:
         if (!player || !spell || !spell->GetSpellInfo())
             return;
         static std::unordered_set<uint32> const shurikenToss = { 954835, 955223, 955224, 955225, 955226, 955227, 955228,
-            1569626, 2304835 };
+            2304835 };
         if (!shurikenToss.contains(spell->GetSpellInfo()->Id))
             return;
         if (player->HasAura(277475))
