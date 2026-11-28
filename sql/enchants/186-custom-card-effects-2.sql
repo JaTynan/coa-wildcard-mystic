@@ -19,6 +19,8 @@
 -- Arcane Divinity 275462 (Epic). While Divine Illumination is up, Arcane Blast, Arcane Missiles and Arcane Barrage deal
 -- Divine damage: the hit becomes Holy and Arcane, and takes the Holy damage bonus when that is higher. Its spell is only
 -- a placeholder, so the roll filter (SkipDudSpells) would leave the card out: wcme_enchant_override keeps it in.
+-- Known limit: the hit's crit chance is the Holy one (the core uses the first school of a mixed hit for a player's spell
+-- crit), so an Arcane-only crit bonus doesn't count while Divine Illumination is up.
 --
 -- Safe to run again: 000-reset removes everything here first.
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_dbc', 277880);
@@ -191,7 +193,6 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 (1235395, 'spell_wcme_arcanesworn'),
 (1435895, 'spell_wcme_arcanesworn'),
 (53385, 'spell_wcme_arcanesworn'),
-(54172, 'spell_wcme_arcanesworn'),
 (54762, 'spell_wcme_arcanesworn'),
 (54763, 'spell_wcme_arcanesworn'),
 (54764, 'spell_wcme_arcanesworn'),

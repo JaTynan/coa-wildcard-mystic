@@ -2414,6 +2414,10 @@ namespace WcmeArcaneCards
         1154490, 1244404, 1254486, 1254488, 1254489, 1254490 };
     constexpr uint32 DIVINE_ILLUMINATION[] = { 31842, 1131842, 1231842, 1575125 };
     constexpr uint32 AVENGING_WRATH[] = { 31884, 66011, 984325, 1131884 };
+    // Every Arcane Missiles channel (stock and CoA ranks), so its cooldown covers each rank the player knows.
+    constexpr uint32 ARCANE_MISSILES[] = { 5143, 5144, 5145, 5146, 8416, 8417, 10211, 10212, 25345, 27075, 38699, 38704,
+        42843, 42846, 1105143, 1105144, 1105145, 1108416, 1108417, 1110211, 1110212, 1125345, 1127075, 1138699, 1138704,
+        1142843, 1142846 };
 
     bool KnowsMissileBarrage(Unit const* unit)
     {
@@ -2450,7 +2454,8 @@ class spell_wcme_arcane_crusade_missiles : public SpellScript
     }
 };
 
-// Arcane Crusade, Arcane Missiles itself: a 12 sec cooldown. Bound to each rank's channel.
+// Arcane Crusade, Arcane Missiles itself: a 12 sec cooldown, on every rank the player knows (cooldowns are kept per
+// spell, so a lower rank would otherwise be free). Bound to each rank's channel.
 class spell_wcme_arcane_crusade_channel : public SpellScript
 {
     PrepareSpellScript(spell_wcme_arcane_crusade_channel);
@@ -2458,8 +2463,11 @@ class spell_wcme_arcane_crusade_channel : public SpellScript
     void HandleAfterCast()
     {
         Player* player = GetCaster() ? GetCaster()->ToPlayer() : nullptr;
-        if (player && player->HasAura(WcmeArcaneCards::ARCANE_CRUSADE) && !GetSpell()->IsTriggered())
-            player->AddSpellCooldown(GetSpellInfo()->Id, 0, 12000, true);
+        if (!player || !player->HasAura(WcmeArcaneCards::ARCANE_CRUSADE) || GetSpell()->IsTriggered())
+            return;
+        for (uint32 missiles : WcmeArcaneCards::ARCANE_MISSILES)
+            if (missiles == GetSpellInfo()->Id || player->HasSpell(missiles))
+                player->AddSpellCooldown(missiles, 0, 12000, true);
     }
 
     void Register() override
@@ -2485,8 +2493,8 @@ class spell_wcme_arcane_crusade_barrage : public SpellScript
     void HandleAfterCast()
     {
         Unit* caster = GetCaster();
-        if (caster && caster->HasAura(WcmeArcaneCards::ARCANE_CRUSADE) && WcmeArcaneCards::KnowsMissileBarrage(caster) &&
-            roll_chance_i(35))
+        if (caster && !GetSpell()->IsTriggered() && caster->HasAura(WcmeArcaneCards::ARCANE_CRUSADE) &&
+            WcmeArcaneCards::KnowsMissileBarrage(caster) && roll_chance_i(35))
             caster->CastSpell(caster, WcmeArcaneCards::MISSILE_BARRAGE, true);
     }
 
@@ -2523,7 +2531,8 @@ class spell_wcme_arcane_crusade_explosion : public SpellScript
 // Divine damage (Holy and Arcane together). The hit becomes Holy and Arcane (resistances, absorbs and the combat log
 // see both), and it is raised to the Holy damage bonus when that is higher than the Arcane one (the "best of either
 // school" rule Ascension uses for mixed-school damage). Bound to Arcane Blast, each Arcane Missiles missile and Arcane
-// Barrage.
+// Barrage. Known limit: the crit chance becomes the Holy one (the core takes the first school of a mixed hit for a
+// player's spell crit), so an Arcane-only crit bonus does not count while it lasts.
 class spell_wcme_arcane_divinity : public SpellScript
 {
     PrepareSpellScript(spell_wcme_arcane_divinity);
