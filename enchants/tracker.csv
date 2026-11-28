@@ -4725,7 +4725,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 277515,Magical Ammunition,Epic,202370,standard,,working (audit),,,,,
 932477,Malediction,Rare,1175843,standard,,working (audit),,,,,
 850183,Malediction,Epic,405001,teaches-ok,,working (audit),,,,,
-271400,Maledictive Assault,Epic,200734,standard,,working (audit),,,,,
+271400,Maledictive Assault,Epic,200734,standard,,live (after restart),aura link: companion 271399 while Nightfall or Backlash is up,,172-showcase-sundering-maledictive.sql,,
 1314142,Malice,Rare,1013678,standard,,working (audit),,,,,
 982026,Malicious Shot,Rare,1178797,standard,,working (audit),,,,,
 81303,Mana Leech,Epic,1176003,standard,,working (audit),,,,,
