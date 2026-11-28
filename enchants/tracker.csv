@@ -2360,7 +2360,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 1180400,Bloodshed,Epic,201441,standard,,working (audit),,,,,
 1585249,Bloodthirsty,Epic,201230,standard,,working (audit),,,,,
 284252,Bloody Maelstrom,Epic,202156,scripted,,working (audit),,,,,
-272214,Blooming Growth,Epic,200818,standard,,working (audit),,,,,
+272214,Blooming Growth,Epic,200818,standard,,live (after restart),script: critical Regrowth spreads its heal over time to 3 party members (patch 55),,179-talent-code-showcase-3.sql,,needs the build with patch 55 batch 3; before it the proc fired on every helpful spell with a 6-per-tick placeholder heal
 965280,Blooming Growth,Legendary,1178474,standard,,working (audit),,,,,
 1570130,Blooming Power,Epic,200529,standard,,working (audit),,,,,
 272216,Blooming Power,Uncommon,200814,standard,,working (audit),,,,,
