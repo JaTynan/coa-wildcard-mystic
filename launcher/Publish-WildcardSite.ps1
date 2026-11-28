@@ -10,13 +10,19 @@ or by hand after changing the client (for example after a client update in the m
   - WildcardLauncher.zip, WildcardLauncher.ps1, WildcardLauncher.py (Linux), and the site folder (index.html, how-to-play.html, server.html, leaderboards.html, pets.html, changes.html, site.js, style.css, images)
   - changelog.json   the last week of merged pull requests, by day, for the home page's "What's new" and the Changes page. A PR body
                      line "Changelog: <text>" replaces its title there; "Changelog: skip" leaves it out.
+  - enchant-tooltips.json, pet-tooltips.json and icons\   what each Mystic Enchant and pet ability does, and its icon, for
+                     the Mystic Enchants and Tameable pets pages: made by tooltips\build_spell_data.py with the server's
+                     Python, from the server's spell data and the client's archives. If that fails the site keeps the
+                     last ones, and the pages still work without them.
 #>
 param(
     [string] $Client = 'F:\CoAClient',
     [string] $Site = 'F:\wildcard-site',
     [string] $Settings = (Join-Path $PSScriptRoot 'launcher-settings.json'),
     [string] $Repo = 'JaTynan/coa-wildcard-mystic',
-    [int] $ChangelogDays = 7
+    [int] $ChangelogDays = 7,
+    # The server folder: this script runs from <server>\patch-night\launcher.
+    [string] $Server = (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent)
 )
 $ErrorActionPreference = 'Stop'
 
@@ -84,6 +90,23 @@ Copy-Item (Join-Path $PSScriptRoot 'WildcardLauncher.py') $Site -Force
 # The whole site folder: the pages, their shared site.js and style.css, and images.
 Copy-Item (Join-Path $PSScriptRoot 'site\*') $Site -Recurse -Force
 
+# ---------------------------------------------------------------- tooltips and icons (a failure keeps the last ones)
+$python = Join-Path $Server 'Runtime\python\python.exe'
+$tipOut = Join-Path $env:TEMP 'wildcard-tooltips.out.txt'
+$tipErr = Join-Path $env:TEMP 'wildcard-tooltips.err.txt'
+try {
+    if (-not (Test-Path $python)) { throw "no Python at $python" }
+    $arguments = '-I "{0}" --server "{1}" --client "{2}" --site "{3}"' -f (Join-Path $PSScriptRoot 'tooltips\build_spell_data.py'), $Server, $Client, $Site
+    $run = Start-Process -FilePath $python -ArgumentList $arguments -NoNewWindow -PassThru `
+        -RedirectStandardOutput $tipOut -RedirectStandardError $tipErr
+    $null = $run.Handle   # keeps the exit code readable after it ends
+    # Normally seconds (a few minutes the first time it reads the icons); never let it hold up patch night.
+    if (-not $run.WaitForExit(15 * 60 * 1000)) { $run.Kill(); throw 'it ran for 15 minutes and was stopped' }
+    if ($run.ExitCode -ne 0) { throw ((Get-Content $tipErr -Tail 1) -join ' ') }
+    $tooltips = [string] (Get-Content $tipOut -Tail 1)
+}
+catch { $tooltips = "Spell tooltips not refreshed: $($_.Exception.Message)" }
+
 # ---------------------------------------------------------------- changelog (a GitHub hiccup keeps the last one)
 $changeCount = 0
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
@@ -128,3 +151,4 @@ Remove-Item $stage -Recurse -Force
 
 $changes = if ($changeCount -lt 0) { "changelog not refreshed ($changeError)" } else { "$changeCount change(s) in the last $ChangelogDays days" }
 "Published {0} client files ({1:N1} GB), launcher version {2}, {3}, to {4}." -f $files.Count, (($files | Measure-Object -Property size -Sum).Sum / 1GB), $launcherVersion, $changes, $Site
+$tooltips
