@@ -164,3 +164,30 @@ nav.top a:hover, nav.top a[aria-current] { color: var(--gold); }
   html { scroll-behavior: auto; }
   .button { transition: none; }
 }
+
+/* Spell tooltips (Mystic Enchants and Tameable pets pages), drawn like the game's own */
+.spell-icon { border-radius: 6px; border: 1px solid #000; box-shadow: 0 0 0 1px #4a4a55; vertical-align: middle;
+              background: #000; flex: none; }
+.has-tip { cursor: help; }
+.tip-float { position: fixed; z-index: 50; width: min(380px, calc(100vw - 16px)); max-height: calc(100vh - 16px);
+             overflow-y: auto; pointer-events: none; border-radius: 8px; }
+.tip-float.pinned { pointer-events: auto; }
+.tip-card { background: rgba(8, 10, 24, .97); border: 1px solid #5a5a70; border-radius: 8px; padding: 10px 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .5); font-size: 14px; line-height: 1.45; color: #ffd100; }
+.tip-card p { margin: 0; }
+.tip-card p.gap { height: .6em; }
+.tip-head { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; }
+.tip-head.small { gap: 7px; margin-bottom: 3px; }
+.tip-name { color: #fff; font-weight: 700; font-size: 15px; line-height: 1.25; }
+.tip-name.legendary { color: #ff9f40; }
+.tip-name.epic { color: #c9a0ff; }
+.tip-sub { color: var(--muted); font-size: 13px; }
+.tip-req { color: #fff; }
+.tip-note { color: #9d9da8; }
+.tip-embed { margin-top: 8px; padding-top: 8px; border-top: 1px solid #2c2c40; }
+.tip-embed.flat { border-top: 0; padding-top: 0; margin-top: 6px; }
+.tip-change { margin-top: 8px; color: #8fd0ff; }
+.tip-change b { font-weight: 600; }
+.tip-where { margin-top: 8px; color: #7ad97a; font-style: italic; }
+.tip-where b { font-style: normal; font-weight: 600; }
+.tip-limit { margin-top: 8px; color: var(--muted); }
