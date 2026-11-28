@@ -241,3 +241,24 @@ Each step is its own pull request, classified under change control; James merges
 | Blades of Blood | Needs code: Whirlwind's +5 targets uses spell modifier 34, which our core lacks; the Rend part is a placeholder | Code |
 | Master of Kunai | Needs code: the Kunai stacks are never used up in data; the cooldown cut reaches only the stock Adrenaline Rush | Code |
 | Toss and Throw | Needs code: in data the combo-point proc would use up the buff's charges; "more damage against monsters" uses spell modifier 38, which does not exist | Code |
+
+## 10. Trace of the 14 suspected-code talents (28 Nov)
+
+Each was traced through its spell data, the core's rule table and the core's code. Only five needed code.
+
+| Talent | Build | What was wrong | Fix | Where |
+|---|---|---|---|---|
+| Wave of Despair | Dark Ranger | Nothing: the cone damage and the delayed removal are effects the core handles | None | - |
+| Emanating Light | Holy Spell Tank | Nothing: a self buff pulsing Consecration damage | None | - |
+| Icy Penance | Cryotherapist | Nothing: a Penance-style channel; the core already gives all 8 ranks their scaling | None | - |
+| Plague Swarm | Plague Caster | No spell or attack power scaling | Data, all 8 ranks | PR #299 |
+| Master of Shadows | Shadow Melee | At 3 stacks the rule cast an internal helper, not the buff; the stack buff gave the buff at any count; the crit part never came | Data | PR #299 |
+| Stormborn | Enhancement | Only the stock Elemental Mastery and Shamanistic Rage counted; no scaling | Data | PR #299 |
+| Frost Bomb | Cryomancer | Never exploded | Data: the core's Living Bomb script on all 8 ranks | PR #299 |
+| Hunting Frenzy | Beast Master | The 2 free pet abilities were never used up (15 sec of free crits); +10% pet damage never reaches the pet | Data for the charges; the pet damage needs a pet aura (to do) | PR #299 |
+| Heavyweight | Titan's Grip Crush | The stack buff is empty; Ready to Strike is never given; Thunder Clap's aftershock is not wired | Data, waiting for James on the auto-attack reset line | - |
+| Blooming Growth | Blooming Growth, Seed of Life | Fired on every helpful spell with a 6-per-tick placeholder | Code | PR #300 |
+| Gul'dan's Chosen | Soul Fire | The buff came but did nothing | Code | PR #300 |
+| Shadow Shot | Dark Ranger | Damage works (Steady Shot's code); the Corruption part did nothing | Code | PR #300 |
+| Time Bomb | Arcane Gunslinger | Nothing stored or exploded | Code | PR #300 |
+| Preservation | Prayer of Preservation | Four placeholder parts | Code (to do) | - |
