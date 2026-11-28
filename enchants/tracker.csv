@@ -231,7 +231,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 982743,Bone Arrow,Epic,132608,needs-code,other placeholder,verified,"teaches spell 284879, as its twin does (wcme_enchant_teach)",852392,006-teach-twins.sql,2026-11-03,pass: damage and debuff
 271778,Built up Thirst,Epic,200765,needs-code,other placeholder,live,action: finishing moves grant Built up Thirst,,007-enchant-actions.sql (part 1),,
 84377,Burst of Thorns,Epic,1176089,needs-code,other placeholder,broken,"teaches spell 1582316, as its twin does (wcme_enchant_teach)",1591036,006-teach-twins.sql,2026-11-03,"buff icon and tooltip only: no armour, mana regen or procs when hit (3 Nov)"
-977940,Demonic Mind,Epic,1178659,needs-code,other placeholder,partly working,"teaches spell 1586069, as its twin does (wcme_enchant_teach)",1591064,006-teach-twins.sql,2026-11-03,crit buff works; the proc on enemies did not fire
+977940,Demonic Mind,Epic,1178659,needs-code,other placeholder,live (after restart),"teaches spell 1586069, as its twin does (wcme_enchant_teach); Demonic Wounds proc via action table",1591064,006-teach-twins.sql; 171-dead-procs-showcase.sql,2026-11-03,crit buff works; the proc on enemies did not fire
 1181190,Electric Surge,Epic,201604,needs-code,other placeholder,live,action: Lightning Bolt or Chain Lightning triggers Flurry (the extra charges are not done),,007-enchant-actions.sql,,"has a real effect besides its placeholder, so it stays in the rolls; check what is missing"
 271997,Forbidden Dance,Epic,200780,needs-code,other placeholder,live,action: Forbidden Technique grants Forbidden Dance,,007-enchant-actions.sql (part 1),,
 977939,Frozen Mind,Epic,1178658,needs-code,other placeholder,live,"teaches spell 1586047, as its twin does (wcme_enchant_teach)",1591063,006-teach-twins.sql,,
@@ -4237,7 +4237,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 850131,Golem Form,Epic,405090,teaches-ok,,working (audit),,,,,
 978713,Good Fortune,Epic,1178706,standard,,working (audit),,,,,
 1586239,Good Fortune,Epic,201264,standard,,working (audit),,,,,
-284012,Good Fortune,Uncommon,202141,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
+284012,Good Fortune,Uncommon,202141,standard,,live (after restart),core rule: other ability version added; cast link: carrier 284013 casts the buff 284015,,170-core-rule-versions.sql; 174-showcase-good-fortune-shot-weaving.sql,,
 850114,Grace of Alexstrasza,Epic,405046,teaches-ok,,working (audit),,,,,
 954050,Graceful Prayer,Epic,1178434,standard,,working (audit),,,,,
 1180930,Graceful Resurgence,Epic,201572,standard,,working (audit),,,,,
@@ -4725,7 +4725,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 277515,Magical Ammunition,Epic,202370,standard,,working (audit),,,,,
 932477,Malediction,Rare,1175843,standard,,working (audit),,,,,
 850183,Malediction,Epic,405001,teaches-ok,,working (audit),,,,,
-271400,Maledictive Assault,Epic,200734,standard,,working (audit),,,,,
+271400,Maledictive Assault,Epic,200734,standard,,live (after restart),aura link: companion 271399 while Nightfall or Backlash is up,,172-showcase-sundering-maledictive.sql,,
 1314142,Malice,Rare,1013678,standard,,working (audit),,,,,
 982026,Malicious Shot,Rare,1178797,standard,,working (audit),,,,,
 81303,Mana Leech,Epic,1176003,standard,,working (audit),,,,,
@@ -5519,7 +5519,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 983560,Shocking Rush,Epic,100086,standard,,working (audit),,,,,
 982148,Shocking Shiv,Rare,1178911,standard,,working (audit),,,,,
 982146,Shocking Wrath,Rare,1178909,standard,,working (audit),,,,,
-274591,Shot Weaving,Epic,201085,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
+274591,Shot Weaving,Epic,201085,standard,,live (after restart),core rule: other ability version added; action table on buff 274592: each missile fires Gunslinger's Barrage,,170-core-rule-versions.sql; 174-showcase-good-fortune-shot-weaving.sql,,
 916966,Shredding Attacks,Rare,1175748,standard,,working (audit),,,,,
 1316968,Shredding Attacks,Rare,1013754,standard,,working (audit),,,,,
 852401,Shredding Shot,Rare,404861,teaches-ok,,working (audit),,,,,
@@ -5892,7 +5892,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 285504,Swift Favor,Uncommon,201818,standard,,working (audit),,,,,
 81027,Swift Justice,Epic,1175920,standard,,working (audit),,,,,
 281300,Swift Justice,Uncommon,201651,standard,,working (audit),,,,,
-984616,Swirling Maelstrom,Epic,200490,standard,,working (audit),; patch 55 batch 2: 5-stack Maelstrom Weapon spend gives a stack,,,,code part needs the build with patch 55 showcase batch 2
+984616,Swirling Maelstrom,Epic,200490,standard,,working (audit),"action table: Lava Lash and Stormstrike, 33%; ; patch 55 batch 2: 5-stack Maelstrom Weapon spend gives a stack",,171-dead-procs-showcase.sql; ,,code part needs the build with patch 55 showcase batch 2
 912281,Sword Specialization,Rare,1175672,standard,,working (audit),,,,,
 979777,Sword and Thunder,Epic,1178760,standard,,working (audit),,,,,
 1587301,Sword and Thunder,Epic,201395,standard,,working (audit),,,,,
