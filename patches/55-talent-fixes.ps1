@@ -2035,7 +2035,9 @@ class spell_wcme_preservation_grant : public SpellScript
 
     bool _injured = false;
 
-    void HandleBeforeHit(SpellMissInfo /*missInfo*/)
+    // Set from the heal effect only: the channel's other effects pick other units (the caster, a second area pick),
+    // which must not get Preservation. Health here is still the value before this heal.
+    void HandleHeal(SpellEffIndex /*effIndex*/)
     {
         Unit* target = GetHitUnit();
         _injured = target && !target->IsFullHealth();
@@ -2052,7 +2054,7 @@ class spell_wcme_preservation_grant : public SpellScript
 
     void Register() override
     {
-        BeforeHit += BeforeSpellHitFn(spell_wcme_preservation_grant::HandleBeforeHit);
+        OnEffectHitTarget += SpellEffectFn(spell_wcme_preservation_grant::HandleHeal, EFFECT_0, SPELL_EFFECT_HEAL);
         AfterHit += SpellHitFn(spell_wcme_preservation_grant::HandleAfterHit);
     }
 };
