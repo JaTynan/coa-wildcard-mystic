@@ -6441,4 +6441,8 @@ WildcardEnchantsData = {
 	{289193,3,0,512},
 	{852463,3,0,512},
 	{852464,3,0,512},
+	-- Cards we added (client-patch/custom_cards.py --addon prints these lines):
+	{1571194,4,0,513},  -- Echoing Warcry (custom_cards.py)
+	{275043,4,0,512},  -- Assault and Battery (custom_cards.py)
+	{1576284,4,0,512},  -- Corrupted Maelstrom Weapon (custom_cards.py)
 }

@@ -5,9 +5,12 @@ our own spells (custom_spells.py) and our rows added to the client's SpellIcon.d
 
 Usage: python3 racials_off_gcd.py <Spell.dbc from the current patch-ZZW.MPQ> <the client's SpellIcon.dbc> [output.MPQ]
        [--icons <folder>] [--charges <the client's SpellCharges.dbc> <the client's SpellChargesCategory.dbc>]
+       [--cards <the client's MysticEnchant.dbc> <the client's Item.dbc>]
 
 --icons adds every .blp in the folder as Interface\\Icons\\<name>.blp (rend_icons.py makes the Elemental Rend ones).
 --charges adds custom_spells.CHARGE_CATEGORIES and CHARGE_LINKS to the client's spell charge tables (Dark Transfusion).
+--cards adds custom_cards.CARDS to the client's MysticEnchant.dbc and their scrolls to its Item.dbc (both extracted from
+the client: DBFilesClient\\MysticEnchant.dbc and DBFilesClient\\Item.dbc, as the client sees them).
 
 The result is the client's own data and is not published: copy it into the client's Data folder
 (F:\\CoAClient\\Data on the VM, which friends sync from).
@@ -40,6 +43,13 @@ if '--charges' in args:
     write_dbc('SpellChargesCategory.dbc', category_rows, 3, None, string_cols=set())
     charge_files = [('DBFilesClient\\SpellCharges.dbc', open('SpellCharges.dbc', 'rb').read()),
                     ('DBFilesClient\\SpellChargesCategory.dbc', open('SpellChargesCategory.dbc', 'rb').read())]
+card_files = []
+if '--cards' in args:
+    at = args.index('--cards')
+    import custom_cards
+    mystic, items = custom_cards.client_dbcs(open(args[at + 1], 'rb').read(), open(args[at + 2], 'rb').read())
+    card_files = [('DBFilesClient\\MysticEnchant.dbc', mystic), ('DBFilesClient\\Item.dbc', items)]
+    del args[at:at + 3]
 visual_files = []
 if '--visuals' in args:
     at = args.index('--visuals')
@@ -55,5 +65,5 @@ icon_rows, icon_string = custom_spells.icon_dbc(Dbc(args[1]))
 write_dbc('SpellIcon.dbc', icon_rows, 2, icon_string, string_cols={1})
 write_mpq(args[2] if len(args) > 2 else 'patch-ZZW.MPQ', [('DBFilesClient\\Spell.dbc', open('Spell.dbc', 'rb').read()),
                                                        ('DBFilesClient\\SpellIcon.dbc', open('SpellIcon.dbc', 'rb').read())]
-          + charge_files + visual_files + icon_files)
+          + charge_files + card_files + visual_files + icon_files)
 print(f'{sum(1 for s in OFF_GCD if s in spells.rows)} racials off the global cooldown; {len(rows)} spells in all.')
