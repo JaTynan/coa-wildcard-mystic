@@ -2301,7 +2301,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 965862,Blademaster,Legendary,1178534,standard,,working (audit),,,,,
 84449,Blades of Blood,Epic,1176100,standard,,working (audit),,,,,
 1590568,Blades of Blood,Epic,201160,standard,,working (audit),,,,,
-285895,Blades of Blood,Epic,202034,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
+285895,Blades of Blood,Epic,202034,standard,,partly working,core rule: other ability version added; patch 55 batch 2: Whirlwind +5 targets and Rend,,170-core-rule-versions.sql; 177-talent-code-showcase-2.sql,,code part needs the build with patch 55 showcase batch 2
 850056,Blades of Flame,Rare,203488,teaches-ok,,working (audit),,,,,
 850057,Blades of Frost,Rare,203489,teaches-ok,,working (audit),,,,,
 850060,Blades of Light,Rare,203492,teaches-ok,,working (audit),,,,,
@@ -5892,7 +5892,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 285504,Swift Favor,Uncommon,201818,standard,,working (audit),,,,,
 81027,Swift Justice,Epic,1175920,standard,,working (audit),,,,,
 281300,Swift Justice,Uncommon,201651,standard,,working (audit),,,,,
-984616,Swirling Maelstrom,Epic,200490,standard,,partly working,"action table: Lava Lash and Stormstrike, 33%",,171-dead-procs-showcase.sql,,the guaranteed stack on spending 5 Maelstrom Weapon stacks is not done
+984616,Swirling Maelstrom,Epic,200490,standard,,working (audit),"action table: Lava Lash and Stormstrike, 33%; ; patch 55 batch 2: 5-stack Maelstrom Weapon spend gives a stack",,171-dead-procs-showcase.sql; ,,code part needs the build with patch 55 showcase batch 2
 912281,Sword Specialization,Rare,1175672,standard,,working (audit),,,,,
 979777,Sword and Thunder,Epic,1178760,standard,,working (audit),,,,,
 1587301,Sword and Thunder,Epic,201395,standard,,working (audit),,,,,
