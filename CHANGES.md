@@ -171,6 +171,9 @@ Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Pla
 Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light,
 Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis. Data only (no build).
 
+`173-blessing-of-the-divines-talent.sql`: the talent Blessing of the Divines works: costed direct Holy and Nature heals
+have a 10% chance, at most once a second, to cast one of its five blessings. Data only.
+
 `016-dead-triggers.sql`: 33 Legendary enchants whose trigger never fired now work: 31 fire from the abilities their
 tooltip names (through the enchant action table; missing chances and sequences are best guesses, marked in each
 row's comment), and 2 grant their bonus while an aura is up (Frost Bomb's Fingers of Frost, Words of Healing).
