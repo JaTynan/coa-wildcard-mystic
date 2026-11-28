@@ -106,6 +106,11 @@ natural carrier yet and is proposed as that bot's rolled extra.
 | Arcane Gunslinger | Ranged | Arcane Empowerment (damage %), Trueshot Aura (backup to the Claw-sader's), Demonic Pact |
 | Ninja | Ranged | **assign** Hunter's Mark |
 | Holy Radiance | Healer | Personal only |
+| Tide Chain Healer | Healer | Earth Shield (tank), Mana Tide or Tremor if rolled |
+| Prayer of Preservation | Healer | Group dispels (Holy Supernova), Power Infusion, Tremor Totem, Mana Tide Totem |
+| Vampire Lord | Healer | Vampiric Embrace |
+| Cryotherapist (showcase) | Healer | none on the checklist |
+| Seed of Life | Healer | Tree of Life (healing received), Innervate |
 | Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled |
 | Holy Spell Tank | Tank | Blessing of Sanctuary, Devotion Aura, Vindication (attack power reduction), Thunder Clap, Blessing of Kings, Blood Pact (imp) |
 | Earthen Guardian | Tank | **assign** Stoneskin Totem |
@@ -120,4 +125,4 @@ covered. Thunder Clap also covers the tanks' attack speed slow.
 
 Tank side after the three tanks: attack power reduction (Vindication), attack speed slow (Thunder Clap), Devotion Aura,
 Stoneskin Totem and Blessing of Sanctuary are covered. **Every line of the checklist now has a carrier** in one
-faction's roster of 20 drafted builds. The five remaining healer slots add no checklist duty.
+faction's roster of the drafted builds (27 in all: 5 tanks, 6 healers, 8 casters, 6 melee, 2 ranged). The six healers add utility beyond the checklist (group dispels, Tree of Life, Power Infusion, mana totems).
