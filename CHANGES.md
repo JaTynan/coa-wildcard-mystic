@@ -165,6 +165,12 @@ Shadows, Spell Shredder, ...).
 
 `151-talent-companions-stock-ids.sql`: talent companions, batch 6 part 1, data only (no build). Sinister Calling rank 3 lengthens Gloomblade by 3 seconds; Rising Flames raises Fire Nova's damage by 10% or 20%; Empowering Frostbolt cuts Frostbolt's cast time by 0.1, 0.2 or 0.3 seconds; Improved Blood Presence rank 5's capstone raises Blood Presence's damage by 8% (its heal half needs the build: 152). Unverified in game.
 `161-wisdomball-tiraxis.sql`: the Wondrous Wisdomball (the pet that offers your dungeon quests) is back on Tiraxis' Convenience Items list for 800 Bazaar Tokens; the core had made it unobtainable.
+`170-core-rule-versions.sql`: 19 Wildcard talents in the bot showcase builds now also fire from the other learnable
+version of their trigger ability (the CoA copy, or the stock spell), which the core's own rule left out: Heavyweight,
+Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw,
+Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light,
+Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis. Data only (no build).
+
 `016-dead-triggers.sql`: 33 Legendary enchants whose trigger never fired now work: 31 fire from the abilities their
 tooltip names (through the enchant action table; missing chances and sequences are best guesses, marked in each
 row's comment), and 2 grant their bonus while an aura is up (Frost Bomb's Fingers of Frost, Words of Healing).
