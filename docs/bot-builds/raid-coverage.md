@@ -97,6 +97,6 @@ natural carrier yet and is proposed as that bot's rolled extra.
 | Holy Radiance | Healer | Personal only |
 | Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled |
 
-Caster side after the eight casters: every caster debuff and caster buff on the checklist is covered, three of them by
+Caster side after the eight casters: every caster debuff and caster buff on the checklist is covered, four of them by
 assignment. Still open overall: the melee, hunter and tank buffs and debuffs, which
 come with those slots.
