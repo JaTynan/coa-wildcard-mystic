@@ -73,7 +73,7 @@ stands near it.
 
 | Role | Slots | Notes |
 |---|---|---|
-| Tanks | 3 | Two main tanks plus one for adds. At least one carries the tank debuffs (attack power reduction, attack speed slow). |
+| Tanks | 3 | Two main tanks plus one for adds. At least one carries the tank debuffs (attack power reduction, attack speed slow). Five tank builds are drafted (James asked for two Wildcard showcase tanks, 28 Nov), so each faction's raid can field a different three and the others tank dungeon groups. |
 | Healers | 6 | Holy Radiance is one of them at most (its guide says it falls off past 10 players). |
 | Casters | 8 | Carry the caster debuffs and caster buffs. |
 | Melee | 6 | Carry the armour, bleed and physical debuffs. |
@@ -109,6 +109,8 @@ natural carrier yet and is proposed as that bot's rolled extra.
 | Shadow Bear | Tank | Mangle (bleed debuff); Demoralizing Roar if rolled |
 | Holy Spell Tank | Tank | Blessing of Sanctuary, Devotion Aura, Vindication (attack power reduction), Thunder Clap, Blessing of Kings, Blood Pact (imp) |
 | Earthen Guardian | Tank | **assign** Stoneskin Totem |
+| Metamorphosis Tank (showcase) | Tank | Immolation Aura (attack power reduction), Challenging Howl |
+| Mana-forged Barrier (showcase) | Tank | Eldritch Wrath (attack power reduction), Deconstruct (Sunder Armor) |
 
 Caster side after the eight casters: every caster debuff and caster buff on the checklist is covered, six of them by
 assignment.
