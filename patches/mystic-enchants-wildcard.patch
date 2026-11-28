@@ -1,8 +1,8 @@
 diff --git a/src/server/coa/AscensionFreepick.cpp b/src/server/coa/AscensionFreepick.cpp
-index 3fae79022..85fc78cef 100644
+index 724a4435..4068dc5b 100644
 --- a/src/server/coa/AscensionFreepick.cpp
 +++ b/src/server/coa/AscensionFreepick.cpp
-@@ -538,7 +538,8 @@ public:
+@@ -581,7 +581,8 @@ public:
          Classless = CurrentRealm.Classless;
          Reborn = CurrentRealm.WarcraftReborn;
          MysticAltars = (Classless || Reborn) &&
@@ -13,7 +13,7 @@ index 3fae79022..85fc78cef 100644
              sGameEventMgr->StartInternalEvent(COA_CLASS_TRAINERS_EVENT);
          if ((Classless || Reborn) && !LoadCatalog(Loaded))
 diff --git a/src/server/coa/AscensionMysticEnchant.cpp b/src/server/coa/AscensionMysticEnchant.cpp
-index 447468c3a..48b9a07c0 100644
+index 6194c286..fc977407 100644
 --- a/src/server/coa/AscensionMysticEnchant.cpp
 +++ b/src/server/coa/AscensionMysticEnchant.cpp
 @@ -5,6 +5,7 @@
@@ -105,7 +105,7 @@ index 447468c3a..48b9a07c0 100644
      void OnPlayerLogin(Player* player) override
      {
          if (!Ready)
-@@ -1179,6 +1217,194 @@ public:
+@@ -1179,6 +1217,257 @@ public:
      }
  };
  
@@ -163,6 +163,69 @@ index 447468c3a..48b9a07c0 100644
 +    QueryResult result = WorldDatabase.Query("SELECT 1 FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() "
 +        "AND TABLE_NAME = '{}'", table);
 +    return bool(result);
++}
++
++// wcme_mystic_enchant: enchant cards this server adds to the list MysticEnchant.dbc gives, or changes in it (a row whose
++// spell is already a card replaces that card's item, weight, quality, level, realms and classes). Read at every startup,
++// before anything else uses the list. The client needs the same cards in its own MysticEnchant.dbc and the scroll items
++// in its Item.dbc to show them (our client patch adds both: client-patch/custom_cards.py, which also writes the rows).
++//   id            the card's id (the client's MysticEnchant.dbc ID)
++//   spell         the enchant's spell (an aura the player has while the card is active)
++//   item          its scroll (item_template); the card stays out of every roll while that item is missing
++//   weight        its share in rolls of its quality (the client's cards mostly use 100)
++//   quality       2 uncommon, 3 rare, 4 epic, 5 legendary
++//   required_level, realms (bit 0 live, 1 seasonal, 2 league, 3 PTR, 4 development), class_mask (bit 9 = Wildcard)
++void LoadExtraCards()
++{
++    if (!WorldTableExists("wcme_mystic_enchant"))
++        return;
++    QueryResult result = WorldDatabase.Query("SELECT id, spell, item, weight, quality, required_level, realms, class_mask "
++        "FROM wcme_mystic_enchant");
++    if (!result)
++        return;
++    uint32 added = 0, changed = 0;
++    do
++    {
++        Field* fields = result->Fetch();
++        uint32 const spell = fields[1].Get<uint32>();
++        uint32 const quality = fields[4].Get<uint32>();
++        if (!sSpellMgr->GetSpellInfo(spell) || quality < QUALITY_UNCOMMON || quality >= QUALITY_HEIRLOOM)
++        {
++            LOG_ERROR("sql.sql", "wcme_mystic_enchant: spell {} does not exist or quality {} is not 2 to 6", spell, quality);
++            continue;
++        }
++        std::size_t index;
++        if (auto const itr = Loaded.BySpell.find(spell); itr != Loaded.BySpell.end())
++        {
++            index = itr->second;
++            if (auto const item = Loaded.ByItem.find(Loaded.Rows[index].Item);
++                item != Loaded.ByItem.end() && item->second == index)
++                Loaded.ByItem.erase(item);
++            ++changed;
++        }
++        else
++        {
++            index = Loaded.Rows.size();
++            Loaded.Rows.emplace_back();
++            Loaded.Rows[index].Spell = spell;
++            Loaded.BySpell[spell] = index;
++            ++added;
++        }
++        Enchant& enchant = Loaded.Rows[index];
++        enchant.Id = fields[0].Get<uint32>();
++        enchant.Item = fields[2].Get<uint32>();
++        enchant.Weight = fields[3].Get<float>();
++        enchant.Quality = enchant.RebornQuality = quality;
++        enchant.RequiredLevel = fields[5].Get<uint32>();
++        enchant.Worldforged = false;
++        uint32 const realms = fields[6].Get<uint32>();
++        for (std::size_t realm = 0; realm < REALM_COUNT; ++realm)
++            enchant.Realms[realm] = (realms >> realm) & 1;
++        enchant.ClassMask = fields[7].Get<uint64>();
++        if (enchant.Item)
++            Loaded.ByItem[enchant.Item] = index;
++    } while (result->NextRow());
++    LOG_INFO("coa", "Mystic enchant cards from wcme_mystic_enchant: {} added, {} changed", added, changed);
 +}
 +
 +// wcme_enchant_teach (enchant_spell, taught_spell): extra spells an enchant teaches while it is active, on top
@@ -300,11 +363,12 @@ index 447468c3a..48b9a07c0 100644
  class AscensionMysticEnchantWorld final : public WorldScript
  {
  public:
-@@ -1188,7 +1414,11 @@ public:
+@@ -1188,7 +1477,12 @@ public:
      {
          Ready = LoadCatalog(Loaded);
          if (Ready)
 +        {
++            LoadExtraCards();
              LoadLinks();
 +            LoadExtraTeaches();
 +            SkipMissingSpells();
@@ -312,7 +376,7 @@ index 447468c3a..48b9a07c0 100644
          if (!Ready)
              LOG_ERROR("coa", "Mystic enchants are unavailable: MysticEnchant.dbc did not load");
      }
-@@ -1289,6 +1519,7 @@ void AddAscensionMysticEnchantScripts()
+@@ -1356,6 +1650,7 @@ void AddAscensionMysticEnchantScripts()
      new AscensionMysticEnchant::AscensionMysticEnchantPlayer();
      new AscensionMysticEnchant::AscensionMysticEnchantForms();
      new AscensionMysticEnchant::AscensionMysticEnchantWorld();
@@ -321,7 +385,7 @@ index 447468c3a..48b9a07c0 100644
      new AscensionMysticEnchant::AscensionMysticEnchantScrollDrops();
      RegisterSpellScriptWithArgs(AscensionMysticEnchant::spell_ascension_unidentified_mystic_scroll,
 diff --git a/src/server/coa/AscensionMysticEnchantRules.cpp b/src/server/coa/AscensionMysticEnchantRules.cpp
-index 25965ce4a..bd2b19491 100644
+index 3a4c13e2..c853547f 100644
 --- a/src/server/coa/AscensionMysticEnchantRules.cpp
 +++ b/src/server/coa/AscensionMysticEnchantRules.cpp
 @@ -205,7 +205,7 @@ void CheckEnchant(Catalog const& catalog, Character const& character, Slots cons
@@ -361,7 +425,7 @@ index 25965ce4a..bd2b19491 100644
              errors.push_back(COLLECTION_REFORGE_DISABLED_IN_WILDCARD);
      }
      else
-@@ -728,7 +731,7 @@ std::string QualityTier(std::uint32_t quality)
+@@ -729,7 +732,7 @@ std::string QualityTier(std::uint32_t quality)
  bool GuideFits(Catalog const& catalog, Character const& character, Slots const& slots, std::uint32_t spell)
  {
      Enchant const* enchant = catalog.FindSpell(spell);
@@ -389,7 +453,7 @@ index 25965ce4a..bd2b19491 100644
      if (character.Knows(spell))
          return DISENCHANT_ALREADY_KNOWN_ENCHANTMENT;
 diff --git a/src/server/coa/AscensionMysticEnchantRules.h b/src/server/coa/AscensionMysticEnchantRules.h
-index 5097e5634..607da8d0f 100644
+index d63c87ec..31420287 100644
 --- a/src/server/coa/AscensionMysticEnchantRules.h
 +++ b/src/server/coa/AscensionMysticEnchantRules.h
 @@ -298,6 +298,7 @@ struct Character
@@ -410,10 +474,10 @@ index 5097e5634..607da8d0f 100644
  
  using Slots = std::array<std::uint32_t, SLOT_COUNT>;
 diff --git a/src/server/coa/conf/coa.conf.dist b/src/server/coa/conf/coa.conf.dist
-index 168bf01ff..87ff7bfb3 100644
+index cb8869f0..1509579c 100644
 --- a/src/server/coa/conf/coa.conf.dist
 +++ b/src/server/coa/conf/coa.conf.dist
-@@ -28,6 +28,13 @@ CoA.AllowRemoteClients = 0
+@@ -40,6 +40,13 @@ CoA.AllowRemoteClients = 0
  # 0 - Create a Hero. Use this on a realm with CoA.ClassModel = "hero".
  CoA.MapClass10ToWarrior = 1
  
@@ -427,7 +491,7 @@ index 168bf01ff..87ff7bfb3 100644
  # Client lab probe relay: the admin command .labprobe whispers read-only CoaProbe requests to an
  # online lab character as addon messages and collects the chunked answers the addon whispers back.
  # Accepted only for accounts whose name starts with CoA.ProbeRelay.AccountPrefix (case-insensitive).
-@@ -138,6 +145,26 @@ CoA.AppearanceCatalogPerCategory = 500
+@@ -186,6 +193,26 @@ CoA.AppearanceCatalogPerCategory = 500
  # Custom Ascension-only entries still require matching server item/spell templates to deliver.
  CoA.UnlockAllVanity = 1
  
