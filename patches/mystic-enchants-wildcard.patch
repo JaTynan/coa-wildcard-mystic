@@ -13,7 +13,7 @@ index 724a4435..4068dc5b 100644
              sGameEventMgr->StartInternalEvent(COA_CLASS_TRAINERS_EVENT);
          if ((Classless || Reborn) && !LoadCatalog(Loaded))
 diff --git a/src/server/coa/AscensionMysticEnchant.cpp b/src/server/coa/AscensionMysticEnchant.cpp
-index 6194c286..fc977407 100644
+index 6194c286..b3dde3ac 100644
 --- a/src/server/coa/AscensionMysticEnchant.cpp
 +++ b/src/server/coa/AscensionMysticEnchant.cpp
 @@ -5,6 +5,7 @@
@@ -105,7 +105,7 @@ index 6194c286..fc977407 100644
      void OnPlayerLogin(Player* player) override
      {
          if (!Ready)
-@@ -1179,6 +1217,257 @@ public:
+@@ -1179,6 +1217,259 @@ public:
      }
  };
  
@@ -175,6 +175,8 @@ index 6194c286..fc977407 100644
 +//   weight        its share in rolls of its quality (the client's cards mostly use 100)
 +//   quality       2 uncommon, 3 rare, 4 epic, 5 legendary
 +//   required_level, realms (bit 0 live, 1 seasonal, 2 league, 3 PTR, 4 development), class_mask (bit 9 = Wildcard)
++// A new card teaches nothing and transforms nothing: LoadCatalog reads those from the client's spell text for its own
++// rows only. A card whose spell teaches a spell needs a wcme_enchant_teach row.
 +void LoadExtraCards()
 +{
 +    if (!WorldTableExists("wcme_mystic_enchant"))
@@ -363,7 +365,7 @@ index 6194c286..fc977407 100644
  class AscensionMysticEnchantWorld final : public WorldScript
  {
  public:
-@@ -1188,7 +1477,12 @@ public:
+@@ -1188,7 +1479,12 @@ public:
      {
          Ready = LoadCatalog(Loaded);
          if (Ready)
@@ -376,7 +378,7 @@ index 6194c286..fc977407 100644
          if (!Ready)
              LOG_ERROR("coa", "Mystic enchants are unavailable: MysticEnchant.dbc did not load");
      }
-@@ -1356,6 +1650,7 @@ void AddAscensionMysticEnchantScripts()
+@@ -1356,6 +1652,7 @@ void AddAscensionMysticEnchantScripts()
      new AscensionMysticEnchant::AscensionMysticEnchantPlayer();
      new AscensionMysticEnchant::AscensionMysticEnchantForms();
      new AscensionMysticEnchant::AscensionMysticEnchantWorld();

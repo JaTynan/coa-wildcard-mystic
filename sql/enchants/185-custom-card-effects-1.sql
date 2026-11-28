@@ -10,7 +10,9 @@
 -- Ascension's own helper Echoing Warcry Rage (272856, 10 rage) on any shout; rule 2 cuts every Warcry (272851, 1571219,
 -- 8006673) by 5 sec. Its second effect (shouts cost no rage) already worked and stays.
 -- Assumptions: the tooltip's 2 sec against players is not done (the table can't tell a player target); 5 sec always.
--- Battle Fatigue comes from other enchants (Warcry and the like), so without one of those only the rage part works.
+-- Battle Fatigue is put on enemies by another enchant's Warcry: each Warcry card applies its own version (272848,
+-- 983849 from the Legendary card, 1571220), and rule 2 takes any of the three. Without such a card only the rage part
+-- works.
 --
 -- Assault and Battery 275043 (Epic). Thunder Clap, Execute and Shield Slam grant Assault and Battery (275044): the next
 -- Lightning Bolt or Chain Lightning is instant, and Lightning Bolt deals 100% more. The talent had no proc rule (so it
@@ -27,6 +29,8 @@
 -- the cast time part names Pure Chaos Bolt's 13 versions (wcme_spellaffect_dbc 960100-960112). The 10% against players
 -- is left out.
 -- Assumption: at 3 stacks Pure Chaos Bolt casts instantly (3 x 34%), as Maelstrom Weapon does at full stacks.
+-- Note: a melee ability that hits several enemies (Whirlwind) gives a stack per enemy hit, and melee-class hits that
+-- other effects trigger count too, as Ascension's own proc flags had it.
 --
 -- Safe to run again: 000-reset removes everything here first.
 INSERT IGNORE INTO `wcme_owned` (`tbl`, `id`) VALUES ('spell_dbc', 275044), ('spell_dbc', 1576264),
@@ -52,7 +56,7 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES (1571194, 'sp
 INSERT INTO `wcme_enchant_action` (`enchant_spell`, `rule`, `spells`, `school_mask`, `target_aura`, `requires_aura`, `chance`,
     `cooldown_ms`, `action`, `action_spells`, `amount`, `comment`) VALUES
 (1571194, 1, '469 1160 1161 2048 5242 5246 6190 6192 6673 11549 11550 11551 11554 11555 11556 13730 16244 18328 19134 19778 20511 25202 25203 25289 27578 27579 29544 29584 33789 38945 38946 45517 47436 47437 47439 47440 59613 61044 61578 62102 65930 69565 84277 102929 102930 155799 161203 340006 340076 365104 383150 388554 992971 1100469 1101160 1101161 1102048 1105242 1105246 1106190 1106192 1106673 1111549 1111550 1111551 1111554 1111555 1111556 1113730 1116244 1118328 1119134 1119778 1120511 1123511 1125202 1125203 1125289 1127578 1127579 1129544 1129584 1133789 1138945 1138946 1145517 1147436 1147437 1147439 1147440 1159613 1161044 1161578 1162102 1165930 1169565 1405742 1405746 1406692 1407173 6072022 10013730', 0, '', '', 100, 0, 'cast_self', '272856', 0, 'Echoing Warcry: a shout generates 10 rage'),
-(1571194, 2, '', 1, '272848', '', 100, 2000, 'reduce_cooldown', '272851 1571219 8006673', 5000,
+(1571194, 2, '', 1, '272848 983849 1571220', '', 100, 2000, 'reduce_cooldown', '272851 1571219 8006673', 5000,
     'Echoing Warcry: a Physical ability on a Battle Fatigued enemy cuts 5 sec off Warcry');
 INSERT INTO `wcme_spellaffect_dbc` (`ID`, `ModifierSpellID`, `AffectedSpellID`) VALUES
 (960100, 1576264, 272774),

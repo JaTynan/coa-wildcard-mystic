@@ -344,6 +344,13 @@ function FetchRepo {
             if (Test-Path $localLauncher) { Remove-Item $localLauncher -Recurse -Force }
             Copy-Item $launcher $localLauncher -Recurse -Force
         }
+        # The client patch's builders (RebuildClientPatch rebuilds patch-ZZW.MPQ from them when they change).
+        $clientPatch = Join-Path $repoRoot 'client-patch'
+        $localClientPatch = Join-Path $here 'client-patch'
+        if (Test-Path $clientPatch) {
+            if (Test-Path $localClientPatch) { Remove-Item $localClientPatch -Recurse -Force }
+            Copy-Item $clientPatch $localClientPatch -Recurse -Force
+        }
         # AI chat for bots (mod-ollama-chat): its config template and characters-database tables.
         $chat = Join-Path $repoRoot 'ollama-chat'
         $localChat = Join-Path $here 'ollama-chat'
@@ -720,6 +727,49 @@ function ReportConfigWarnings([string] $text) {
     Log "Settings: the server runs $($missing.Count) setting(s) on defaults (none set in a config file) and could not use $($bad.Count)$(if ($bad.Count) { ': ' + (($bad | ForEach-Object { $_.Trim() }) -join '; ') }). Full list in server-settings\settings-report.txt." $level
 }
 
+function RebuildClientPatch {
+    # The client patch (Data\patch-ZZW.MPQ in the client folder friends sync from) is rebuilt from client-patch\ whenever
+    # one of its files has changed since the last build (James, 28 Nov: no commands by hand), with the server still up;
+    # friends get it from the site after the restart. client-patch\rebuild_client_patch.py reads the client's own
+    # files, builds, and checks the result reads back before anything changes. The old patch is kept in backup\ (the
+    # newest 5). Reverting the change in GitHub rebuilds the old patch the next night. Until the client patch has this
+    # repo's enchant cards, their SQL (184) is left out, so nobody rolls a scroll their client can't show.
+    $source = Join-Path $here 'client-patch'
+    $builder = Join-Path $source 'rebuild_client_patch.py'
+    $stampFile = Join-Path $here 'client-patch-built.txt'
+    $cards = Join-Path $here 'enchants\184-custom-cards.sql'
+    if (-not (Test-Path $builder)) { return }
+    $sha = [Security.Cryptography.SHA256]::Create()
+    $hashes = @(Get-ChildItem $source -Filter *.py | Sort-Object Name | ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA256).Hash }) -join ''
+    $hash = ([BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($hashes)))).Replace('-', '')
+    $built = if (Test-Path $stampFile) { (Get-Content $stampFile -Raw).Trim() } else { '' }
+    if ($built -ne $hash) {
+        $livePatch = Join-Path $Client 'Data\patch-ZZW.MPQ'
+        $newPatch = Join-Path $work 'patch-ZZW.new.MPQ'
+        Remove-Item $newPatch -ErrorAction SilentlyContinue
+        Log 'The client patch files changed in GitHub; rebuilding the client patch...'
+        $result = Invoke-Quiet $python @('-I', "`"$builder`"", '--client', "`"$Client`"", '--out', "`"$newPatch`"",
+            '--work', "`"$(Join-Path $work 'client-patch-build')`"") '' 30
+        $last = @($result.Text -split "`n" | Where-Object { $_.Trim() }) | Select-Object -Last 1
+        if ($result.Code -eq 0 -and (Test-Path $newPatch)) {
+            $backups = Join-Path $here 'backup'
+            New-Item -ItemType Directory -Force -Path $backups | Out-Null
+            if (Test-Path $livePatch) { Copy-Item $livePatch (Join-Path $backups ('patch-ZZW.{0}.MPQ' -f (Get-Date -Format 'yyyyMMdd-HHmm'))) -Force }
+            Get-ChildItem $backups -Filter 'patch-ZZW.*.MPQ' | Sort-Object Name -Descending | Select-Object -Skip 5 | Remove-Item -Force
+            Move-Item $newPatch $livePatch -Force
+            Set-Content -Path $stampFile -Value $hash -Encoding ascii
+            $built = $hash
+            Log "$last The new client patch is in place (old one in backup\); friends get it from the site after the restart. Open the game once to check it."
+        } else {
+            Log "Rebuilding the client patch failed, so the old one stays: $last" 'WARN'
+        }
+    }
+    if ($built -ne $hash -and (Test-Path $cards)) {
+        Remove-Item $cards -Force
+        Log 'New Mystic Enchant cards are left out tonight (184-custom-cards.sql): the client patch does not have them yet.' 'WARN'
+    }
+}
+
 function PublishFriendsSite {
     # Refreshes the friends' download site (launcher, its settings, the client manifest) after the client folder
     # may have changed. Does nothing until Setup-WildcardSite.ps1 has created the site folder.
@@ -969,6 +1019,7 @@ if ($installNeeded) {
 $script:perfMonWasOn = [bool] (MonitorWasOn | Select-Object -Last 1)   # before the rewrite below: what the running server started with
 Log 'Applying server-settings (used from the restart)...'
 if (RunScript $applySettings @('-Server', "`"$Server`"", '-Unattended')) { Log 'Applying the settings reported a problem.' 'WARN' }
+RebuildClientPatch
 Log "Prepared in $([int] ((Get-Date) - $prepared).TotalSeconds) s, with the server up."
 
 # The rest of the countdown. A warning preparing ran past is skipped, except the last minute, which always comes.
