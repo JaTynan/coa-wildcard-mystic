@@ -138,11 +138,11 @@ patch or the mechanic when there is a chance.
 
 ### A Quick Death (283565, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-10-31), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** 2026-10-31 pass: Execute grants the haste buff; tooltip shows the twin text
 
@@ -152,19 +152,18 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Arcane (1587962, Rare)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -178,37 +177,34 @@ patch or the mechanic when there is a chance.
 
 ### Abjurer's Ward: Arcane (284711, Uncommon)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Arcane (982567, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Fire (1587982, Rare)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -222,37 +218,34 @@ patch or the mechanic when there is a chance.
 
 ### Abjurer's Ward: Fire (284716, Uncommon)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Fire (982572, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Frost (1588050, Rare)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -266,50 +259,52 @@ patch or the mechanic when there is a chance.
 
 ### Abjurer's Ward: Frost (284752, Uncommon)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Abjurer's Ward: Frost (982605, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Absolute Zero (983165, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-02), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass: spell taught and works (2 Nov) | 2026-11-02
 
 ### Adrenaline Junkie (1589466, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**What the pull requests said:**
+
+- #178: Adrenaline Junkie (1589466) | Finishers, 20% per combo point: 12 sec off Adrenaline Rush | |
 
 **Assumptions:** 12 sec (1589467's value) taken off any Adrenaline Rush you know. The GCD removal was already its data.
 
@@ -319,17 +314,21 @@ patch or the mechanic when there is a chance.
 
 ### Adumbral Companion (81422, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Companions (81418 Arcane, 81419 Fire, 81420 Frost, 81421 Nature, 81422 Shadow): your hunter pet's auto attacks deal only that school (the enchant's own school value) and 10% less damage (wcme_epic_batch2_hooks); the pet shows the Companion's visual (81424-81428). Kept in step every second; the pet's school is put back when the enchant goes.
 - Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
 - 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**What the pull requests said:**
+
+- #178: Companions (81418-81422) | Hunter pet auto attacks deal the Companion's school, 10% less, with its visual | |
 
 **Assumptions:** As 81418 (Shadow).
 
@@ -339,18 +338,21 @@ patch or the mechanic when there is a chance.
 
 ### Aegis Overdrive (299160, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 7910784 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Aegis Overdrive (299160): dodging, parrying or blocking with Mana Shield up has a 20% chance (its helper 299162) to set off Aegis Explosion (299163), at most once every 5 sec. The explosions on Mana Shield going up and ending are in wcme_epic_batch67_hooks.
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: With rows: Party Recuperation (983475: finisher proc, 10% per combo point), Twisted Mind (979779: Fel Armor shows as Twisted Mind), "Stealth" (982477, You're a Solid Crate: its stealth and slow helpers, crate removed after), Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or block with Mana Shield up).
+
+**What the pull requests said:**
+
+- #178: Aegis Overdrive (299160) | Mana Shield up / ending sets off Aegis Explosion; dodge, parry or block 20% (5 sec cooldown) | Mana-Forged Barrier not checked |
 
 **Assumptions:** Mana-Forged Barrier isn't checked. The activation lockout is its own helper 299161. 20% chance and 5 sec cooldown on avoidance from the text.
 
@@ -362,22 +364,21 @@ patch or the mechanic when there is a chance.
 
 ### Aftershock (983635, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-02), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass: Tectonic Shockwave taught and works (2 Nov) | 2026-11-02
 
 ### All that is Right (277746, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-02), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** fail: no All that is Right buff from Seal of Righteousness damage; likely a different seal damage spell ID on this server (2 Nov). One client crash during the test, cause unknown | 2026-11-02
 
@@ -387,7 +388,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -397,25 +398,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Arcane Charge (282881, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-02), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-02 | 52a235a | #32 Take out 20 namesake teaches that taught the wrong piece of the ability | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-02 | 29eac6a | #33 Divine Steed mounts you; Arcane Charge fix no longer refused at range | build16 (2026-11-05) | 2026-11-10 |
-| 2026-11-02 | 93bfa49 | #34 Revert the Arcane Charge retarget; record 2 Nov test results | build16 (2026-11-05) | 2026-11-10 |
-
-**What the pull requests said:**
-
-- #33: Arcane Charge (282881): last fix aimed the damage at the Charge target but the helper has a self-only range, so the whole cast failed. Range opened up.
-- #34: Arcane Charge: both retarget attempts made the helper fail entirely in game, so its override is removed (back to the earlier state: mana parts work, damage hits enemies near you as Charge starts). Also records tonight's results in the tracker and checklist: 6 passes, 1 partly working, 2 fails.
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** partly: mana parts work; damage only hits enemies near you as Charge starts. Retargeting it at the Charge target broke the whole helper, reverted (2 Nov) | 2026-11-02
 
@@ -425,8 +418,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -436,7 +428,40 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 5781a9e | #296 Raging Onslaught, Master of Kunai and Toss and Throw do what their tooltips say | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+- 175-talent-code-showcase-1.sql: Arcane Gunslinger 274586: while its buff 274590 is up, the core grants 300028 (Arcane Barrage hits one more enemy; aura link, recipe R7).
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
+- #296: Code for three showcase-build talents that data cannot fix, plus Arcane Gunslinger in data. James asked (28 Nov) to restore these builds' talents with code where needed. Background: `docs/bot-builds/showcase-audit.md`, sections 8-9, on PR #289.
+- #296: Arcane Gunslinger 274586, data only, live at the next restart:** an aura link grants 300028 (Arcane Barrage hits one more enemy) while the buff 274590 is up. Cast links make any of the six 15-sec Missile Barrage buffs end the buff, as the tooltip says.
+
+**Testing:** nothing recorded yet
+
+### Arcane Motes (281905, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Testing:** nothing recorded yet
 
@@ -446,7 +471,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -456,17 +481,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Arcanist's Explosion (982545, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass | 2026-11-03
 
@@ -476,7 +501,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -486,25 +511,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Arngrim's Greeting (997188, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 9298c60 | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Arngrim's Greeting (997188) | Heroic Leap landing: Blizzard (215 Frost every 2 sec, 6 sec) where you land and Icy Veins (+20% cast speed, 6 sec) | Reviewed: waits until you're on the ground. Blizzard's text number doesn't match its data (tooltip flag) |
 
 **Assumptions:** Landing is Heroic Leap's damage spell (86359), which arrives with the leap's missile (speed 30); Blizzard is placed where the caster stands, so the script waits (checking every 0.1 sec, up to 2 sec) until you are on the ground within 4 yards of the landing point. Blizzard is its helper 997194 (215 Frost damage every 2 sec for 6 sec, radius index 8); its text formula ($m2*8 = 520) doesn't match the data (3 x 215 = 645). Icy Veins is 997193 (+20% casting speed, 6 sec). Blizzard and Icy Veins aren't checked as known. Review 2026-11-17: the first version cast Blizzard at the warrior's position as the damage spell went off, which can be mid-air.
 
@@ -516,23 +542,13 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
-### Astral Reconstitution (850088, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
 ### Atal'ai Totem (92384, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass | 2026-11-03
 
@@ -542,7 +558,47 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Authority (299120, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-25 | bb8d36e | #272 Talents: Challenging Echo, Explosive Shot splash, Authority | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 149-talent-companion-scripts-2.sql: Authority (299120): Execution Sentence's ticks stack Authority on the target (the talent's trigger had no proc rule: now periodic damage done by Execution Sentence, paladin flag 0x2000000 in the third mask).
+
+**What the pull requests said:**
+
+- #272: Authority** | Execution Sentence ticks now stack Authority on the target (the talent's trigger had no proc rule). Shield of Righteousness consumes the stacks: the stacks boost that hit (their own data), then the paladin takes 3% less damage per stack consumed for 8 sec (a new consume replaces the buff, never adds to it). Every damaging Shield of Righteousness version consumes, Light of Tyr's included. Shield of Righteousness also has a 20% chance to reset Execution Sentence. |
+- #272: Authority's damage reduction did nothing (the buff had no school in its data); our copy covers every school. It would also have compounded on a refresh; now one stack per Authority consumed, replaced each time.
+- #272: Changelog: Talents: Challenging Echo (Roar and Shout), Explosive Shot's splash and Authority now do what they say
+
+**Testing:** nothing recorded yet
+
+### Battle Fatigue (272854, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-24 | 3b855aa | #269 Talents: code batch parts 2 and 3 reach main (stacked merge missed them) | build77 (2026-11-24) | 2026-11-25 |
+| 2026-11-24 | 56706f1 | #269 Talents: code batch parts 2 and 3 reach main (stacked merge missed them) | build77 (2026-11-24) | 2026-11-25 |
+
+**What the server does (from the code and SQL comments):**
+
+- 145-talent-companions-native-effects.sql: Battle Fatigue (272854).
+
+**What the pull requests said:**
+
+- #269: #263, code batch part 2:** Battle Fatigue (extensions capped at +50% per shout) and Divine Reset get their trigger rules (`sql/enchants/145`); patch 55's cap for effect 173; the batch 2 proc-flag fix (87312) is already on main through #259. Patch review: fixed, merge.
+- #269: Changelog: Talents: Battle Fatigue, Divine Reset, Harbinger of Plague and Reave now work
 
 **Testing:** nothing recorded yet
 
@@ -552,7 +608,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -562,7 +618,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -572,8 +628,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -583,7 +638,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -593,24 +648,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Bestial Assault (272317, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 0b4e6a2 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: With rows: Bestial Assault (272317: its own data procs are switched off, the script gives the stacks instead).
+
+**What the pull requests said:**
+
+- #178: Bestial Assault (272317) | Each damaging Hunter cast (not Auto Shot) stacks; 5 stacks give back an Unrelenting Wrath charge | Reviewed: Auto Shot no longer counts. Old every-attack procs switched off |
 
 **Assumptions:** Direct damage means an effect that deals spell or weapon damage; triggered spells and Auto Shot don't count. Its own data procs (on every melee and ranged attack) are switched off. Review 2026-11-17: the first version counted Auto Shot (a Hunter-family weapon damage spell), which would have built stacks on its own every couple of seconds.
 
@@ -622,12 +679,11 @@ patch or the mechanic when there is a chance.
 
 ### Big Brain Big Muscles (84589, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-10-31), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** 2026-10-31 pass: both buffs (Surging from Physical, Growing from Moonfire)
 
@@ -637,8 +693,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -648,8 +703,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -659,7 +713,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -669,17 +723,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Black Widow Strike (979088, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass | 2026-11-03
 
@@ -689,7 +743,11 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Refresh-aura effect** (`enchants/core-refresh-aura-review.csv`): 72 spells use the "refresh aura" effect with a time but without its "add" flag, so the core sets the aura's time left to that value instead of adding it, though most are named as extensions (Rip Extend, Endless Agony duration, Permafrost Wound: Extend 999 ms). 13 are reached by Mystic Enchants, e.g. Endless Agonizer, Healing Garden, Turning Tides, Perforation, Blade Vortex, Embracing Shadows. Only Savage Momentum's is fixed so far; the rest are to review.
 
 **Testing:** nothing recorded yet
 
@@ -699,7 +757,11 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Refresh-aura effect** (`enchants/core-refresh-aura-review.csv`): 72 spells use the "refresh aura" effect with a time but without its "add" flag, so the core sets the aura's time left to that value instead of adding it, though most are named as extensions (Rip Extend, Endless Agony duration, Permafrost Wound: Extend 999 ms). 13 are reached by Mystic Enchants, e.g. Endless Agonizer, Healing Garden, Turning Tides, Perforation, Blade Vortex, Embracing Shadows. Only Savage Momentum's is fixed so far; the rest are to review.
 
 **Testing:** nothing recorded yet
 
@@ -709,7 +771,30 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Refresh-aura effect** (`enchants/core-refresh-aura-review.csv`): 72 spells use the "refresh aura" effect with a time but without its "add" flag, so the core sets the aura's time left to that value instead of adding it, though most are named as extensions (Rip Extend, Endless Agony duration, Permafrost Wound: Extend 999 ms). 13 are reached by Mystic Enchants, e.g. Endless Agonizer, Healing Garden, Turning Tides, Perforation, Blade Vortex, Embracing Shadows. Only Savage Momentum's is fixed so far; the rest are to review.
+
+**Testing:** nothing recorded yet
+
+### Blades of Blood (285895, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Testing:** nothing recorded yet
 
@@ -719,7 +804,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -729,23 +814,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Blessed by the Elune (272253, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Blessed by the Elune (272253) | After Solar Eclipse, the next Wrath or Starsurge applies Insect Swarm; after Lunar, the next Starfire or Starsurge applies Moonfire | Each waits up to 30 sec; Moonfire brings its small direct hit (tooltip flag) |
 
 **Assumptions:** Each Eclipse arms its effect for up to 30 sec (no number given). Uses your highest known Insect Swarm or Moonfire, or rank 1 if you know none; Moonfire comes with its own small direct hit. A Starsurge with both armed applies both.
 
@@ -759,42 +848,54 @@ patch or the mechanic when there is a chance.
 
 ### Blind Rage (282040, Uncommon)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | c494f83 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | c494f83 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 005-twin-procs.sql: Review 2026-11-18: Blind Rage (282040) uses the core's own row again (its skill-card repairs fire it on misses); ours hid it without changing what happened, since the core's script only lets true misses through.
 
+**What the pull requests said:**
+
+- #178: Proc rows that changed the core's chance** (`enchants/core-proc-row-replacements.csv`): for six enchants the core runs, our SQL replaced the core's own `spell_proc` row. The core's rule takes its chance from that row (0 = the spell's own chance), so ours at 100% made it fire every time. Soul Erosion (live legendary) empowered Drain Soul on every Unstable Affliction or Curse of Agony tick instead of 8%: ours removed, the core's row restored. Wraithweaver: Shadow Orbs (live legendary) had the same problem: an orb on every damage-over-time tick instead of 20%; the core's row is restored, and our Mind Blast/Shadowy Apparition part moved to a damage hook so the 20% doesn't gate it. Blazing Flame checked: no doubling. Shadow Visions (live legendary): our script added a second Soul Fragment on every Mind Flay tick on top of the core's, so Shadow Visions came twice as fast; ours no longer builds fragments. Overflow: no doubling, but the core only counts the CoA Regrowth and Nourish, so a fill-in now gives stacks for the stock ones. The other four keep the same chance. A later full check against every core proc row (not only the mystic enchant files) found five more: Relentless Reflexes (ours refreshed the buff's duration on every stack, against the text, and hid the core's 4 November script; fixed, core row restored), Blind Rage (core row restored, no change in result), Rush of Blood (both scripts counted Hemorrhages, so the energy came twice; core row restored), Starburst Barrage (the core's filter blocked the Starsurge stack the text names; core row restored plus a Starsurge fill-in), and Hellish Pursuit (core row restored, no change in result). Stormbound Instinct was checked: no doubling.
+
 **Testing:** nothing recorded yet
 
 ### Blind Rage (81477, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | c494f83 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | c494f83 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Proc rows that changed the core's chance** (`enchants/core-proc-row-replacements.csv`): for six enchants the core runs, our SQL replaced the core's own `spell_proc` row. The core's rule takes its chance from that row (0 = the spell's own chance), so ours at 100% made it fire every time. Soul Erosion (live legendary) empowered Drain Soul on every Unstable Affliction or Curse of Agony tick instead of 8%: ours removed, the core's row restored. Wraithweaver: Shadow Orbs (live legendary) had the same problem: an orb on every damage-over-time tick instead of 20%; the core's row is restored, and our Mind Blast/Shadowy Apparition part moved to a damage hook so the 20% doesn't gate it. Blazing Flame checked: no doubling. Shadow Visions (live legendary): our script added a second Soul Fragment on every Mind Flay tick on top of the core's, so Shadow Visions came twice as fast; ours no longer builds fragments. Overflow: no doubling, but the core only counts the CoA Regrowth and Nourish, so a fill-in now gives stacks for the stock ones. The other four keep the same chance. A later full check against every core proc row (not only the mystic enchant files) found five more: Relentless Reflexes (ours refreshed the buff's duration on every stack, against the text, and hid the core's 4 November script; fixed, core row restored), Blind Rage (core row restored, no change in result), Rush of Blood (both scripts counted Hemorrhages, so the energy came twice; core row restored), Starburst Barrage (the core's filter blocked the Starsurge stack the text names; core row restored plus a Starsurge fill-in), and Hellish Pursuit (core row restored, no change in result). Stormbound Instinct was checked: no doubling.
 
 **Testing:** nothing recorded yet
 
 ### Blinding Dispersion (283428, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Blinding Dispersion (283428, 954634) | When Dispersion ends, enemies around you are disoriented for 2 sec (its own nova spell); the cooldown cut was already data | Also when Dispersion is cancelled early |
 
 **Assumptions:** Also fires when Dispersion is cancelled early ("ends"). Nova uses its own spell 283429 (area and 2 sec duration from the data). The cooldown cut was already its data.
 
@@ -804,16 +905,20 @@ patch or the mechanic when there is a chance.
 
 ### Blinding Dispersion (954634, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Blinding Dispersion (283428, 954634) | When Dispersion ends, enemies around you are disoriented for 2 sec (its own nova spell); the cooldown cut was already data | Also when Dispersion is cancelled early |
 
 **Assumptions:** As 283428, with its own nova 954635.
 
@@ -823,16 +928,20 @@ patch or the mechanic when there is a chance.
 
 ### Blood Drinker (965389, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Blood Drinker (965389) | Bloodthirst spends Taste for Blood to heal 3% max health + 25% AP | No amount in the data, so I picked one |
 
 **Assumptions:** Heal of 3% maximum health plus 25% attack power, chosen because the data has no amount and the text says small and attack-power based (Bloodthirst's own heal is a small percentage of health). Spends the whole Taste for Blood buff.
 
@@ -844,16 +953,20 @@ patch or the mechanic when there is a chance.
 
 ### Blood Shield (288804, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Blood Shield (288804) | In Frost Presence, Death Strike's heal also gives an absorb shield that stacks | Cap 20% of max health (10% vs players): our number, the data is blank (tooltip flag) |
 
 **Assumptions:** The tooltip's caps were missing from the data: 20% of your maximum health, 10% when your target is a player. 100% of the Death Strike heal before overhealing. Needs Frost Presence.
 
@@ -871,8 +984,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -880,7 +992,7 @@ patch or the mechanic when there is a chance.
 
 **What the pull requests said:**
 
-- #175: Blood and Guts (977906):** Mutilate on a Disemboweled target adds Mutilating Disembowel; Execute consumes Disembowel (after the twin's explosion), and Remorseless only stays if you know Remorseless Attacks.
+- #178: Blood and Guts (273885) | — | **No doubling**: our 977906 links it on purpose for the core's explosion |
 
 **Assumptions:** Review 2026-11-18: no doubling. The core does this enchant (Execute on a target with your Disembowel explodes, 273886); its rule covers all 23 Execute and 39 Disembowel versions. Our legendary Blood and Guts (977906) links this enchant on purpose for that explosion and only adds what the core lacks (Mutilating Disembowel, Disembowel used up just after the explosion, Remorseless only if known).
 
@@ -890,18 +1002,23 @@ patch or the mechanic when there is a chance.
 
 ### Blood-Soaked Mutilation (1590974, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 5bf04bd | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): (Mutilate +6% per bleed of yours is the core's bonus table; ours doubled it and was removed in review 2026-11-18.) The out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Blood-Soaked Mutilation (1590974) | #178 batch 4 | the core's bonus table (Mutilate +6% per bleed). **Resolved: our Mutilate bonus removed; Crimson Tempest/Garrote stay ours** |
+- #178: Fire Walk With Me (1584166), Blood-Soaked Mutilation (1590974) | #178 batch 4 | the core's own C++ mentions each; to review |
+- #178: Blood-Soaked Mutilation (1590974) | Mutilate +6% per bleed of yours; Crimson Tempest can allow one Garrote out of Stealth, without silence | The window is 10 sec |
 
 **Assumptions:** The out-of-Stealth Garrote is allowed once within 10 sec of the Crimson Tempest proc (10 sec is our choice); its silence is removed right after it lands. "Your bleeds" are bleeds you applied. Review 2026-11-18: the Mutilate part (+6% per bleed of yours on the target) is the core's bonus table (bleeds counted by mechanic, every learnable Mutilate); ours added it again (+12% per bleed) and is removed. The Crimson Tempest chance to use Garrote outside Stealth, and that Garrote's silence being removed, stay ours.
 
@@ -911,13 +1028,33 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Bloodletting (283986, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-25 | f6e7650 | #270 Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 147-talent-companion-scripts.sql: Bloodletting (283986): Rupture deals 25% more to targets with your Rend, and its companion (283987, linked) makes Rend deal 30% more to targets with your Rupture.
+
+**What the pull requests said:**
+
+- #270: Bloodletting** | Rupture deals 25% more to targets with your Rend; Rend 30% more to targets with your Rupture. The same rule also fixes the Mystic Enchant **Garrote** (982178: +5% against your Rend), which uses the same script id. |
+- #270: The Bloodletting check now looks at the attacker first, so ordinary damage-over-time ticks (bots included) cost almost nothing. Relevant to the lag work.
+- #270: Changelog: Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike and Bloodletting now do what they say; Corrupted Bear Form's Shadow damage scales with your hits
+
+**Testing:** nothing recorded yet
+
 ### Bloody Maelstrom (284252, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -927,7 +1064,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -937,27 +1074,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Bone Arrow (982743, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass: damage and debuff | 2026-11-03
 
 ### Bone Spear (982748, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** damage, rage cost and debuff work; no charges | 2026-11-03
 
@@ -967,18 +1104,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Burst of Thorns (84377, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** buff icon and tooltip only: no armour, mana regen or procs when hit (3 Nov) | 2026-11-03
 
@@ -988,7 +1124,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -998,7 +1134,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1008,18 +1144,25 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
-### Caltrops (850138, Epic)
+### Cataclysmic Sundering (1578857, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-28 | 45a58e4 | #292 Cataclysmic Sundering and Maledictive Assault work | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 172-showcase-sundering-maledictive.sql: The Sundering list is the one the core uses for the enchant version of the same talent, 1578857 (coa_mystic_enchant_proc), which has the same design. 2.
+
+**What the pull requests said:**
+
+- #292: Cataclysmic Sundering 277180** (Earthen Guardian). Each of its three effects fires a position trigger (277182-277184). The core's delayed-trigger effect places Burning Ground 277181 at 2, 6 and 10 yards in front of the shaman, 0.2, 0.4 and 0.6 s later. Burning Ground deals fire damage each second and raises Flame Shock damage taken. Fix: one action-table rule (R6): casting Sundering casts all three, once per cast. It uses the cast phase only, so a Sundering that hits several enemies, or none, leaves exactly three patches. The Sundering list is the core's own, from its rule for the enchant version 1578857, which has the same design.
 
 **Testing:** nothing recorded yet
 
@@ -1029,22 +1172,29 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Taught spell plus twin (decided: own spell only):** four enchants linked a twin because their own taught spell was broken, but the core still teaches that spell, so players got both while the addon showed only the twin's tooltip. Shadow Siphon (852174): link and tooltip entry removed, since the core now scripts its spell. Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412): queued; their own spells get fixed in a later batch, then their links go.
 
 **Testing:** nothing recorded yet
 
 ### Cauterize (850093, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 003-twin-links-close.sql: Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412) have the same double, but their own spells still need code; their links go once that is done.
+
+**What the pull requests said:**
+
+- #178: Taught spell plus twin (decided: own spell only):** four enchants linked a twin because their own taught spell was broken, but the core still teaches that spell, so players got both while the addon showed only the twin's tooltip. Shadow Siphon (852174): link and tooltip entry removed, since the core now scripts its spell. Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412): queued; their own spells get fixed in a later batch, then their links go.
 
 **Assumptions:** Review 2026-11-18, needs a decision: file 003 links twin 1181410 and the addon shows the twin's tooltip, but the enchant's own text teaches Cauterize (280330), and the core teaches it too (its 'Teaches you' parser). So a player gets both: the twin's effect and a Cauterize spell whose effects (a script effect and a dummy) nothing in the core handles. Same pattern on three rares: Frost Shot 851989, Shadow Siphon 852174 (its spell 913222 is now scripted by the core), Hammerstorm 852412. Decision (James, 2026-11-18): own spell only. Shadow Siphon's link is removed now (the core scripts 913222); Cauterize, Frost Shot and Hammerstorm keep theirs until their own spells are fixed in a later batch.
 
@@ -1052,23 +1202,13 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
-### Champion of the Sun (850098, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
 ### Chaos Burn (997020, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass | 2026-11-03
 
@@ -1078,7 +1218,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1088,7 +1228,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1098,17 +1238,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Chaos Meteor (954235, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** damage and cast work; no meteor visual, only the ground marker | 2026-11-03
 
@@ -1118,23 +1258,30 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Chilling Blows (81213) | Frostbrand hits extend Deep Freeze; Deep Freeze on a stun-immune target comes back 10.5 sec sooner | Once per Deep Freeze, not per hit (flagged) |
 
 **Testing:** nothing recorded yet
 
 ### Chilling Blows (81213, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Chilling Blows (81213) | Frostbrand hits extend Deep Freeze; Deep Freeze on a stun-immune target comes back 10.5 sec sooner | Once per Deep Freeze, not per hit (flagged) |
 
 **Assumptions:** The 10.5 sec cooldown cut happens once per Deep Freeze that deals damage (a stun-immune target), not per Frostbrand hit, because per hit would remove the cooldown entirely.
 
@@ -1152,7 +1299,11 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Twin links that doubled our own scripts** (files 003 and 004, live legendaries): a twin link puts the twin's aura on you and with it the twin's core rules, so where we later scripted the enchant's own text, both ran. Compound Power gave 4 combo points per shot instead of 2; Frozen Chaos jumped to 4 charges on every crit (and counted Frostfire Bolt); Elemental Assassin's next Shock got both +130% and +110%. A further case: Precision Impact linked a twin with the same name but a different effect (a 20% chance to reset Meteor), on top of the core's own handling. Those four links are removed (SQL only, live at the first patch night after this PR merges), and the addon shows their own tooltips. Circle of Life's Halo cooldown cuts were done by nobody (its twin cuts a different Halo) and are now two action rows.
 
 **Testing:** nothing recorded yet
 
@@ -1162,7 +1313,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1172,7 +1323,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1182,7 +1333,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1192,7 +1343,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1202,7 +1353,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1212,23 +1363,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Cobra Combo (284148, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**What the pull requests said:**
+
+- #178: Cobra Combo (979106, 284148) | Finishers, 20% per combo point: your pet gets +15% crit | The active pet |
 
 **Assumptions:** As 979106; the newer text says Tamed Pet of any kind, done as your active pet.
 
@@ -1238,16 +1392,20 @@ patch or the mechanic when there is a chance.
 
 ### Cobra Combo (979106, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**What the pull requests said:**
+
+- #178: Cobra Combo (979106, 284148) | Finishers, 20% per combo point: your pet gets +15% crit | The active pet |
 
 **Assumptions:** The crit buff goes to your active pet (979105 targets the pet).
 
@@ -1257,34 +1415,38 @@ patch or the mechanic when there is a chance.
 
 ### Compound Power (275317, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | 99174fa | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 003-twin-links-close.sql: Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our scripts do their own text in full, and the twins' core rules doubled it (two more combo points;
 
+**What the pull requests said:**
+
+- #178: Twin links that doubled our own scripts** (files 003 and 004, live legendaries): a twin link puts the twin's aura on you and with it the twin's core rules, so where we later scripted the enchant's own text, both ran. Compound Power gave 4 combo points per shot instead of 2; Frozen Chaos jumped to 4 charges on every crit (and counted Frostfire Bolt); Elemental Assassin's next Shock got both +130% and +110%. A further case: Precision Impact linked a twin with the same name but a different effect (a 20% chance to reset Meteor), on top of the core's own handling. Those four links are removed (SQL only, live at the first patch night after this PR merges), and the addon shows their own tooltips. Circle of Life's Halo cooldown cuts were done by nobody (its twin cuts a different Halo) and are now two action rows.
+
 **Testing:** nothing recorded yet
 
 ### Consumed By Shadows (997217, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 5db193a | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Consumed By Shadows (997217) | Leaving Stealth puts you in Shadowform; Master of Subtlety boosts Shadow damage | Reviewed: works with the talent's twin buffs; no Shadowform if you left Stealth into cat/bear, mounted, or re-stealthed |
 
 **Assumptions:** Shadow damage (direct and over time) gets Master of Subtlety's bonus while its damage buff is up (during Stealth and the 6 sec after; 31665 or the twin the core picks for your talent rank; 12% at rank 3). Leaving Stealth casts your highest known Shadowform, but only if you end up in no form at all: not if Stealth ended because you shifted into cat or bear, not when mounted, and not if you are stealthed again. Rank 3 of Master of Subtlety is the enchant's requirement, not checked by the script. Review 2026-11-17: the first version only looked for 31665 itself (missing the talent twins) and would have forced Shadowform over a cat or bear form you shifted into from Stealth.
 
@@ -1296,18 +1458,22 @@ patch or the mechanic when there is a chance.
 
 ### Controlled Aggression (1181300, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-18 | 92b8e46 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Controlled Aggression (1181300) used to keep its helper 1181301 here; review 2026-11-18 found the core's own aura link already grants 1181301 (Shield Slam cooldown) and 1181302 while you have the enchant. Its attack power part and the doubled Sword and Board chance are in wcme_epic_batch3_hooks. Deadly Follow-up (979080): teaches Deadly Follow-up (979081) for as long as you know Shiv and have the enchant.
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit). Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has no spell class mask, so it changes nothing by itself. - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300: no rows since review 2026-11-18, the core's aura link keeps its helpers; the script hook stays), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**What the pull requests said:**
+
+- #178: Controlled Aggression (1181300) | #178 batch 3 | aura link grants 1181301 / 1181302. **Resolved: our 1181301 grant removed; 1181302 has no class mask, so the doubled Sword and Board stays ours (fixed, see batch 3)** |
+- #178: Controlled Aggression (1181300) | Shield Slam +25% AP and 3 sec longer cooldown (the core's helper); Sword and Board chance exactly doubled, and each extra proc resets Shield Slam and gives the talent's own buff | Review fixed the extra proc, which never reset Shield Slam before |
 
 **Assumptions:** The core's aura link grants both helpers while you have the enchant: 1181301 (Shield Slam cooldown +50%, so 6 to 9 sec) and 1181302. 1181302's data says 'Sword and Board chance +100%' but has no spell class mask, so it changes nothing; the doubling is ours. (Rechecked the same day with the correct mask layout: still none. 1181301's first effect does target Shield Slam, +25 with modifier type 42, but this core ignores types above 31, so our attack power bonus is the only one.) After each Devastate or Revenge hit, if the talent did not just proc (its buff is not fresh), a second roll at p/(1-p) makes the total exactly 2p (10% per rank: 20/40/60%). A success resets Shield Slam's cooldown and gives the talent's own buff (50227, or 1150227 / 1250227 for the CoA talent versions). The 25% of attack power is added to Shield Slam before armour and crit but after other damage-done bonuses (assumption). Review 2026-11-18: our script also added 1181301 (harmless duplicate, removed); and our old second roll only gave 50227, so it never reset Shield Slam's cooldown (the reset is in the talent's proc script) and gave the wrong buff to the CoA talent versions; both fixed.
 
@@ -1323,8 +1489,31 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Corrupted Bear Form (271403, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-25 | f6e7650 | #270 Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form | none yet | - |
+| 2026-11-25 | 4be769a | #270 Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form | none yet | - |
+| 2026-11-25 | 938ac30 | #270 Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 147-talent-companion-scripts.sql: Corrupted Bear Form (271403): the core gives it the -20% Physical penalty in Bear Form and fires Corrupted Paw (271411) on each melee hit, but the Paw dealt a flat 2 Shadow, and the penalty was only synced on the stock forms (5487, 9634): the CoA Bear Form and Dire Bear Form (1105487, 1109634) now get the core's form script too.
+
+**What the pull requests said:**
+
+- #270: Corrupted Bear Form** | The core fires Corrupted Paw on each melee hit in Bear Form and applies a -20% Physical penalty, but the Paw dealt a flat 2 Shadow. It now deals **25% of the hit as dealt** (after armour and the penalty), so the total equals a plain bear: 0.8 x 1.25 = 1.0. Why after armour: Ascension's elemental weapon attacks (Shadow Swipe, Dusk Maul, Shadow Slam and the rest, about 150 of them) keep Physical in their school, so armour still applies; only a handful of pure-Shadow rogue strikes skip it. Taking the Paw's share after armour gives the same result. Also: the core synced the penalty only on the stock bear forms, so the CoA Bear and Dire Bear forms now get its script too; and the Paw no longer adds spell power or the caster's damage bonuses. Small upside left: the Paw can crit on its own. |
+- #270: Pre-flight passes against the pinned core; syntax check of the changed core file clean (rerun after the Corrupted Bear Form commit). Not built.
+- #270: Talent scan: strong list down to 5 entries (Icy Reach, Corrupted Bear Form, Tidecaller's Boon, One With The Light, Nature's Splendor), all decided or explained.
+- #270: Second review (25 Nov, Corrupted Bear Form commit): merge after fixes. Both fixed: the penalty never applied in the CoA bear forms (the new Paw was a straight +25% there), and the Paw picked up about 43% of spell power from the default coefficient.
+- #270: Changelog: Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike and Bloodletting now do what they say; Corrupted Bear Form's Shadow damage scales with your hits
 
 **Testing:** nothing recorded yet
 
@@ -1334,27 +1523,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Counterpoise (282348, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** 3 Nov: no crit or haste seen with the aura; needs a closer look | 2026-11-03
 
 ### Counterpoise (84524, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** 3 Nov: no crit or haste seen with the aura; needs a closer look | 2026-11-03
 
@@ -1364,7 +1553,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1374,7 +1563,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1384,23 +1573,28 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Critical Time (1575124, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-18 | 5bf04bd | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Moon's Wrath (1180590), Critical Time (1575124) and Pyroclasmic Shadows (1577402) were dropped in review 2026-11-18: the core's bonus table already gives their crit bonuses.
+
+**What the pull requests said:**
+
+- #178: Moon's Wrath (1180590), Critical Time (1575124), Pyroclasmic Shadows (1577402) | #178 batch 3 | the core's bonus table. **Resolved: ours doubled the crit bonuses; removed** |
+- #178: a **crit-chance hook** on the core's `OnSpellCritChance`, used by Moon's Wrath, Critical Time, Unstoppable Force, Pyroclasmic Shadows and Shooting Stars
+- #178: Critical Time (1575124) | Your spells +5% crit on your Living Bomb target | |
 
 **Assumptions:** Every spell of yours gets +5% crit on a target with your Living Bomb. Review 2026-11-18: the core's bonus table already gives this (your spells +5% crit on targets with your Living Bomb; all 51 Living Bomb versions, every learnable one included). Our batch 3 hook added it again (+10%); removed.
 
@@ -1416,32 +1610,36 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Curse of the Swamp Witch (997076, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass | 2026-11-03
 
 ### Dancer in the Dark (282118, Uncommon)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Dancer in the Dark (81521 / 282118): while you are in Stealth, Shadow Dance's cooldown recovers twice as fast (1 extra sec off it every sec).
 - 047-epics-1.sql: With rows: Dancer in the Dark (81521, 282118: Shadow Dance recovers twice as fast in Stealth), Soul Restoration (84381, 282213, 1181290: heals shorten Weakened Soul), Swift Shadows (272814: Shadowstep reset from a Shadow Marked target).
+
+**What the pull requests said:**
+
+- #178: Dancer in the Dark (81521, 282118) | Shadow Dance's cooldown runs twice as fast while you're in Stealth | |
 
 **Assumptions:** As 81521.
 
@@ -1451,16 +1649,20 @@ patch or the mechanic when there is a chance.
 
 ### Dancer in the Dark (81521, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Dancer in the Dark (81521 / 282118): while you are in Stealth, Shadow Dance's cooldown recovers twice as fast (1 extra sec off it every sec).
 - 047-epics-1.sql: With rows: Dancer in the Dark (81521, 282118: Shadow Dance recovers twice as fast in Stealth), Soul Restoration (84381, 282213, 1181290: heals shorten Weakened Soul), Swift Shadows (272814: Shadowstep reset from a Shadow Marked target).
+
+**What the pull requests said:**
+
+- #178: Dancer in the Dark (81521, 282118) | Shadow Dance's cooldown runs twice as fast while you're in Stealth | |
 
 **Assumptions:** Done as 1 extra second off Shadow Dance's cooldown every second while stealthed.
 
@@ -1474,7 +1676,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1484,23 +1686,18 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Deadly Bite (272353, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-15 | f3a1225 | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-15 | 730ecea | #166 Code the enchants that need memory or checks | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | 2026-11-16 |
-| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | 2c8f3d7 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1509,27 +1706,24 @@ patch or the mechanic when there is a chance.
 - 017-enchant-scripts.sql: Martial Crescendo 84752, Tools of War 84750, Curse of Arugal 982806, Primordial Fury 977717, Ice Lash 977764, Words of Healing 81470, Ambidextrous 977771, Nature's Fervor 965283, Controlled Burn 81407, Eldritch Knight 81116, Disciple of the Tides 274921, Twilight Paragon 977824, Consecrated Strikes 965295, Consecrated Weapon 977848, Titanic Mutilate 954067, Deadly Bite 272353, Hand of the Adorned 986003, Arcane Thunder Seer 997055, Arcane Thunder 997056, Divine Purpose 965421, Benevolent Crusader 81251, Unbounded Spell Slinger 1568060, Evoker 953308.
 - 019-tooltip-review.sql: Deadly Bite's own version (965292) is Ascension's real design, not a placeholder for its twin 272353: it teaches Savage Blade and stacks its own bleed (spell_wcme_deadly_bite_stacks). 004 no longer blanks it or links it to 272353.
 
-**What the pull requests said:**
-
-- #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
-- #166: Deadly Bite | The bleed is 40% of the triggering hit, added to what's left of a running bleed; the enchant's placeholder copy (965292) loses the duplicate rule #164 gave it |
-- #169: Deadly Bite (965292):** this is Ascension's real version, not a placeholder for its twin 272353. It teaches Savage Blade, and Mongoose Bite and Counterattack apply the stacking bleed (up to 5 stacks). Bleed ticks have a 20% chance of Sharpened Blade, which cuts Savage Blade's cooldown by 4 sec. The 20% is assumed; the tooltip only says "a chance". `004` no longer blanks it or links it to 272353.
-- #169: Follow our client's own spell text:** Deadly Bite 272353, Warcry's 30 sec lockout, Frost Lich's 12 sec and Spell Slinger's 6 sec. The site doesn't mention these.
-
 **Testing:** nothing recorded yet
 
 ### Deadly Combo (283833, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**What the pull requests said:**
+
+- #178: Deadly Combo (977856, 283833) | Finishers, 20% per combo point: Sudden Death, plus Deadly Combo on 977856 | Needs the Sudden Death talent, any rank |
 
 **Assumptions:** Sudden Death only (283835); needs the talent unless you have 973827, as its text says.
 
@@ -1539,16 +1733,20 @@ patch or the mechanic when there is a chance.
 
 ### Deadly Combo (977856, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**What the pull requests said:**
+
+- #178: Deadly Combo (977856, 283833) | Finishers, 20% per combo point: Sudden Death, plus Deadly Combo on 977856 | Needs the Sudden Death talent, any rank |
 
 **Assumptions:** Needs the Sudden Death talent known (any rank); triggers through its own 977858 (Sudden Death 52437 and Deadly Combo 954353).
 
@@ -1558,13 +1756,11 @@ patch or the mechanic when there is a chance.
 
 ### Deadly Follow-up (979080, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-18 | 92b8e46 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1572,6 +1768,10 @@ patch or the mechanic when there is a chance.
 - Controlled Aggression (1181300) used to keep its helper 1181301 here; review 2026-11-18 found the core's own aura link already grants 1181301 (Shield Slam cooldown) and 1181302 while you have the enchant. Its attack power part and the doubled Sword and Board chance are in wcme_epic_batch3_hooks. Deadly Follow-up (979080): teaches Deadly Follow-up (979081) for as long as you know Shiv and have the enchant.
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300: no rows since review 2026-11-18, the core's aura link keeps its helpers; the script hook stays), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**What the pull requests said:**
+
+- #178: Deadly Follow-up (979080) | Taught with Shiv; damaging finishers give charges (up to 3); it spends one and applies both poisons twice | |
 
 **Assumptions:** Deadly Follow-up is taught while you know Shiv; charges last 979082's own duration and stop at 3; the dagger requirement is the ability's own.
 
@@ -1587,7 +1787,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1597,17 +1797,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Death Mark (814183, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass | 2026-11-03
 
@@ -1617,19 +1817,41 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Debilitating Roar (283530, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-25 | bb8d36e | #272 Talents: Challenging Echo, Explosive Shot splash, Authority | none yet | - |
+| 2026-11-25 | cb200fd | #272 Talents: Challenging Echo, Explosive Shot splash, Authority | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 149-talent-companion-scripts-2.sql: Debilitating Roar (283530) and Challenging Echo (283527).
+
+**What the pull requests said:**
+
+- #272: Debilitating Roar** + **Challenging Echo** | The talent now grants Echo: enemies taunted by Challenging Roar **or the warrior's Challenging Shout** deal 15% less damage. Echo was a druid-family modifier, which this core only lets touch druid spells; our copy drops the class flag and names its targets instead (stock and CoA Roar and Shout). Data only. The talent's +1 sec duration and -12 sec cooldown stay **Roar only**: changing them the same way would hide Roar's shorter cooldown from the client (the button would stay grey for 90 sec), so Shout would need a client patch for those. The CoA Challenging Shout has no damage effect, so Echo does nothing there. |
 
 **Testing:** nothing recorded yet
 
 ### Decimation by Pyro (271547, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Decimation by Pyro (271547) | live since file 007 | the core does it. **Resolved: our link removed (it watched the talent, so it was permanent)** |
+- #178: Aura links that watched talents** (file 007, live): a link grants its spell while you have any watched aura, and four of ours watched the talent as well as its proc buff, so the bonus was permanent for anyone with the talent: Decimation by Pyro (removed, the core does it), Mind Core, Pyroclasmic Shadows and Fingers of Death (watch lists now name the buffs only). SQL only: it goes live at the first patch night after this PR merges, without waiting for a build.
 
 **Assumptions:** The core already does this enchant (wildcard_decimation_pyro: while you have a Decimation buff, the one that cuts cast time, you get 271542 for the same time left: Pyroblast and Meteor +25%). Review 2026-11-18: our old aura link (007) watched the Decimation talent ranks as well as the buff, so anyone with the talent had 271542 all the time; it also watched 271542 itself. The link is removed (SQL only, so it goes live at the first patch night after the fix merges, without a build).
 
@@ -1643,18 +1865,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Defias Gunslinger (276669, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** 2026-11-03
 
@@ -1664,19 +1885,20 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 63a06c9 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
-| 2026-11-16 | 107f408 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Demolisher (977864): its own design instead of twin 273786 (003 no longer links them). Mortal Strike shows as Demolishing Strike (947486, WcmeSyncSwap: the core does not swap it, the names differ), which puts Demolish on the target (273795: 2% more Physical damage taken from you per stack, 6 stacks). Each of your melee critical strikes on it adds a stack; at 6 stacks Demolish is spent and your next of these abilities is empowered: Expose Armor gives you Demolishing Strikes (954090: 35% armor penetration for 20 sec); Riposte awards 2 more combo points and slows the target's attack speed by 10% more; Mongoose Bite triggers no cooldown and deals as much as a critical strike with 100% more damage (50% against players).
 - 029-medium-legendaries-6.sql: Demolisher (977864): its own design instead of twin 273786 (003 no longer links them).
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
 
 **What the pull requests said:**
 
-- #175: Demolisher (977864):** its own design instead of twin 273786 (link and addon tooltip twin removed). Demolishing Strike applies Demolish; melee crits stack it; at 6 stacks your next Expose Armor (35% armor penetration), Riposte (+2 combo points, 10% more attack speed slow) or Mongoose Bite (no cooldown, crit-level damage +100%, 50% vs players) is empowered.
-- #175: Ability swaps (affects earlier batches too):** the core only swaps an enchant's ability when the new name contains the old one, or the description says "transform". A new helper (`WcmeSyncSwap`) now does the swap for Champion of Justice (Crusader Strike → Crusader's Justice, only while Righteous Justice is up), Demolisher (Mortal Strike → Demolishing Strike), Dragon Warrior (Death Wish → Dragon Roar, Intercept → Dragon Charge), Astral Bomber, Cauterizing Flames and Dark Ranger. Fel Corruption now teaches Felblade alongside Bloodthirst.
+- #178: Demolisher (273786) | — | **No overlap**: ours is the same-named enchant 977864 |
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Assumptions:** Review 2026-11-18: no overlap. The core handles this enchant on its own (a cast rule: Mortal Strike applies Demolish 273795). Our script is for the same-named enchant 977864 with its own Demolishing Strike. The core's rule lists only the stock Mortal Strike, so the CoA Mortal Strike (1112294), which is also learnable here, never applies Demolish (see core-rule-version-gaps.csv). The enchant's dummy effect names Overwhelm (273787) but the core does not swap it in (the names differ and the text doesn't say transform).
 
@@ -1686,13 +1908,42 @@ patch or the mechanic when there is a chance.
 
 ### Demonic Mind (977940, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-28 | 5983b1c | #291 Demonic Mind and Swirling Maelstrom procs fire | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 171-dead-procs-showcase.sql: Demonic Mind, all three versions: the Wildcard talent 283942, 978704, and 1586069 (the spell the enchant 977940 teaches).
+
+**What the pull requests said:**
+
+- #291: Demonic Mind**, all three versions (Wildcard talent 283942, 978704, and 1586069, the spell the enchant 977940 teaches): direct spell damage has a 75% chance (the spell's own proc chance) to put Demonic Wounds on the target. The GM test of 3 Nov recorded "crit buff works; the proc on enemies did not fire".
+- #291: L5 2: Demonic Mind's fault seen in a GM test; Swirling Maelstrom's read from data
 
 **Testing:** crit buff works; the proc on enemies did not fire | 2026-11-03
+
+### Demonic Persistence (276506, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-24 | e27f5e7 | #254 Demonic Persistence: imps deteriorate, Incinerate and Mind Blast sacrifice the weakest (#149) | build77 (2026-11-24) | 2026-11-25 |
+| 2026-11-24 | f264b7c | #254 Demonic Persistence: imps deteriorate, Incinerate and Mind Blast sacrifice the weakest (#149) | build77 (2026-11-24) | 2026-11-25 |
+
+**What the pull requests said:**
+
+- #254: Changelog: Demonic Persistence now works: your Wild Imps deteriorate, and Incinerate and Mind Blast sacrifice the weakest one for its stacking bonuses
+- #254: The talent (and the Epic Mystic Enchant on the same spell, 276506) was half wired:
+- #254: 3. **You gain a stack of Demonic Persistence** (276513, up to 4, 20 seconds): Hand of Gul'dan's imps last 1 second longer per stack. That part is game data, the same mechanism as Master Summoner. **Your demon gains a stack** of +20% damage.
+- #254: 990142 Demonic Persistence** | Ascension's own "damage over time to Wild Imps", made for this talent's Legendary version | **4–5% of max health a second** |
+- #254: Live rule, script binding and proc settings for 276506 | read from the server's tables: rule covers every Hero Mind Blast and Incinerate rank, 100%, no cooldown |
+
+**Testing:** nothing recorded yet
 
 ### Demonic Reoccurence (272730, Epic)
 
@@ -1700,7 +1951,13 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-23 | 8c657e5 | #252 Demonic Recurrence gives its cooldown cut and tooltip drawbacks (#148) | build77 (2026-11-24) | 2026-11-25 |
+
+**What the pull requests said:**
+
+- #252: Stuns and snares no longer shortened | the talent itself (272730) | worked |
+- #252: Live link table and SpellAffect.dbc | no existing rows for the companions' links; 272731 -> 47241 and 272730 -> 54817 already named |
 
 **Testing:** nothing recorded yet
 
@@ -1710,7 +1967,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1720,7 +1977,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1730,7 +1987,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1740,7 +1997,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -1750,22 +2007,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Deter and Punish (283979, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Deter and Punish (977988, 283979) | Deterrence also reflects spells (Spell Reflection at 100%) and counterattacks melee (Retaliation) | Uses the warrior spells' own behaviour |
 
 **Assumptions:** As 977988.
 
@@ -1777,16 +2038,20 @@ patch or the mechanic when there is a chance.
 
 ### Deter and Punish (977988, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Deter and Punish (977988, 283979) | Deterrence also reflects spells (Spell Reflection at 100%) and counterattacks melee (Retaliation) | Uses the warrior spells' own behaviour |
 
 **Assumptions:** Reflect uses Spell Reflection (11818) set to 100%; retaliation uses the warrior's Retaliation (20230: counterattacks melee hits from the front, up to 20, for 50% weapon damage). Both last exactly as long as Deterrence.
 
@@ -1802,17 +2067,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Devour Mind (983120, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** channel damage and healing work; The Devourer buff does not; tooltip numbers broken | 2026-11-03
 
@@ -1822,8 +2087,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 647e1f3 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1832,7 +2096,7 @@ patch or the mechanic when there is a chance.
 
 **What the pull requests said:**
 
-- #175: Disciple of the Tides (978234):** its own design instead of twin 274918 (004 override and link removed, addon tooltip twin removed): Chain Heal → Blessed Waves; each bolt adds a Tidal Swell charge (up to 5); Lesser Healing Wave → Tidal Shield while charges last; Tidal Shield spends a charge and adds an absorb (50% of health restored, 10% on full overheal, stacking to 35% max health); single-target Shaman crit heals take 1 sec off Blessed Waves.
+- #178: Disciple of the Tides (274918) | — | **No overlap**: the core builds the buff, ours spends it on Penance |
 
 **Assumptions:** Review 2026-11-18: no overlap. The core gives the buff (274921, up to 5 stacks) on critical Nature heals; our script on the buff spends every stack on the next Penance (+20% per stack through its hidden modifier 274928; the other two helpers, 274926 and 274927, do nothing: one is empty, the other uses a modifier type this core ignores). Small difference, the core's: its 'critical heal' event also counts heal-over-time crits, while the text says direct heals.
 
@@ -1846,22 +2110,45 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Divine Reset (277920, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-24 | 3b855aa | #269 Talents: code batch parts 2 and 3 reach main (stacked merge missed them) | build77 (2026-11-24) | 2026-11-25 |
+
+**What the server does (from the code and SQL comments):**
+
+- 145-talent-companions-native-effects.sql: Divine Reset (277920).
+
+**What the pull requests said:**
+
+- #269: #263, code batch part 2:** Battle Fatigue (extensions capped at +50% per shout) and Divine Reset get their trigger rules (`sql/enchants/145`); patch 55's cap for effect 173; the batch 2 proc-flag fix (87312) is already on main through #259. Patch review: fixed, merge.
+- #269: Changelog: Talents: Battle Fatigue, Divine Reset, Harbinger of Plague and Reave now work
 
 **Testing:** nothing recorded yet
 
 ### Do The Stance Dance (81216, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Do The Stance Dance (81216) | Each stance switch adds 6 sec to a running Bloodrage | No cap, as written |
 
 **Assumptions:** No cap on how often stance switches extend Bloodrage, as written.
 
@@ -1875,25 +2162,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Double Agent (81439, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 3c1c790 | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Double Agent (81439) | Ambush on a stealthed target deals double | Reviewed: stealth is checked when Ambush starts (the core removes it before damage) |
 
 **Assumptions:** Stealthed means the target had a stealth aura when the Ambush started. Review 2026-11-17: the first version checked when the damage was worked out, by which time the core has already taken the target's stealth off, so it never fired. The stealth detection is its data.
 
@@ -1905,16 +2193,20 @@ patch or the mechanic when there is a chance.
 
 ### Double Team (275094, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**What the pull requests said:**
+
+- #178: Double Team (275094) | Finishers, 20% per combo point: Double Team | |
 
 **Sources:** our client spell data (Spell.dbc)
 
@@ -1922,16 +2214,21 @@ patch or the mechanic when there is a chance.
 
 ### Down For The Count (281649, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Down For The Count (81263) | Killing Spree +10% against a bleeding or poisoned target | Anyone's bleed or poison counts |
+- #178: Down For The Count (281649) | Killing Spree hits on such a target strike again for 25% (15% against players) | |
 
 **Assumptions:** The extra strike is a second hit of the same Killing Spree spell for 25% (15% against players); it cannot chain into another extra strike.
 
@@ -1941,16 +2238,21 @@ patch or the mechanic when there is a chance.
 
 ### Down For The Count (81263, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Down For The Count (81263) | Killing Spree +10% against a bleeding or poisoned target | Anyone's bleed or poison counts |
+- #178: Down For The Count (281649) | Killing Spree hits on such a target strike again for 25% (15% against players) | |
 
 **Assumptions:** Any bleed or poison on the target counts, not only yours ("afflicted with").
 
@@ -1960,16 +2262,20 @@ patch or the mechanic when there is a chance.
 
 ### Downpour (983523, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**What the pull requests said:**
+
+- #178: Downpour (983523) | Teaches it; healing injured allies stacks Torrential Riptide; Riptide spends them for 3 sec off Downpour each | |
 
 **Assumptions:** Taught unconditionally. Effectively healed means the ally was below full health. The Riptide bonuses and charge use are Torrential Riptide's data.
 
@@ -1985,8 +2291,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | a224506 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -1995,8 +2300,7 @@ patch or the mechanic when there is a chance.
 
 **What the pull requests said:**
 
-- #175: Dragon Warrior (954252):** its own design instead of twin 271907 (004 override and link removed, addon tooltip twin removed): Bloodthirst/Execute give Draconic Slam (instant Slam that deals 50% more and grants Dragon Fury); Dragon Fury stacks (up to 3) cut Dragon Roar's cooldown by 5 sec each and use their own visual; Dragon Roar's stun only happens at 3 stacks, and it spends them.
-- #175: Ability swaps (affects earlier batches too):** the core only swaps an enchant's ability when the new name contains the old one, or the description says "transform". A new helper (`WcmeSyncSwap`) now does the swap for Champion of Justice (Crusader Strike → Crusader's Justice, only while Righteous Justice is up), Demolisher (Mortal Strike → Demolishing Strike), Dragon Warrior (Death Wish → Dragon Roar, Intercept → Dragon Charge), Astral Bomber, Cauterizing Flames and Dark Ranger. Fel Corruption now teaches Felblade alongside Bloodthirst.
+- #178: Dragon Warrior (271907) | — | **No overlap**: ours is the same-named enchant 954252 |
 
 **Assumptions:** Review 2026-11-18: no overlap. The core handles this enchant on its own (a cast rule: Slam gives Dragon Fury 271896). Our script is for a different enchant with the same name (954252) with its own helpers (954253, 954261), and nothing of ours touches 271907 or 271896.
 
@@ -2010,22 +2314,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Duck Hunting (81110, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Duck Hunting (81110) | +3% damage when the target is more than 5 yards above you; your damaging spells remove Slow Fall | Slow Fall means any feather-fall effect |
 
 **Assumptions:** Slow Fall means any feather-fall effect; elevation is the target's height more than 5 yards above yours; the 3% applies to spells and melee.
 
@@ -2039,7 +2347,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2049,22 +2357,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Eclipse Bomber (275014, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit). Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has no spell class mask, so it changes nothing by itself. - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Eclipse Bomber (275014) | Eclipse gives the Bomber buff; Fireball/Pyroblast give Lunar Flames, Starfire/Starsurge give Solar Flames | Follows the text; the data points the other way |
 
 **Assumptions:** The Bomber buffs' data points at the opposite Flames spells from the text; we follow the text (Fireball/Pyroblast give Lunar Flames, Starfire/Starsurge give Solar Flames).
 
@@ -2078,28 +2390,32 @@ patch or the mechanic when there is a chance.
 
 ### Electric Surge (1181190, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | cca2a2c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | cca2a2c | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Electrical Discharge (277082, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Electrical Discharge (277082), Holy Servitude (1584997) and Pious Strikes (1581647) were dropped in review: the core already does them (no rows were ever added for them).
+
+**What the pull requests said:**
+
+- #178: Electrical Discharge (277082) | this PR (batch 6) | hard-coded in the core's aura code. **Resolved: ours removed** |
+- #178: Electrical Discharge (277082) | Dropped in review: the core already does it (hard-coded) | — |
 
 **Assumptions:** Review 2026-11-17: the core already does this enchant itself (hard-coded in AuraEffect::HandleAscensionPercentEventProc: on a Mangle (Bear) hit, 15% chance, it casts the helper 277083 with 20% of the hit, an area damage over time around you of 3 ticks, 60% in all). Our batch 6 script did it a second time and has been removed; nothing of ours acts on it now.
 
@@ -2111,16 +2427,19 @@ patch or the mechanic when there is a chance.
 
 ### Elemental Assassin (274673, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | 99174fa | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 004-twin-links-dedup.sql: Review 2026-11-18: Elemental Assassin (978229) no longer links twin 274673; file 046's scripts give its own Backstab buff (978642), and the twin's 274679 doubled the next Shock's bonus.
+
+**What the pull requests said:**
+
+- #178: Twin links that doubled our own scripts** (files 003 and 004, live legendaries): a twin link puts the twin's aura on you and with it the twin's core rules, so where we later scripted the enchant's own text, both ran. Compound Power gave 4 combo points per shot instead of 2; Frozen Chaos jumped to 4 charges on every crit (and counted Frostfire Bolt); Elemental Assassin's next Shock got both +130% and +110%. A further case: Precision Impact linked a twin with the same name but a different effect (a 20% chance to reset Meteor), on top of the core's own handling. Those four links are removed (SQL only, live at the first patch night after this PR merges), and the addon shows their own tooltips. Circle of Life's Halo cooldown cuts were done by nobody (its twin cuts a different Halo) and are now two action rows.
 
 **Testing:** nothing recorded yet
 
@@ -2130,23 +2449,31 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Elemental Lord (276578) | Elemental Blast or Lava Burst gives a random shock empowerment; Earth: aftershocks, Frost: next Lava Burst +55%, Fire: Lava Burst reset | Tethered-elemental extras not done (tooltip flag) |
+- #178: Elemental Burst (278033) | Elemental Blast speeds up your Searing Totem | |
 
 **Testing:** nothing recorded yet
 
 ### Elemental Burst (278033, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Elemental Burst (278033) | Elemental Blast speeds up your Searing Totem | |
 
 **Assumptions:** 278035 slows nothing itself; its data shortens your Searing Totem's attack (your spell modifiers apply to your totems).
 
@@ -2162,7 +2489,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2172,8 +2499,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2183,7 +2509,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2193,23 +2519,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Elemental Lord (276578, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Elemental Lord (276578) | Elemental Blast or Lava Burst gives a random shock empowerment; Earth: aftershocks, Frost: next Lava Burst +55%, Fire: Lava Burst reset | Tethered-elemental extras not done (tooltip flag) |
 
 **Assumptions:** Earth: 15% of the Earth Shock hit split over 3 ticks on up to 3 other enemies within 8 yards (its helper's 15). Frost: +55% next Lava Burst (+20% against players), used up by it. Fire: the empowered Flame Shock always finishes Lava Burst's cooldown (its helper's 100% chance) and its ticks for 12 sec have 20%. The empowerment from Elemental Blast or Lava Burst replaces the last one. The tethered-elemental bonuses in the helper texts are not done. Review 2026-11-17: Elemental Aftershock (276585) is set to skip your damage bonuses, because its amount is already 15% of a finished Earth Shock hit.
 
@@ -2227,24 +2557,29 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Elemental Torrent (1180420, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
-| 2026-11-18 | d8f9215 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Elemental Torrent (1180420) | Your Water Elemental's Waterbolt gives you stacking spell haste | |
+- #178: Open problem found in the review: overlaps with the core's own enchant rules.** The core has a data-driven Mystic Enchant system, plus some enchants hard-coded in its C++, (`coa_mystic_enchant_proc`, `coa_mystic_enchant_aura_link`, script `spell_ascension_mystic_enchant_proc`) that already handles 583 enchants, including the "X% of damage as Y" effects. Ten enchants we scripted are also in it, and the live world database (16 Nov snapshot) confirms the core rules are active for all but two (Elemental Torrent, Savage Momentum: rows in the core's SQL updates, not seen in the snapshot). Where both act, the effect can happen twice. The full list (56 enchants, from a scan of the core's tables and C++) is in `enchants/core-overlap-review.csv` with each review result. Reviewed so far:
+- #178: Elemental Torrent (1180420) | #178 batch 1 | core minion listener. **Resolved: ours removed** |
+- #178: The hand-kept assumptions, sources and decisions are in `enchants/epic-notes.csv`. For batch 1, the Ascension builder archive covers 11 of the 13 enchants and matches the numbers used. Elemental Torrent and Swift Shadows rest on our client data alone. The legendary files were regenerated too: they now show #176 and #177, and each copy's quality.
 
 **Assumptions:** Review 2026-11-18: the core already does this enchant (coa_mystic_enchant_minion_aura puts listener 1180421 on your minions; Waterbolt damage from it makes you cast the haste stack 1180423 through 1180422). Our batch 1 hook cast the stack too, so each Waterbolt gave two stacks. Ours removed.
 
@@ -2258,16 +2593,11 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-11 | e73b77b | #117 Wildcard: one of each card pack from the free-pack bar; Empowered Light used up | build29 (2026-11-11) | 2026-11-12 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 014-consume-buffs.sql: Empowered Light (enchant 275361): its buff 275362 cut the cast time of every Holy Fire for 8 seconds, instead of only the next one.
-
-**What the pull requests said:**
-
-- #117: ### Also in this PR: Empowered Light used up by the next Holy Fire (database only)
-- #117: `sql/enchants/014-consume-buffs.sql`: the Empowered Light buff (275362) had no charge, so it sped up every Holy Fire for 8 seconds. It now has one charge, dropped only when the buff actually changes a spell. Applies at the next server start, no build needed. Tested in game first: buff showed `charges: 0` and stayed after Holy Fire.
 
 **Testing:** nothing recorded yet
 
@@ -2277,7 +2607,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2287,7 +2617,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2297,30 +2627,34 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-24 | ed05ac9 | #259 Talents: companions batch 2, event-driven (8 talents) | build77 (2026-11-24) | 2026-11-25 |
 
 **What the pull requests said:**
 
-- #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
+- #178: Refresh-aura effect** (`enchants/core-refresh-aura-review.csv`): 72 spells use the "refresh aura" effect with a time but without its "add" flag, so the core sets the aura's time left to that value instead of adding it, though most are named as extensions (Rip Extend, Endless Agony duration, Permafrost Wound: Extend 999 ms). 13 are reached by Mystic Enchants, e.g. Endless Agonizer, Healing Garden, Turning Tides, Perforation, Blade Vortex, Embracing Shadows. Only Savage Momentum's is fixed so far; the rest are to review.
+- #259: Endless Agony | Curse of Agony builds up 25% more and benefits from haste | Link |
+- #259: Every pair was read by hand. Talonshrike's cooldown cut and Endless Agony's proc were already in 007 and 015 (these talents double as Mystic Enchants), so they aren't repeated here.
 
 **Testing:** nothing recorded yet
 
 ### Energy Surge (1180750, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 7910784 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Energy Surge (1180750): every second, while a creature (not a player) has your Gouge, you get 10 more energy, doubling the normal regeneration. Its Gouge cost cut is its data; the damage bonus is in wcme_epic_batch67_hooks.
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: With rows: Party Recuperation (983475: finisher proc, 10% per combo point), Twisted Mind (979779: Fel Armor shows as Twisted Mind), "Stealth" (982477, You're a Solid Crate: its stealth and slow helpers, crate removed after), Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or block with Mana Shield up).
+
+**What the pull requests said:**
+
+- #178: Energy Surge (1180750) | Double energy regen while a monster is Gouged; the breaking hit +30% | |
 
 **Assumptions:** Doubling regeneration is +10 energy a second (the normal 10). The bonus hit is any damaging Rogue ability other than Gouge on your Gouged target.
 
@@ -2332,16 +2666,20 @@ patch or the mechanic when there is a chance.
 
 ### Enraging Finale (283405, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**What the pull requests said:**
+
+- #178: Enraging Finale (283405) | Finishers, 20% per combo point: Bloodrage if known, at most once every 20 sec, not while up | |
 
 **Assumptions:** Casts your known Bloodrage; without it, only with 973827 (then the Bloodrage buff 29131). The 20 sec limit starts on every successful roll.
 
@@ -2355,23 +2693,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Esoteric Power (1556015, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit). Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has no spell class mask, so it changes nothing by itself. - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Esoteric Power (1556015) | Arcane Blast stacks to 5; each stack gives 10% for a 15% bonus hit | |
 
 **Assumptions:** Arcane Blast's buff (normally 4 stacks) goes to 5; each hit has 10% per stack to add 15% as Esoteric Power (1556016). The chance per stack is the text's; 15% is its own value.
 
@@ -2383,18 +2725,21 @@ patch or the mechanic when there is a chance.
 
 ### Eternity (276362, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Eternity (276362) | Align / Synchronize / Time-bind leaving you at 0 energy gives Eternity | Reviewed, no change |
+- #178: Batch 5** (`051-epics-5.sql`). It also fixes a core quirk: the heal hook gets its two units as (healer, target) for direct heals but (target, healer) for heal-over-time ticks. The new `WcmeHealParties` puts them in order. Growing Light and Holy Ground (batch 4) and the Align +10% heal (Steward of Eternity) had them the wrong way round, so their direct-heal parts never fired.
 
 **Assumptions:** Checked just after the cast; any of your Align, Synchronize or Time-bind spells by name. Reviewed 2026-11-17, no change.
 
@@ -2410,7 +2755,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2420,7 +2765,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2430,22 +2775,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Faerie Swarm (281916, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Faerie Swarm (81402, 281916) | Faerie Fire (Feral) also applies your Insect Swarm | |
 
 **Assumptions:** As 81402.
 
@@ -2457,16 +2806,20 @@ patch or the mechanic when there is a chance.
 
 ### Faerie Swarm (81402, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Faerie Swarm (81402, 281916) | Faerie Fire (Feral) also applies your Insect Swarm | |
 
 **Assumptions:** Casts your highest known Insect Swarm on the target when Faerie Fire (Feral) lands.
 
@@ -2482,8 +2835,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2493,7 +2845,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2503,7 +2855,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2513,33 +2865,36 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Fiery Charge (92247, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-02), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** fail: aura stays on but Charge never triggers it, although the rule loads; sister enchants 92249/92250/92252/92438 suspect (2 Nov) | 2026-11-02
 
 ### Final Shield (281638, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Final Shield (81255, 281638) | Power Word: Shield on an ally under 20% health removes their crowd control, once per 30 sec | Snares aren't removed; the 30 sec starts only when something was removed |
 
 **Assumptions:** As 81255.
 
@@ -2551,16 +2906,20 @@ patch or the mechanic when there is a chance.
 
 ### Final Shield (81255, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Final Shield (81255, 281638) | Power Word: Shield on an ally under 20% health removes their crowd control, once per 30 sec | Snares aren't removed; the 30 sec starts only when something was removed |
 
 **Assumptions:** Counts your own Power Word: Shield on yourself as an ally. Crowd control means harmful stuns, fears, charms, polymorphs, sleeps, horrors, saps, freezes, banishes, shackles, roots, silences and pacifies; snares are not removed. The 30 sec lockout starts only when something was removed. Health is checked when the shield is cast.
 
@@ -2572,13 +2931,15 @@ patch or the mechanic when there is a chance.
 
 ### Fingers of Death (274179, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Aura links that watched talents** (file 007, live): a link grants its spell while you have any watched aura, and four of ours watched the talent as well as its proc buff, so the bonus was permanent for anyone with the talent: Decimation by Pyro (removed, the core does it), Mind Core, Pyroclasmic Shadows and Fingers of Death (watch lists now name the buffs only). SQL only: it goes live at the first patch night after this PR merges, without waiting for a build.
 
 **Assumptions:** Review 2026-11-18: our aura link (007) watched the Fingers of Frost talent ranks as well as the Fingers of Frost buff, so anyone with the talent had the enchant's bonus all the time. The watch list now names the buff versions only. The core does not handle this enchant.
 
@@ -2592,7 +2953,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2602,25 +2963,29 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Fire Walk With Me (1584166, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
-| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Holy Ground (81315 / 281788): every second, allies standing in your Consecration get 983813 from you (your heals on them +5%, its own value). Fire Walk With Me 1584166 used to keep its helper 1584168 on you here (Scorch while moving, 10 yards less range); review 2026-11-18 found the core already does both in its own code (Unit.cpp, SpellInfo.cpp), so Scorch lost 20 yards. Its Flamestrike speed field stays ours (wcme_epic_batch4_spells).
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Fire Walk With Me (1584166) lost its Scorch helper row in review 2026-11-18 (the core does Scorch while moving and its shorter range itself); its Flamestrike field is a hook.
+
+**What the pull requests said:**
+
+- #178: Fire Walk With Me (1584166) | #178 batch 4 | the core's Unit.cpp / SpellInfo.cpp. **Resolved: our Scorch helper removed (Scorch lost 20 yards); Flamestrike field stays ours** |
+- #178: Fire Walk With Me (1584166), Blood-Soaked Mutilation (1590974) | #178 batch 4 | the core's own C++ mentions each; to review |
+- #178: Fire Walk With Me (952120, 283296, 1584166) | Flamestrike lays a speed field for allies; 1584166 also allows Scorch while moving | |
 
 **Assumptions:** Speed field 1584167 (+40%); Scorch while moving and 10 yards less range come from its helper 1584168, kept on you. Review 2026-11-18: the core already does the Scorch part in its own code: Scorch can be cast while moving (Unit.cpp) and its range is 10 yards shorter (SpellInfo.cpp), for every Mage Scorch (both learnable versions carry the flag it checks). Our helper 1584168 did both again, so Scorch lost 20 yards; it is removed. The Flamestrike speed field (1584167, +40% for allies) stays ours.
 
@@ -2632,16 +2997,22 @@ patch or the mechanic when there is a chance.
 
 ### Fire Walk With Me (283296, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Fire Walk With Me (1584166) | #178 batch 4 | the core's Unit.cpp / SpellInfo.cpp. **Resolved: our Scorch helper removed (Scorch lost 20 yards); Flamestrike field stays ours** |
+- #178: Fire Walk With Me (1584166), Blood-Soaked Mutilation (1590974) | #178 batch 4 | the core's own C++ mentions each; to review |
+- #178: Fire Walk With Me (952120, 283296, 1584166) | Flamestrike lays a speed field for allies; 1584166 also allows Scorch while moving | |
 
 **Assumptions:** As 952120.
 
@@ -2653,16 +3024,22 @@ patch or the mechanic when there is a chance.
 
 ### Fire Walk With Me (952120, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Fire Walk With Me (1584166) | #178 batch 4 | the core's Unit.cpp / SpellInfo.cpp. **Resolved: our Scorch helper removed (Scorch lost 20 yards); Flamestrike field stays ours** |
+- #178: Fire Walk With Me (1584166), Blood-Soaked Mutilation (1590974) | #178 batch 4 | the core's own C++ mentions each; to review |
+- #178: Fire Walk With Me (952120, 283296, 1584166) | Flamestrike lays a speed field for allies; 1584166 also allows Scorch while moving | |
 
 **Assumptions:** The speed field is the client's own 411155 cast at Flamestrike's target point; "does not work with Flameburst" is not checked.
 
@@ -2674,25 +3051,15 @@ patch or the mechanic when there is a chance.
 
 ### Fire Watch (274470, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-16 | 446e48a | #171 Quick legendary fixes, batch 1 | build46 (2026-11-15) | 2026-11-16 |
-| 2026-11-18 | f9806da | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 020-quick-legendaries.sql: Fire Watch's legendary copy (978220) carries its working twin (274470).
-
-**What the pull requests said:**
-
-- #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
-- #164: Fire Watch grants its buff but not its secondary shaman aura (that aura fires on every hit by itself, so adding it back would bring the runaway back).
-- #171: Fire Watch, legendary copy (978220):** carries its working twin (274470).
 
 **Testing:** nothing recorded yet
 
@@ -2702,22 +3069,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Fire and Ice (84382, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit). Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has no spell class mask, so it changes nothing by itself. - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Fire and Ice (84382) | Deep Freeze leaves Frozen Flesh (3 charges); Fire hits on it trigger Thawed Flesh | |
 
 **Assumptions:** Frozen Flesh has 3 charges ("up to 3 times"); every Fire spell hit on it triggers Thawed Flesh and spends one.
 
@@ -2733,7 +3104,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2743,7 +3114,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2753,7 +3124,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2763,22 +3134,33 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-25 | f6e7650 | #270 Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form | none yet | - |
+
+**What the pull requests said:**
+
+- #270: Flare Strike** (5 ranks) | The rain of arrows already worked (the core). Its companion now gives the rain 100% more damage against the target of your Hunter's Mark. |
+- #270: Flare Strike's bonus would have doubled Volley and Hail of Arrows too (shared class flag); now only the rain's own ids.
+- #270: Changelog: Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike and Bloodletting now do what they say; Corrupted Bear Form's Shadow damage scales with your hits
 
 **Testing:** nothing recorded yet
 
 ### Flash of Adrenaline (282309, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Flash of Adrenaline (84453, 282309) | Sprint's cooldown finishes when Adrenaline Rush expires | Only on expiry, not when cancelled |
 
 **Assumptions:** Same design as 84453.
 
@@ -2788,16 +3170,20 @@ patch or the mechanic when there is a chance.
 
 ### Flash of Adrenaline (84453, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Flash of Adrenaline (84453, 282309) | Sprint's cooldown finishes when Adrenaline Rush expires | Only on expiry, not when cancelled |
 
 **Assumptions:** Only when Adrenaline Rush expires, not when it is cancelled ("expires" in the text).
 
@@ -2805,30 +3191,25 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
-### Flesh Hook (92580, Epic)
+### Flowing (273418, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
-### Flowing (273418, Epic)
-
-**Status:** changed on an unmerged branch
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-11-17 | 508789d | not merged yet | none yet | - |
-| 2026-11-17 | 7910784 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Flowing (273418): the core's own Mystic Enchant rule (spell_ascension_mystic_enchant_proc) already adds a stack of Flowing (273419) for each Healing Touch cast, but nothing turned the stacks into Overflowing. Just after the cast, three stacks (the enchant's text; the buff's own text says 2) become Overflowing (273420).
 - 054-base-spell-fixes.sql: Flowing (273418): the core's own Mystic Enchant rule already builds Flowing stacks from Healing Touch; the enchant scripts now turn the third stack into Overflowing (273420), which the next Chain Heal uses up.
 - 054-base-spell-fixes.sql: No rows for it here: the core's spell_proc and script rows for 273418 stay as they are.
+
+**What the pull requests said:**
+
+- #178: Flowing (273418) | The core's own Mystic Enchant rule builds the stacks (corrected: an earlier note said it never fired), but nothing turned 3 stacks into Overflowing | The 3rd stack now becomes Overflowing, used up by the next Chain Heal. No extra proc rows: the core's rule stays |
+- #178: Flowing (273418) | this PR (base fixes) | stacks; ours now only adds the 3rd-stack Overflowing (checked) |
+- #178: Overflowing Cultivation (273422) | Chain Heal with Overflowing up applies Living Seed (30%) | Reviewed: also Overflow's Overflowing (1571973). Flowing (273418) may never give Overflowing (no proc flags) |
 
 **Assumptions:** Correction 2026-11-17: the core's own Mystic Enchant rule (spell_ascension_mystic_enchant_proc, rule 'cast' on every Healing Touch rank) already adds a Flowing stack (273419) per Healing Touch, so the tracker's 'working' was right about the stacks; an earlier note here wrongly said it never fired. What was missing is the third stack turning into Overflowing (273420); the enchant scripts now do that just after the cast (the enchant's text says 3 stacks; the buff's own text says 2). Overflowing is used up by the next Chain Heal (removed 0.5 sec after the cast, once its jumps have landed) because its own 'removal delay' helper is never set off. Its no-falloff part needs core patch 71.
 
@@ -2846,7 +3227,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2856,7 +3237,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2866,7 +3247,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2876,8 +3257,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2887,7 +3267,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2897,7 +3277,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2907,23 +3287,29 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Freedom by Death (283360, Uncommon)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
-| 2026-11-18 | d8f9215 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-25 | 89d9079 | #271 Talents: Rapid Killing, Holy Focus, Temple Guardian, Twisted Mind | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+- 148-talent-companions-data-links.sql: Checked and left alone (no change needed): - Freedom by Death (283360): its companion 283362 repeats the talent's own Shadow Word: Death cooldown cut, which the talent already applies; linking it would double the cut.
+
+**What the pull requests said:**
+
+- #178: Freedom by Death (954128, 283360) | Your own Shadow Word: Death backlash while crowd-controlled gives +20% damage and healing for 6 sec; the cooldown cut was already data | Crowd control counts stun, fear, disorient, root, silence or pacify |
+- #271: Freedom by Death**: its companion repeats the Shadow Word: Death cooldown cut the talent already applies. Linking it would double the cut. It stays on the scan list; the reason is in the SQL header.
 
 **Assumptions:** As 954128, with its own buff 283361.
 
@@ -2933,17 +3319,20 @@ patch or the mechanic when there is a chance.
 
 ### Freedom by Death (954128, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
-| 2026-11-18 | d8f9215 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Freedom by Death (954128, 283360) | Your own Shadow Word: Death backlash while crowd-controlled gives +20% damage and healing for 6 sec; the cooldown cut was already data | Crowd control counts stun, fear, disorient, root, silence or pacify |
 
 **Assumptions:** Crowd control counts stun, fear, disorient, root, silence and pacify. The cooldown cut was already its data.
 
@@ -2957,7 +3346,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2967,7 +3356,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2977,8 +3366,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2988,7 +3376,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -2998,7 +3386,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3008,7 +3396,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3018,23 +3406,25 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Frozen Chaos (275614, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | 99174fa | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 003-twin-links-close.sql: Review 2026-11-18: Frozen Chaos (980673) and Compound Power (979740) no longer link their twins (275614, 275317): our scripts do their own text in full, and the twins' core rules doubled it (two more combo points;
+
+**What the pull requests said:**
+
+- #178: Twin links that doubled our own scripts** (files 003 and 004, live legendaries): a twin link puts the twin's aura on you and with it the twin's core rules, so where we later scripted the enchant's own text, both ran. Compound Power gave 4 combo points per shot instead of 2; Frozen Chaos jumped to 4 charges on every crit (and counted Frostfire Bolt); Elemental Assassin's next Shock got both +130% and +110%. A further case: Precision Impact linked a twin with the same name but a different effect (a 20% chance to reset Meteor), on top of the core's own handling. Those four links are removed (SQL only, live at the first patch night after this PR merges), and the addon shows their own tooltips. Circle of Life's Halo cooldown cuts were done by nobody (its twin cuts a different Halo) and are now two action rows.
 
 **Testing:** nothing recorded yet
 
@@ -3044,8 +3434,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3055,7 +3444,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3065,7 +3454,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3075,7 +3464,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3085,7 +3474,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3095,18 +3484,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Glacial Companion (81420, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3124,7 +3512,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3134,7 +3522,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3144,7 +3532,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Glimmer of Light (277692, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Nineteen Wildcard talents in the bot showcase builds did nothing for a player who learnt the other version of their trigger ability. The core's own rule for each (`coa_mystic_enchant_proc`) lists either the stock spell or its CoA copy, not both (`enchants/core-rule-version-gaps.csv`). Example: Glimmer of Light fires from Flash of Light 19750 but not from the CoA Flash of Light 1119750.
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Testing:** nothing recorded yet
 
@@ -3154,7 +3562,29 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Good Fortune (284012, Uncommon)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 132c8c2 | #295 Good Fortune and Shot Weaving finish their last step | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+- 174-showcase-good-fortune-shot-weaving.sql: Good Fortune 284012 (priest talent, Holy Radiance build).
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
+- #295: Good Fortune 284012** (Holy Radiance). With three Serendipity stacks, Greater Heal or Prayer of Healing makes the core cast 284013 and 284014. Each is only a carrier whose proc never fired, so the real buff never came: Good Fortune 284015, +12% Holy critical strike chance for 12 sec. Fix: a cast link (type 0; the core runs these at the end of every cast, triggered or not) so 284013 also casts 284015. Only 284013 is linked, so the buff comes once.
 
 **Testing:** nothing recorded yet
 
@@ -3164,23 +3594,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Group Think (282009, Uncommon)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
-| 2026-11-18 | d8f9215 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Group Think (81453, 282009, 1581626) | Your pet, or a charmed or tamed minion, deals 20% more while you have Berserk | |
 
 **Assumptions:** As 81453.
 
@@ -3190,17 +3623,20 @@ patch or the mechanic when there is a chance.
 
 ### Group Think (81453, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
-| 2026-11-18 | d8f9215 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Group Think (81453, 282009, 1581626) | Your pet, or a charmed or tamed minion, deals 20% more while you have Berserk | |
 
 **Assumptions:** Applies to your pet or a charmed or tamed minion (the builder text says Hunter pet; the newer copies say any Tamed Pet). Done as +20% damage while you have Berserk rather than a buff on the pet.
 
@@ -3214,7 +3650,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3224,20 +3660,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Growing Light (270661, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
-| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3245,6 +3678,12 @@ patch or the mechanic when there is a chance.
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): (Mutilate +6% per bleed of yours is the core's bonus table; ours doubled it and was removed in review 2026-11-18.) The out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: Savage Momentum (1556008) and Growing Light (270661) were dropped in review 2026-11-18: the core already does them.
 - 051-epics-5.sql: Growing Light 270661 did too, but is now left to the core).
+
+**What the pull requests said:**
+
+- #178: Growing Light (270661) | Review: the core does it, ours removed; ours now covers only the Beacon versions the core can't see (see version gaps) | **Resolved** |
+- #178: Version gaps** (`enchants/core-version-gaps.csv`, `enchants/core-rule-version-gaps.csv`): this server runs `CoA.ClassModel = "hero"`, and its CharacterAdvancement.dbc lets a character learn either the stock or the CoA version of most abilities (Shadow Bolt 686 or 1100686, Living Bomb 44457 or 1144457). Core enchant code that finds one version (the "twin" lookup, or a missile only the stock rank has) misses the other: Growing Light, Pyroclasmic Ignition and Shadow Crash are now covered by ours running only when the core's test fails; Infinite Burn, Big Flaming Grimfire and Light of Life are to review. Separately, **263 of the core's 585 enchant rules** list spell ids that leave out a learnable version, so that version never sets the enchant off (e.g. Pure Shadow only counts the stock Shadow Bolt). To review as one batch.
+- #178: Batch 5** (`051-epics-5.sql`). It also fixes a core quirk: the heal hook gets its two units as (healer, target) for direct heals but (target, healer) for heal-over-time ticks. The new `WcmeHealParties` puts them in order. Growing Light and Holy Ground (batch 4) and the Align +10% heal (Steward of Eternity) had them the wrong way round, so their direct-heal parts never fired.
 
 **Assumptions:** Review 2026-11-18: the core already does this enchant (wildcard_growing_light in AscensionWildcardReconstruction: any Holy heal of yours on a target with your Beacon of Light heals up to 3 other allies within 8 yards for 20% through 270665). Ours did the same splash again (40% in total) and is removed. Differences from ours, now the core's: heal-over-time ticks also count, and the splash is its own spell 270665. Second look, same day: the core's Beacon test only sees the stock Beacon of Light (53563) on this server's 'hero' class model, so wcme_growing_light_versions copies the core's rule (same splash spell 270665, same most-injured pick) for the other Beacon versions (1153563, 1253563, 1567798) and runs only when the core's test fails.
 
@@ -3254,13 +3693,32 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Gul'dan's Chosen (277150, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
+
+**Testing:** nothing recorded yet
+
 ### Hailstorm (1591029, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3270,32 +3728,25 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
-### Hammer of Kings (850156, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Hammerstorm (852412, Rare)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 003-twin-links-close.sql: Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412) have the same double, but their own spells still need code; their links go once that is done.
+
+**What the pull requests said:**
+
+- #178: Taught spell plus twin (decided: own spell only):** four enchants linked a twin because their own taught spell was broken, but the core still teaches that spell, so players got both while the addon showed only the twin's tooltip. Shadow Siphon (852174): link and tooltip entry removed, since the core now scripts its spell. Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412): queued; their own spells get fixed in a later batch, then their links go.
 
 **Testing:** nothing recorded yet
 
@@ -3305,7 +3756,36 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Taught spell plus twin (decided: own spell only):** four enchants linked a twin because their own taught spell was broken, but the core still teaches that spell, so players got both while the addon showed only the twin's tooltip. Shadow Siphon (852174): link and tooltip entry removed, since the core now scripts its spell. Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412): queued; their own spells get fixed in a later batch, then their links go.
+
+**Testing:** nothing recorded yet
+
+### Harbinger of Plague (276427, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-25 | 5536878 | #269 Talents: code batch parts 2 and 3 reach main (stacked merge missed them) | build77 (2026-11-24) | 2026-11-25 |
+| 2026-11-25 | 0017520 | #269 Talents: code batch parts 2 and 3 reach main (stacked merge missed them) | build77 (2026-11-24) | 2026-11-25 |
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 146-talent-companions-percent-damage.sql: Harbinger of Plague (talent 276427).
+- 146-talent-companions-percent-damage.sql: The buff from Wrath already works (the core's own Mystic Enchant proc rules for 276427; not touched here).
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #269: #264, code batch part 3:** Harbinger of Plague's Haunt splash and the Hero Reave's bonus damage (patch 55 aura 354 scripts, `sql/enchants/146`). Patch review: fixed, merge.
+- #269: Changelog: Talents: Battle Fatigue, Divine Reset, Harbinger of Plague and Reave now work
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Testing:** nothing recorded yet
 
@@ -3315,7 +3795,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3325,18 +3805,41 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Heavyweight (273378, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Testing:** nothing recorded yet
 
 ### Hellish Pursuit (983065, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | 0c119f4 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | 0c119f4 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Proc rows that changed the core's chance** (`enchants/core-proc-row-replacements.csv`): for six enchants the core runs, our SQL replaced the core's own `spell_proc` row. The core's rule takes its chance from that row (0 = the spell's own chance), so ours at 100% made it fire every time. Soul Erosion (live legendary) empowered Drain Soul on every Unstable Affliction or Curse of Agony tick instead of 8%: ours removed, the core's row restored. Wraithweaver: Shadow Orbs (live legendary) had the same problem: an orb on every damage-over-time tick instead of 20%; the core's row is restored, and our Mind Blast/Shadowy Apparition part moved to a damage hook so the 20% doesn't gate it. Blazing Flame checked: no doubling. Shadow Visions (live legendary): our script added a second Soul Fragment on every Mind Flay tick on top of the core's, so Shadow Visions came twice as fast; ours no longer builds fragments. Overflow: no doubling, but the core only counts the CoA Regrowth and Nourish, so a fill-in now gives stacks for the stock ones. The other four keep the same chance. A later full check against every core proc row (not only the mystic enchant files) found five more: Relentless Reflexes (ours refreshed the buff's duration on every stack, against the text, and hid the core's 4 November script; fixed, core row restored), Blind Rage (core row restored, no change in result), Rush of Blood (both scripts counted Hemorrhages, so the energy came twice; core row restored), Starburst Barrage (the core's filter blocked the Starsurge stack the text names; core row restored plus a Starsurge fill-in), and Hellish Pursuit (core row restored, no change in result). Stormbound Instinct was checked: no doubling.
 
 **Testing:** nothing recorded yet
 
@@ -3346,22 +3849,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### High Winds (954126, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit). Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has no spell class mask, so it changes nothing by itself. - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: High Winds (954126) | When your Cyclone ends: -20% damage and healing on the target for 4 sec | |
 
 **Assumptions:** Also after a Cyclone that breaks early (any end but the target's death).
 
@@ -3377,20 +3884,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Holy Ground (281788, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
-| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3398,6 +3902,11 @@ patch or the mechanic when there is a chance.
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): (Mutilate +6% per bleed of yours is the core's bonus table; ours doubled it and was removed in review 2026-11-18.) The out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration).
 - 051-epics-5.sql: The same build also fixes the order of the two units in the core's heal hook for direct heals (Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before;
+
+**What the pull requests said:**
+
+- #178: Batch 5** (`051-epics-5.sql`). It also fixes a core quirk: the heal hook gets its two units as (healer, target) for direct heals but (target, healer) for heal-over-time ticks. The new `WcmeHealParties` puts them in order. Growing Light and Holy Ground (batch 4) and the Align +10% heal (Steward of Eternity) had them the wrong way round, so their direct-heal parts never fired.
+- #178: Holy Ground (81315, 281788) | Allies in your Consecration take 5% more healing from you; direct heals there splash 5% to 5 allies | |
 
 **Assumptions:** As 81315. Batch 5 (051) fixed which unit the server read as the healer for direct heals; before that this rule never fired.
 
@@ -3409,14 +3918,11 @@ patch or the mechanic when there is a chance.
 
 ### Holy Ground (81315, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
-| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -3424,6 +3930,11 @@ patch or the mechanic when there is a chance.
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): (Mutilate +6% per bleed of yours is the core's bonus table; ours doubled it and was removed in review 2026-11-18.) The out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: With rows: Holy Ground (81315, 281788: allies in your Consecration).
 - 051-epics-5.sql: The same build also fixes the order of the two units in the core's heal hook for direct heals (Holy Ground 81315 / 281788 and the Align heal bonus 986160 read them the wrong way round before;
+
+**What the pull requests said:**
+
+- #178: Batch 5** (`051-epics-5.sql`). It also fixes a core quirk: the heal hook gets its two units as (healer, target) for direct heals but (target, healer) for heal-over-time ticks. The new `WcmeHealParties` puts them in order. Growing Light and Holy Ground (batch 4) and the Align +10% heal (Steward of Eternity) had them the wrong way round, so their direct-heal parts never fired.
+- #178: Holy Ground (81315, 281788) | Allies in your Consecration take 5% more healing from you; direct heals there splash 5% to 5 allies | |
 
 **Assumptions:** 983813 is put on allies inside your Consecration every second. The 5% splash goes to up to 5 allies within 8 yards of the healed ally; heal-over-time ticks don't count. The Purification by Light and Consecrated Strikes exclusion is not checked. Batch 5 (051) fixed which unit the server read as the healer for direct heals; before that this rule never fired.
 
@@ -3439,25 +3950,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Holy Servitude (1584997, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 3c1c790 | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Electrical Discharge (277082), Holy Servitude (1584997) and Pious Strikes (1581647) were dropped in review: the core already does them (no rows were ever added for them).
+
+**What the pull requests said:**
+
+- #178: Holy Servitude (1584997) | Dropped in review: the core already does it (its own enchant rule) | — |
+- #178: Holy Servitude (1584997) | Greater Heal also heals 12% over 12 sec, stacking to 3 | Reviewed: no second helping of spell power on the HoT |
 
 **Assumptions:** Review 2026-11-17: the core already does this enchant itself (coa_mystic_enchant_proc rule on every Greater Heal rank: it casts the heal over time 1584998 with 3% of the heal per tick, 4 ticks, 12% in all, stacking to 3; the helper has no spell power coefficient, so no second helping of spell power). Our batch 6 script did it a second time and has been removed.
 
@@ -3473,13 +3986,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-16 | 1d8de01 | #174 Medium legendaries batch 3: Time Warp, Snowblind, Mending Tide, Temporal Shift, Touch of the Magi, Bane of Havoc | build47 (2026-11-15) | 2026-11-16 |
-
-**What the pull requests said:**
-
-- #174: Hot Hands (979765 / 1575104)**:
-- #174: Pyroblast counts toward Hot Streak. The core already supported this for a different Hot Hands spell; patch 66 adds ours, and `026` adds Pyroblast to Hot Streak's proc mask. For anyone without Hot Hands, the core's own check still ignores Pyroblast, so nothing changes for them.
-- #174: Targets with your Living Bomb get a new mark, Hot Hands (9990019): +8% spell crit for you, lasting as long as the bomb.
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3489,7 +3996,33 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Hunting Frenzy (1180820, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 861f0be | #299 Showcase talents fixed with data: Master of Shadows, Stormborn, Frost Bomb, Hunting Frenzy, Plague Swarm | none yet | - |
+| 2026-11-28 | a4b46a3 | #299 Showcase talents fixed with data: Master of Shadows, Stormborn, Frost Bomb, Hunting Frenzy, Plague Swarm | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+- 178-showcase-trace-data.sql: Hunting Frenzy 1180821 (Beast Master; buff from enchant 1180820 after Kill Command or a kill).
+- 178-showcase-trace-data.sql: Without the proc flags each pet ability uses one charge. (The +10% pet damage against Hunter's Mark, 1180820's second effect, already works: the core reads that kind of aura from a pet's owner.)  Plague Swarm 276431 and ranks 2-8 (Plague Caster).
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
+- #299: Hunting Frenzy** (Beast Master enchant): the pet's "next 2 special abilities" free crits are now used up. Before, the buff's proc flags made the core skip charge use, so pet specials were free crits for the full 15 sec. (Correction, 28 Nov: its +10% pet damage against Hunter's Mark already works. The core reads that kind of aura from a pet's owner. I first said it was missing because I read too little of the core's damage code.)
+- #299: CHANGES.md, the test checklist (5 rows) and the Hunting Frenzy tracker row.
+- #299: I4 2: four talents and one enchant start working as described (Hunting Frenzy gets weaker: it was unlimited for 15 sec)
+- #299: Changelog: Showcase talents fixed: Master of Shadows, Stormborn, Frost Bomb, Hunting Frenzy, Plague Swarm
 
 **Testing:** nothing recorded yet
 
@@ -3499,7 +4032,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3509,7 +4042,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3519,22 +4052,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### I Have The High Ground (81090, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
 - 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**What the pull requests said:**
+
+- #178: I Have The High Ground (81090) | +3% damage when you're 5+ yards above the target | |
 
 **Assumptions:** The 3% applies to spells, melee and periodic damage.
 
@@ -3548,7 +4085,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3558,7 +4095,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3568,8 +4105,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3579,8 +4115,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3590,7 +4125,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3600,7 +4135,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3610,17 +4145,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
-### Infused Aegis (850166, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3630,22 +4155,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Iron Guard (1181340, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 049-epics-3.sql: Core patch 69: Iron Guard (1181340).
+
+**What the pull requests said:**
+
+- #178: Iron Guard (1181340) | this PR (core patch 69) | the core does melee/ranged blocks. **Resolved: patch 69 now only does blocked spells** |
+- #178: core patch 69**, which lets Iron Guard act on blocked hits
+- #178: Iron Guard (1181340) | Blocks take another 15% off what gets through (core patch 69) | |
 
 **Assumptions:** 15% of the damage left after the block is blocked too; spells that can be blocked included. Needs core patch 69. Review 2026-11-17: the release core already reduces melee and ranged damage after a block by Iron Guard's amount (Unit.cpp, 'Ascension Iron Guard'), so core patch 69 now only covers blocked spells; the earlier version would have applied it twice to melee blocks.
 
@@ -3661,7 +4191,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3671,8 +4201,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3682,7 +4211,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3692,8 +4221,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3703,7 +4231,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3713,23 +4241,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Lightning Mastery (81140, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Lightning Mastery (81140) / Overload Mastery (281411) | Lightning Bolt and Chain Lightning echo for half damage (11% / 22%) | |
 
 **Assumptions:** 11% (its own chance). The echo is a second hit of the same spell for half the damage; it cannot echo again.
 
@@ -3741,18 +4272,21 @@ patch or the mechanic when there is a chance.
 
 ### Lingering Death (81506, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-18 | 93996b4 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003).
+
+**What the pull requests said:**
+
+- #178: Lingering Death (81506) | Shadow Word: Death's damage blocks the next heals for 3 sec; ground slows 40% for 6 sec | Slow is Earthbind re-applied each second |
 
 **Assumptions:** Heals are reduced until the Shadow Word: Death damage is used up or 3 sec pass. The ground effect is re-applying Earthbind (3600: 40% slow, 3 sec) to enemies within 7 yards of the spot every second for 6 sec.
 
@@ -3764,17 +4298,21 @@ patch or the mechanic when there is a chance.
 
 ### Lone Wolf (1180030, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
-| 2026-11-18 | 92b8e46 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Lone Wolf (1180030): its own data already gives 1180031 (+10% damage and armour penetration) every second; that is now held back while you have a living pet out (the same test as the core's no_pet condition). The +10% damage itself is the core's own enchant bonus (coa_mystic_enchant_bonus, no_pet), so spell_wcme_lone_wolf_buff zeroes 1180031's damage effect and it gives only the armour penetration (review 2026-11-18: before, no pet meant +21% damage). Every second, each enemy in combat with you within 8 yards adds a stack of 1101498 (+3% damage and attack speed, up to 5, its own data).
 - 051-epics-5.sql: With rows: Sniper (81166) and Ready, Set, Go! (81128) (standing still), Lone Wolf (1180030: no pet, enemies around you; its buff 1180031 gives only the armour penetration, since the core's own enchant bonus gives the +10% damage).
+
+**What the pull requests said:**
+
+- #178: Lone Wolf (1180030) | #178 batch 5 | core bonus +10% damage with no pet. **Resolved: was +21% with no pet; the buff now gives only armour penetration** |
+- #178: Lone Wolf (1180030) | Without a living pet: +10% damage (the core's bonus) and +10% armour penetration (the buff); +3% damage and attack speed per enemy within 8 yards (up to 5) | |
 
 **Assumptions:** Pet means a living pet you control (a hunter or warlock pet), the same test as the core's no_pet condition; guardians don't count. The +10% damage without a pet is the core's own enchant bonus (coa_mystic_enchant_bonus); 1180031 now gives only the +10% armour penetration (its damage effect is zeroed). Surrounded counts enemies in combat with you within 8 yards, checked every second, up to 5 stacks, with or without a pet (the text says 'additional', which we read as on top, not as needing no pet). Review 2026-11-18: before this, the core's +10% and 1180031's +10% both applied, so no pet gave +21% damage.
 
@@ -3790,7 +4328,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3800,8 +4338,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3811,8 +4348,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3822,7 +4358,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3832,7 +4368,25 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Maledictive Assault (271400, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 45a58e4 | #292 Cataclysmic Sundering and Maledictive Assault work | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 172-showcase-sundering-maledictive.sql: Maledictive Assault 271400 (warlock talent, Shadow Bear build).
+
+**What the pull requests said:**
+
+- #292: Maledictive Assault 271400** (Shadow Bear). The bonus is in the hidden companion 271399: Shadow Bolt +3 jump targets (the main target plus two). Stock Shadow Bolt's own chain damage factor of 0.6 reduces the extra hits, as the tooltip says. Fix: an aura link (R7, as file 143). While the talent and a Nightfall (Shadow Trance) or Backlash buff are both up, the core grants 271399. Only the proc buffs are watched.
 
 **Testing:** nothing recorded yet
 
@@ -3842,7 +4396,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3852,7 +4406,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3862,7 +4416,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3872,7 +4426,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3882,21 +4436,71 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Master of Kunai (277475, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 5781a9e | #296 Raging Onslaught, Master of Kunai and Toss and Throw do what their tooltips say | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
+- #296: Master of Kunai:** each Shuriken Toss cuts Adrenaline Rush's cooldown by 4 sec, for the stock spell (13750) and the CoA copy (1113750). The core's own helper 277479 reaches only the stock rank chain.
+- #296: Held back on purpose:** the proc rows for Raging Onslaught (275920) and the Master of Kunai buff (277476). Without the build, Raging Onslaught's proc would recast Rage! and cost a charge, and Kunai stacks would never be used up. They follow in a small SQL PR once a build with this patch is installed.
+- #296: Not in this batch (still to do):** Toss and Throw's "more damage against monsters" (spell modifier 38 does not exist); Glaive Toss's share of Master of Kunai and Toss and Throw (the talents' own data only targets Shuriken Toss and Deadly Throw); Blades of Blood, Preservation, and Swirling Maelstrom's 5-stack part.
+
+**Testing:** nothing recorded yet
+
+### Master of Shadows (275491, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 861f0be | #299 Showcase talents fixed with data: Master of Shadows, Stormborn, Frost Bomb, Hunting Frenzy, Plague Swarm | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+- 178-showcase-trace-data.sql: Master of Shadows 275491 (Shadow Melee build).
+- 178-showcase-trace-data.sql: Now 275491's second trigger is 275495 (so both the core's rule and our rule for the other version, file 170, cast it), 275494 has no proc of its own, and 275502 comes with 275495.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
+- #299: Master of Shadows** (Shadow Melee): Rupture or Eviscerate at 3 Apprentice of Shadows stacks now gives the real Master of Shadows buff (+18% Shadow damage) plus its 10% Shadow crit. Before, the core's rule cast an internal helper spell at 3 stacks, and the stack buff's own proc gave Master of Shadows at any stack count.
+- #299: Changelog: Showcase talents fixed: Master of Shadows, Stormborn, Frost Bomb, Hunting Frenzy, Plague Swarm
 
 **Testing:** nothing recorded yet
 
 ### Mastery of the Tide (1574368, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 050-epics-4.sql: Core patch 70: Mastery of the Tide (1574368, 274948).
+
+**What the pull requests said:**
+
+- #178: Mastery of the Tide (1574368, 274948) | Chain Heal no longer uses up Riptide (core patch 70) | |
 
 **Assumptions:** Chain Heal still gets the 25% Riptide bonus but leaves Riptide on. Needs core patch 70. Its cast time cut is its data.
 
@@ -3908,15 +4512,19 @@ patch or the mechanic when there is a chance.
 
 ### Mastery of the Tide (274948, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 050-epics-4.sql: Core patch 70: Mastery of the Tide (1574368, 274948).
+
+**What the pull requests said:**
+
+- #178: Mastery of the Tide (1574368, 274948) | Chain Heal no longer uses up Riptide (core patch 70) | |
 
 **Assumptions:** As 1574368 (its text says Riptide is no longer consumed; Chain Heal is the only thing that consumes it).
 
@@ -3932,7 +4540,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -3942,23 +4550,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Mending Hands (281724, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Mending Hands (81297, 281724) | Lay on Hands heals allies within 8 yards too | |
 
 **Assumptions:** As 81297 (1.5 sec cast from its data).
 
@@ -3970,17 +4581,20 @@ patch or the mechanic when there is a chance.
 
 ### Mending Hands (81297, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Mending Hands (81297, 281724) | Lay on Hands heals allies within 8 yards too | |
 
 **Assumptions:** Every other ally within 8 yards of the target is healed for the same amount as the target.
 
@@ -3996,13 +4610,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-
-**What the pull requests said:**
-
-- #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4012,7 +4620,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4022,23 +4630,35 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Open problem found in the review: overlaps with the core's own enchant rules.** The core has a data-driven Mystic Enchant system, plus some enchants hard-coded in its C++, (`coa_mystic_enchant_proc`, `coa_mystic_enchant_aura_link`, script `spell_ascension_mystic_enchant_proc`) that already handles 583 enchants, including the "X% of damage as Y" effects. Ten enchants we scripted are also in it, and the live world database (16 Nov snapshot) confirms the core rules are active for all but two (Elemental Torrent, Savage Momentum: rows in the core's SQL updates, not seen in the snapshot). Where both act, the effect can happen twice. The full list (56 enchants, from a scan of the core's tables and C++) is in `enchants/core-overlap-review.csv` with each review result. Reviewed so far:
+- #178: Savage Momentum (1556008) | #178 batch 4 | pet listener (core SQL update). **Resolved: ours now only cuts the shot versions the core misses; Stampede extension fixed (see below)** |
+- #178: Refresh-aura effect** (`enchants/core-refresh-aura-review.csv`): 72 spells use the "refresh aura" effect with a time but without its "add" flag, so the core sets the aura's time left to that value instead of adding it, though most are named as extensions (Rip Extend, Endless Agony duration, Permafrost Wound: Extend 999 ms). 13 are reached by Mystic Enchants, e.g. Endless Agonizer, Healing Garden, Turning Tides, Perforation, Blade Vortex, Embracing Shadows. Only Savage Momentum's is fixed so far; the rest are to review.
+- #178: Savage Momentum (1556008) | Pet melee special crits take 2 sec off four Hunter shots (the core for the CoA versions, ours for the others) and add 2 sec to Stampede | Review fixed the Stampede extension, which set Stampede to 2 sec |
 
 **Testing:** nothing recorded yet
 
 ### Moon's Wrath (1180590, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-18 | 5bf04bd | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Moon's Wrath (1180590), Critical Time (1575124) and Pyroclasmic Shadows (1577402) were dropped in review 2026-11-18: the core's bonus table already gives their crit bonuses.
+
+**What the pull requests said:**
+
+- #178: Moon's Wrath (1180590), Critical Time (1575124), Pyroclasmic Shadows (1577402) | #178 batch 3 | the core's bonus table. **Resolved: ours doubled the crit bonuses; removed** |
+- #178: a **crit-chance hook** on the core's `OnSpellCritChance`, used by Moon's Wrath, Critical Time, Unstoppable Force, Pyroclasmic Shadows and Shooting Stars
+- #178: Moon's Wrath (1180590) | Wrath and Starsurge +8% crit on your Moonfire target | |
 
 **Assumptions:** "Your Moonfire" means one you cast; +8% from its own value. Review 2026-11-18: the core's bonus table already gives this (Wrath and Starsurge +8% crit on targets with your Moonfire; its lists cover all 93 Wrath, 25 Starsurge and 77 Moonfire versions, every learnable one included). Our batch 3 hook added it again (+16%); removed.
 
@@ -4050,17 +4670,21 @@ patch or the mechanic when there is a chance.
 
 ### Mystic Companion (81418, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Companions (81418 Arcane, 81419 Fire, 81420 Frost, 81421 Nature, 81422 Shadow): your hunter pet's auto attacks deal only that school (the enchant's own school value) and 10% less damage (wcme_epic_batch2_hooks); the pet shows the Companion's visual (81424-81428). Kept in step every second; the pet's school is put back when the enchant goes.
 - Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
 - 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**What the pull requests said:**
+
+- #178: Companions (81418-81422) | Hunter pet auto attacks deal the Companion's school, 10% less, with its visual | |
 
 **Assumptions:** Only hunter pets; the school comes from the enchant's own school value; -10% applies to the pet's melee. "Does not stack" is met because the enchants are mutually exclusive in practice; if two were on, the last one checked wins the school and the -10% applies once.
 
@@ -4074,8 +4698,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4085,7 +4708,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4095,8 +4718,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4106,26 +4728,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Necromancer's Touch (275963, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 9298c60 | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - Necromancer's Touch (275963): a pet made by Dominate Undead or Enslave Demon (in our data these tame the creature, so it is a pet, not a charm), a ghoul from Raise Dead or Summon Ghoul, or a demon or undead you are charming.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Necromancer's Touch (275963) | Hits from your Dominate Undead / Enslave Demon pet or ghoul stack +5% Drain Life / Drain Soul (up to 10) and +5% next Grave Coil | Reviewed: those pets are tamed in our data, so they never counted before; Grave Coil part added. Drain stacks aren't used up (tooltip flag) |
 
 **Assumptions:** Qualifying pets: one made by Dominate Undead or Enslave Demon (in our data these tame the creature, so it becomes a pet rather than a charm), a ghoul from Raise Dead or Summon Ghoul (or creature 26125), or a demon or undead you are charming. Both melee and spell hits from it count. Each hit adds a stack of 275966 (+5% from your Drain Life and Drain Soul per stack, up to 10, 8 sec; refreshed by each hit, not used up, per its data) and of 288824 (+5% from your next Grave Coil per stack, up to 10, used up by that Grave Coil). Review 2026-11-17: the first version only counted charmed pets (Dominate Undead and Enslave Demon pets never qualified), counted any undead pet, only counted melee, and left out the Grave Coil part.
 
@@ -4143,7 +4766,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4153,7 +4776,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4163,8 +4786,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4174,23 +4796,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Ol' Bloodsurge (983600, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003).
+
+**What the pull requests said:**
+
+- #178: Ol' Bloodsurge (983600) | Listed hits give Bloodsurge (4 sec cooldown); using it gives +20% to the next Hunter/Warrior hit | |
 
 **Assumptions:** Uses the builder's 100% chance and 4 sec cooldown. The +20% goes on your next Hunter or Warrior direct damage spell within 15 sec of using Bloodsurge.
 
@@ -4202,13 +4828,15 @@ patch or the mechanic when there is a chance.
 
 ### Omen of Doom (1988300, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Omen of Doom (1988300) | file 007 (aura link) | the core's C++. **Resolved: our link removed (it watched every class's Clearcasting and cut the timed buff short)** |
 
 **Assumptions:** Review 2026-11-18: the core already does this (AscensionMysticEnchantScripts: when druid Clearcasting 16870 or 1116870 appears, it casts 1988301, +10% Arcane and Nature damage, for the buff's own duration; every learnable Omen of Clarity ends in one of those two). Our old aura link (007) watched 14 Clearcasting auras from every class, though the text says Omen of Clarity, and took the buff away as soon as Clearcasting was used, cutting the core's timed buff short. Removed (SQL only).
 
@@ -4222,25 +4850,32 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Core rule gaps** (`enchants/core-rule-gaps.csv`): nine enchants the core handles where one trigger effect has no core rule, so that effect never fires: Blink and you'll miss it! (272185), Whispers of the Old Gods (272950), Victorious Stand (275132), Ursine Frenzy (278460), Whirling Bladestorm (283499), Searing Brand (1118810), Blades of Blood (1590568), plus Searing Flames and Overflow, which our scripts already cover. Not changed yet; to review.
+- #178: Proc rows that changed the core's chance** (`enchants/core-proc-row-replacements.csv`): for six enchants the core runs, our SQL replaced the core's own `spell_proc` row. The core's rule takes its chance from that row (0 = the spell's own chance), so ours at 100% made it fire every time. Soul Erosion (live legendary) empowered Drain Soul on every Unstable Affliction or Curse of Agony tick instead of 8%: ours removed, the core's row restored. Wraithweaver: Shadow Orbs (live legendary) had the same problem: an orb on every damage-over-time tick instead of 20%; the core's row is restored, and our Mind Blast/Shadowy Apparition part moved to a damage hook so the 20% doesn't gate it. Blazing Flame checked: no doubling. Shadow Visions (live legendary): our script added a second Soul Fragment on every Mind Flay tick on top of the core's, so Shadow Visions came twice as fast; ours no longer builds fragments. Overflow: no doubling, but the core only counts the CoA Regrowth and Nourish, so a fill-in now gives stacks for the stock ones. The other four keep the same chance. A later full check against every core proc row (not only the mystic enchant files) found five more: Relentless Reflexes (ours refreshed the buff's duration on every stack, against the text, and hid the core's 4 November script; fixed, core row restored), Blind Rage (core row restored, no change in result), Rush of Blood (both scripts counted Hemorrhages, so the energy came twice; core row restored), Starburst Barrage (the core's filter blocked the Starsurge stack the text names; core row restored plus a Starsurge fill-in), and Hellish Pursuit (core row restored, no change in result). Stormbound Instinct was checked: no doubling.
+- #178: Overflowing Cultivation (273422) | Chain Heal with Overflowing up applies Living Seed (30%) | Reviewed: also Overflow's Overflowing (1571973). Flowing (273418) may never give Overflowing (no proc flags) |
 
 **Testing:** nothing recorded yet
 
 ### Overflowing Cultivation (273422, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 2a15355 | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Overflowing Cultivation (273422) | Chain Heal with Overflowing up applies Living Seed (30%) | Reviewed: also Overflow's Overflowing (1571973). Flowing (273418) may never give Overflowing (no proc flags) |
 
 **Assumptions:** Overflowing must be up when the Chain Heal starts: 273420 (from Flowing, 273418) or 1571973 (from Overflow, 1571951). Overflow 977710's own Overflowing (986113) already plants Living Seed on each Chain Heal target, so it isn't doubled. Every ally the Chain Heal heals gets Living Seed (48504) for 30% (the enchant's value) of that heal; knowing Living Seed isn't required. Review 2026-11-17: added Overflow's Overflowing (1571973). Flowing (273418) built its stacks (through the core's own rule) but never turned them into Overflowing; fixed in 054. Overflowing's 'not diminished per jump' would have made each Chain Heal jump heal about 21 times the last in our core; core patch 71 fixes that.
 
@@ -4252,17 +4887,20 @@ patch or the mechanic when there is a chance.
 
 ### Overload Mastery (281411, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Lightning Mastery (81140) / Overload Mastery (281411) | Lightning Bolt and Chain Lightning echo for half damage (11% / 22%) | |
 
 **Assumptions:** 22% (its own chance), otherwise as 81140.
 
@@ -4278,7 +4916,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4288,7 +4926,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4298,19 +4936,36 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Pack Leader (277566, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-25 | f6e7650 | #270 Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 147-talent-companion-scripts.sql: Pack Leader (277566): the talent's own Feral Spirit buff already works (the core's rules); its companion (277750) now cuts the Spirit Wolves' Spirit Hunt healing to 30%, as the tooltip says, since Pack Leader adds wolves. 4.
+
+**What the pull requests said:**
+
+- #270: Pack Leader** | The Feral Spirit buff already worked (the core's rule). Its companion now cuts Spirit Wolf (Spirit Hunt) healing to 30%, as the tooltip says, since Pack Leader adds wolves. |
+- #270: Changelog: Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike and Bloodletting now do what they say; Corrupted Bear Form's Shadow damage scales with your hits
 
 **Testing:** nothing recorded yet
 
 ### Party Recuperation (983475, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 7910784 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -4319,6 +4974,10 @@ patch or the mechanic when there is a chance.
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
 - 053-epics-7.sql: With rows: Party Recuperation (983475: finisher proc, 10% per combo point), Twisted Mind (979779: Fel Armor shows as Twisted Mind), "Stealth" (982477, You're a Solid Crate: its stealth and slow helpers, crate removed after), Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or block with Mana Shield up).
+
+**What the pull requests said:**
+
+- #178: Party Recuperation (983475) | Finishers stack Bubbling Tankard (up to 4); teaches Party Recuperate, which needs and spends a stack | |
 
 **Assumptions:** 10% per combo point. Party Recuperate can't be cast without a stack and uses one. Bubbling Tankard's data doesn't stack, so the script sets the stack count itself (up to 4).
 
@@ -4334,7 +4993,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4344,8 +5003,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4355,7 +5013,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4365,22 +5023,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Pestilent Opportunist (81188, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Pestilent Opportunist (81188) | Your diseases +5% on a target with one of your bleeds | "Your bleeds" means bleeds you applied |
 
 **Assumptions:** "Your bleeds" means bleeds you applied; diseases are spells with the disease dispel type.
 
@@ -4390,17 +5052,20 @@ patch or the mechanic when there is a chance.
 
 ### Photosynthesis (287852, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-18 | 93996b4 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003).
+
+**What the pull requests said:**
+
+- #178: Photosynthesis (287852) | Your Nature HoT ticks on a Lifebloomed ally may bloom it without using it | |
 
 **Assumptions:** Only your druid Nature heal-over-time ticks; the bloom amount is worked out as the core's Lifebloom does at expiry.
 
@@ -4412,18 +5077,21 @@ patch or the mechanic when there is a chance.
 
 ### Physics in Practice (277460, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Trauma Care (274205) and Physics in Practice (277460) were also dropped in review: the core already does them (aura_wildcard_trauma_care with its own spell_proc row, and a damage hook in AscensionMysticEnchantScripts).
+
+**What the pull requests said:**
+
+- #178: Trauma Care (274205), Physics in Practice (277460) | this PR (batch 6) | **Resolved: ours removed** |
+- #178: Physics in Practice (277460) | Dropped in review: the core already does it (its own damage hook) | — |
 
 **Assumptions:** Review 2026-11-17: the core already does this enchant itself (a damage hook in AscensionMysticEnchantScripts: Deadly Throw and Shuriken Toss + your Sprint's speed bonus, 15% of it against players), exactly as ours did, so the bonus was applied twice. Ours removed. The earlier 'reviewed, no change' missed this because the core wasn't checked.
 
@@ -4435,17 +5103,21 @@ patch or the mechanic when there is a chance.
 
 ### Pious Strikes (1581647, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Electrical Discharge (277082), Holy Servitude (1584997) and Pious Strikes (1581647) were dropped in review: the core already does them (no rows were ever added for them).
+
+**What the pull requests said:**
+
+- #178: Pious Strikes (1581647) | Dropped in review: the core already does it, splash and mana (its own enchant rule) | — |
+- #178: Pious Strikes (1581647) | Crusader Strike / Avenger's Shield: 10% as Holy to every enemy within 5 yards of the target, target included; 5% base mana per cast | Reviewed. Extra threat not added (tooltip flag) |
 
 **Assumptions:** Review 2026-11-17: the core already does this enchant itself (coa_mystic_enchant_proc rule on every Crusader Strike and Avenger's Shield rank, run by spell_ascension_mystic_enchant_proc: it casts the helper 1581627 with 10% of the hit, which damages enemies within 5 yards of the target, restores 5% of your base mana through the core's effect 166, and plays its visual). Our batch 6 script did the splash and the mana a second time and has been removed. The extra threat in the text is not done by either.
 
@@ -4461,7 +5133,12 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Pious Strikes (1581647) | Dropped in review: the core already does it, splash and mana (its own enchant rule) | — |
+- #178: Pious Strikes (1581647) | Crusader Strike / Avenger's Shield: 10% as Holy to every enemy within 5 yards of the target, target included; 5% base mana per cast | Reviewed. Extra threat not added (tooltip flag) |
 
 **Testing:** nothing recorded yet
 
@@ -4471,24 +5148,32 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Pious Strikes (1581647) | Dropped in review: the core already does it, splash and mana (its own enchant rule) | — |
+- #178: Pious Strikes (1581647) | Crusader Strike / Avenger's Shield: 10% as Holy to every enemy within 5 yards of the target, target included; 5% base mana per cast | Reviewed. Extra threat not added (tooltip flag) |
 
 **Testing:** nothing recorded yet
 
 ### Poison Bomb (979113, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-18 | 92b8e46 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit). Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has no spell class mask, so it changes nothing by itself. - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300: no rows since review 2026-11-18, the core's aura link keeps its helpers; the script hook stays), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**What the pull requests said:**
+
+- #178: Poison Bomb (979113) | Envenom and Eviscerate take 4 sec off Poison Bomb (20% per combo point) | |
 
 **Assumptions:** 4 sec from its text (its helper says 2).
 
@@ -4506,7 +5191,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4516,22 +5201,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Precision Impact (1180200, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | aa927a6 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 003-twin-links-close.sql: Precision Impact (1180200) no longer links twin 290200 either: the core's bonus table does this enchant's own two damage bonuses, and the twin is a different effect (a 20% chance to reset Meteor) the text never mentions.
+
+**What the pull requests said:**
+
+- #178: Precision Impact (1180200) | file 003 (twin link) | the core does it. **Resolved: twin link removed; the twin was a different enchant (20% Meteor reset)** |
+- #178: Twin links that doubled our own scripts** (files 003 and 004, live legendaries): a twin link puts the twin's aura on you and with it the twin's core rules, so where we later scripted the enchant's own text, both ran. Compound Power gave 4 combo points per shot instead of 2; Frozen Chaos jumped to 4 charges on every crit (and counted Frostfire Bolt); Elemental Assassin's next Shock got both +130% and +110%. A further case: Precision Impact linked a twin with the same name but a different effect (a 20% chance to reset Meteor), on top of the core's own handling. Those four links are removed (SQL only, live at the first patch night after this PR merges), and the addon shows their own tooltips. Circle of Life's Halo cooldown cuts were done by nobody (its twin cuts a different Halo) and are now two action rows.
 
 **Assumptions:** The core does this enchant itself (coa_mystic_enchant_bonus): Meteor and Scorch +20% on targets with your Fireball or Pyroblast damage over time, Fireball and Pyroblast +10% on targets with your Meteor damage over time; its lists cover every learnable version except two Meteor burns (see below). Review 2026-11-18: file 003 also linked twin 290200, a different enchant of the same name (Meteor, Fireball and Pyroblast have a 20% chance to reset Meteor's cooldown), so players got that extra effect, and the addon showed its tooltip. Link and tooltip entry removed. The core's Meteor-burn list misses 760042 and 2110042 (the ground burns of the learnable Meteors 760040 and 2110040), so Fireball and Pyroblast get no +10% on those targets (core-version-gaps.csv).
 
@@ -4541,31 +5230,39 @@ patch or the mechanic when there is a chance.
 
 ### Precision Impact (290200, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | aa927a6 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 003-twin-links-close.sql: Precision Impact (1180200) no longer links twin 290200 either: the core's bonus table does this enchant's own two damage bonuses, and the twin is a different effect (a 20% chance to reset Meteor) the text never mentions.
 
+**What the pull requests said:**
+
+- #178: Precision Impact (1180200) | file 003 (twin link) | the core does it. **Resolved: twin link removed; the twin was a different enchant (20% Meteor reset)** |
+- #178: Twin links that doubled our own scripts** (files 003 and 004, live legendaries): a twin link puts the twin's aura on you and with it the twin's core rules, so where we later scripted the enchant's own text, both ran. Compound Power gave 4 combo points per shot instead of 2; Frozen Chaos jumped to 4 charges on every crit (and counted Frostfire Bolt); Elemental Assassin's next Shock got both +130% and +110%. A further case: Precision Impact linked a twin with the same name but a different effect (a 20% chance to reset Meteor), on top of the core's own handling. Those four links are removed (SQL only, live at the first patch night after this PR merges), and the addon shows their own tooltips. Circle of Life's Halo cooldown cuts were done by nobody (its twin cuts a different Halo) and are now two action rows.
+
 **Testing:** nothing recorded yet
 
 ### Predatory Nature (979050, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Predatory Nature (979050) | Each Predator's Swiftness used: +10 energy and a stack; with 2 stacks: 5 combo points (2 vs players) and a guaranteed crit on the next one | |
 
 **Assumptions:** The combo points go on your selected target (2 against players); with no hostile target you still get the critical strike buff. The critical strike buff is removed after the next spell that uses Predator's Swiftness (the crit has already been rolled by then); otherwise it lasts its 12 sec.
 
@@ -4581,8 +5278,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4592,8 +5288,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4603,7 +5298,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4613,7 +5308,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4623,7 +5318,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4633,7 +5328,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4643,24 +5338,28 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Pyroclasmic Ignition (271125, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
-| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, unit side: - Pyroclasmic Ignition (271125): Explosive Shot +30% (20% against players) on a target with your Living Bomb. The core does this itself (Unit.cpp) for a Hunter Explosive Shot when the Living Bomb is the stock one (44457 and its ranks; on this server's "hero" class model the core has no other Living Bomb versions to match). Review 2026-11-18: ours added it again (+69%); now ours only covers the cases the core skips: another Living Bomb version, or an Explosive Shot from outside the Hunter family. - Blood-Soaked Mutilation (1590974): (Mutilate +6% per bleed of yours is the core's bonus table; ours doubled it and was removed in review 2026-11-18.) The out-of-Stealth Garrote's silence is removed. - Growing Light (270661) used to be here; review 2026-11-18 found the core already does it (wildcard_growing_light in AscensionWildcardReconstruction: 3 allies within 8 yards for 20% through 270665), so ours doubled the splash. wcme_growing_light_versions covers only the Beacon of Light versions the core can't see. - Holy Ground (81315 / 281788): your direct heals on an ally inside your Consecration also heal 5 allies within 8 yards for 5%.
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Pyroclasmic Ignition (271125) | #178 batch 4 | the core's Unit.cpp. **Resolved: was +69%; ours now covers only other Living Bomb versions** |
+- #178: Version gaps** (`enchants/core-version-gaps.csv`, `enchants/core-rule-version-gaps.csv`): this server runs `CoA.ClassModel = "hero"`, and its CharacterAdvancement.dbc lets a character learn either the stock or the CoA version of most abilities (Shadow Bolt 686 or 1100686, Living Bomb 44457 or 1144457). Core enchant code that finds one version (the "twin" lookup, or a missile only the stock rank has) misses the other: Growing Light, Pyroclasmic Ignition and Shadow Crash are now covered by ours running only when the core's test fails; Infinite Burn, Big Flaming Grimfire and Light of Life are to review. Separately, **263 of the core's 585 enchant rules** list spell ids that leave out a learnable version, so that version never sets the enchant off (e.g. Pure Shadow only counts the stock Shadow Bolt). To review as one batch.
+- #178: Pyroclasmic Ignition (271125) | Explosive Shot +30% (20% vs players) on your Living Bomb target: the core for the stock Living Bomb, ours for the other versions | |
 
 **Assumptions:** 'Your Living Bomb' means one you cast. The core already does this enchant (Unit.cpp: Hunter Explosive Shot +30%, +20% against players, on a target with your stock Living Bomb 44457 or its ranks). On this server's 'hero' class model the core's version lookup has no other Living Bomb versions, so ours covers the rest: another Living Bomb version (1144457 and others) or a non-Hunter Explosive Shot. Review 2026-11-18: ours used to add the bonus again on top of the core's (+69%), and counted player pets as players; now it runs only when the core's test fails and matches the core's player test.
 
@@ -4672,17 +5371,23 @@ patch or the mechanic when there is a chance.
 
 ### Pyroclasmic Shadows (1577402, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-18 | 5bf04bd | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Moon's Wrath (1180590), Critical Time (1575124) and Pyroclasmic Shadows (1577402) were dropped in review 2026-11-18: the core's bonus table already gives their crit bonuses.
+
+**What the pull requests said:**
+
+- #178: Moon's Wrath (1180590), Critical Time (1575124), Pyroclasmic Shadows (1577402) | #178 batch 3 | the core's bonus table. **Resolved: ours doubled the crit bonuses; removed** |
+- #178: Aura links that watched talents** (file 007, live): a link grants its spell while you have any watched aura, and four of ours watched the talent as well as its proc buff, so the bonus was permanent for anyone with the talent: Decimation by Pyro (removed, the core does it), Mind Core, Pyroclasmic Shadows and Fingers of Death (watch lists now name the buffs only). SQL only: it goes live at the first patch night after this PR merges, without waiting for a build.
+- #178: a **crit-chance hook** on the core's `OnSpellCritChance`, used by Moon's Wrath, Critical Time, Unstoppable Force, Pyroclasmic Shadows and Shooting Stars
+- #178: Pyroclasmic Shadows (1577402) | Shadow Bolt +20% crit while Pyroclasm is up | |
 
 **Assumptions:** Pyroclasm buff means any Warlock aura named Pyroclasm on you; +20% is 1577382's value. Review 2026-11-18: the core's bonus table already gives this (Shadow Bolt +20% crit while a Pyroclasm buff is up; every learnable Shadow Bolt and Pyroclasm buff; the Pyroclasm ids it leaves out are the talents, correctly). Our batch 3 hook added it again (+40%); removed, so nothing of ours runs for this enchant now.
 
@@ -4694,13 +5399,18 @@ patch or the mechanic when there is a chance.
 
 ### Pyroclasmic Shadows (276551, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | b8dfdbb | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Moon's Wrath (1180590), Critical Time (1575124), Pyroclasmic Shadows (1577402) | #178 batch 3 | the core's bonus table. **Resolved: ours doubled the crit bonuses; removed** |
+- #178: Aura links that watched talents** (file 007, live): a link grants its spell while you have any watched aura, and four of ours watched the talent as well as its proc buff, so the bonus was permanent for anyone with the talent: Decimation by Pyro (removed, the core does it), Mind Core, Pyroclasmic Shadows and Fingers of Death (watch lists now name the buffs only). SQL only: it goes live at the first patch night after this PR merges, without waiting for a build.
+- #178: a **crit-chance hook** on the core's `OnSpellCritChance`, used by Moon's Wrath, Critical Time, Unstoppable Force, Pyroclasmic Shadows and Shooting Stars
+- #178: Pyroclasmic Shadows (1577402) | Shadow Bolt +20% crit while Pyroclasm is up | |
 
 **Assumptions:** Review 2026-11-18: our aura link (007) watched the Pyroclasm talent ranks as well as the Pyroclasm buff, so anyone with the talent had the enchant's bonus all the time. The watch list now names the buff versions only. The core does not handle this enchant.
 
@@ -4714,7 +5424,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4724,7 +5434,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4734,8 +5444,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4745,7 +5454,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4755,42 +5464,46 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Rain of Arrows (1591030, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** would not cast, tooltip numbers broken; retest with a ranged weapon equipped (tooltip requires one) | 2026-11-03
 
 ### Rain of Arrows (852321, Rare)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** would not cast, tooltip numbers broken; retest with a ranged weapon equipped (tooltip requires one) | 2026-11-03
 
 ### Raising Hell (281336, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Raising Hell (81096, 281336) | Your demon casts Hellfire with you and stops when you do | The demon takes Hellfire's self-damage too |
 
 **Assumptions:** As 81096.
 
@@ -4802,16 +5515,20 @@ patch or the mechanic when there is a chance.
 
 ### Raising Hell (81096, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Raising Hell (81096, 281336) | Your demon casts Hellfire with you and stops when you do | The demon takes Hellfire's self-damage too |
 
 **Assumptions:** Your demon casts the same Hellfire rank and takes Hellfire's self-damage like you do; an Infernal is excluded; the demon's Hellfire stops when yours ends.
 
@@ -4827,23 +5544,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Ready, Set, Go! (81128, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
-| 2026-11-18 | 92b8e46 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Standing still, checked every half second: - Sniper (81166): every 3 sec standing still adds a stack of 81167 (Aimed Shot and Kill Shot +1 yard range and +2% damage per stack, up to 10, its own data); moving removes the stacks. - Ready, Set, Go! (81128): in combat, every 3 sec standing still adds a stack of 81129 (+7% movement speed per stack, up to 5, its own data). The stacks are kept fresh while you stand still and last their 3 sec once you move, so the speed is there when you set off.
 - 051-epics-5.sql: With rows: Sniper (81166) and Ready, Set, Go! (81128) (standing still), Lone Wolf (1180030: no pet, enemies around you; its buff 1180031 gives only the armour penetration, since the core's own enchant bonus gives the +10% damage).
+
+**What the pull requests said:**
+
+- #178: Ready, Set, Go! (81128) | In combat, +7% speed per 3 sec standing still (up to 5), lasting 3 sec once you move | |
 
 **Assumptions:** Stacks build every 3 sec standing still in combat and last their own 3 sec once you move, so the speed is there as you set off. Leaving combat stops the building but doesn't remove stacks you have.
 
@@ -4859,8 +5579,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4870,24 +5589,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Saber Fangs (984696, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Saber Fangs (984696) | Every 3rd Swipe (Cat) on a target applies a bleed; Ferocious Bite splashes 50% to bleeding enemies | Reviewed. Bleed amount from the text formula (tooltip flag), no second helping of bonuses |
 
 **Assumptions:** Saber Fangs' tick is your level + 6% of (magic spell power + attack power) from its text formula, as its data has no amount; the bleed is set to skip your damage bonuses so they aren't added twice. Ferocious Bite's spread uses its helper's 50%.
 
@@ -4905,7 +5626,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4915,17 +5636,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
-### Sacred Grove (850130, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4935,7 +5646,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4945,23 +5656,29 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Savage Momentum (1556008, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
-| 2026-11-18 | 209d729 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Savage Momentum (1556008) and Growing Light (270661) were dropped in review 2026-11-18: the core already does them.
+
+**What the pull requests said:**
+
+- #178: Open problem found in the review: overlaps with the core's own enchant rules.** The core has a data-driven Mystic Enchant system, plus some enchants hard-coded in its C++, (`coa_mystic_enchant_proc`, `coa_mystic_enchant_aura_link`, script `spell_ascension_mystic_enchant_proc`) that already handles 583 enchants, including the "X% of damage as Y" effects. Ten enchants we scripted are also in it, and the live world database (16 Nov snapshot) confirms the core rules are active for all but two (Elemental Torrent, Savage Momentum: rows in the core's SQL updates, not seen in the snapshot). Where both act, the effect can happen twice. The full list (56 enchants, from a scan of the core's tables and C++) is in `enchants/core-overlap-review.csv` with each review result. Reviewed so far:
+- #178: Savage Momentum (1556008) | #178 batch 4 | pet listener (core SQL update). **Resolved: ours now only cuts the shot versions the core misses; Stampede extension fixed (see below)** |
+- #178: Refresh-aura effect** (`enchants/core-refresh-aura-review.csv`): 72 spells use the "refresh aura" effect with a time but without its "add" flag, so the core sets the aura's time left to that value instead of adding it, though most are named as extensions (Rip Extend, Endless Agony duration, Permafrost Wound: Extend 999 ms). 13 are reached by Mystic Enchants, e.g. Endless Agonizer, Healing Garden, Turning Tides, Perforation, Blade Vortex, Embracing Shadows. Only Savage Momentum's is fixed so far; the rest are to review.
+- #178: Savage Momentum (1556008) | Pet melee special crits take 2 sec off four Hunter shots (the core for the CoA versions, ours for the others) and add 2 sec to Stampede | Review fixed the Stampede extension, which set Stampede to 2 sec |
 
 **Assumptions:** The core does most of this: your pet carries its listener 1556010, and the pet's melee special-attack crits cast 1556009 and 1556022, which take 2 sec off the CoA versions of Aimed Shot (1119434, 1469434), Multi-Shot (1102643), Arcane Shot (1103044) and Quick Shot (1121004). Those are one-rank spells, so the core never reaches other versions of the same shots; ours cuts those other versions by name on the same event. Stampede: 1556022's refresh effect has no 'add' flag, so the core would set Stampede's time left to 2 sec; spell_wcme_stampede_extension adds 2 sec instead. Review 2026-11-18: before, ours also cut the CoA shots (4 sec in total) and cast 1556022 a second time, which set Stampede to 2 sec twice.
 
@@ -4977,8 +5694,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4988,7 +5704,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -4998,7 +5714,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5008,33 +5724,28 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Scorched Ground (283200, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-10-31), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** 2026-10-31 pass: applied at the altar, twin present after relog, Living Bomb explosion leaves the fire patch
 
 ### Scorched Ground (911162, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | c4507e9 | #24 Enchant fixes batch 5: 9 twins that never fired | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 4795ac5 | #25 Batch 5 fix: triggered spells can set off three procs | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | 0c119f4 | not merged yet | none yet | - |
-
-**What the pull requests said:**
-
-- #25: Scorched Ground did not fire in testing. Living Bomb's explosion is a triggered spell, and triggered spells only set off a proc when spell_proc allows it (AttributesMask 2, PROC_ATTR_TRIGGERED_CAN_PROC). Same for Fire Nova's damage and Hellfire's ticks; Hellfire's damage also counts as periodic (ProcFlags 0x40000), as the core treats Hellfire Effect.
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | 0c119f4 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5044,7 +5755,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5054,23 +5765,29 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Searing Flames (1180640, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003).
+
+**What the pull requests said:**
+
+- #178: Searing Flames (1180640) | this PR (batch 7) | the core's rule covers only the pet crit stacks. **Resolved: our duplicate stacks removed; the splash stays ours (no core rule)** |
+- #178: Core rule gaps** (`enchants/core-rule-gaps.csv`): nine enchants the core handles where one trigger effect has no core rule, so that effect never fires: Blink and you'll miss it! (272185), Whispers of the Old Gods (272950), Victorious Stand (275132), Ursine Frenzy (278460), Whirling Bladestorm (283499), Searing Brand (1118810), Blades of Blood (1590568), plus Searing Flames and Overflow, which our scripts already cover. Not changed yet; to review.
+- #178: Searing Flames (1180640) | Immolate ticks splash 8 yards; one Immolate at a time; a Firebolt crit uses up the pet's crit stacks (the stacks themselves are the core's) | |
 
 **Assumptions:** The splash is the full tick to every other enemy within 8 yards (up to 10). A new Immolate removes yours from the previous target. Your pet's Firebolt crit uses up its crit stacks (1180644). Review 2026-11-18: the core has a rule for this enchant, but only for effect 1 (the pet's +3% crit stack on each Immolate tick); effect 0 (the splash) has no rule, so it never fires there. Our duplicate pet stacks are removed; the splash, the one-target rule and the use-up stay ours.
 
@@ -5086,7 +5803,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5096,8 +5813,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5107,24 +5823,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Shadow Crash (273458, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | 1789a56 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Shadow Crash (273458) for the Shadowfury versions the core misses. The core (AscensionShadowfuryShadowCrash) calls down Shadow Crash (273455) at Shadowfury's target spot while Pure Shadow (273456) is at full stacks, but it spots Shadowfury by its third effect launching 273459, which only the stock ranks (30283 ... 47847) do; the CoA Warlock Shadowfury ranks (1130283 and the rest) never set it off. This copies the core's rule for any other Warlock Shadowfury, so the two never both fire.
 - 006-teach-twins.sql: Shadow Crash (273458) was removed in review 2026-11-18: the core already does its own effect (AscensionShadowfuryShadowCrash), and the twin's spell (1572039) is a different ability the enchant's text never mentions.
+
+**What the pull requests said:**
+
+- #178: Shadow Crash (273458) | file 006 (teach) | the core does it. **Resolved: our teach of an unrelated Shadow Crash ability removed; gap-filler for CoA Shadowfury** |
+- #178: Version gaps** (`enchants/core-version-gaps.csv`, `enchants/core-rule-version-gaps.csv`): this server runs `CoA.ClassModel = "hero"`, and its CharacterAdvancement.dbc lets a character learn either the stock or the CoA version of most abilities (Shadow Bolt 686 or 1100686, Living Bomb 44457 or 1144457). Core enchant code that finds one version (the "twin" lookup, or a missile only the stock rank has) misses the other: Growing Light, Pyroclasmic Ignition and Shadow Crash are now covered by ours running only when the core's test fails; Infinite Burn, Big Flaming Grimfire and Light of Life are to review. Separately, **263 of the core's 585 enchant rules** list spell ids that leave out a learnable version, so that version never sets the enchant off (e.g. Pure Shadow only counts the stock Shadow Bolt). To review as one batch.
 
 **Assumptions:** The core already does this enchant (AscensionShadowfuryShadowCrash): while Pure Shadow (273456, built by the separate Pure Shadow enchant 273453) is at full stacks, Shadowfury calls down Shadow Crash (273455) at its target spot. The core spots Shadowfury by a missile only the stock ranks carry, so the CoA Warlock Shadowfury ranks (1130283 and the rest, also learnable here) never set it off; wcme_shadow_crash_versions copies the core's rule for those and runs only when the core's test fails. Review 2026-11-18: file 006 also taught the twin's Shadow Crash (1572039), a different ability the text never mentions; removed. Note: the core's Pure Shadow rule lists only stock Shadow Bolt, Shadowburn, Shadow Word: Death and Chaos Bolt, so CoA versions don't build Pure Shadow (see core-rule-version-gaps.csv).
 
@@ -5134,17 +5853,20 @@ patch or the mechanic when there is a chance.
 
 ### Shadow Funnel (1180900, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-18 | 93996b4 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: Shadow Funnel (1180900) was dropped in review 2026-11-18: the core already does it.
+
+**What the pull requests said:**
+
+- #178: Shadow Funnel (1180900) | Dropped in review: the core already does it (Voidwalker aura while Health Funnelled sets off Void Nova) | — |
 
 **Assumptions:** Review 2026-11-18: the core already does this enchant (AscensionMysticEnchantScripts gives the Voidwalker 1180901 while it is being Health Funnelled; its spell_proc row sets off Void Nova 1180902 on each auto attack). Our batch 7 hook set off a second Void Nova on the same hits and is removed. Void Nova's damage is Physical in the data though the text says Shadow (both versions).
 
@@ -5162,38 +5884,43 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Shadow Siphon (1180660, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 003-twin-links-close.sql: Shadow Siphon (852174) no longer links twin 1180660: the core teaches its own spell (Shadow Siphon 913222, a Death Strike that heals 5% per disease), which it now scripts, so players had both.
+
+**What the pull requests said:**
+
+- #178: Taught spell plus twin (decided: own spell only):** four enchants linked a twin because their own taught spell was broken, but the core still teaches that spell, so players got both while the addon showed only the twin's tooltip. Shadow Siphon (852174): link and tooltip entry removed, since the core now scripts its spell. Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412): queued; their own spells get fixed in a later batch, then their links go.
 
 **Testing:** nothing recorded yet
 
 ### Shadow Siphon (852174, Rare)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | d6da5ba | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - 003-twin-links-close.sql: Shadow Siphon (852174) no longer links twin 1180660: the core teaches its own spell (Shadow Siphon 913222, a Death Strike that heals 5% per disease), which it now scripts, so players had both.
+
+**What the pull requests said:**
+
+- #178: Taught spell plus twin (decided: own spell only):** four enchants linked a twin because their own taught spell was broken, but the core still teaches that spell, so players got both while the addon showed only the twin's tooltip. Shadow Siphon (852174): link and tooltip entry removed, since the core now scripts its spell. Cauterize (850093), Frost Shot (851989) and Hammerstorm (852412): queued; their own spells get fixed in a later batch, then their links go.
 
 **Testing:** nothing recorded yet
 
@@ -5203,7 +5930,11 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Proc rows that changed the core's chance** (`enchants/core-proc-row-replacements.csv`): for six enchants the core runs, our SQL replaced the core's own `spell_proc` row. The core's rule takes its chance from that row (0 = the spell's own chance), so ours at 100% made it fire every time. Soul Erosion (live legendary) empowered Drain Soul on every Unstable Affliction or Curse of Agony tick instead of 8%: ours removed, the core's row restored. Wraithweaver: Shadow Orbs (live legendary) had the same problem: an orb on every damage-over-time tick instead of 20%; the core's row is restored, and our Mind Blast/Shadowy Apparition part moved to a damage hook so the 20% doesn't gate it. Blazing Flame checked: no doubling. Shadow Visions (live legendary): our script added a second Soul Fragment on every Mind Flay tick on top of the core's, so Shadow Visions came twice as fast; ours no longer builds fragments. Overflow: no doubling, but the core only counts the CoA Regrowth and Nourish, so a fill-in now gives stacks for the stock ones. The other four keep the same chance. A later full check against every core proc row (not only the mystic enchant files) found five more: Relentless Reflexes (ours refreshed the buff's duration on every stack, against the text, and hid the core's 4 November script; fixed, core row restored), Blind Rage (core row restored, no change in result), Rush of Blood (both scripts counted Hemorrhages, so the energy came twice; core row restored), Starburst Barrage (the core's filter blocked the Starsurge stack the text names; core row restored plus a Starsurge fill-in), and Hellish Pursuit (core row restored, no change in result). Stormbound Instinct was checked: no doubling.
 
 **Testing:** nothing recorded yet
 
@@ -5213,23 +5944,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Shadow Word: Gore (983020, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**What the pull requests said:**
+
+- #178: Shadow Word: Gore (983020) | Teaches it; +8% per other bleed of yours at cast, up to 40% | |
 
 **Assumptions:** Taught unconditionally. The bonus counts your other bleeds when you cast it and lasts until it is cast again on that target.
 
@@ -5245,7 +5980,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5255,17 +5990,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
-### Shadowcrawl (850087, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5275,22 +6000,46 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Shield Finesse (285548, Uncommon)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Testing:** nothing recorded yet
 
 ### Shooting Stars (281485, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Shooting Stars (281485) | Any non-channelled cast extends your Starfall by half its cast time | |
+- #178: a **crit-chance hook** on the core's `OnSpellCritChance`, used by Moon's Wrath, Critical Time, Unstoppable Force, Pyroclasmic Shadows and Shooting Stars
+- #178: Shooting Stars (81181) | During Starfall: +5% spell crit, and Arcane casts extend Starfall by half their cast time | |
 
 **Assumptions:** Every non-channelled spell with a cast time counts (81181 counts Arcane only).
 
@@ -5302,17 +6051,22 @@ patch or the mechanic when there is a chance.
 
 ### Shooting Stars (81181, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-18 | 5bf04bd | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Shooting Stars (281485) | Any non-channelled cast extends your Starfall by half its cast time | |
+- #178: a **crit-chance hook** on the core's `OnSpellCritChance`, used by Moon's Wrath, Critical Time, Unstoppable Force, Pyroclasmic Shadows and Shooting Stars
+- #178: Shooting Stars (81181) | During Starfall: +5% spell crit, and Arcane casts extend Starfall by half their cast time | |
 
 **Assumptions:** Arcane spells are any with the Arcane school (Starfire is Arcane); the +5% crit applies to magic spells only.
 
@@ -5322,13 +6076,35 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
+### Shot Weaving (274591, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 132c8c2 | #295 Good Fortune and Shot Weaving finish their last step | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+- 174-showcase-good-fortune-shot-weaving.sql: Shot Weaving 274591 (Arcane Gunslinger build).
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
+- #295: Shot Weaving 274591** (Arcane Gunslinger). Arcane Missiles cast with Missile Barrage up makes the core give the 2.5-sec buff 274592, whose proc never fired. Fix: an action-table rule on that buff. Each Arcane Missiles hit (triggered spells, hence AttributesMask 2) casts Gunslinger's Barrage 274600 at the target. The buff has no charges, so the extra proc uses nothing up.
+
+**Testing:** nothing recorded yet
+
 ### Sinister Flurry (283559, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5338,17 +6114,17 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Smoldering Companion (81419, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -5360,29 +6136,22 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
-### Snatch (850207, Epic)
+### Sniper (81166, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
-### Sniper (81166, Epic)
-
-**Status:** changed on an unmerged branch
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
-| 2026-11-18 | 92b8e46 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Standing still, checked every half second: - Sniper (81166): every 3 sec standing still adds a stack of 81167 (Aimed Shot and Kill Shot +1 yard range and +2% damage per stack, up to 10, its own data); moving removes the stacks. - Ready, Set, Go! (81128): in combat, every 3 sec standing still adds a stack of 81129 (+7% movement speed per stack, up to 5, its own data). The stacks are kept fresh while you stand still and last their 3 sec once you move, so the speed is there when you set off.
 - 051-epics-5.sql: With rows: Sniper (81166) and Ready, Set, Go! (81128) (standing still), Lone Wolf (1180030: no pet, enemies around you; its buff 1180031 gives only the armour penetration, since the core's own enchant bonus gives the +10% damage).
+
+**What the pull requests said:**
+
+- #178: Sniper (81166) | A stack of Sniper every 3 sec standing still (up to 10); moving clears them | |
 
 **Assumptions:** Checked every 0.5 sec; falling counts as moving. Stacks are kept fresh while you stand still (the stack aura lasts only 3 sec). Works in or out of combat (the tooltip doesn't limit it).
 
@@ -5394,17 +6163,20 @@ patch or the mechanic when there is a chance.
 
 ### Soul Restoration (1181290, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
-| 2026-11-17 | 5e50d90 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Soul Restoration: your heals shorten Weakened Soul on the ally you heal by 2 sec. 84381 and 282213: Holy Light, Greater Heal, Healing Wave or Healing Touch (282213's data says 4 sec; 2 sec by James's decision, so every copy matches). 1181290: Flash Heal or Greater Heal.
 - 047-epics-1.sql: With rows: Dancer in the Dark (81521, 282118: Shadow Dance recovers twice as fast in Stealth), Soul Restoration (84381, 282213, 1181290: heals shorten Weakened Soul), Swift Shadows (272814: Shadowstep reset from a Shadow Marked target).
+
+**What the pull requests said:**
+
+- #178: Soul Restoration (84381, 282213, 1181290) | Heals shorten Weakened Soul on the ally by 2 sec; 1181290 only from Flash Heal / Greater Heal | 282213's data says 4 sec; 2 sec on every copy (James, 17 Nov) |
 
 **Assumptions:** Flash Heal or Greater Heal only, as its own text says.
 
@@ -5414,17 +6186,20 @@ patch or the mechanic when there is a chance.
 
 ### Soul Restoration (282213, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
-| 2026-11-17 | 5e50d90 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Soul Restoration: your heals shorten Weakened Soul on the ally you heal by 2 sec. 84381 and 282213: Holy Light, Greater Heal, Healing Wave or Healing Touch (282213's data says 4 sec; 2 sec by James's decision, so every copy matches). 1181290: Flash Heal or Greater Heal.
 - 047-epics-1.sql: With rows: Dancer in the Dark (81521, 282118: Shadow Dance recovers twice as fast in Stealth), Soul Restoration (84381, 282213, 1181290: heals shorten Weakened Soul), Swift Shadows (272814: Shadowstep reset from a Shadow Marked target).
+
+**What the pull requests said:**
+
+- #178: Soul Restoration (84381, 282213, 1181290) | Heals shorten Weakened Soul on the ally by 2 sec; 1181290 only from Flash Heal / Greater Heal | 282213's data says 4 sec; 2 sec on every copy (James, 17 Nov) |
 
 **Assumptions:** Its data says 4 sec; set to 2 sec so every copy matches.
 
@@ -5438,17 +6213,20 @@ patch or the mechanic when there is a chance.
 
 ### Soul Restoration (84381, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
-| 2026-11-17 | 5e50d90 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Soul Restoration: your heals shorten Weakened Soul on the ally you heal by 2 sec. 84381 and 282213: Holy Light, Greater Heal, Healing Wave or Healing Touch (282213's data says 4 sec; 2 sec by James's decision, so every copy matches). 1181290: Flash Heal or Greater Heal.
 - 047-epics-1.sql: With rows: Dancer in the Dark (81521, 282118: Shadow Dance recovers twice as fast in Stealth), Soul Restoration (84381, 282213, 1181290: heals shorten Weakened Soul), Swift Shadows (272814: Shadowstep reset from a Shadow Marked target).
+
+**What the pull requests said:**
+
+- #178: Soul Restoration (84381, 282213, 1181290) | Heals shorten Weakened Soul on the ally by 2 sec; 1181290 only from Flash Heal / Greater Heal | 282213's data says 4 sec; 2 sec on every copy (James, 17 Nov) |
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
 
@@ -5456,16 +6234,20 @@ patch or the mechanic when there is a chance.
 
 ### Soul Siphoner (81398, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Soul Siphoner (81398) | Haunt heals you for half, and the 3 lowest-health party or raid members within 40 yards for the same | |
 
 **Assumptions:** Heals the 3 lowest-health members (by percentage) of your party or raid within 40 yards, not yourself; each gets the halved amount. The enchant's own -50% modifier had no spells in its mask, so the halving is done by the script.
 
@@ -5477,16 +6259,20 @@ patch or the mechanic when there is a chance.
 
 ### Spectre (81186, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 1 hooks: - Flash of Adrenaline (84453 / 282309): when Adrenaline Rush expires, Sprint's cooldown is finished. - Blinding Dispersion (283428 / 954634): when Dispersion ends, a shadow nova disorients enemies around you for 2 sec (283429 / 954635, their own area and duration). - Do The Stance Dance (81216): switching stances adds 6 sec to your Bloodrage, if it is running. - Spectre (81186): your periodic damage deals 10% more while you are stealthed. - Pestilent Opportunist (81188): your diseases deal 5% more to targets with one of your bleeds. - Down For The Count: 81263, Killing Spree deals 10% more to a target with a bleed or poison (anyone's); 281649, Killing Spree hits on such a target strike again for 25% of the damage (15% against players). - Duck Hunting (81110): your damage is 3% higher when the target is more than 5 yards above you, and your damaging spells remove Slow Fall from the target. - Freedom by Death (954128 / 283360): taking damage from your own Shadow Word: Death while stunned, feared, disoriented, rooted, silenced or pacified gives 954129 / 283361 (+20% damage and healing, 6 sec). Its cooldown cut is its own data. - Group Think (81453 / 282009 / 1581626): your pet (or charmed or tamed minion) deals 20% more while you have Berserk. Elemental Torrent (1180420) used to be here; review 2026-11-18 found the core already does it (its coa_mystic_enchant_minion_aura listener 1180421 on your minions), so ours gave two haste stacks per Waterbolt.
 - 047-epics-1.sql: Most of these are hooks in wcme_epic_batch1_hooks and need no rows here: Flash of Adrenaline (84453, 282309), Blinding Dispersion (283428, 954634), Do The Stance Dance (81216), Spectre (81186), Pestilent Opportunist (81188), Down For The Count (81263, 281649), Duck Hunting (81110), Freedom by Death (954128, 283360), Group Think (81453, 282009, 1581626), Elemental Torrent (1180420; dropped in review 2026-11-18, the core already does it).
+
+**What the pull requests said:**
+
+- #178: Spectre (81186) | Your periodic damage +10% while stealthed | |
 
 **Assumptions:** Applies to every periodic damage effect you cause while you have a stealth aura.
 
@@ -5500,23 +6286,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Spellstorm (271709, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Spellstorm (271709) | Missile Barrage used gives Arcane Evoked; Brain Freeze used gives Fire Evoked; each is an extra 80% roll for the other proc | Separate roll rather than a change to the talent chance (tooltip flag) |
 
 **Assumptions:** Arcane Evoked and Fire Evoked are each used up by the next spell that could have given the other proc (a chilling Frost damage spell for Brain Freeze; Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt for Missile Barrage), whether or not the extra 80% roll succeeds. Needs the matching talent. The extra chance is rolled on its own, not added to the talent's chance.
 
@@ -5534,7 +6324,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5544,7 +6334,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5554,7 +6344,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5564,7 +6354,21 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Stalker of the Frozen Wastes (277490, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-24 | ed05ac9 | #259 Talents: companions batch 2, event-driven (8 talents) | build77 (2026-11-24) | 2026-11-25 |
+
+**What the pull requests said:**
+
+- #259: Stalker of the Frozen Wastes | Ranged Hunter abilities: 40% chance to take 8 sec off Frozen Orb | Action rule |
 
 **Testing:** nothing recorded yet
 
@@ -5574,13 +6378,16 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-18 | 2c8f3d7 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-18 | 2c8f3d7 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Starburst Barrage (979137) for Starsurge. Its text names Starfire, Starsurge and Arcane Barrage, but the core's aura_hero_druid_starburst_barrage (2 November) lets only Starfire and Arcane Barrage through, and with two scripts on one aura its filter also blocked ours, so Starsurge gave nothing. This gives the stack (979138) for a Starsurge cast.
+
+**What the pull requests said:**
+
+- #178: Proc rows that changed the core's chance** (`enchants/core-proc-row-replacements.csv`): for six enchants the core runs, our SQL replaced the core's own `spell_proc` row. The core's rule takes its chance from that row (0 = the spell's own chance), so ours at 100% made it fire every time. Soul Erosion (live legendary) empowered Drain Soul on every Unstable Affliction or Curse of Agony tick instead of 8%: ours removed, the core's row restored. Wraithweaver: Shadow Orbs (live legendary) had the same problem: an orb on every damage-over-time tick instead of 20%; the core's row is restored, and our Mind Blast/Shadowy Apparition part moved to a damage hook so the 20% doesn't gate it. Blazing Flame checked: no doubling. Shadow Visions (live legendary): our script added a second Soul Fragment on every Mind Flay tick on top of the core's, so Shadow Visions came twice as fast; ours no longer builds fragments. Overflow: no doubling, but the core only counts the CoA Regrowth and Nourish, so a fill-in now gives stacks for the stock ones. The other four keep the same chance. A later full check against every core proc row (not only the mystic enchant files) found five more: Relentless Reflexes (ours refreshed the buff's duration on every stack, against the text, and hid the core's 4 November script; fixed, core row restored), Blind Rage (core row restored, no change in result), Rush of Blood (both scripts counted Hemorrhages, so the energy came twice; core row restored), Starburst Barrage (the core's filter blocked the Starsurge stack the text names; core row restored plus a Starsurge fill-in), and Hellish Pursuit (core row restored, no change in result). Stormbound Instinct was checked: no doubling.
 
 **Assumptions:** Review 2026-11-18: the core has done this since 2 November (aura_hero_druid_starburst_barrage: Starfire and Arcane Barrage hits give a Starburst Barrage stack, 979138, through the aura's own trigger). Our 007 action row sat on the same aura, and since every script's filter must pass, the core's filter blocked our Starsurge, which the text names, so Starsurge gave nothing. Our row and proc row are removed, the core's row restored, and wcme_starburst_barrage_starsurge gives the stack for a Starsurge cast (both learnable Starsurges, 954800 and 2304800).
 
@@ -5594,33 +6401,47 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
-### Stoneclaw (1590422, Epic)
+### Stormborn (274078, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-28 | 861f0be | #299 Showcase talents fixed with data: Master of Shadows, Stormborn, Frost Bomb, Hunting Frenzy, Plague Swarm | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 178-showcase-trace-data.sql: Stormborn 274078 (Enhancement).
+
+**What the pull requests said:**
+
+- #299: Stormborn** (Enhancement): fires with the CoA versions of Elemental Mastery and Shamanistic Rage, not only the stock ones. The cone now scales with half your spell power and half your attack power, as the tooltip says.
+- #299: Stormborn: the core's Stormstrike list has both CoA hand hits but only the stock main-hand hit, so with the CoA Stormstrike the cone may fire twice. Left as the core has it.
+- #299: Changelog: Showcase talents fixed: Master of Shadows, Stormborn, Frost Bomb, Hunting Frenzy, Plague Swarm
 
 **Testing:** nothing recorded yet
 
 ### Suffocating Roots (84378, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Suffocating Roots (84378) | A dispelled Entangling Roots roots the dispeller | |
 
 **Assumptions:** Only when the roots are dispelled (not when they break or run out). The dispeller gets the same roots spell from you if you can attack them, with no range limit.
 
@@ -5630,28 +6451,22 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
-### Sunwell (850127, Epic)
+### Swashbuckler: Bloodsail (285111, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
-### Swashbuckler: Bloodsail (285111, Epic)
-
-**Status:** changed on an unmerged branch
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**What the pull requests said:**
+
+- #178: Swashbuckler: Bloodsail (983110, 285111) | Damaging finishers while Swashbuckling: Bloodsail stacks (the timer isn't refreshed) and 1 rage per stack per main-hand hit; 285111 gives crit stacks | Rage is per stack |
 
 **Assumptions:** Gives 285115 (crit, up to 5) with the same Swashbuckling check; the Defias Gunslinger helper 285113 is not used.
 
@@ -5661,16 +6476,20 @@ patch or the mechanic when there is a chance.
 
 ### Swashbuckler: Bloodsail (983110, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Finishing-move procs, 20% chance per combo point spent (10% for none here), checked at the cast while the combo points are still on you: - Cobra Combo (979106 / 284148): your pet gets 979105 (+15% critical strike chance). - Double Team (275094): 275096 on you (your pet's special attacks hit harder; its own data). - Deadly Combo (977856): needs Sudden Death; triggers Sudden Death (52437) and Deadly Combo (954353) through 977858. 283833: Sudden Death only (283835), and needs Sudden Death unless you have 973827. - Enraging Finale (283405): Bloodrage, if you know it (always with 973827), at most once every 20 sec and not while Bloodrage is up. - Titanic Finale (954436): the same Bloodrage proc from Rogue finishers while you can use Titan's Grip. - Adrenaline Junkie (1589466): 12 sec off Adrenaline Rush (its 1589467 value). - Swashbuckler: Bloodsail (983110): damaging finishers while Swashbuckling give a stack of Bloodsail Swashbuckling (983112, up to 10, 18 sec, the duration is not refreshed by new stacks) and the same number of stacks of 983113 (each main-hand auto attack gives 1 rage per stack, spell_wcme_bloodsail_rage). 285111: damaging finishers while Swashbuckling give 285115 (crit, up to 5). - Poison Bomb (979113): Envenom and Eviscerate take 4 sec off Poison Bomb (the text's 4 sec; its helper 979165 says 2). - Deadly Follow-up (979080): damaging finishers, 10% per combo point (the builder's number), give a charge of Poisoned Shiv (979082, up to 3), which Deadly Follow-up (979081) needs and spends. - Party Recuperation (983475): 10% per combo point, a stack of Bubbling Tankard (983476, up to 4).
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
+
+**What the pull requests said:**
+
+- #178: Swashbuckler: Bloodsail (983110, 285111) | Damaging finishers while Swashbuckling: Bloodsail stacks (the timer isn't refreshed) and 1 rage per stack per main-hand hit; 285111 gives crit stacks | Rage is per stack |
 
 **Assumptions:** Swashbuckling means one one-handed weapon in the main hand, nothing in the off hand, not shapeshifted (the same check Swashbuckler: Bloodsail Captain uses). New stacks do not refresh the 18 sec timer. The rage is 1 per stack per main-hand auto attack hit (983113, kept at the same stacks).
 
@@ -5684,23 +6503,30 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Swashbuckler: Flurry of Blows (81221) / Matched Blows (81219) | +20% melee haste / +5% parry while Swashbuckling | |
 
 **Testing:** nothing recorded yet
 
 ### Swashbuckler: Flurry of Blows (81221, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Swashbuckler: Flurry of Blows (81221, +20% melee haste) and Swashbuckler: Matched Blows (81219, +5% parry) while Swashbuckling (one one-handed weapon, empty off hand, not shapeshifted). The enchant's own effect becomes that bonus in Validate and is switched on or off every second. Swashbuckler: Shocktrooper 281944 keeps 281945 (its own -2 sec on Shaman Shocks) on you the same way.
 - 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300: no rows since review 2026-11-18, the core's aura link keeps its helpers; the script hook stays), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**What the pull requests said:**
+
+- #178: Swashbuckler: Flurry of Blows (81221) / Matched Blows (81219) | +20% melee haste / +5% parry while Swashbuckling | |
 
 **Assumptions:** Its dummy becomes +20% melee haste, on only while Swashbuckling.
 
@@ -5716,23 +6542,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Swashbuckler: Matched Blows (81219, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Swashbuckler: Flurry of Blows (81221, +20% melee haste) and Swashbuckler: Matched Blows (81219, +5% parry) while Swashbuckling (one one-handed weapon, empty off hand, not shapeshifted). The enchant's own effect becomes that bonus in Validate and is switched on or off every second. Swashbuckler: Shocktrooper 281944 keeps 281945 (its own -2 sec on Shaman Shocks) on you the same way.
 - 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300: no rows since review 2026-11-18, the core's aura link keeps its helpers; the script hook stays), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**What the pull requests said:**
+
+- #178: Swashbuckler: Flurry of Blows (81221) / Matched Blows (81219) | +20% melee haste / +5% parry while Swashbuckling | |
 
 **Assumptions:** Its dummy becomes +5% parry, on only while Swashbuckling.
 
@@ -5744,16 +6573,20 @@ patch or the mechanic when there is a chance.
 
 ### Swashbuckler: Shocktrooper (281944, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Swashbuckler: Flurry of Blows (81221, +20% melee haste) and Swashbuckler: Matched Blows (81219, +5% parry) while Swashbuckling (one one-handed weapon, empty off hand, not shapeshifted). The enchant's own effect becomes that bonus in Validate and is switched on or off every second. Swashbuckler: Shocktrooper 281944 keeps 281945 (its own -2 sec on Shaman Shocks) on you the same way.
 - 049-epics-3.sql: With rows: Swashbuckler: Flurry of Blows (81221), Matched Blows (81219), Shocktrooper (281944), Controlled Aggression (1181300: no rows since review 2026-11-18, the core's aura link keeps its helpers; the script hook stays), Poison Bomb (979113), Deadly Follow-up (979080 and its ability 979081).
+
+**What the pull requests said:**
+
+- #178: Swashbuckler: Shocktrooper (81415, 281944) | Shock cooldowns shorter while Swashbuckling (10.5 sec; 281944 uses its own -2 sec helper) | |
 
 **Assumptions:** Keeps its own 281945 (-2 sec on Shocks, -15% Shock damage against players) on you while Swashbuckling.
 
@@ -5765,17 +6598,20 @@ patch or the mechanic when there is a chance.
 
 ### Swashbuckler: Shocktrooper (81415, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-18 | 5bf04bd | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Swashbuckler: Shocktrooper (81415, 281944) | Shock cooldowns shorter while Swashbuckling (10.5 sec; 281944 uses its own -2 sec helper) | |
 
 **Assumptions:** 10.5 sec from its text, taken off after the Shock is cast while Swashbuckling.
 
@@ -5787,16 +6623,20 @@ patch or the mechanic when there is a chance.
 
 ### Sweeping Swings (912326, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit). Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has no spell class mask, so it changes nothing by itself. - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Sweeping Swings (912326) | +2% crit during Sweeping Strikes; 1 sec off its cooldown per ability hit (once a sec); hits the lone target again; -25% vs players | "Hit your primary target" means an extra hit when no other enemy is near |
 
 **Assumptions:** "Can hit your primary target": with no other enemy within 8 yards, your hits during Sweeping Strikes strike the target again for the same damage and spend a Sweeping Strikes charge. The 1 sec cooldown cut is the text's (its helper says 2). -25% against players from the text.
 
@@ -5810,20 +6650,63 @@ patch or the mechanic when there is a chance.
 
 ### Swift Shadows (272814, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 4a0748b | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Swift Shadows (272814): Shadowstep's speed buff lasting 2 sec longer is its own data. Ambush, Deadly Throw or Ravage on a target with your Shadow Mark (832713, from Assuaging Shadows) finishes Shadowstep's cooldown.
 - 047-epics-1.sql: With rows: Dancer in the Dark (81521, 282118: Shadow Dance recovers twice as fast in Stealth), Soul Restoration (84381, 282213, 1181290: heals shorten Weakened Soul), Swift Shadows (272814: Shadowstep reset from a Shadow Marked target).
 
+**What the pull requests said:**
+
+- #178: Swift Shadows (272814) | Ambush, Deadly Throw or Ravage on your Shadow Marked target finishes Shadowstep's cooldown; the longer Shadowstep was already data | The mark comes from Assuaging Shadows, so this needs both enchants |
+- #178: The hand-kept assumptions, sources and decisions are in `enchants/epic-notes.csv`. For batch 1, the Ascension builder archive covers 11 of the 13 enchants and matches the numbers used. Elemental Torrent and Swift Shadows rest on our client data alone. The legendary files were regenerated too: they now show #176 and #177, and each copy's quality.
+
 **Assumptions:** Shadow Mark comes only from Assuaging Shadows (832713), so the reset needs both enchants. The longer Shadowstep was already its data.
 
 **Sources:** our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Swirling Maelstrom (984616, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 5983b1c | #291 Demonic Mind and Swirling Maelstrom procs fire | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 171-dead-procs-showcase.sql: Swirling Maelstrom 984616: Lava Lash and Stormstrike hits have a 33% chance (from its sister spell 984610) to give a Swirling Maelstrom stack (984617); one roll per Stormstrike or Lava Lash cast, not per weapon hit.
+
+**What the pull requests said:**
+
+- #291: Swirling Maelstrom** 984616: Lava Lash and Stormstrike have a 33% chance (from its sister spell 984610) to give a stack, one roll per cast. **Not done:** the guaranteed stack when 5 Maelstrom Weapon stacks are spent (the action table cannot see stacks being spent), so the tracker says partly working.
+- #291: L5 2: Demonic Mind's fault seen in a GM test; Swirling Maelstrom's read from data
+
+**Testing:** nothing recorded yet
+
+### Sword and Thunder (284435, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Testing:** nothing recorded yet
 
@@ -5833,7 +6716,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**Testing:** nothing recorded yet
+
+### Synergetic Light (285818, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Testing:** nothing recorded yet
 
@@ -5843,23 +6745,33 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-24 | ed05ac9 | #259 Talents: companions batch 2, event-driven (8 talents) | build77 (2026-11-24) | 2026-11-25 |
+
+**What the pull requests said:**
+
+- #259: Talonshrike | Raptor Strike, Counterattack and Mongoose Bite deal 30% more | Link, plus an owned copy: the companion's modifier type (38) is outside the core's range and was silently ignored |
+- #259: Every pair was read by hand. Talonshrike's cooldown cut and Endless Agony's proc were already in 007 and 015 (these talents double as Mystic Enchants), so they aren't repeated here.
+- #259: Ran 141 and 142 together twice on MariaDB with the core's own `spell_linked_spell`, `spell_proc` and `spell_script_names` rows. Clean both times: 83 links, 15 proc rows, 14 action rules, 14 bindings, and the Talonshrike copy carries type 0.
 
 **Testing:** nothing recorded yet
 
 ### Tempered by Chaos (299180, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 79f4a39 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 4, spell side: - Faerie Swarm (81402 / 281916): Faerie Fire (Feral) also applies your highest known Insect Swarm. - Tempered by Chaos (299180): Incinerate or Chaos Bolt cast with Molten Core up gives Tempered Cleave (299181: Fel Cleave's cooldown reset and +30% on the next one, its own data). - Shooting Stars (281485): while your Starfall is up, every non-channelled spell you cast adds half its cast time to it. - Fire Walk With Me (952120 / 283296 / 1584166): Flamestrike also lays its speed field where it lands (411155, +50% for allies; 1584167, +40%, for 1584166). - Blood-Soaked Mutilation (1590974): Crimson Tempest has a 20% chance per combo point to let you use Garrote outside Stealth once within 10 sec; that Garrote doesn't silence. - Elemental Burst (278033): Elemental Blast damage gives you 278035 (your Searing Totem attacks 50% faster, its data). - Savage Momentum (1556008): the core does most of it (its pet carries the listener 1556010, whose melee special crits cast 1556009 and 1556022: 2 sec off the CoA Aimed Shot 1119434 / 1469434, Multi-Shot 1102643, Arcane Shot 1103044 and Quick Shot 1121004). Review 2026-11-18: ours cut every version again, so the CoA shots lost 4 sec; now ours only cuts the other versions of those four shots (the core's ids are one-rank chains, so it never reaches them), on the same event (a pet melee special crit). The Stampede part is fixed by spell_wcme_stampede_extension. - Lightning Mastery (81140, 11%) / Overload Mastery (281411, 22%): Lightning Bolt and Chain Lightning hits (Lightning Overload included) may strike the same target again for half the damage; the echo can't echo again. - Chilling Blows (81213): each Frostbrand hit adds 0.3 sec to your Deep Freeze on the target; when Deep Freeze deals damage instead of stunning (a stun-immune target), its cooldown comes back 10.5 sec sooner. - Mending Hands (81297 / 281724): Lay on Hands also heals every other ally within 8 yards of the target for the same amount (its longer cast time is its data).
 - 050-epics-4.sql: Hooks only (wcme_epic_batch4_spells / wcme_epic_batch4_hooks): Faerie Swarm (81402, 281916), Tempered by Chaos (299180), Shooting Stars (281485), Fire Walk With Me (952120, 283296), Blood-Soaked Mutilation (1590974), Elemental Burst (278033), Lightning Mastery (81140), Overload Mastery (281411), Chilling Blows (81213), Mending Hands (81297, 281724), Pyroclasmic Ignition (271125).
+
+**What the pull requests said:**
+
+- #178: Tempered by Chaos (299180) | Incinerate or Chaos Bolt with Molten Core: Fel Cleave reset and +30% on the next one | |
 
 **Assumptions:** "Consuming Molten Core" is taken as casting Incinerate or Chaos Bolt while Molten Core is up; Tempered Cleave's own effects reset Fel Cleave.
 
@@ -5875,7 +6787,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5885,17 +6797,11 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 2582b52 | #175 Medium legendary fixes, batches 4 to 8 | build50 (2026-11-16) | 2026-11-17 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Steward of Eternity (986162): Moonfire shows as Align (986163), Renew as Time-bind (986164) and Arcane Missiles as Synchronize (986165). Each of them drains energy (Align 5, Time-bind 30, Synchronize 70, the amounts in their data) and triggers Borrowed Time if you know its final rank, and adds Temporal Distortion (986166, up to 20; Align on a Time-bound target adds one more), as the enchant and its class version (276361) say. Synchronize uses Missile Barrage through its data. Your heals on an Aligned target heal 10% more (wcme_kit5_hooks). When one of them empties your energy, the distortion is released: Eternity's healing wave (986173, 13% stronger per stack released) and Eternity (986167) for 2 sec plus 0.6 sec per stack released (its duration as the class version gives it, 276347 and 276373).
-
-**What the pull requests said:**
-
-- #175: Steward of Eternity (986162):** Moonfire → Align, Renew → Time-bind, Arcane Missiles → Synchronize; each drains energy (5 / 30 / 70), adds Temporal Distortion and triggers final-rank Borrowed Time; your heals on an Aligned target heal 10% more; emptying energy releases Eternity (healing wave +13% per stack; buff for 2 sec + 0.6 sec per stack, from the class version 276347/276373); Time-bind absorbs 30% of each hit (15% of hits from players) and heals it back over time after 6 sec; Synchronize heals only Aligned / Time-bound allies, holds Align and uses Missile Barrage (data).
 
 **Testing:** nothing recorded yet
 
@@ -5905,8 +6811,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5916,8 +6821,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5927,7 +6831,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5937,7 +6841,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5947,7 +6851,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5957,7 +6861,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5967,7 +6871,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5977,7 +6881,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -5987,22 +6891,31 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Tidecaller's Boon (271813, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+| 2026-11-25 | f6e7650 | #270 Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form | none yet | - |
+| 2026-11-25 | 4be769a | #270 Talents: Beacon of Virtue, Holy Concentration, Pack Leader, Flare Strike, Bloodletting, Corrupted Bear Form | none yet | - |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+- 147-talent-companion-scripts.sql: Not here: Tidecaller's Boon (271813) already works through the Epic enchant scripts (Healing Wave, its stacks).
+
+**What the pull requests said:**
+
+- #178: Tidecaller's Boon (271813) | Healing Wave +50%, less 4% per Boon stack on the target; adds 3 stacks; your HoT ticks remove one | |
+- #270: Tidecaller's Boon** already works: the Epic enchant scripts handle it under the talent's own id. The scan can't see that; noted in the talent reference.
+- #270: Talent scan: strong list down to 5 entries (Icy Reach, Corrupted Bear Form, Tidecaller's Boon, One With The Light, Nature's Splendor), all decided or explained.
 
 **Assumptions:** Healing Wave +50%, less 4% per stack of your Tidecaller's Boon already on the target (its helper's -4% per stack), then adds 3 stacks (up to 15, 10 sec). Each periodic heal tick of yours takes off one stack. The helper's bonus for periodic heals (271820's text) is not part of this enchant.
 
@@ -6014,16 +6927,20 @@ patch or the mechanic when there is a chance.
 
 ### Timed Charge (954636, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Unit-side parts: - Esoteric Power (1556015): each Arcane Blast hit has a 10% chance per Arcane Blast stack to deal 15% more as Esoteric Power (1556016). - Swashbuckler: Sweeping Swings (912326): while Sweeping Strikes is up you also have Critical Swings (912328, +2% melee crit); a melee ability hit takes 1 sec off Sweeping Strikes, at most once a second; with no other enemy within 8 yards, your hits also strike the primary target again for the same damage (Sweeping Strikes' own spell 26654), spending a Sweeping Strikes charge; Sweeping Strikes deals 25% less against players. - High Winds (954126): when your Cyclone ends on a target, it gets 954127 (-20% damage and healing, its own 4 sec). - Timed Charge (954636): when your Alter Time ends (you return), 954637 bursts around you (Arcane damage, 3 sec stun). - Fire and Ice (84382): your Deep Freeze leaves Frozen Flesh (944829, 3 charges) on the target; your Fire spells on it trigger Thawed Flesh (944831) and spend a charge. - Eclipse Bomber (275014): gaining Eclipse (Solar) gives Solar Bomber (274981) and ends your Lunar Flames; gaining Eclipse (Lunar) gives Lunar Bomber (274982) and ends your Solar Flames. With Solar Bomber, Fireball and Pyroblast hits give Lunar Flames (274983, Starfire / Starsurge damage); with Lunar Bomber, Starfire and Starsurge hits give Solar Flames (275002, Fireball / Pyroblast damage), as the enchant's text says. - Controlled Aggression (1181300): Shield Slam deals 25% of your attack power more (added before armour and crit). Sword and Board's chance is doubled: after each Devastate or Revenge hit, if your talent did not just proc, a second roll at chance p/(1-p) (p = 10% per rank) makes the total exactly 2p. A success does what the talent's own proc does: resets Shield Slam's cooldown (category 1209, as spell_warr_sword_and_board) and gives the talent's buff (50227, or 1150227 / 1250227 for the CoA versions). The enchant's helper 1181302 ("chance doubled" in its data) has no spell class mask, so it changes nothing by itself. - Poison Bomb (979113): Envenom and Eviscerate have a 20% chance per combo point to take 4 sec off Poison Bomb (in spell_wcme_finisher_combo). - Raising Hell: your demon's Hellfire stops when yours does.
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Timed Charge (954636) | Alter Time return: Arcane burst and 3 sec stun around you | |
 
 **Assumptions:** "Return" means the Alter Time aura ending (expiry or recast), not death.
 
@@ -6035,11 +6952,11 @@ patch or the mechanic when there is a chance.
 
 ### Titanic Finale (954436, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -6047,9 +6964,32 @@ patch or the mechanic when there is a chance.
 - Epic batch 2 hooks: - I Have The High Ground (81090): 3% more damage when you are more than 5 yards above your target. - Companions (81418-81422): your hunter pet's auto attacks deal 10% less while one is on (their own -10). - Titanic Finale (954436): while the Enrage talent's buff is on you, you also have 954437 (+5% melee attack speed), for as long as Enrage lasts.
 - 048-epics-2.sql: Finishing-move procs (spell_wcme_finisher_combo, 20% per combo point): Cobra Combo (979106, 284148), Double Team (275094), Deadly Combo (977856, 283833), Enraging Finale (283405), Titanic Finale (954436), Adrenaline Junkie (1589466), Swashbuckler: Bloodsail (983110, 285111; 983113 gives its rage on main-hand hits).
 
+**What the pull requests said:**
+
+- #178: Titanic Finale (954436) | Rogue finishers with Titan's Grip: the same Bloodrage proc; +5% attack speed while the Enrage talent buff lasts | The Enrage buff is any Warrior "Enrage" aura of up to 30 sec |
+
 **Assumptions:** "While Titan's Grip is active" means you can use Titan's Grip. The Enrage talent buff is any Warrior aura named Enrage lasting up to 30 sec; 954437 lasts as long as it.
 
 **Sources:** Ascension builder tooltip (area-52 archive, 14 Jun 2026); our client spell data (Spell.dbc)
+
+**Testing:** nothing recorded yet
+
+### Toss and Throw (277455, Epic)
+
+**Status:** changed, awaiting in-game test
+
+| Date | Commit | Pull request | First build with it | Installed on the server |
+|---|---|---|---|---|
+| 2026-11-28 | 48ec048 | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+| 2026-11-28 | 7fd72ed | #290 Wildcard talents fire from both versions of their trigger ability | none yet | - |
+
+**What the server does (from the code and SQL comments):**
+
+- 170-core-rule-versions.sql: Talents: Heavyweight 273378, Demolisher 273786, Arcane Gunslinger 274586, Shot Weaving 274591, Master of Shadows 275491, Harbinger of Plague 276427, Gul'dan's Chosen 277150, Toss and Throw 277455, Master of Kunai 277475, Glimmer of Light 277692, Arcane Motes 281905, Good Fortune 284012, Sword and Thunder 284435, Shield Finesse 285548, Synergetic Light 285818, Blades of Blood 285895, Shadow Infusion 285942, Hunting Frenzy 1180820, Enduring Aegis 1584825.
+
+**What the pull requests said:**
+
+- #290: Talents: Heavyweight, Demolisher, Arcane Gunslinger, Shot Weaving, Master of Shadows, Harbinger of Plague, Gul'dan's Chosen, Toss and Throw, Master of Kunai, Glimmer of Light, Arcane Motes, Good Fortune, Sword and Thunder, Shield Finesse, Synergetic Light, Blades of Blood, Shadow Infusion, Hunting Frenzy, Enduring Aegis.
 
 **Testing:** nothing recorded yet
 
@@ -6059,8 +6999,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6070,23 +7009,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Totem Master: Fire (1581586, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Totem Master: Fire (81445, 1581586) | Fire totem health is 15% of yours; 1581586's Fire totems also give Totem of Wrath's or Flametongue's aura | |
 
 **Assumptions:** The extra aura is the one the Totem of Wrath creature casts (or Flametongue Totem's if you don't know Totem of Wrath), from the highest rank you know.
 
@@ -6098,16 +7040,20 @@ patch or the mechanic when there is a chance.
 
 ### Totem Master: Fire (81445, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: Totem Master: Fire (81445, 1581586) | Fire totem health is 15% of yours; 1581586's Fire totems also give Totem of Wrath's or Flametongue's aura | |
 
 **Assumptions:** The health is set 0.1 sec after the totem appears, on the totem in your Fire slot.
 
@@ -6123,7 +7069,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6133,23 +7079,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Trauma Care (274205, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Trauma Care (274205) and Physics in Practice (277460) were also dropped in review: the core already does them (aura_wildcard_trauma_care with its own spell_proc row, and a damage hook in AscensionMysticEnchantScripts).
+
+**What the pull requests said:**
+
+- #178: Trauma Care (274205), Physics in Practice (277460) | this PR (batch 6) | **Resolved: ours removed** |
+- #178: Trauma Care (274205) | Dropped in review: the core already does it (its own script; the buff's data gives the extra target) | — |
 
 **Assumptions:** Review 2026-11-17: the core already does this enchant itself (aura_wildcard_trauma_care with its own spell_proc row: finishers, 20% per combo point counted before they are spent, only with Path of Healing (84867, the enchant's stated requirement), giving Trauma Care 274211 with its data's 2 charges; the buff's own data makes the next Greater Heal instant, +100%, and its +2 jump targets give Greater Heal one extra target in this core). Our batch 6 version replaced the core's proc row (which would have stopped the core's script), gave 1 charge, and added a second extra-target heal. All of ours removed, including the spell_proc and script rows in 052.
 
@@ -6161,16 +7111,20 @@ patch or the mechanic when there is a chance.
 
 ### Twilight (84471, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, unit side: - Blessed by the Elune (272253): notes the Eclipse for the spell side. - Deter and Punish (977988 / 283979): while Deterrence lasts you also reflect spells (Spell Reflection 11818 set to 100%) and counterattack melee attacks from the front (Retaliation 20230, up to its 20 counterattacks); both end with Deterrence. - Spellstorm (271709): Missile Barrage used by Arcane Missiles gives Arcane Evoked (271710); Brain Freeze (57761) used by Fireball or Frostfire Bolt gives Fire Evoked (271713). Given just after, so the spell that used the proc doesn't use the new buff. - Predatory Nature (979050): each Predator's Swiftness you use restores 10 energy and adds a stack of 979051 (up to 2, 12 sec, its own data). Using it with 2 stacks instead uses them up for 979055: 5 combo points on your target (2 if the target is a player) and a 100% critical strike chance on the next Predator's Swiftness spell, which is removed once that spell is cast. - Suffocating Roots (84378): notes a dispelled Entangling Roots of yours for the spell side. - Soul Siphoner (81398): Haunt heals you for half, and heals the 3 lowest-health members of your party or raid within 40 yards for that half too. - Blood Shield (288804): in Frost Presence, Death Strike's heal also shields you (288805) for 100% of it, adding to what is left of the shield, capped at 20% of your maximum health (10% when your target is a player). - Tidecaller's Boon (271813): Healing Wave heals 50% more, less 4% for each stack of your Tidecaller's Boon (271814) on the target, then adds 3 stacks (up to 15, 10 sec). Each of your periodic heals on the target takes a stack off. - Twilight (84471): with Vampiric Embrace up, your bleeds heal through it like Shadow damage (you for its percentage of the tick, your party for a fifth of that), as the core's Vampiric Embrace does. - Elemental Lord (276578): Lava Burst +55% (+20% against players) with Elemental Solidification, which it uses up; Flame Shock ticks with Elemental Lava (276587) have a 20% chance to finish Lava Burst's cooldown.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: Twilight (84471) | Your bleed ticks heal through Vampiric Embrace like Shadow damage | |
 
 **Assumptions:** Bleed ticks of yours (any class) heal through your Vampiric Embrace exactly like Shadow damage does in the core: you for its percentage, your party for a fifth of that. Direct bleed hits don't count.
 
@@ -6180,39 +7134,32 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
-### Twilight Shieldtoss (850190, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
 ### Twilight Shock (997305, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Twisted Mind (979779, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 7910784 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Shows Twisted Mind (978703) in place of Fel Armor while Twisted Mind (979779) is active.
 - 053-epics-7.sql: With rows: Party Recuperation (983475: finisher proc, 10% per combo point), Twisted Mind (979779: Fel Armor shows as Twisted Mind), "Stealth" (982477, You're a Solid Crate: its stealth and slow helpers, crate removed after), Energy Surge (1180750: energy while a monster is Gouged), Aegis Overdrive (299160: dodge, parry or block with Mana Shield up).
+
+**What the pull requests said:**
+
+- #178: Twisted Mind (979779) | Fel Armor shows as Twisted Mind | |
 
 **Assumptions:** Fel Armor (every rank) shows as Twisted Mind while the enchant is active.
 
@@ -6228,23 +7175,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Unbounded Drain Mana (81362, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 7910784 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Likewise Unbounded Drain Mana (81362 -> 81383) needs Drain Mana, and You're a Solid Crate (982476 -> 982477) needs Stealth.
 - 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**What the pull requests said:**
+
+- #178: Unbounded Drain Mana (81362) | Teaches the cone Drain Mana (20 yd, 5 targets, 2% of their mana a second, capped at 4% of yours per target) | Reviewed: needs Drain Mana known to cast |
 
 **Assumptions:** Taught outright (wcme_enchant_teach), but the taught spell refuses to cast unless you know Drain Mana, as its text says. The taught spell works from its data: channelled 5 sec, a 20-yard cone hitting up to 5 enemies, each losing 2% of its maximum mana a second to you, capped per target at 4% of your maximum mana a second (the core's own Drain Mana rule), so up to 20% of your mana a second against 5 casters. Same 17% base mana cost as Drain Mana. Review 2026-11-17: added the Drain Mana requirement; checked cone, range, target cap, drain and cap against the data and the core.
 
@@ -6260,23 +7210,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Unbounded Mind Flay (81370, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 5db193a | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Unbounded Mind Flay (81370) teaches 81371 outright; it is only usable if you know Mind Flay, as its text says.
 - 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**What the pull requests said:**
+
+- #178: Unbounded Mind Flay (81370) | Teaches the cone Mind Flay (10 yd, 5 targets, 84 over 3 sec + spell power, 50% slow) | Reviewed: needs Mind Flay known to cast. Rank 1 damage (tooltip flag) |
 
 **Assumptions:** Taught outright (wcme_enchant_teach), but the taught spell now refuses to cast unless you know Mind Flay, as its text says. The taught spell works from its data: channelled 3 sec, a 10-yard cone hitting up to 5 enemies, 28 Shadow damage per second (84 total, matching the builder) plus about 26% of spell power per tick, and a 50% slow. Its damage is the rank 1 figure and doesn't grow with your Mind Flay rank. Review 2026-11-17: added the Mind Flay requirement; checked the cone, target cap, damage and slow against the data.
 
@@ -6294,7 +7247,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6304,7 +7257,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6314,23 +7267,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Unstoppable Force (911167, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 75e2c05 | not merged yet | none yet | - |
-| 2026-11-18 | 5bf04bd | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Spell-side parts (casts and critical strike chance): - Moon's Wrath (1180590) and Critical Time (1575124) used to be here; review 2026-11-18 found the core's bonus table already gives both crit bonuses (and its lists cover every learnable Wrath, Starsurge, Moonfire and Living Bomb), so ours doubled them. - Unstoppable Force (911167): Slam always crits on an incapacitated or immobilized target. - Pyroclasmic Shadows (1577402): its crit bonus used to be here too; the core's bonus table gives it (every learnable Shadow Bolt and Pyroclasm buff), so ours doubled it (review 2026-11-18). - Shooting Stars (81181): while your Starfall is up, +5% spell crit chance, and every non-channelled Arcane spell you cast adds half its cast time to Starfall. - Swashbuckler: Shocktrooper (81415): Shaman Shocks cast while Swashbuckling come back 10.5 sec sooner. - Esoteric Power (1556015): Arcane Blast's buff stacks to 5 (one more than normal). - Raising Hell (81096 / 281336): when you start Hellfire, your summoned demon (not an Infernal) casts it too; it stops when yours ends (wcme_epic_batch3_hooks). - Totem Master: Fire. 81445: your Fire totem gets health equal to 15% of yours (its mana cost and Searing / Magma cooldown changes are its data). 1581586: your Fire totem also gives Totem of Wrath's, or else Flametongue Totem's, aura if you know that totem (the aura comes from that totem's creature). - Blood Drinker (965389): Bloodthirst spends your Taste for Blood to heal you for 3% of your maximum health plus 25% of your attack power (no amount in the data; based on Bloodthirst's own small heal). - Deadly Follow-up (979080): damaging finishing moves give a charge of Poisoned Shiv (979082, up to 3), 10% per combo point (in spell_wcme_finisher_combo).
 - 049-epics-3.sql: Hooks only (wcme_epic_batch3_spells / wcme_epic_batch3_hooks): Unstoppable Force (911167), Shooting Stars (81181), Swashbuckler: Shocktrooper (81415), Esoteric Power (1556015), Raising Hell (81096, 281336), Totem Master: Fire (81445, 1581586), Blood Drinker (965389), Sweeping Swings (912326), High Winds (954126), Timed Charge (954636), Fire and Ice (84382), Eclipse Bomber (275014).
+
+**What the pull requests said:**
+
+- #178: a **crit-chance hook** on the core's `OnSpellCritChance`, used by Moon's Wrath, Critical Time, Unstoppable Force, Pyroclasmic Shadows and Shooting Stars
+- #178: Unstoppable Force (911167) | Slam always crits on an incapacitated or immobilized target | Those states: root, stun, sap, polymorph, knockout, sleep, freeze, horror, banish |
 
 **Assumptions:** Incapacitated or immobilized means rooted, stunned, sapped, polymorphed, knocked out, asleep, frozen, horrified or banished. The Thunder Slam exclusion is not checked.
 
@@ -6342,19 +7299,20 @@ patch or the mechanic when there is a chance.
 
 ### Ursoc's Blessing (282004, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 0b4e6a2 | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Ursoc's Blessing (81446, 282004) | Bear form's armour and Stamina (not attack power) stay 3 sec after leaving it | Reviewed: now only those two effects |
 
 **Assumptions:** As 81446.
 
@@ -6366,19 +7324,20 @@ patch or the mechanic when there is a chance.
 
 ### Ursoc's Blessing (81446, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 0b4e6a2 | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Ursoc's Blessing (81446, 282004) | Bear form's armour and Stamina (not attack power) stay 3 sec after leaving it | Reviewed: now only those two effects |
 
 **Assumptions:** Re-applies only effects 0 and 1 (armour and Stamina) of Bear Form (Passive) or Dire Bear Form (Passive) for 3 sec after the form ends; the form's attack power isn't kept. Going back into a bear form within the 3 sec drops the copy first so the form's own passive isn't cut short. Review 2026-11-17: the first version re-applied the whole passive (attack power too) and also Bear Form (Passive2) (threat and dodge, not Stamina or armour), and re-entering the form could have left the real passive on a 3 sec timer.
 
@@ -6388,49 +7347,32 @@ patch or the mechanic when there is a chance.
 
 **Testing:** nothing recorded yet
 
-### Valkyr's Calling (850128, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
 ### Vampiric Bite (997120, Epic)
 
 **Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
-### Vampiric Tonic (850199, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Vampirism (277003, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-18 | 93996b4 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, unit side: - Double Agent (81439): Ambush deals double damage to a target that was stealthed when the Ambush started (the core takes the target's stealth off before the damage is worked out). Its stealth detection is its data. - Shadow Word: Gore (983020): its ticks get the bonus worked out when it was cast. - Energy Surge (1180750): your damaging Rogue ability that hits a target with your Gouge deals 30% more (its own value); the Gouge then breaks as usual. - Ol' Bloodsurge (983600): using Bloodsurge makes your next Hunter or Warrior direct damage ability deal 20% more (within 15 sec). - Consumed By Shadows (997217): with Master of Subtlety (31665) up, your Shadow damage gets its bonus too (its value, 12% at rank 3); leaving Stealth puts you in Shadowform if you know it, unless you left Stealth by shifting into another form, are mounted, or are stealthed again. - Necromancer's Touch (275963): melee and spell hits from your Dominate Undead or Enslave Demon pet, or your ghoul, add a stack of Necromancer's Touch (275966) and of its Grave Coil part (288824) from you on the target (see NecromancerPet). Your next Grave Coil on the target uses up the Grave Coil stacks. - Searing Flames (1180640): each Immolate tick also hits every other enemy within 8 yards of the target for the same damage (1180643). The pet's crit stacks (1180644) per tick are the core's own enchant rule (effect 1); the core has no rule for this splash (effect 0), so it is done here. - Lingering Death (81506): heals on the target take off what Shadow Word: Death dealt, until used up or 3 sec pass. - Downpour (983523): teaches Downpour (983524, wcme_enchant_teach). Each injured ally it heals gives you a stack of Torrential Riptide (983519, up to 5); when Riptide uses them, Downpour's cooldown drops 3 sec per stack. - Photosynthesis (287852): while your Lifebloom is on an ally (not you), each of your Nature heal-over-time ticks on them has a 20% chance to make it bloom (33778, worked out as the core's Lifebloom does) without using it up. - Vampirism (277003): Vampiric Embrace no longer heals you or your party; the part it would have healed you for goes instead to the lowest-health ally within 40 yards (you included), with your healing power added, up to 5% of your maximum health per heal. - Ursoc's Blessing (81446 / 282004): leaving Bear or Dire Bear Form keeps the armour and Stamina parts of the form's passive (Bear Form (Passive) / Dire Bear Form (Passive), effects 0 and 1, not its attack power) on you for 3 more sec. Shadow Funnel (1180900) used to be here; review 2026-11-18 found the core already does it (the Voidwalker gets 1180901 while Health Funnelled, which sets off Void Nova on its auto attacks), so ours doubled Void Nova. - Aegis Overdrive (299160): Mana Shield going up sets off Aegis Explosion (299163) unless its activation lockout (299161) is on you; Mana Shield running out or breaking sets it off again. - Party Recuperation (983475): finisher proc in spell_wcme_finisher_combo.
 - 053-epics-7.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Searing Flames (1180640), Ol' Bloodsurge (983600), Photosynthesis (287852), Lingering Death (81506), Vampirism (277003).
+
+**What the pull requests said:**
+
+- #178: Vampirism (277003) | Vampiric Embrace heals the lowest-health ally instead, with healing power, capped at 5% of your max health | |
 
 **Assumptions:** The heal goes to the lowest-health injured ally within 40 yards (you if no one else is hurt), healing power added as the core adds it to Vampiric Embrace's heal, capped at 5% of your maximum health.
 
@@ -6446,7 +7388,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6456,26 +7398,26 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Void Teleportation (954626, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 2a15355 | not merged yet | none yet | - |
-| 2026-11-17 | f70bb96 | not merged yet | none yet | - |
-| 2026-11-17 | 7dcb81f | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batches 6 and 7, spell side. Not here because the core already does them (review 2026-11-17): Electrical Discharge (277082, hard-coded in AuraEffect::HandleAscensionPercentEventProc), Pious Strikes (1581647) and Holy Servitude (1584997) (both coa_mystic_enchant_proc rules run by spell_ascension_mystic_enchant_proc), Trauma Care (274205, aura_wildcard_trauma_care) and Physics in Practice (277460, in AscensionMysticEnchantScripts). - Saber Fangs (984696): every third Swipe (Cat) hit on an enemy (counter 984697) applies Saber Fangs (984698: a bleed of your level plus 6% of your spell power and attack power every 3 sec), unless it already has yours (it can't be refreshed). Ferocious Bite deals 50% of its damage (984701) as Saber Thrash (984700) to up to 5 other enemies within 8 yards that have your Saber Fangs. - Bestial Assault (272317): each Hunter ability you cast that deals direct damage (not Auto Shot) adds a stack of 272319; at 5 the stacks go and a charge of Unrelenting Wrath comes back. Its own data procs are switched off (051's SQL). - Eternity (276362): an Align, Synchronize or Time-bind cast that leaves you at 0 energy gives Eternity (276347). - Arngrim's Greeting (997188): landing a Heroic Leap (its damage spell 86359) starts its Blizzard (997194: 215 Frost damage every 2 sec for 6 sec, its data) where you land and Icy Veins (997193: +20% casting speed, 6 sec). - Void Teleportation (954626): your (Priest) Void Shift also swaps your position with the target's, as they were when you cast it; skipped if either of you is on a transport, in a vehicle or on a flight path. - Overflowing Cultivation (273422): a Chain Heal cast with Overflowing (273420 from Flowing, or 1571973 from Overflow 1571951; Overflow 977710's own Overflowing 986113 already does this) up also puts Living Seed (48504) on each ally it heals, for 30% of the heal (its own value). - Shadow Word: Gore (983020): teaches Shadow Word: Gore (983021, wcme_enchant_teach); its damage is 8% higher for each other bleed of yours on the target when cast, up to 40%, for its whole duration. - Searing Flames (1180640): your Immolate can only be on one target; a new one takes the last one off. Your pet's Firebolt crit uses up its crit stacks (1180644). - Ol' Bloodsurge (983600): Mongoose Bite, Counterattack, Glaive Toss, Mortal Strike, Execute, Raging Blow, Whirlwind and Bloodthirst hits give Bloodsurge (983604: next Slam instant, free and ignoring armour, its data), at most once every 4 sec. - Lingering Death (81506): Shadow Word: Death's damage is also taken off the next heals the target receives within 3 sec, and for 6 sec enemies within 7 yards of where it hit are slowed by 40% (Earthbind 3600, renewed every sec). - Party Recuperation (983475): Party Recuperate (983478, taught) needs a stack of Bubbling Tankard (983476) and uses one. - Void Teleportation, Eternity and the rest above are cast-time rules; damage and heal rules are on the unit side.
 - 052-epics-6.sql: Hooks only (wcme_epic_batch67_spells / wcme_epic_batch67_hooks): Double Agent (81439), Saber Fangs (984696), Eternity (276362), Ursoc's Blessing (81446, 282004), Necromancer's Touch (275963), Arngrim's Greeting (997188), Void Teleportation (954626), Overflowing Cultivation (273422), Consumed By Shadows (997217).
+
+**What the pull requests said:**
+
+- #178: Void Teleportation (954626) | Your Priest Void Shift swaps your positions too | Reviewed: Priest spell only; no swap on transports, vehicles or flight paths. Void Shift itself has no script in our core (no health swap) |
 
 **Assumptions:** Only your Priest Void Shift (not the creature spells of the same name). Positions are those at the moment you cast it, swapped right after; skipped if either of you is on a boat or zeppelin, in a vehicle or on a flight path, or on another map. Review 2026-11-17: added the Priest check and the transport, vehicle and flight-path guard. Void Shift itself (954522) had no script in our core, so it did nothing; fixed in 054 (spell_wcme_void_shift): health percentages swap with a 25% floor, and Void Instability (956037, 1 min) stops either of you casting it or being its target again.
 
@@ -6487,11 +7429,11 @@ patch or the mechanic when there is a chance.
 
 ### Voltaic Companion (81421, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
@@ -6505,16 +7447,20 @@ patch or the mechanic when there is a chance.
 
 ### War Mage (281939, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 09c12c0 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Epic batch 5, spell side: - Final Shield (81255 / 281638): Power Word: Shield on an ally (you included) below 20% health removes the harmful crowd control on them (stun, fear, charm, polymorph, sleep, root, silence and the like); at most once every 30 sec, counted only when something was removed. - Blessed by the Elune (272253): after a Solar Eclipse your next Wrath or Starsurge also applies your highest known Insect Swarm; after a Lunar Eclipse your next Starfire or Starsurge also applies your highest known Moonfire. Each waits up to 30 sec. - War Mage (281939): Blink casts your highest known Arcanist's Explosion or Arcane Explosion where you land; each enemy in its radius takes 1.5 sec off Blink, up to 6 (9 sec), matching its helper 281943 / 281941. - Elemental Lord (276578): Elemental Blast or Lava Burst gives one of Elemental Earth (276579), Frost (276580) or Fire (276581) at random, replacing the last; each makes its shock deal 100% more direct damage (their data) and is used up by that shock: Earth Shock: Elemental Aftershock (276585) on up to 3 other enemies within 8 yards, 15% of the hit over 3 sec. Frost Shock: Elemental Solidification (276586): the next Lava Burst +55% (+20% against players). Flame Shock: Lava Burst's cooldown finishes, and for 12 sec (276587) each Flame Shock tick has a 20% chance to finish it again. - Spellstorm (271709), the chance part: with Arcane Evoked (271710), your next Frost damage spell that chills has an extra 80% chance to give Brain Freeze (57761) if you know Brain Freeze; with Fire Evoked (271713), your next Arcane Blast, Arcane Barrage, Fireball, Frostbolt or Frostfire Bolt has an extra 80% chance to give Missile Barrage (44401) if you know Missile Barrage. Either way the Evoked buff is used up. - Suffocating Roots (84378): when your Entangling Roots is dispelled, the dispeller gets the same roots from you.
 - 051-epics-5.sql: Hooks only (wcme_epic_batch5_spells / wcme_epic_batch5_hooks): Final Shield (81255, 281638), Blessed by the Elune (272253), War Mage (281939), Elemental Lord (276578), Spellstorm (271709), Suffocating Roots (84378), Deter and Punish (977988, 283979), Predatory Nature (979050), Soul Siphoner (81398), Blood Shield (288804), Tidecaller's Boon (271813), Twilight (84471).
+
+**What the pull requests said:**
+
+- #178: War Mage (281939) | Blink casts Arcane Explosion where you land; 1.5 sec off Blink per enemy, up to 9 sec | Counts enemies in range rather than hits |
 
 **Assumptions:** Counts enemies in the explosion's radius just before it goes off, up to 6, rather than the hits it scores. Uses Arcanist's Explosion if you know it, else Arcane Explosion, else rank 1. War Mage 81408 (the other copy) is a separate enchant with its own rule.
 
@@ -6526,22 +7472,25 @@ patch or the mechanic when there is a chance.
 
 ### War Mage (81408, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-02), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: War Mage (281939) | Blink casts Arcane Explosion where you land; 1.5 sec off Blink per enemy, up to 9 sec | Counts enemies in range rather than hits |
 
 **Testing:** pass: each Arcane Explosion hit takes 5 sec off Blink (2 Nov) | 2026-11-02
 
 ### Warbreaker (852368, Rare)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** pass | 2026-11-03
 
@@ -6551,7 +7500,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6561,7 +7510,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6571,34 +7520,36 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-01 | 2284b9e | #31 Rebuild 1,195 missing enchants and load extra SpellAffect rows (patch) | build16 (2026-11-05) | 2026-11-10 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### Waves of Time (850145, Epic)
 
-**Status:** tested (see test notes)
+**Status:** changed after its last test (2026-11-03), retest needed
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** works; no tooltip text | 2026-11-03
 
 ### Weapon Command (283338, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Weapon Command (954057 / 283338): while you wield a single two-handed weapon, are not in Cat or Bear Form and cannot use Titan's Grip, you have 954058 (+10% Physical damage and +4% melee critical strike chance, the client data). Checked every second.
 - 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**What the pull requests said:**
+
+- #178: Weapon Command (954057, 283338) | +10% Physical damage and +4% melee crit with a single two-handed weapon, not in Cat/Bear Form, without Titan's Grip | The builder archive says attack speed; our client data (what players see) says Physical damage, and we follow the client |
 
 **Assumptions:** As 954057.
 
@@ -6610,16 +7561,20 @@ patch or the mechanic when there is a chance.
 
 ### Weapon Command (954057, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 07911c5 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - Weapon Command (954057 / 283338): while you wield a single two-handed weapon, are not in Cat or Bear Form and cannot use Titan's Grip, you have 954058 (+10% Physical damage and +4% melee critical strike chance, the client data). Checked every second.
 - 048-epics-2.sql: Weapon Command (954057, 283338: single two-handed weapon), the Companions (81418-81422: hunter pet auto attack school) and, as a hook only, I Have The High Ground (81090) and Titanic Finale's Enrage speed.
+
+**What the pull requests said:**
+
+- #178: Weapon Command (954057, 283338) | +10% Physical damage and +4% melee crit with a single two-handed weapon, not in Cat/Bear Form, without Titan's Grip | The builder archive says attack speed; our client data (what players see) says Physical damage, and we follow the client |
 
 **Assumptions:** Our client's buff 954058 gives +10% Physical damage and +4% melee crit. The builder archive says +10% melee attack speed instead; we follow the client, which is what players see.
 
@@ -6635,8 +7590,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6646,8 +7600,11 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 360dc22 | #23 Enchant fixes batch 4: 38 twins without double bonuses | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-16 | 8cdfebf | #169 Fix two enchants found in the tooltip review | build46 (2026-11-15) | 2026-11-16 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
+
+**What the pull requests said:**
+
+- #178: Core rule gaps** (`enchants/core-rule-gaps.csv`): nine enchants the core handles where one trigger effect has no core rule, so that effect never fires: Blink and you'll miss it! (272185), Whispers of the Old Gods (272950), Victorious Stand (275132), Ursine Frenzy (278460), Whirling Bladestorm (283499), Searing Brand (1118810), Blades of Blood (1590568), plus Searing Flames and Overflow, which our scripts already cover. Not changed yet; to review.
 
 **Testing:** nothing recorded yet
 
@@ -6657,13 +7614,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | b1f1d81 | #20 Enchant fixes batch 3: 67 twin links plus matching tooltips | build6 (2026-10-31) | 2026-11-02 |
-| 2026-11-15 | 7a1f7a8 | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-| 2026-11-15 | cde036b | #164 Stop runaway Legendary enchant procs | build45 (2026-11-15) | 2026-11-16 |
-
-**What the pull requests said:**
-
-- #164: Only the named abilities set it off** (`spell_wcme_enchant_action` rule): Dark Surgeon, Fire Watch, Midnight Flames, Wind Rager, Deadly Bite (both spells), Blood Tracker: Deadly Bite, Circle of Life, Adorned by Light, Lava Sweep (Doomhammer's Fury), Warcry (30 sec lockout for other shouts), Arcane Thunder Seer, Divine Purpose, Endless Agony (both), Evoker, Nature's Fervor (both), One With The Light, Tidecaller (Healing Wave crits), Titanic Mutilate, Transcendental Embrace, Unbounded Spell Slinger, Blooming Growth.
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6673,8 +7624,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | fc36cc0 | #18 Enchant fixes batch 1: 51 enchants linked to their working twins | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | 3a141df | #19 Enchant fixes batch 2: 21 school-pair enchants | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6684,7 +7634,7 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
@@ -6694,35 +7644,27 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-| 2026-10-31 | bfc5fb3 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
-
-**Testing:** nothing recorded yet
-
-### Xorothian Sigil (850099, Epic)
-
-**Status:** changed, awaiting in-game test
-
-| Date | Commit | Pull request | First build with it | Installed on the server |
-|---|---|---|---|---|
-| 2026-10-31 | 6922a11 | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet
 
 ### You're a Solid Crate (982476, Epic)
 
-**Status:** changed on an unmerged branch
+**Status:** changed, awaiting in-game test
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-11-17 | 44ee48c | not merged yet | none yet | - |
-| 2026-11-17 | 7910784 | not merged yet | none yet | - |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **What the server does (from the code and SQL comments):**
 
 - You're a Solid Crate (982476) teaches "Stealth" (982477). In our data that spell only gives the Stealth form (so stealth openers work) and summons the crate (creature 300099, which our world database has); the actual hiding and the "no legs" slow are its two server-side helpers, which nothing applied: "Stealth" - SLS #1 (982478: stealth of the same strength as Stealth, 5 + 5 per level) and SLS #2 (982479: -95% movement speed). They come and go with the crate form; moving still breaks it (its data). The crate it summoned is removed when the form ends, so crates don't pile up.
 - Likewise Unbounded Drain Mana (81362 -> 81383) needs Drain Mana, and You're a Solid Crate (982476 -> 982477) needs Stealth.
 - 053-epics-7.sql: Taught spells (wcme_enchant_teach): Unbounded Mind Flay (81370 -> 81371), Unbounded Drain Mana (81362 -> 81383), You're a Solid Crate (982476 -> 982477), Shadow Word: Gore (983020 -> 983021, its bleed bonus in the hooks), Downpour (983523 -> 983524, Torrential Riptide in the hooks), Party Recuperation (983475 -> 983478).
+
+**What the pull requests said:**
+
+- #178: You're a Solid Crate (982476) | Teaches the crate "Stealth": real stealth, -95% speed (moving breaks it), crate removed afterwards | Reviewed: its two server-side helpers were never applied, so you were visible and could walk with stealth openers; needs Stealth known. Crate creature 300099 is in our DB |
 
 **Assumptions:** Taught outright, but the crate refuses to cast unless you know Stealth. In our data the crate spell (982477) only gives the Stealth form and summons the crate (creature 300099, present in our world database); the actual hiding (982478: stealth of the same strength as Stealth) and the 'no legs' slow (982479: -95% speed) are server-side helpers nothing applied, so you were a visible, walking player with stealth openers available. Both helpers now come and go with the crate form; moving breaks it (its data); the crate is removed when the form ends so they don't pile up. Review 2026-11-17.
 
@@ -6738,6 +7680,6 @@ patch or the mechanic when there is a chance.
 
 | Date | Commit | Pull request | First build with it | Installed on the server |
 |---|---|---|---|---|
-| 2026-10-31 | 9970cbf | #26 One build, 227 more enchants: taught spells, roll overrides, enchant action handler | build6 (2026-10-31) | 2026-11-02 |
+| 2026-11-18 | 271f5d8 | #178 Epic batches 1-4 and held-back epics: 61 epic enchants | build53 (2026-11-18) | 2026-11-20 |
 
 **Testing:** nothing recorded yet

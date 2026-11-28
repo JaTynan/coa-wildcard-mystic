@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mystic Enchants</title>
+<link rel="stylesheet" href="style.css">
+<script src="site.js"></script>
+<style>
+  /* Mystic Enchants only */
+  main { max-width: 1100px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+  .tabs button { font: inherit; font-size: 15px; color: var(--text); background: var(--field); border: 1px solid #44444e;
+                 border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: #111; font-weight: 700; }
+  .tabs button span { opacity: .7; font-weight: 400; margin-left: 4px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin: 0 0 14px; }
+  .tools input[type=search] { max-width: 320px; margin: 0; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+       font-weight: 600; padding: 0 10px 8px; border-bottom: 1px solid var(--line); }
+  td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.name { font-weight: 700; }
+  td.name .quality { display: block; font-weight: 400; font-size: 13px; }
+  .legendary { color: #ff9f40; }
+  .epic { color: #c9a0ff; }
+  .badge { display: inline-block; white-space: nowrap; font-size: 13px; font-weight: 700; border-radius: 6px; padding: 1px 8px;
+           border: 1px solid currentColor; }
+  .badge.confirmed { color: var(--good); }
+  .badge.restored { color: var(--gold); }
+  .badge.feedback { color: #8fb8ff; }
+  .badge.broken { color: var(--bad); }
+  .differs { margin-top: 4px; font-size: 14px; color: var(--muted); }
+  .differs b { color: var(--text); font-weight: 600; }
+  dl.legend { display: grid; grid-template-columns: max-content 1fr; gap: 8px 14px; margin: 0; }
+  dl.legend dd { margin: 0; color: var(--muted); font-size: 15px; }
+  @media (max-width: 720px) {
+    thead { display: none; }
+    tr, td { display: block; }
+    tr { border-bottom: 1px solid var(--line); padding: 8px 0; }
+    td { border: 0; padding: 4px 0; }
+    dl.legend { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body data-page="enchants">
+<main>
+  <header class="page-head">
+    <p class="eyebrow">Mystic Enchants</p>
+    <h1>Enchant status</h1>
+    <p class="lede">Many Legendary and Epic Mystic Enchants needed fixing on Wildcard. This table shows where each one
+    stands, so you can plan a build around enchants that work. Hover or open an enchant in game for what it does.</p>
+  </header>
+  <div class="stack">
+    <section class="panel">
+      <div class="tabs" id="quality" role="group" aria-label="Quality"></div>
+      <div class="tabs" id="status" role="group" aria-label="Status"></div>
+      <div class="tools">
+        <input type="search" id="search" placeholder="Search an enchant" aria-label="Search">
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Enchant</th><th>Status</th><th>Notes</th></tr></thead>
+          <tbody id="rows"><tr><td colspan="3" class="note">Loading...</td></tr></tbody>
+        </table>
+      </div>
+      <p class="note" id="count" style="margin-top:12px"></p>
+    </section>
+    <section class="panel">
+      <h2>What the statuses mean</h2>
+      <dl class="legend">
+        <dt><span class="badge confirmed">Confirmed working</span></dt>
+        <dd>Tested in game and does what it says. Nothing has changed since.</dd>
+        <dt><span class="badge restored">Restored</span></dt>
+        <dd>It was broken and we fixed it; the fix is on the server. Not yet confirmed in game, so tell us how it goes.</dd>
+        <dt><span class="badge feedback">Waiting on feedback</span></dt>
+        <dd>Should work: it worked as it came, or it passed a test before a later change. Nobody has confirmed it since.</dd>
+        <dt><span class="badge broken">Not working yet</span></dt>
+        <dd>Known not to work, or only partly. Some have a fix waiting for the next server update.</dd>
+      </dl>
+      <p class="note" style="margin-top:14px">Found an enchant that does not do what it says, or one that works?
+      Use <b>Report Bug</b> in game and name the enchant. Every report helps move an
+      enchant to Confirmed working. Recent fixes are listed on the <a href="changes.html">Changes</a> page.</p>
+    </section>
+  </div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const LABELS = { confirmed: "Confirmed working", restored: "Restored", feedback: "Waiting on feedback", broken: "Not working yet" };
+const QUALITIES = ["All", "Legendary", "Epic"];
+let data = null;
+let quality = "All";
+let status = "all";
+
+function el(tag, attrs = {}, text) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function button(label, count, pressed, onclick) {
+  const node = el("button", { type: "button", "aria-pressed": String(pressed) }, label);
+  node.append(el("span", {}, count));
+  node.onclick = onclick;
+  return node;
+}
+
+function inQuality(e) {
+  return quality === "All" || e.quality === quality;
+}
+
+function showTabs() {
+  const q = $("quality");
+  q.textContent = "";
+  for (const name of QUALITIES)
+    q.append(button(name, data.enchants.filter((e) => name === "All" || e.quality === name).length, name === quality,
+                    () => { quality = name; showTabs(); showRows(); }));
+  const s = $("status");
+  s.textContent = "";
+  s.append(button("Any status", data.enchants.filter(inQuality).length, status === "all",
+                  () => { status = "all"; showTabs(); showRows(); }));
+  for (const [key, label] of Object.entries(LABELS))
+    s.append(button(label, data.enchants.filter((e) => inQuality(e) && e.status === key).length, status === key,
+                    () => { status = key; showTabs(); showRows(); }));
+}
+
+function showRows() {
+  const body = $("rows");
+  body.textContent = "";
+  const words = $("search").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const list = data.enchants.filter((e) => inQuality(e) && (status === "all" || e.status === status) &&
+    words.every((w) => e.name.toLowerCase().includes(w)));
+  for (const e of list.slice(0, 600)) {
+    const row = el("tr");
+    const name = el("td", { class: "name" }, e.name);
+    name.append(el("span", { class: "quality " + e.quality.toLowerCase() }, e.quality));
+    const badge = el("td");
+    badge.append(el("span", { class: "badge " + e.status }, LABELS[e.status]));
+    const notes = el("td", { class: "note" }, e.note);
+    if (e.differs) {
+      const differs = el("div", { class: "differs" });
+      differs.append(el("b", {}, "Differs from its tooltip: "), document.createTextNode(e.differs));
+      notes.append(differs);
+    }
+    row.append(name, badge, notes);
+    body.append(row);
+  }
+  if (!list.length) {
+    const row = el("tr");
+    row.append(el("td", { colspan: "3", class: "note" }, "No enchant matches."));
+    body.append(row);
+  }
+  $("count").textContent = list.length + (list.length === 1 ? " enchant" : " enchants") +
+    (list.length > 600 ? " (the first 600 shown; search or filter to narrow it)" : "") +
+    ". Updated " + new Date(data.updated + "T00:00:00").toLocaleDateString() + ".";
+}
+
+async function load() {
+  try {
+    const reply = await fetch("enchant-status.json", { cache: "no-store" });
+    if (!reply.ok) throw new Error(reply.status);
+    data = await reply.json();
+  } catch (error) {
+    $("rows").innerHTML = '<tr><td colspan="3" class="note">The enchant list is unavailable right now. Try again in a minute.</td></tr>';
+    return;
+  }
+  showTabs();
+  showRows();
+}
+
+$("search").addEventListener("input", showRows);
+load();
+</script>
+</body>
+</html>

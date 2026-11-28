@@ -9,6 +9,7 @@ const Wildcard = (() => {
     ["server", "server.html", "Server"],
     ["leaderboards", "leaderboards.html", "Leaderboards"],
     ["pets", "pets.html", "Tameable pets"],
+    ["enchants", "enchants.html", "Mystic Enchants"],
     ["changes", "changes.html", "Changes"],
   ];
 
