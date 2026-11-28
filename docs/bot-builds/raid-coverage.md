@@ -118,4 +118,4 @@ covered. Thunder Clap also covers the tanks' attack speed slow.
 
 Tank side after the three tanks: attack power reduction (Vindication), attack speed slow (Thunder Clap), Devotion Aura,
 Stoneskin Totem and Blessing of Sanctuary are covered. **Every line of the checklist now has a carrier** in one
-faction's roster of 19 drafted builds. The five remaining healer slots add no checklist duty.
+faction's roster of 20 drafted builds. The five remaining healer slots add no checklist duty.
