@@ -2184,7 +2184,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 965365,Arcane Empowerment,Rare,1178505,standard,,working (audit),,,,,
 1354659,Arcane Fortitude,Rare,1013955,standard,,working (audit),,,,,
 101278,Arcane Fulmination,Uncommon,1178385,standard,,working (audit),,,,,
-274586,Arcane Gunslinger,Epic,201087,standard,,working (audit),,,,,
+274586,Arcane Gunslinger,Epic,201087,standard,,live (after restart),aura link 300028 while buff; Missile Barrage ends buff,,175-talent-code-showcase-1.sql,,
 281654,Arcane Infusion,Epic,201952,scripted,,working (audit),,,,,
 81265,Arcane Infusion,Epic,1175986,standard,,working (audit),,,,,
 1134962,Arcane Mastery,Legendary,1013874,standard,,working (audit),,,,,
@@ -4757,7 +4757,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 913958,Master of Deception,Rare,1175693,standard,,working (audit),,,,,
 1313971,Master of Deception,Rare,1013668,standard,,working (audit),,,,,
 929074,Master of Elements,Rare,1175814,standard,,working (audit),,,,,
-277475,Master of Kunai,Epic,202320,standard,,working (audit),,,,,
+277475,Master of Kunai,Epic,202320,standard,,partly working,"patch 55 + sql 175: Kunai stacks, consumption, CDR",,175-talent-code-showcase-1.sql,,code part needs the build with patch 55 showcase batch 1
 275491,Master of Shadows,Epic,201200,standard,,working (audit),,,,,
 980046,Master of Shadows,Legendary,1178766,standard,,working (audit),,,,,
 103040,Masterful Slavery,Rare,1178391,standard,,working (audit),,,,,
@@ -6101,7 +6101,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 84451,Tooth and Nail,Epic,1176101,standard,,working (audit),,,,,
 955339,Torment the Weak,Rare,1175907,standard,,working (audit),,,,,
 285267,Torrential Riptide,Uncommon,201762,scripted,,working (audit),,,,,
-277455,Toss and Throw,Epic,202316,standard,,working (audit),,,,,
+277455,Toss and Throw,Epic,202316,standard,,partly working,patch 55: combo point per Shuriken Toss,,175-talent-code-showcase-1.sql,,code part needs the build with patch 55 showcase batch 1
 965282,Total Eclipse,Legendary,1178475,standard,,working (audit),,,,,
 281447,Totemic Avatar,Epic,201926,standard,,working (audit),,,,,
 916173,Totemic Focus,Rare,1175726,standard,,working (audit),,,,,
