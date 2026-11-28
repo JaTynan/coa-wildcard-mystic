@@ -6101,7 +6101,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 84451,Tooth and Nail,Epic,1176101,standard,,working (audit),,,,,
 955339,Torment the Weak,Rare,1175907,standard,,working (audit),,,,,
 285267,Torrential Riptide,Uncommon,201762,scripted,,working (audit),,,,,
-277455,Toss and Throw,Epic,202316,standard,,partly working,core rule: other ability version added; patch 55: combo point per Shuriken Toss,,170-core-rule-versions.sql; 175-talent-code-showcase-1.sql,,code part needs the build with patch 55 showcase batch 1
+277455,Toss and Throw,Epic,202316,standard,,partly working,core rule: other ability version added; patch 55: combo point per Shuriken Toss; batch 6: double damage to monsters and Glaive Toss parts,,170-core-rule-versions.sql; 175-talent-code-showcase-1.sql; 183-talent-code-showcase-6.sql,,code parts need the builds with patch 55 batches 1 and 6
 965282,Total Eclipse,Legendary,1178475,standard,,working (audit),,,,,
 281447,Totemic Avatar,Epic,201926,standard,,working (audit),,,,,
 916173,Totemic Focus,Rare,1175726,standard,,working (audit),,,,,
