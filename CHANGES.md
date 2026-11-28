@@ -183,6 +183,7 @@ Arcane Barrage hits one more enemy while its buff is up, and gaining Missile Bar
 `173-blessing-of-the-divines-talent.sql`: the talent Blessing of the Divines works: costed direct Holy and Nature heals
 have a 10% chance, at most once a second, to cast one of its five blessings. Data only.
 
+`182-showcase-divine-concord-kunai.sql`: Divine Concord: The Art of War also makes Arcane Blast instant and 40% stronger, and whichever spell uses it, it is gone for both; Master of Kunai: Glaive Toss also hits 2 more targets while its buff lasts. Data only.
 `178-showcase-trace-data.sql`: four showcase talents fixed with data. Master of Shadows grants its buff (and its
 Shadow crit) only at 3 stacks; Stormborn fires with the CoA Elemental Mastery and Shamanistic Rage and scales with
 spell and attack power; Frost Bomb explodes when it ends or is dispelled; Hunting Frenzy's two free pet abilities are

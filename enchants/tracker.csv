@@ -527,7 +527,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 997115,Dark Ranger,Legendary,114116,needs-code,modifier on a placeholder,broken,,,,,
 288828,Defile the Grove,Uncommon,404425,needs-code,modifier on a placeholder,broken,,,,,
 1134965,Demonology Mastery,Legendary,1013876,needs-code,modifier on a placeholder,broken,,,,,
-277860,Divine Concord,Epic,202414,needs-code,modifier on a placeholder,broken,,,,,
+277860,Divine Concord,Epic,202414,needs-code,modifier on a placeholder,partly working,aura link: The Art of War also gives the Arcane Blast buff 984293; links remove every Art of War version when Arcane Blast uses it,,182-showcase-divine-concord-kunai.sql,,the extra Arcane Blast stack or Harnessed Energy charge needs patch 55 batch 6
 81216,Do The Stance Dance,Epic,1175969,needs-code,modifier on a placeholder,broken,,,,,
 81263,Down For The Count,Epic,1175985,needs-code,modifier on a placeholder,broken,,,,,
 281649,Down For The Count,Epic,201951,needs-code,modifier on a placeholder,broken,,,,,
@@ -4757,7 +4757,7 @@ spell,name,quality,scroll item,audit,family,status,fix,twin,fix file,tested,note
 913958,Master of Deception,Rare,1175693,standard,,working (audit),,,,,
 1313971,Master of Deception,Rare,1013668,standard,,working (audit),,,,,
 929074,Master of Elements,Rare,1175814,standard,,working (audit),,,,,
-277475,Master of Kunai,Epic,202320,standard,,partly working,"core rule: other ability version added; patch 55 + sql 175: Kunai stacks, consumption, CDR",,170-core-rule-versions.sql; 175-talent-code-showcase-1.sql,,code part needs the build with patch 55 showcase batch 1
+277475,Master of Kunai,Epic,202320,standard,,partly working,"core rule: other ability version added; patch 55 + sql 175: Kunai stacks, consumption, CDR; sql 182: Glaive Toss +2 targets (companion 277480)",,170-core-rule-versions.sql; 175-talent-code-showcase-1.sql; 182-showcase-divine-concord-kunai.sql,,code part needs the build with patch 55 showcase batch 1; Kunai on Glaive Toss needs batch 6
 275491,Master of Shadows,Epic,201200,standard,,live (after restart),core rule: other ability version added,,170-core-rule-versions.sql,,
 980046,Master of Shadows,Legendary,1178766,standard,,working (audit),,,,,
 103040,Masterful Slavery,Rare,1178391,standard,,working (audit),,,,,
