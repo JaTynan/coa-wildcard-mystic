@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wildcard abilities and talents</title>
+<link rel="stylesheet" href="style.css">
+<script src="site.js"></script>
+<style>
+  /* Abilities and talents only */
+  main { max-width: 1100px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+  .tabs button { font: inherit; font-size: 15px; color: var(--text); background: var(--field); border: 1px solid #44444e;
+                 border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+  .tabs button[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: #111; font-weight: 700; }
+  .tabs button span { opacity: .7; font-weight: 400; margin-left: 4px; }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; margin: 0 0 14px; }
+  .tools input[type=search] { max-width: 320px; margin: 0; }
+  .tools select { font: inherit; color: var(--text); background: var(--field); border: 1px solid #42424c; border-radius: 8px;
+                  padding: 7px 10px; }
+  .tools label { font-weight: 400; margin: 0; color: var(--muted); font-size: 15px; display: flex; gap: 6px; align-items: center; }
+  .tools input[type=checkbox] { width: auto; margin: 0; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+       font-weight: 600; padding: 0 10px 8px; border-bottom: 1px solid var(--line); }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  td.name .entry { display: flex; gap: 10px; align-items: center; font-weight: 700; }
+  td.name .where { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+  td.num { white-space: nowrap; }
+  .tagword { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; border-radius: 4px;
+             padding: 0 5px; margin: 0 6px 0 0; white-space: nowrap; border: 1px solid currentColor; }
+  .tagword.starter { color: var(--gold); }
+  .tagword.pet { color: #8fd0ff; }
+  .tagword.from-talent { color: var(--muted); }
+  .common { color: #e6e6ea; } .uncommon { color: #5fd35f; } .rare { color: #4da3ff; } .epic { color: #c9a0ff; }
+  .legendary { color: #ff9f40; }
+  dl.rules { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; margin: 0; }
+  dl.rules dt { font-weight: 700; }
+  dl.rules dd { margin: 0; color: var(--muted); font-size: 15px; }
+  @media (max-width: 720px) {
+    thead { display: none; }
+    tr, td { display: block; }
+    tr { border-bottom: 1px solid var(--line); padding: 8px 0; }
+    td { border: 0; padding: 3px 0; }
+    td.num::before { content: attr(data-label) ": "; color: var(--muted); }
+    dl.rules { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body data-page="wildcard">
+<main>
+  <header class="page-head">
+    <p class="eyebrow">Wildcard</p>
+    <h1>Abilities and talents</h1>
+    <p class="lede">Everything a Wildcard character can roll, from every class. Hover over one, or tap it, for its
+    tooltip. Pick the ones you want on the <a href="planner.html">Build planner</a>.</p>
+  </header>
+  <div class="stack">
+    <section class="panel">
+      <div class="tabs" id="kind" role="group" aria-label="Abilities or talents"></div>
+      <div class="tools">
+        <input type="search" id="search" placeholder="Search a name or what it does" aria-label="Search">
+        <select id="klass" aria-label="Class"></select>
+        <label><input type="checkbox" id="starters"> Starting abilities only</label>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Name</th><th>From level</th><th>Essence</th><th>Card</th></tr></thead>
+          <tbody id="rows"><tr><td colspan="4" class="note">Loading...</td></tr></tbody>
+        </table>
+      </div>
+      <p class="note" id="count" style="margin-top:12px"></p>
+    </section>
+    <section class="panel">
+      <h2>How a Wildcard character is built</h2>
+      <dl class="rules" id="rules"></dl>
+      <p class="note" style="margin-top:14px">These limits are read from the server's own data each night, so they match
+      the game. Numbers in the tooltips are for a level 60 character.</p>
+    </section>
+  </div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const el = Wildcard.el;
+const CLASS_NAMES = { DeathKnight: "Death Knight", General: "General (any class)" };
+let data = null;
+let kind = "abilities";
+
+function className(name) { return CLASS_NAMES[name] || name; }
+function inKind(e) { return kind === "abilities" ? !e.talent : e.talent; }
+
+function facts(e) {
+  const where = [e.talent ? "Talent" : e.fromTalent ? "Ability (from a talent tree)" : "Ability",
+                 className(e.class).replace(" (any class)", "") + (e.tab && e.tab !== e.class ? " · " + e.tab : "")];
+  const list = [where.join(" · "), "Can be rolled from level " + Math.max(e.level, e.talent ? data.talentStart : 1) +
+                " · " + e.cost + (e.talent ? " talent essence" : " ability essence")];
+  if (e.starter) list.push("Can be one of your four starting abilities");
+  if (e.card) list.push(e.card + " skill card");
+  return list;
+}
+
+function tabs() {
+  const box = $("kind");
+  box.textContent = "";
+  for (const [key, label] of [["abilities", "Abilities"], ["talents", "Talents"]]) {
+    const count = data.entries.filter((e) => key === "abilities" ? !e.talent : e.talent).length;
+    const node = el("button", { type: "button", "aria-pressed": String(kind === key) }, label, el("span", {}, count));
+    node.onclick = () => { kind = key; $("starters").disabled = key === "talents"; tabs(); show(); };
+    box.append(node);
+  }
+}
+
+function show() {
+  const body = $("rows");
+  body.textContent = "";
+  const words = $("search").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const klass = $("klass").value;
+  const starters = $("starters").checked && kind === "abilities";
+  const list = data.entries.filter((e) => inKind(e) && (!klass || e.class === klass) && (!starters || e.starter) &&
+    words.every((w) => e.search.includes(w)));
+  for (const e of list.slice(0, 500)) {
+    const label = el("div", {}, e.name, el("span", { class: "where" }, className(e.class).replace(" (any class)", "") +
+      (e.tab && e.tab !== e.class ? " · " + e.tab : "")));
+    const entry = el("div", { class: "entry" }, Wildcard.icon(e.tip.icon, 32), label);
+    Wildcard.attachTip(entry, () => Wildcard.tipCard(e.tip, { name: e.name, facts: facts(e) }));
+    const tags = el("td", { class: "num", "data-label": "Card" });
+    if (e.card) tags.append(el("span", { class: e.card.toLowerCase() }, e.card));
+    const marks = el("div", {});
+    if (e.starter) marks.append(el("span", { class: "tagword starter" }, "Starter"));
+    if (e.tame) marks.append(el("span", { class: "tagword pet" }, "Pet"));
+    if (e.fromTalent) marks.append(el("span", { class: "tagword from-talent" }, "Talent tree"));
+    if (marks.childNodes.length) label.append(marks);
+    body.append(el("tr", {}, el("td", { class: "name" }, entry),
+      el("td", { class: "num", "data-label": "From level" }, Math.max(e.level, e.talent ? data.talentStart : 1)),
+      el("td", { class: "num", "data-label": "Essence" }, e.cost), tags));
+  }
+  if (!list.length) body.append(el("tr", {}, el("td", { colspan: "4", class: "note" }, "Nothing matches.")));
+  $("count").textContent = list.length + (list.length === 1 ? " match" : " matches") +
+    (list.length > 500 ? " (the first 500 shown; search or pick a class to narrow it)" : "") + ".";
+}
+
+function rules() {
+  const top = data.budget[data.budget.length - 1] || [60, 0, 0];
+  const at60 = data.budget.find((b) => b[0] === data.level) || top;
+  const firstTalent = data.budget.find((b) => b[2] > 0);
+  const weights = Object.entries(data.cardWeights || {});
+  const total = weights.reduce((sum, [, w]) => sum + w, 0);
+  const starters = data.entries.filter((e) => e.starter).length;
+  const items = [
+    ["Starting abilities", `You start with ${data.startingAbilities}, chosen with starter cards (two normal, two golden; ` +
+      `every character has them). ${starters} abilities can be a starter.`],
+    ["Ability essence", `Each level gives some; at level ${at60[0]} you have ${at60[1]}. Most abilities cost 2, so a ` +
+      `level ${at60[0]} character has about ${Math.floor(at60[1] / 2)} abilities, the starting four included.`],
+    ["Talent essence", `${at60[2]} at level ${at60[0]}, the first at level ${firstTalent ? firstTalent[0] : 11}. Each talent ` +
+      `costs 1 whatever its rank; a rolled talent comes at a random rank.`],
+    ["Rolls", "When you have essence to spend, you roll from what your level allows: an ability or talent can only " +
+      "come up once you have reached the level shown in the table."],
+    ["Pets", "Only one way to tame a pet: Tame Beast, Dominate Undead, Enslave Demon, Tether Elemental or Tame " +
+      "Dragonkin."],
+    ["Skill cards", `Put a card in a slot and your next roll gives you that ability or talent. Three ability card ` +
+      `slots (open at level 1, 25 and 40), three golden ones, and three of each for talents.`],
+    ["Where cards come from", `Any enemy that gives experience can drop a normal card (${(data.cardDropPerMille / 10)}% ` +
+      `a kill${total ? ": " + weights.map(([q, w]) => `${q} ${Math.round(w * 100 / total)}%`).join(", ") : ""}). ` +
+      "Golden cards come from card packs and Darkmoon tickets. No card is tied to a place or an enemy; some Mystic " +
+      "Enchants are (see Worldforged on the Mystic Enchants page)."],
+  ];
+  $("rules").textContent = "";
+  for (const [term, text] of items) $("rules").append(el("dt", {}, term), el("dd", {}, text));
+}
+
+function textOf(tip) {
+  const parts = [tip.name, ...(tip.req || [])];
+  for (const line of tip.lines || []) for (const [text] of line) parts.push(text);
+  return parts.join(" ");
+}
+
+async function load() {
+  try {
+    data = await Wildcard.tooltips("wildcard-tooltips.json");
+  } catch (error) {
+    $("rows").textContent = "";
+    $("rows").append(el("tr", {}, el("td", { colspan: "4", class: "note" },
+      "The list is unavailable right now. Try again in a minute.")));
+    return;
+  }
+  for (const e of data.entries) e.search = (e.name + " " + textOf(e.tip) + " " + e.class + " " + e.tab).toLowerCase();
+  data.entries.sort((a, b) => a.name.localeCompare(b.name));
+  const classes = [...new Set(data.entries.map((e) => e.class))].sort((a, b) =>
+    (a === "General") - (b === "General") || className(a).localeCompare(className(b)));
+  $("klass").append(el("option", { value: "" }, "Every class"), ...classes.map((c) => el("option", { value: c }, className(c))));
+  tabs();
+  rules();
+  show();
+}
+
+$("search").addEventListener("input", show);
+$("klass").addEventListener("change", show);
+$("starters").addEventListener("change", show);
+load();
+</script>
+</body>
+</html>

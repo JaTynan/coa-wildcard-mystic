@@ -10,8 +10,9 @@ or by hand after changing the client (for example after a client update in the m
   - WildcardLauncher.zip, WildcardLauncher.ps1, WildcardLauncher.py (Linux), and the site folder (index.html, how-to-play.html, server.html, leaderboards.html, pets.html, changes.html, site.js, style.css, images)
   - changelog.json   the last week of merged pull requests, by day, for the home page's "What's new" and the Changes page. A PR body
                      line "Changelog: <text>" replaces its title there; "Changelog: skip" leaves it out.
-  - enchant-tooltips.json, pet-tooltips.json, racial-tooltips.json and icons\   what each Mystic Enchant, pet ability
-                     and racial does, and its icon, for the Mystic Enchants, Tameable pets and Racials pages: made by tooltips\build_spell_data.py with the server's
+  - enchant-tooltips*.json, pet-tooltips.json, racial-tooltips.json, wildcard-tooltips.json and icons\   what each
+                     Mystic Enchant, pet ability, racial, Wildcard ability and talent does, and its icon, for the Mystic
+                     Enchants, Tameable pets, Racials, Abilities and talents, and Build planner pages: made by tooltips\build_spell_data.py with the server's
                      Python, from the server's spell data and the client's archives. If that fails the site keeps the
                      last ones, and the pages still work without them.
 #>
