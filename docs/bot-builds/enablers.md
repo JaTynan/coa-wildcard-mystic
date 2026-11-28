@@ -1,6 +1,7 @@
 # Bot builds: the talents and enchants each build depends on
 
-Status: draft, 28 Nov 2026. Covers all 37 drafted builds (27 in `raid-coverage.md`, 10 new in `faction-rosters.md`).
+Status: draft, 28 Nov 2026. **Superseded in part by `showcase-audit.md`**, which checks every part of every build and
+found proc talents that never fire (some graded "working" below). Covers all 37 drafted builds (27 in `raid-coverage.md`, 10 new in `faction-rosters.md`).
 
 Many Wildcard builds only exist because of one or two talents or Mystic Enchants: without Blooming Growth there is no
 Blooming Growth healer, without Divine Concord no Arcane Paladin. This page lists those **enablers** for every build
